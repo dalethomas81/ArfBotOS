@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+*.opt
+*.precompilecache
+Codesys/Resources/VisionErrorLog.txt
+Codesys/Resources/VisionLog.txt
