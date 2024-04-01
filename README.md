@@ -1,7 +1,7 @@
 # ArfBotOS
- ArfBotOS is an operating system for a 6 axis robot running on CoDeSys, Arduino, and OpenCV. One of the main intentions of ArfBotOS is to give an example of how a typical industrial control system is programmed in IEC-61131. This wil give good experience to new Automation and Controls engineers.
+ArfBotOS is an operating system for a 6 axis robot running on CoDeSys, Arduino, and OpenCV. One of the main intentions of ArfBotOS is to give an example of how a typical industrial control system is programmed in IEC-61131. This wil give good experience to new Automation and Controls engineers.
  
- Disclaimer: The cost of the hardware in this project has been kept at a minimum to make it more attainable. However, there is a Codesys licensing cost associated with this project. You can simulate the code if you do not have a license. The licensing cost approx $695.00 USD and this will get you multi-core support on the Raspberry Pi as well as CNC/Robotics motion control.
+Disclaimer: The cost of the hardware in this project has been kept at a minimum to make it more attainable. However, there is a Codesys licensing cost associated with this project but the runtime will run in demo mode for 2 hours if you do not purchase the license. (You can restart the runtime to restart the 2 hour demo mode). The licensing cost approx $695.00 USD and this will get you multi-core support on the Raspberry Pi as well as CNC/Robotics motion control.
  
 ## Raspberry Pi OS Installation and Configuration
 #### Needed:
@@ -195,7 +195,7 @@ WantedBy=multi-user.target
 ### Codesys Development and Runtime
 1. download Codesys dev environment 32-bit 3.5.19.40 from the Codesys store and install. https://us.store.codesys.com/codesys.html
 2. download Codesys Raspberry Pi Runtime 4.10.0 from the Codesys store and install. https://us.store.codesys.com/codesys-control-for-raspberry-pi-sl.html
-3. download the Codesys Softmotion library 4.13.0 from the Codesys store and install. https://us.store.codesys.com/codesys-softmotion-sl-bundle.html
+3. download the Codesys Softmotion library 4.13.0 from the Codesys store and install. (will need to uninstall 4.15 first - details in lower section) https://us.store.codesys.com/codesys-softmotion-sl-bundle.html
 4. download the OMAC PackML State Machine library 1.0.0.1 from the Codesys store and install. https://us.store.codesys.com/omac-packml-state-machine.html
 5. open Codesys dev environment and from the Tools menu choose Update Raspberry Pi.
 6. from the Raspberry Pi panel enter the username and password of the user you created when you imaged the Raspberry Pi.
@@ -208,12 +208,6 @@ WantedBy=multi-user.target
 1. From the Start menu of Windows open the Codesys Installer (optionally you can find this in Tools menu of the Codesys IDE but you will need to close Codesys to uninstall/install anyway)
 2. Find Codesys Softmotion in the Installed applications and uninstall it 4.15.0.0 (this comes prepacked in 3.5.19.40 of Codesys but gives compiler errors for the Adafruit PWM drives)
 3. Browse for version 4.13.0.0 and install it.
-
-XXXXXXXXXX
-4. once the project loads open Library Manager from the Devices tree.
-5. select Download Missing Licenses at the top of the manager and select Download.
-6. if some libraries show not resolved click Add Library to add them manually. Additionally, you may select the Placholders button and select Set all unresolved placeholders to the newest available version. Double-clicking placeholders will allow you to choose another version.
-XXXXXXXXXX
 
 ### ArfBotOS Codesys Project On The Raspberry Pi
 1. open ArfBot.project in Codesys from `ArfBot\Codesys` (if prompted to update any libraries select 'Do Not Update' for each selection unless you know what you are doing)
@@ -267,3 +261,4 @@ sudo kill -15 <pid> // force kill
 df -Bm //Get size of disk
 sudo chown -R <user> /var/opt/codesys // ownership permissions of directory/file
 sudo netstat -nlp | grep <port number> // see which app is using a specific port
+sudo reboot now // restart
