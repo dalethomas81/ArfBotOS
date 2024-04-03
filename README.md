@@ -97,7 +97,7 @@ WantedBy=multi-user.target
 - `sudo systemctl daemon-reload`
 - `sudo systemctl enable PyServer.service`
 - `sudo systemctl start PyServer.service` (optional)
-- `sudo systemctl status PyServer` (optional - will see failed here if script not installed)
+- `sudo systemctl status PyServer.service` (optional - will see failed here if script not installed)
 
 #### references:
 - https://medium.com/codex/setup-a-python-script-as-a-service-through-systemctl-systemd-f0cc55a42267
@@ -106,9 +106,8 @@ WantedBy=multi-user.target
 
 ### Install Vision Web Service
 1. run the following commands to install flask:
-- `sudo apt install python3-flask`
-- `sudo pip install flask` (optional)
-- `sudo pip install flask-wtf` (optional)
+- `sudo pip install flask --break-system-packages` TODO: install this in a virtual environment instead.
+- `sudo pip install flask-wtf --break-system-packages` TODO: install this in a virtual environment instead.
 - `sudo pip install flask-sqlalchemy` (optional)
 - `sudo pip install flask-migrate` (optional)
 2. run this command to make the service file and edit in nano `sudo nano /etc/systemd/system/VisionWeb.service`
@@ -123,7 +122,7 @@ Type=simple
 Restart=always
 Environment=FLASK_APP=vision.py
 WorkingDirectory=/var/opt/codesys/PlcLogic/Application/Vision/VisionWebServer
-ExecStart=/usr/local/bin/flask run -h arfbot.local -p 5000
+ExecStart=/usr/bin/flask run -h arfbot.local -p 5000
 
 [Install]
 WantedBy=multi-user.target
@@ -133,7 +132,11 @@ WantedBy=multi-user.target
 - `sudo systemctl daemon-reload`
 - `sudo systemctl enable VisionWeb.service`
 - `sudo systemctl start VisionWeb.service` (optional)
-- `sudo systemctl status VisionWeb` (optional - will see failed here if script not installed)
+- `sudo systemctl status VisionWeb.service` (optional - will see failed here if script not installed)
+
+#### references:
+- https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world
+- https://blog.miguelgrinberg.com/post/running-a-flask-application-as-a-service-with-systemd
 
 ### Install Controller Service
 1. run the following command to clone pydualsense to your raspberry pi: `git clone https://github.com/flok/pydualsense` (this will make the next step easier)
@@ -165,7 +168,7 @@ WantedBy=multi-user.target
 - `sudo systemctl daemon-reload`
 - `sudo systemctl enable DualSenseController.service`
 - `sudo systemctl start DualSenseController.service` (optional)
-- `sudo systemctl status DualSenseController` (optional - will see failed here if script not installed)
+- `sudo systemctl status DualSenseController.service` (optional - will see failed here if script not installed)
 
 #### references:
 - https://github.com/flok/pydualsense
@@ -215,6 +218,10 @@ WantedBy=multi-user.target
 3. from the device tree, double-click on 'Device' and open the 'Communication Settings' tab.
 4. type in the ip address of the Raspberry Pi and hit enter. this will establish a connection to the gateway on the controller. (note that if you are having connectivity issues here you may have a different version of the runtime installed vs the gateway. you can check this by using the 'Update Raspberry Pi' and 'Update Edge Gateway' from the Tools menu)
 4. if the project built successfully and a connection to the gateway is established, open the Online menu and select 'Multiple Download...' to download the code to the controller. keep the default selections and press 'OK'
+5. during download, Codesys will install necessary script files in the `/var/opt/codesys/PlcLogic/Application/Vision` directory (this is why the services we installed earlier would fail). there are 2 files and 1 directory that you will have to manually copy over to get vision working.
+6. from the Codesys development environment, double-click on Device and from the Files tab find the `cal.yaml` and `roi.yaml` files located in the ArfBot repository and copy them to the `PlcLogic/Application/Vision` directory. they can be found in the `ArfBot/OpenCV/CameraCalibration` and `ArfBot/OpenCV/FastTemplateMatching` folders, respectively. these files have initial values and will be dynamically generated later.
+7. next, copy the `ArfBot/OpenCV/VisionWebServer` directory over to the `/var/opt/codesys/PlcLogic/Application/Vision` directory.
+8. next, create a new directory in `PlcLogic/Application/Vision` called `Templates`.
 
 ### Configuring Codesys To Run Commands In Linux
 1. run this command to open the Codesys Control config file and edit in nano `sudo nano /etc/CODESYSControl.cfg`
@@ -255,10 +262,15 @@ Below are detailed instructions on how to modify the AR4 connections to work wit
 TODO
 
 ## Handy Bash commands
-pidof <process> // find the pid of a process so you can kill it
-sudo kill -9 <pid> // SIGINT request to stop gracefully
-sudo kill -15 <pid> // force kill
-df -Bm //Get size of disk
-sudo chown -R <user> /var/opt/codesys // ownership permissions of directory/file
-sudo netstat -nlp | grep <port number> // see which app is using a specific port
-sudo reboot now // restart
+- `pidof <process>` find the pid of a process so you can kill it
+- `sudo kill -9 <pid>` SIGINT request to stop gracefully
+- `sudo kill -15 <pid>` force kill
+- `df -Bm` Get size of disk
+- `sudo chown -R <user> /var/opt/codesys` ownership permissions of directory/file
+- `sudo netstat -nlp | grep <port number>` see which app is using a specific port
+- `sudo reboot now` restart
+- `journalctl -u <service name>` see logs written by system services
+- `journalctl -u <service name> --since=-5m` logs in the last 5 minutes
+- `journalctl -u <service name> -n 25` last 25 log entries
+- `journalctl -u <service name> -f` tail the logs
+- `which <executable name>` locates the path of an executable
