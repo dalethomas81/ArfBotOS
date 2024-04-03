@@ -1,0 +1,27 @@
+<html>
+    <head>
+        {% if title %}
+        <title>{{ title }} - vision</title>
+        {% else %}
+        <title>vision</title>
+        {% endif %}
+    </head>
+    <body>
+        <div>
+            Vision:
+            <a href="{{ url_for('template') }}">Template</a>
+            <a href="{{ url_for('files') }}">Files</a>
+        </div>
+        <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </body>
+</html>

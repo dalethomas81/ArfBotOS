@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Create Template</h1>
+
+    <div id="results">
+        <p id="start">start: x: , y:</p>
+        <p id="end">end: x: , y:</p>
+        <p id="current">current: x: , y:</p>
+    </div>
+
+    <img id="cameraimage" src="{{ url_for('captured_image') }}" draggable="false">
+    <img id="cropped" src="{{ url_for('cropped') }}" draggable="false">
+    
+    <div class='container'>
+        <form>
+            <a href=# id=capture><button class='btn btn-default'>Capture Image</button></a>
+            <a href=# id=crop><button class='btn btn-default'>Crop Image</button></a>
+        </form>
+    </div>
+    <div class='container'>
+        <form>
+            <label for="template_filename">Template Name:</label>
+            <input type="text" id="template_filename" name="template_filename" />
+            <a href=# id=save><button class='btn btn-default'>Save</button></a>
+        </form>
+    </div>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script type=text/javascript>
+    
+        var offsetLeft = 0; var offsetTop = 0;
+        var offsetHeight = 0; var offsetWidth = 0;
+        var startPointX = 0; var startPointY = 0;
+        var endPointX = 0; var endPointY = 0;
+        var startPoint = [0.0, 0.0]; var endPoint = [0.0, 0.0];
+
+        // https://stackoverflow.com/questions/42601478/flask-calling-python-function-on-button-onclick-event
+        $(function() {
+            $('a#capture').on('click', function(e) {
+                e.preventDefault()
+                $.getJSON('/captured_image',
+                    function(data) {
+                    //do something with return data
+                })
+                .done(function() {
+                    //console.log( "second success" );
+                })
+                .fail(function() {
+                    //console.log( "error" );
+                })
+                .always(function() {
+                    refreshCameraImage();
+                    //console.log( "complete" );
+                });
+                return false;
+            });
+        });
+        $(function() {
+            $('a#crop').on('click', function(e) {
+                refreshCroppedImage();
+                return false;
+            });
+        });
+        $(function() {
+            $('a#save').on('click', function(e) {
+                saveCroppedImage();
+                return false;
+            });
+        });
+
+        function refreshCameraImage() {
+            console.log("reloaded captured image")
+            document.getElementById('cameraimage').src = "{{ url_for('captured_image') }}?"+new Date().getTime();
+        }
+        function refreshCroppedImage() {
+            console.log("reloaded cropped image")
+            document.getElementById('cropped').src = "{{ url_for('cropped') }}"+"/"+startPoint+"/"+endPoint;
+        }
+        function saveCroppedImage() {
+            //console.log("saved cropped image")
+            $.get("{{ url_for('save_template') }}"+"/"+template_filename.value+".jpg",function(data,status) {
+                //
+            },'html');
+        }
+        
+        // offsets are off is page refreshes and the scroll is not at the top
+        // adding this to force it to the top as a workaround for now
+        window.onbeforeunload = function () {
+            window.scrollTo(0, 0);
+        }
+
+        // getting the position of the image on the page
+        document.getElementById("cameraimage").addEventListener("load", getRect);
+        function getRect(){
+            offsetLeft = getOffset(document.getElementById('cameraimage')).left;
+            offsetTop = getOffset(document.getElementById('cameraimage')).top;
+            offsetHeight = getOffset(document.getElementById('cameraimage')).height;
+            offsetWidth = getOffset(document.getElementById('cameraimage')).width;
+
+            // leave for dev purpose but remove later
+            /*var elem = document.getElementById('cameraimage')
+            var rect = elem.getBoundingClientRect();
+            for (const key in rect) {
+                if (typeof rect[key] !== "function") {
+                    let para = document.createElement("p");
+                    para.textContent = `${key} : ${rect[key]}`;
+                    document.body.appendChild(para);
+                }
+            }*/
+        }
+        
+        // get the offsets of the image in the page
+        function getOffset( el ) {
+            var _x = 0;  var _y = 0;
+            var _h = 0;  var _w = 0;
+            _h = el.height; _w = el.width
+            while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop )) {
+                _x += el.offsetLeft - el.scrollLeft;
+                _y += el.offsetTop - el.scrollTop;
+                el = el.offsetParent;
+            }
+            return { top: _y, left: _x, height: _h, width: _w};
+        }
+
+        // make image not selectable while cropping
+        function disableSelect(event) {
+            event.preventDefault();
+        }
+        
+        // capture the starting coordinate so we can crop later
+        function captureStartPoint(){
+            if (event.pageX > offsetLeft && event.pageY > offsetTop 
+                && event.pageX < offsetLeft + offsetWidth 
+                && event.pageY < offsetTop + offsetHeight) {
+                
+                    startPointX = event.pageX - offsetLeft;
+                    startPointY = event.pageY - offsetTop;
+                    startPoint[0] = startPointX;
+                    startPoint[1] = startPointY;
+                    document.getElementById('start').innerHTML = "top left x,y: " + startPoint;
+            }
+            window.addEventListener('selectstart', disableSelect);
+        }
+
+        // capture the end point and send coordinates to crop
+        function captureEndPoint(){
+            if (event.pageX > offsetLeft && event.pageY > offsetTop 
+                && event.pageX < offsetLeft + offsetWidth 
+                && event.pageY < offsetTop + offsetHeight) {
+                    //
+                    endPointX = event.pageX - offsetLeft;
+                    endPointY = event.pageY - offsetTop;
+                    endPoint[0] = endPointX;
+                    endPoint[1] = endPointY;
+                    document.getElementById('end').innerHTML = "bottom right x,y: " + endPoint;
+                    // show me!
+                    refreshCroppedImage();
+            }
+            window.removeEventListener('selectstart', disableSelect);
+        }
+
+        // capture the realtime coordinates of the mouse pointer
+        function printMousePos(event) {
+            document.getElementById('current').innerHTML = "current x: " + event.pageX + ", y: " + event.pageY;
+        }
+        
+        document.addEventListener("mousedown", captureStartPoint);
+        document.addEventListener("mouseup", captureEndPoint);
+        document.addEventListener("mousemove", printMousePos);
+        
+    </script>
+
+{% endblock %}

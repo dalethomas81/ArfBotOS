@@ -1,0 +1,11 @@
+[ERROR:0@708.921] global ./modules/core/src/persistence.cpp (505) open Can't open file: '/var/opt/codesys/PlcLogic/Application/Vision/cal.yaml' in read mode
+[ERROR:0@708.934] global ./modules/core/src/persistence.cpp (505) open Can't open file: '/var/opt/codesys/PlcLogic/Application/Vision/roi.yaml' in read mode
+[0:36:34.754338314] [1905] [1;32m INFO [1;37mCamera [1;34mcamera_manager.cpp:284 [0mlibcamera v0.2.0+46-075b54d5
+Exception ignored in: <function Picamera2.__del__ at 0xdad96e88>
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 404, in __del__
+    self.close()
+  File "/usr/lib/python3/dist-packages/picamera2/picamera2.py", line 604, in close
+    if self._preview:
+       ^^^^^^^^^^^^^
+AttributeError: 'Picamera2' object has no attribute '_preview'

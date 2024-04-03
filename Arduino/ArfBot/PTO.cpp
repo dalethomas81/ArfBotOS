@@ -47,7 +47,7 @@ PTO::PTO(int In_DirPin, int In_PulsePin) {
 }
 
 // unit revolutions per second so we take in motor steps per revolution
-void PTO::run(float RevolutionsPerSecond, int StepsPerRevolution){
+void PTO::run(float RevolutionsPerSecond, float StepsPerRevolution){
   if (RevolutionsPerSecond != 0 && StepsPerRevolution != 0 && DriveEnabled) {
 
     bOffOneshot = true;

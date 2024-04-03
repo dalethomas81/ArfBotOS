@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "C:\Users\Dale\Documents\GitHub\ArfBot\OpenCV\ImageCapture\CaptureImage.py", line 157, in <module>
+    roi_top_left, roi_bot_right = load_cal_data(roi_file_path)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: too many values to unpack (expected 2)

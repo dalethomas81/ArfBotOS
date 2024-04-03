@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33712.159
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "FastTemplateMatching", "FastTemplateMatching.pyproj", "{3184D09D-0438-4BCA-9151-0752E59CBB4B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3184D09D-0438-4BCA-9151-0752E59CBB4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3184D09D-0438-4BCA-9151-0752E59CBB4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0B7969E6-29B7-4B74-92D6-F5CC15222FFC}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Template Files</title>
+  </head>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script type=text/javascript>
+    // https://laracasts.com/discuss/channels/laravel/how-to-give-dynamic-id-for-button-tag-when-using-in-foreach-loop
+    $(document).on('click', 'button[data-id]', function (e) {
+        var filename = $(this).attr('data-id');
+        // delete the file
+        // https://stackoverflow.com/questions/423376/how-to-get-the-file-name-from-a-full-path-using-javascript
+        deleteTemplate(filename.split('\\').pop().split('/').pop())
+        //$.when(deleteTemplate(filename.split('\\').pop().split('/').pop()))
+        //.then();
+        //location.reload();
+    });
+    
+    function deleteTemplate(filename) {
+        //console.log("delete template")
+        $.get("{{ url_for('delete_template') }}"+"/"+filename,function(data,status) {
+            //
+        },'html')
+                .done(function() {
+                    //console.log( "second success" );
+                    location.reload();
+                })
+                .fail(function() {
+                    //console.log( "error" );
+                })
+                .always(function() {
+                    //console.log( "complete" );
+                })};
+  </script>
+  <body>
+    <ul id="filenamelist">
+    {% for file in files %}
+        <li><a href="{{ url_for('file', filename=file) }}">{{ file }}</a>
+          <button class="btn btn-success" data-id="{{ url_for('file', filename=file) }}">Delete</button>
+        </li>
+    {% endfor %}
+    </ul>
+  </body>
+</html>
+
+{% endblock %}

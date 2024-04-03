@@ -1,0 +1,13 @@
+%YAML:1.0
+---
+rotation_offset: -5.1297642418819915e+00
+top_left: !!opencv-matrix
+   rows: 2
+   cols: 1
+   dt: f
+   data: [ 182.0e+00, 11.0e+00 ]
+bot_right: !!opencv-matrix
+   rows: 2
+   cols: 1
+   dt: f
+   data: [ 415.0e+00, 384.0e+00 ]
