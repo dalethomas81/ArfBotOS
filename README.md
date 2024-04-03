@@ -1,7 +1,10 @@
 # ArfBotOS
-ArfBotOS is an operating system for a 6 axis robot running on CoDeSys, Arduino, and OpenCV. One of the main intentions of ArfBotOS is to give an example of how a typical industrial control system is programmed in IEC-61131. This wil give good experience to new Automation and Controls engineers.
+ArfBotOS is an operating system for a 6 axis robot running on CoDeSys, Arduino, and OpenCV. One of the main intentions of ArfBotOS is to give an example of how a typical industrial control system is programmed in IEC-61131. This will give good experience to new Automation and Controls engineers.
  
 Disclaimer: The cost of the hardware in this project has been kept at a minimum to make it more attainable. However, there is a Codesys licensing cost associated with this project but the runtime will run in demo mode for 2 hours if you do not purchase the license. (You can restart the runtime to restart the 2 hour demo mode). The licensing cost approx $695.00 USD and this will get you multi-core support on the Raspberry Pi as well as CNC/Robotics motion control.
+
+## Hello World
+If you already have ArfBotOS running and have it connected to a robot, you will want to create your first program. I have put together a Hello World project that will help you do that. You can find it in the Projects folder [here](/Projects/HelloWorld). Otherwise, please follow the installation and configuration instructions below to get started.
  
 ## Raspberry Pi OS Installation and Configuration
 #### Needed:
