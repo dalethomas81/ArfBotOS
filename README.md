@@ -200,7 +200,7 @@ WantedBy=multi-user.target
 
 ### Codesys Development and Runtime
 1. download Codesys dev environment 32-bit 3.5.19.40 from the Codesys store and install. https://us.store.codesys.com/codesys.html
-2. download Codesys Raspberry Pi Runtime 4.10.0 from the Codesys store and install. https://us.store.codesys.com/codesys-control-for-raspberry-pi-sl.html
+2. download Codesys Raspberry Pi Runtime 4.11.0 from the Codesys store and install. https://us.store.codesys.com/codesys-control-for-raspberry-pi-sl.html
 3. download the Codesys Softmotion library 4.13.0 from the Codesys store and install. (will need to uninstall 4.15 first - details in lower section) https://us.store.codesys.com/codesys-softmotion-sl-bundle.html
 4. download the OMAC PackML State Machine library 1.0.0.1 from the Codesys store and install. https://us.store.codesys.com/omac-packml-state-machine.html
 5. open Codesys dev environment and from the Tools menu choose Update Raspberry Pi.
