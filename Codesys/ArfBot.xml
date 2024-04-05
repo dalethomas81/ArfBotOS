@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-02T21:00:22.6063163" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-02T20:38:31.7755226">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-04T17:16:13.9205654" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-04T17:06:21.4730056">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -3617,6 +3617,25 @@ END_IF
                         <returnType>
                           <BOOL />
                         </returnType>
+                        <globalVars>
+                          <variable name="_PowerRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="_PowerTimer">
+                            <type>
+                              <derived name="TON" />
+                            </type>
+                            <initialValue>
+                              <structValue>
+                                <value member="PT">
+                                  <simpleValue value="TIME#3s0ms" />
+                                </value>
+                              </structValue>
+                            </initialValue>
+                          </variable>
+                        </globalVars>
                       </interface>
                       <body>
                         <ST>
@@ -3636,6 +3655,13 @@ END_IF
 IF ResetController THEN
 	ResetController:=FALSE;
 	Controller.M_Reset();
+END_IF
+
+// put two fingers on the trackpad for 3 seconds to toggle power
+_PowerTimer(IN:=Controller.P_State.Trackpads.One.Active AND Controller.P_State.Trackpads.Two.Active);
+_PowerRtrig(CLK:=_PowerTimer.Q);
+IF _PowerRtrig.Q THEN
+	GVL.PowerOn := NOT GVL.PowerOn;
 END_IF</xhtml>
                         </ST>
                       </body>
@@ -4263,6 +4289,45 @@ tx_en := GVL.PowerOn;
                         <derived name="MC_COORD_REF" />
                       </type>
                     </variable>
+                    <variable name="_TraceStart">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="5" />
+                          <baseType>
+                            <BOOL />
+                          </baseType>
+                        </array>
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> trace
+_TraceTrigger: ARRAY[0..5] OF BOOL;</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="_TraceStop">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="5" />
+                          <baseType>
+                            <BOOL />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="_i">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_j">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_k">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
                     <variable name="_FirstScan">
                       <type>
                         <BOOL />
@@ -4725,6 +4790,13 @@ _SMC_GroupJog2(
 	Error=&gt; , 
 	ErrorID=&gt; , 
 	CurrentPosition=&gt; Position);
+	
+// trace activation
+FOR _i:=0 TO 5 BY 1 DO
+	//_TraceTrigger[_i] := _SMC_GroupJog2.Forward[_i] OR _SMC_GroupJog2.Backward[_i];
+	_TraceStart[_i] := _SMC_GroupJog2.Forward[_i] OR _SMC_GroupJog2.Backward[_i];
+	_TraceStop[_i] := NOT _TraceStart[_i];
+END_FOR
 
 //
 CoordSystem := _SMC_GroupJog2.CoordSystem;
@@ -12968,8 +13040,8 @@ SUPER^._UnitMode.Reset();</xhtml>
                       <addData>
                         <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                           <Attributes>
-                            <Attribute Name="instance-path" Value="" />
                             <Attribute Name="noinit" />
+                            <Attribute Name="instance-path" Value="" />
                           </Attributes>
                         </data>
                       </addData>
@@ -17406,6 +17478,36 @@ _FirstScan := FALSE;</xhtml>
                       <addData />
                     </Method>
                   </data>
+                  <data name="http://www.3s-software.com/plcopenxml/property" handleUnknown="implementation">
+                    <Property name="P_State" ObjectId="8f9874b7-a4ba-4163-b1b5-6ca35856054f">
+                      <interface>
+                        <returnType>
+                          <derived name="REFERENCE TO ST_Controller" />
+                        </returnType>
+                        <Attributes>
+                          <Attribute Name="monitoring" Value="variable" />
+                        </Attributes>
+                      </interface>
+                      <GetAccessor>
+                        <interface>
+                          <addData>
+                            <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                              <Attributes>
+                                <Attribute Name="monitoring" Value="variable" />
+                              </Attributes>
+                            </data>
+                          </addData>
+                        </interface>
+                        <body>
+                          <ST>
+                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_State ref= Controller;</xhtml>
+                          </ST>
+                        </body>
+                        <addData />
+                      </GetAccessor>
+                      <addData />
+                    </Property>
+                  </data>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>6c3bd905-e561-44be-a365-7f9abc521e72</ObjectId>
                   </data>
@@ -20805,6 +20907,7 @@ END_CASE</xhtml>
                   <Folder Name="private">
                     <Object Name="_M_EvaluateControllerStates" ObjectId="ec5a2389-0422-417f-bd11-588f38f08844" />
                   </Folder>
+                  <Object Name="P_State" ObjectId="8f9874b7-a4ba-4163-b1b5-6ca35856054f" />
                 </Object>
                 <Object Name="ST_Buttons" ObjectId="95f2037f-8fc8-4d22-85e5-1ff2dd41a9ab" />
                 <Object Name="ST_Controller" ObjectId="cae9356f-d6ac-4e7d-8011-d5a6d5d74766" />
