@@ -280,3 +280,4 @@ TODO
 - `journalctl -u <service name> -f` tail the logs
 - `which <executable name>` locates the path of an executable
 - `scp -r <local directory> user@host.host:<remote>` copy local files to remote
+- `sudo systemctl stop bluetooth.service` self explanatory

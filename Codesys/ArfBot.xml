@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-04T17:16:13.9205654" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-04T17:06:21.4730056">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-05T01:47:09.4187668" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-05T01:28:00.0456404">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -299,6 +299,25 @@
               </initialValue>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> total number of registers</xhtml>
+              </documentation>
+            </variable>
+            <variable name="POSCONT_ARR_BEG">
+              <type>
+                <INT />
+              </type>
+              <initialValue>
+                <simpleValue value="0" />
+              </initialValue>
+            </variable>
+            <variable name="POSCONT_ARR_END">
+              <type>
+                <INT />
+              </type>
+              <initialValue>
+                <simpleValue value="5" />
+              </initialValue>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> total number of axes</xhtml>
               </documentation>
             </variable>
             <variable name="COMMAND_LEN">
@@ -783,6 +802,25 @@ RESERVED: INT:=47;</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> total number of registers</xhtml>
                       </documentation>
                     </variable>
+                    <variable name="POSCONT_ARR_BEG">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="0" />
+                      </initialValue>
+                    </variable>
+                    <variable name="POSCONT_ARR_END">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="5" />
+                      </initialValue>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> total number of axes</xhtml>
+                      </documentation>
+                    </variable>
                     <variable name="COMMAND_LEN">
                       <type>
                         <UINT />
@@ -1136,11 +1174,28 @@ RESERVED: INT:=47;</xhtml>
                 </data>
               </addData>
             </variable>
+            <variable name="PositionControllers">
+              <type>
+                <array>
+                  <dimension lower="GVL.POSCONT_ARR_BEG" upper="GVL.POSCONT_ARR_END" />
+                  <baseType>
+                    <derived name="DUT_PositionController" />
+                  </baseType>
+                </array>
+              </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="order_in_persistent_editor" Value="4" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                 <Attributes>
                   <Attribute Name="qualified_only" Value="" />
-                  <Attribute Name="checksumnoinit_override" Value="3161106809" />
+                  <Attribute Name="checksumnoinit_override" Value="1817016765" />
                   <Attribute Name="init_related_code" Value="bac351e4-1440-4031-887f-c3d65d99e6dc" />
                 </Attributes>
               </data>
@@ -1220,6 +1275,11 @@ RESERVED: INT:=47;</xhtml>
                     <variable name="CommandString">
                       <type>
                         <string length="GVL.COMMAND_LEN" />
+                      </type>
+                    </variable>
+                    <variable name="CommandComment">
+                      <type>
+                        <string />
                       </type>
                     </variable>
                   </struct>
@@ -2287,6 +2347,59 @@ RESERVED: INT:=47;</xhtml>
                 </addData>
               </dataType>
             </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="DUT_PositionController">
+                <baseType>
+                  <struct>
+                    <variable name="fKp">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="fPartVelPilotControl">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="fDeadTime">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="fMaxPositionDiff">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="fSWMaxVelocity">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="fSWMaxAcceleration">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="fSWMaxDeceleration">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="fSWMaxJerk">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                  </struct>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>862da66f-a0ac-4f98-8a1c-2d6c546e43d9</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/interface" handleUnknown="implementation">
               <Interface name="ITFModule" ObjectId="83e2f220-b628-4cc1-8425-5ccb3ca1431d">
                 <Methods>
@@ -2368,19 +2481,63 @@ RESERVED: INT:=47;</xhtml>
               <pou name="_00_Main" pouType="program">
                 <interface>
                   <localVars>
+                    <variable name="MoveRelative">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="5" />
+                          <baseType>
+                            <derived name="MC_MoveRelative" />
+                          </baseType>
+                        </array>
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> tuning</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="GroupPower">
+                      <type>
+                        <derived name="SMC_GroupPower" />
+                      </type>
+                    </variable>
+                    <variable name="GroupEnable">
+                      <type>
+                        <derived name="MC_GroupEnable" />
+                      </type>
+                    </variable>
+                    <variable name="TraceStart">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="5" />
+                          <baseType>
+                            <BOOL />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="TraceStop">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="5" />
+                          <baseType>
+                            <BOOL />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="TraceTime">
+                      <type>
+                        <TIME />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="TIME#50ms" />
+                      </initialValue>
+                    </variable>
                     <variable name="SMC_Homing_J1">
                       <type>
                         <derived name="SMC_Homing" />
                       </type>
                       <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> drive parameters
-SM_Drive_PosControl_J1.controller.fDeadTime := 2.0;
-SM_Drive_PosControl_J2.controller.fDeadTime := 2.0;
-SM_Drive_PosControl_J3.controller.fDeadTime := 2.0;
-SM_Drive_PosControl_J4.controller.fDeadTime := 2.0;
-SM_Drive_PosControl_J5.controller.fDeadTime := 2.0;
-SM_Drive_PosControl_J6.controller.fDeadTime := 2.0;
- homing</xhtml>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> homing</xhtml>
                       </documentation>
                     </variable>
                     <variable name="SMC_Homing_J2">
@@ -2388,14 +2545,7 @@ SM_Drive_PosControl_J6.controller.fDeadTime := 2.0;
                         <derived name="SMC_Homing" />
                       </type>
                       <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> drive parameters
-SM_Drive_PosControl_J1.controller.fDeadTime := 2.0;
-SM_Drive_PosControl_J2.controller.fDeadTime := 2.0;
-SM_Drive_PosControl_J3.controller.fDeadTime := 2.0;
-SM_Drive_PosControl_J4.controller.fDeadTime := 2.0;
-SM_Drive_PosControl_J5.controller.fDeadTime := 2.0;
-SM_Drive_PosControl_J6.controller.fDeadTime := 2.0;
- homing</xhtml>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> homing</xhtml>
                       </documentation>
                     </variable>
                     <variable name="SMC_Homing_J3">
@@ -2403,14 +2553,7 @@ SM_Drive_PosControl_J6.controller.fDeadTime := 2.0;
                         <derived name="SMC_Homing" />
                       </type>
                       <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> drive parameters
-SM_Drive_PosControl_J1.controller.fDeadTime := 2.0;
-SM_Drive_PosControl_J2.controller.fDeadTime := 2.0;
-SM_Drive_PosControl_J3.controller.fDeadTime := 2.0;
-SM_Drive_PosControl_J4.controller.fDeadTime := 2.0;
-SM_Drive_PosControl_J5.controller.fDeadTime := 2.0;
-SM_Drive_PosControl_J6.controller.fDeadTime := 2.0;
- homing</xhtml>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> homing</xhtml>
                       </documentation>
                     </variable>
                     <variable name="SMC_Homing_J4">
@@ -2700,7 +2843,6 @@ SM_Drive_PosControl_J6.controller.fDeadTime := 2.0;
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">
 {region "utility"}
-		 
 	IF FirstScan THEN
 		M_Init();	
 	END_IF
@@ -2709,120 +2851,311 @@ SM_Drive_PosControl_J6.controller.fDeadTime := 2.0;
 		BuildTests := FALSE;
 		M_BuildTests();
 	END_IF
-	
 {endregion}
      
 {region "methods"}
-
-    M_Jogging();
-    M_Homing();
-    M_Cnc();
-    M_Processor();
-    M_Vision();
-	M_Controller();
-    
+    _M_Jogging();
+    _M_Homing();
+    _M_Cnc();
+    _M_Processor();
+    _M_Vision();
+	_M_Controller();
+	_M_Tuning();
 {endregion}
 
+// do not put anything below this
 FirstScan:=FALSE;</xhtml>
                   </ST>
                 </body>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_Init" ObjectId="229ed790-05b4-4c75-a8a2-65170cb5046e">
+                    <Method name="M_BuildTests" ObjectId="9a5607a2-ed23-4572-beb3-b80fd95846d5">
                       <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
+                        <localVars>
+                          <variable name="_i">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                          <variable name="_j">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                          <variable name="_k">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                        </localVars>
                       </interface>
                       <body>
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">
-// check if arfbot has been initialized
-IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
-	// poses
-	PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Value := FALSE;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.X := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Y := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Z := -30.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.B := -30.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.C := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.X := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Y := 30.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Z := -30.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.B := 30.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.C := 0.0;
-		 
-	// decoder
-	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.X := 300.0; // TODO need to verify all 6 of these
-	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.Y := 0.0;
-	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.Z := -400.0;
-	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.B := 0.0;
-	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.C := 0.0;
-		 
-	
-	// set homing offsets
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X := 167.0; // J1 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y := 42.41; // J2 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z := -57.35; // J3 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A := -169.66; // J4 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B := -94.106; // J5 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C := 171.581; // J6 initial home offset
-		 
-	
-	// set speeds
-	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X := 100.0; // max velocity
-	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.Y := 1000.0; // max accel/decel
-	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.Z := 1000.0; // max jerk
-	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.A := 1.0; // velocity factor
-	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.B := 0.05; // accel/decel factor
-	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.C := 1.0; // jerk factor
-	
-	//
-	M_BuildTests();
-		 
-	// indicate initialized
-	PersistentVars.Flags[GVL.INIT_POS_IDX].Value := TRUE;
-END_IF
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[1].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[1].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[1].ProgramName := 'Vision Pick and Place';
+PersistentVars.Programs[1].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[1].Commands[0].CommandString := 'STO 0046 +0000.00 +0000.00 +0000.00 +0090.00 +0000.00 +0000.00';
+PersistentVars.Programs[1].Commands[1].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[1].CommandString := 'DIR ABS 020 ACS LIT 00000.00 00030.00 -0030.00 00000.00 00030.00 00000.00';
+PersistentVars.Programs[1].Commands[2].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[2].CommandString := 'DIG 1 1';
+PersistentVars.Programs[1].Commands[3].CommandType := DUT_CommandType.VisionCommand;
+PersistentVars.Programs[1].Commands[3].CommandString := 'LOC 640 400 0060 001 000.0 0.8 030.0 000 Template.jpg FastTemplateMatching.py';
+PersistentVars.Programs[1].Commands[4].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[4].CommandString := 'DIG 1 0';
+PersistentVars.Programs[1].Commands[5].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[5].CommandString := 'DIR ABS 050 PC1 LIT 00000.00 00000.00 -0010.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[1].Commands[6].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[6].CommandString := 'DIR ABS 050 PC1 VAR VIS 000';
+PersistentVars.Programs[1].Commands[7].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[7].CommandString := 'SRV 1 30.0 360.0';
+PersistentVars.Programs[1].Commands[8].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[8].CommandString := 'LIN REL 050 TCS LIT 00000.00 00000.00 00010.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[1].Commands[9].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[9].CommandString := 'SRV 1 0.0 360.0';
+PersistentVars.Programs[1].Commands[10].CommandType := DUT_CommandType.PauseCommand;
+PersistentVars.Programs[1].Commands[10].CommandString := 'T#1s';
+PersistentVars.Programs[1].Commands[11].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[11].CommandString := 'LIN REL 050 TCS LIT 00000.00 00000.00 -0010.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[1].Commands[12].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[12].CommandString := 'DIR ABS 050 PC1 LIT 00000.00 00000.00 -0050.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[1].Commands[13].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[13].CommandString := 'SRV 1 30.0 360.0';
 
 //
-PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Comment := 'vel, acc, jerk, vel fact, acc fact, jerk fact';
-PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Comment := 'Home Offsets J1, J2, J3, J4, J5, J6';
-PersistentVars.StoredPositions[GVL.DEC_START_POS].Comment := 'NC Decoder Start Position';
-PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Comment := 'TCP Offset';
-PersistentVars.StoredPositions[GVL.PC2_POS_IDX].Comment := 'PCS 2 Offset';
-PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Comment := 'PCS 1 Offset';
-PersistentVars.StoredPositions[GVL.MCS_POS_IDX].Comment := 'MCS Offset';
-
-//	 
-PersistentVars.StoredPositions[GVL.POSE_1_IDX].Comment := 'Pose 1 coordinates';
-PersistentVars.StoredPositions[GVL.POSE_2_IDX].Comment := 'Pose 2 coordinates';
-PersistentVars.StoredPositions[GVL.POSE_3_IDX].Comment := 'Pose 3 coordinates';
-PersistentVars.StoredPositions[GVL.POSE_4_IDX].Comment := 'Pose 4 coordinates';
-PersistentVars.StoredPositions[GVL.POSE_5_IDX].Comment := 'Pose 5 coordinates';
-
-//
-PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Comment := 'Finish home at Pose';
-
-//
-PersistentVars.Flags[GVL.HOME_COMPLETE].Comment := 'Axes are homed';
-PersistentVars.Flags[GVL.HOME_COMPLETE].Value := FALSE;
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[2].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[2].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[2].ProgramName := 'PCS1 Corners';
+PersistentVars.Programs[2].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[2].Commands[0].CommandString := 'STO 0046 +0000.00 +0000.00 +0000.00 +0090.00 +0000.00 +0000.00';
+PersistentVars.Programs[2].Commands[1].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[1].CommandString := 'DIR ABS 050 PC1 LIT 0 0 0 0 0 0';
+PersistentVars.Programs[2].Commands[2].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[2].CommandString := 'LIN REL 100 TCS LIT 0.0 200.0 0.0 0.0 0.0 0.0';
+PersistentVars.Programs[2].Commands[3].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[3].CommandString := 'LIN REL 100 TCS LIT 00125.00 00000.00 00000.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[2].Commands[4].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[4].CommandString := 'LIN REL 100 TCS LIT 00000.00 -0200.00 00000.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[2].Commands[5].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[5].CommandString := 'LIN REL 100 TCS LIT -0125.00 00000.00 00000.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[2].Commands[6].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[6].CommandString := 'DIR ABS 050 ACS LIT +00 +30 -30 +00 +30 +00';
 
 //
-PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';</xhtml>
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[3].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[3].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[3].ProgramName := 'Cnc Validation';
+PersistentVars.Programs[3].Commands[0].CommandType := DUT_CommandType.CncCommand;
+PersistentVars.Programs[3].Commands[0].CommandString := 'CNC_FromFile.cnc XYZ VAR STO 45';
+PersistentVars.Programs[3].Commands[1].CommandType := DUT_CommandType.CncCommand;
+PersistentVars.Programs[3].Commands[1].CommandString := 'CNC_FromFile.cnc XYZ LIT +0300.00 +0000.00 -0300.00 +0000.00 +0000.00 +0000.00';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[4].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[4].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[4].ProgramName := 'Vision Validation';
+PersistentVars.Programs[4].Commands[0].CommandType := DUT_CommandType.VisionCommand;
+PersistentVars.Programs[4].Commands[0].CommandString := 'LOC 640 400 60 1 0.0 0.8 30.0 10 Template.jpg FastTemplateMatching.py';
+PersistentVars.Programs[4].Commands[1].CommandType := DUT_CommandType.VisionCommand;
+PersistentVars.Programs[4].Commands[1].CommandString := 'LOC 640 400 60 1 0.0 0.8 30.0 4 strippers2.jpg FastTemplateMatching.py';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[5].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[5].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[5].ProgramName := 'VarSet Validation';
+PersistentVars.Programs[5].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[5].Commands[0].CommandString := 'STO 1 6.0 5.0 4.0 3.0 2.0 1.0 ';
+PersistentVars.Programs[5].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[5].Commands[1].CommandString := 'VIS 2 1 2 3 4 5 6';
+PersistentVars.Programs[5].Commands[2].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[5].Commands[2].CommandString := 'FLG 3 1';
+
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[6].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[6].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[6].ProgramName := 'Logic Validation';
+PersistentVars.Programs[6].Commands[0].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[6].Commands[0].CommandString := 'IF INPUT 1 EQU 1 THEN OUTPUT 1 1 ELSE OUTPUT 1 0';
+PersistentVars.Programs[6].Commands[1].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[6].Commands[1].CommandString := 'IF INPUT 1 EQU 1 THEN CNTUP 1 ELSE CNTUP 2';
+PersistentVars.Programs[6].Commands[2].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[6].Commands[2].CommandString := 'IF COUNTER 2 GRE 10 THEN NOP ELSE JUMP 0';
+
+(*
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[11].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[11].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[11].ProgramName := 'Make Me an Egg, Please';
+PersistentVars.Programs[11].Commands[0].CommandType := DUT_CommandType.Disabled;
+PersistentVars.Programs[11].Commands[0].CommandString := '';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[12].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[12].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[12].ProgramName := 'Egg Pick Routine';
+PersistentVars.Programs[12].Commands[0].CommandType := DUT_CommandType.Disabled;
+PersistentVars.Programs[12].Commands[0].CommandString := '';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[13].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[13].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[13].ProgramName := 'Egg Crack Routine';
+PersistentVars.Programs[13].Commands[0].CommandType := DUT_CommandType.Disabled;
+PersistentVars.Programs[13].Commands[0].CommandString := '';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[14].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[14].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[14].ProgramName := 'Egg Flip Routine';
+PersistentVars.Programs[14].Commands[0].CommandType := DUT_CommandType.Disabled;
+PersistentVars.Programs[14].Commands[0].CommandString := '';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[15].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[15].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[15].ProgramName := 'Egg Place Routine';
+PersistentVars.Programs[15].Commands[0].CommandType := DUT_CommandType.Disabled;
+PersistentVars.Programs[15].Commands[0].CommandString := '';
+*)</xhtml>
                         </ST>
                       </body>
                       <addData />
                     </Method>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_Homing" ObjectId="bf4b7640-1df3-46ff-b6ca-dc416adad7e8">
+                    <Method name="_M_Cnc" ObjectId="c97e4850-18dd-453d-978c-2cd37627fe3a">
                       <interface>
                         <returnType>
                           <BOOL />
                         </returnType>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">// track position of robot end effector to display on hmi
+TrackPosition(
+	AxisGroup:=ArfBotAxisGroup,
+	SM3_Drive_PosControl_J1:=SM_Drive_PosControl_J1,
+	SM3_Drive_PosControl_J2:=SM_Drive_PosControl_J2,
+	SM3_Drive_PosControl_J3:=SM_Drive_PosControl_J3,
+	SM3_Drive_PosControl_J4:=SM_Drive_PosControl_J4,
+	SM3_Drive_PosControl_J5:=SM_Drive_PosControl_J5,
+	SM3_Drive_PosControl_J6:=SM_Drive_PosControl_J6,
+	VisuStruct3DTrack=&gt;,
+	Arm=&gt;,
+	Elbow=&gt;,
+	Hand=&gt;);</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_Controller" ObjectId="111d7557-61e1-48d4-ad0f-48b4ac517334">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <globalVars>
+                          <variable name="_PowerRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="_PowerTimer">
+                            <type>
+                              <derived name="TON" />
+                            </type>
+                            <initialValue>
+                              <structValue>
+                                <value member="PT">
+                                  <simpleValue value="TIME#1s0ms" />
+                                </value>
+                              </structValue>
+                            </initialValue>
+                          </variable>
+                        </globalVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// dont get sleepy
+Controller(sIpAddress:= '127.0.0.1', uPort:= 50013);
+
+//
+IF ConnectController THEN
+	ConnectController:=FALSE;
+	Controller.M_ReadInputs();
+END_IF
+IF DisconnectController THEN
+	DisconnectController:=FALSE;
+	Controller.M_Cancel();
+END_IF
+IF ResetController THEN
+	ResetController:=FALSE;
+	Controller.M_Reset();
+END_IF
+
+// put two fingers on the trackpad for 3 seconds to toggle power
+_PowerTimer(IN:=Controller.P_State.Connected
+				AND Controller.P_State.Buttons.Touch
+				AND Controller.P_State.Trackpads.One.Active 
+				AND Controller.P_State.Trackpads.Two.Active);
+_PowerRtrig(CLK:=_PowerTimer.Q);
+IF _PowerRtrig.Q THEN
+	GVL.PowerOn := NOT GVL.PowerOn;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_Homing" ObjectId="bf4b7640-1df3-46ff-b6ca-dc416adad7e8">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
                       </interface>
                       <body>
                         <ST>
@@ -3243,11 +3576,62 @@ MC_GroupReset_J(
                     </Method>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_Processor" ObjectId="d0cb92ac-a65b-4a94-99d2-d1aa2daea05c">
+                    <Method name="_M_Jogging" ObjectId="0244d8b9-9bfb-4b7e-b2e7-dffe5ddef546">
                       <interface>
                         <returnType>
                           <BOOL />
                         </returnType>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// dont get sleepy
+ProcessJog(
+	AxisGroup:= ArfBotAxisGroup,
+	Enable:= GVL.PowerOn,
+	Reset:= GVL.Reset,
+	StoredPositions:= PersistentVars.StoredPositions,
+	VisionRegisters:= PersistentVars.VisionRegisters,
+	Flags:= PersistentVars.Flags,
+	ABC_as_ACS=&gt;,
+	CoordSystem=&gt;, 
+	Position=&gt;, 
+	Done=&gt; , 
+	Busy=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );
+	
+//
+IF ProcessJog.Reset THEN
+	JogStatusText := '';
+END_IF
+IF ProcessJog.Error THEN
+	JogStatusText := CONCAT('Jog Processor Error: ',
+						CONCAT(TO_STRING(ProcessJog.ErrorID),
+						CONCAT(' ', SMC_ErrorString(ProcessJog.ErrorID,
+									SMC_Language_Type.english)))) ;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_Processor" ObjectId="d0cb92ac-a65b-4a94-99d2-d1aa2daea05c">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
                       </interface>
                       <body>
                         <ST>
@@ -3341,260 +3725,16 @@ ProcessPrograms(
                     </Method>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_Cnc" ObjectId="c97e4850-18dd-453d-978c-2cd37627fe3a">
+                    <Method name="_M_Vision" ObjectId="fa98ae8b-a1f5-443f-972f-ae0665ecf7ea">
                       <interface>
                         <returnType>
                           <BOOL />
                         </returnType>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">// track position of robot end effector to display on hmi
-TrackPosition(
-	AxisGroup:=ArfBotAxisGroup,
-	SM3_Drive_PosControl_J1:=SM_Drive_PosControl_J1,
-	SM3_Drive_PosControl_J2:=SM_Drive_PosControl_J2,
-	SM3_Drive_PosControl_J3:=SM_Drive_PosControl_J3,
-	SM3_Drive_PosControl_J4:=SM_Drive_PosControl_J4,
-	SM3_Drive_PosControl_J5:=SM_Drive_PosControl_J5,
-	SM3_Drive_PosControl_J6:=SM_Drive_PosControl_J6,
-	VisuStruct3DTrack=&gt;,
-	Arm=&gt;,
-	Elbow=&gt;,
-	Hand=&gt;);</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_Jogging" ObjectId="0244d8b9-9bfb-4b7e-b2e7-dffe5ddef546">
-                      <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
-// dont get sleepy
-ProcessJog(
-	AxisGroup:= ArfBotAxisGroup,
-	Enable:= GVL.PowerOn,
-	Reset:= GVL.Reset,
-	StoredPositions:= PersistentVars.StoredPositions,
-	VisionRegisters:= PersistentVars.VisionRegisters,
-	Flags:= PersistentVars.Flags,
-	ABC_as_ACS=&gt;,
-	CoordSystem=&gt;, 
-	Position=&gt;, 
-	Done=&gt; , 
-	Busy=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-	
-//
-IF ProcessJog.Reset THEN
-	JogStatusText := '';
-END_IF
-IF ProcessJog.Error THEN
-	JogStatusText := CONCAT('Jog Processor Error: ',
-						CONCAT(TO_STRING(ProcessJog.ErrorID),
-						CONCAT(' ', SMC_ErrorString(ProcessJog.ErrorID,
-									SMC_Language_Type.english)))) ;
-END_IF
-</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_BuildTests" ObjectId="9a5607a2-ed23-4572-beb3-b80fd95846d5">
-                      <interface>
-                        <localVars>
-                          <variable name="_i">
-                            <type>
-                              <INT />
-                            </type>
-                          </variable>
-                          <variable name="_j">
-                            <type>
-                              <INT />
-                            </type>
-                          </variable>
-                          <variable name="_k">
-                            <type>
-                              <INT />
-                            </type>
-                          </variable>
-                        </localVars>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[1].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[1].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[1].ProgramName := 'Vision Pick and Place';
-PersistentVars.Programs[1].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
-PersistentVars.Programs[1].Commands[0].CommandString := 'STO 0046 +0000.00 +0000.00 +0000.00 +0090.00 +0000.00 +0000.00';
-PersistentVars.Programs[1].Commands[1].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[1].CommandString := 'DIR ABS 020 ACS LIT 00000.00 00030.00 -0030.00 00000.00 00030.00 00000.00';
-PersistentVars.Programs[1].Commands[2].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[2].CommandString := 'DIG 1 1';
-PersistentVars.Programs[1].Commands[3].CommandType := DUT_CommandType.VisionCommand;
-PersistentVars.Programs[1].Commands[3].CommandString := 'LOC 640 400 0060 001 000.0 0.8 030.0 000 Template.jpg FastTemplateMatching.py';
-PersistentVars.Programs[1].Commands[4].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[4].CommandString := 'DIG 1 0';
-PersistentVars.Programs[1].Commands[5].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[5].CommandString := 'DIR ABS 050 PC1 LIT 00000.00 00000.00 -0010.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[1].Commands[6].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[6].CommandString := 'DIR ABS 050 PC1 VAR VIS 000';
-PersistentVars.Programs[1].Commands[7].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[7].CommandString := 'SRV 1 30.0 360.0';
-PersistentVars.Programs[1].Commands[8].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[8].CommandString := 'LIN REL 050 TCS LIT 00000.00 00000.00 00010.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[1].Commands[9].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[9].CommandString := 'SRV 1 0.0 360.0';
-PersistentVars.Programs[1].Commands[10].CommandType := DUT_CommandType.PauseCommand;
-PersistentVars.Programs[1].Commands[10].CommandString := 'T#1s';
-PersistentVars.Programs[1].Commands[11].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[11].CommandString := 'LIN REL 050 TCS LIT 00000.00 00000.00 -0010.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[1].Commands[12].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[12].CommandString := 'DIR ABS 050 PC1 LIT 00000.00 00000.00 -0050.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[1].Commands[13].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[13].CommandString := 'SRV 1 30.0 360.0';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[2].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[2].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[2].ProgramName := 'PCS1 Corners';
-PersistentVars.Programs[2].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
-PersistentVars.Programs[2].Commands[0].CommandString := 'STO 0046 +0000.00 +0000.00 +0000.00 +0090.00 +0000.00 +0000.00';
-PersistentVars.Programs[2].Commands[1].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[1].CommandString := 'DIR ABS 050 PC1 LIT 0 0 0 0 0 0';
-PersistentVars.Programs[2].Commands[2].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[2].CommandString := 'LIN REL 100 TCS LIT 0.0 200.0 0.0 0.0 0.0 0.0';
-PersistentVars.Programs[2].Commands[3].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[3].CommandString := 'LIN REL 100 TCS LIT 00125.00 00000.00 00000.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[2].Commands[4].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[4].CommandString := 'LIN REL 100 TCS LIT 00000.00 -0200.00 00000.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[2].Commands[5].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[5].CommandString := 'LIN REL 100 TCS LIT -0125.00 00000.00 00000.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[2].Commands[6].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[6].CommandString := 'DIR ABS 050 ACS LIT +00 +30 -30 +00 +30 +00';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[3].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[3].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[3].ProgramName := 'Cnc Validation';
-PersistentVars.Programs[3].Commands[0].CommandType := DUT_CommandType.CncCommand;
-PersistentVars.Programs[3].Commands[0].CommandString := 'CNC_FromFile.cnc XYZ VAR STO 45';
-PersistentVars.Programs[3].Commands[1].CommandType := DUT_CommandType.CncCommand;
-PersistentVars.Programs[3].Commands[1].CommandString := 'CNC_FromFile.cnc XYZ LIT +0300.00 +0000.00 -0300.00 +0000.00 +0000.00 +0000.00';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[4].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[4].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[4].ProgramName := 'Vision Validation';
-PersistentVars.Programs[4].Commands[0].CommandType := DUT_CommandType.VisionCommand;
-PersistentVars.Programs[4].Commands[0].CommandString := 'LOC 640 400 60 1 0.0 0.8 30.0 10 Template.jpg FastTemplateMatching.py';
-PersistentVars.Programs[4].Commands[1].CommandType := DUT_CommandType.VisionCommand;
-PersistentVars.Programs[4].Commands[1].CommandString := 'LOC 640 400 60 1 0.0 0.8 30.0 4 strippers2.jpg FastTemplateMatching.py';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[5].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[5].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[5].ProgramName := 'VarSet Validation';
-PersistentVars.Programs[5].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
-PersistentVars.Programs[5].Commands[0].CommandString := 'STO 1 6.0 5.0 4.0 3.0 2.0 1.0 ';
-PersistentVars.Programs[5].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
-PersistentVars.Programs[5].Commands[1].CommandString := 'VIS 2 1 2 3 4 5 6';
-PersistentVars.Programs[5].Commands[2].CommandType := DUT_CommandType.VarSetCommand;
-PersistentVars.Programs[5].Commands[2].CommandString := 'FLG 3 1';
-
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[6].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[6].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[6].ProgramName := 'Logic Validation';
-PersistentVars.Programs[6].Commands[0].CommandType := DUT_CommandType.LogicCommand;
-PersistentVars.Programs[6].Commands[0].CommandString := 'IF INPUT 1 EQU 1 THEN OUTPUT 1 1 ELSE OUTPUT 1 0';
-PersistentVars.Programs[6].Commands[1].CommandType := DUT_CommandType.LogicCommand;
-PersistentVars.Programs[6].Commands[1].CommandString := 'IF INPUT 1 EQU 1 THEN CNTUP 1 ELSE CNTUP 2';
-PersistentVars.Programs[6].Commands[2].CommandType := DUT_CommandType.LogicCommand;
-PersistentVars.Programs[6].Commands[2].CommandString := 'IF COUNTER 2 GRE 10 THEN NOP ELSE JUMP 0';
-
-(*
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[11].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[11].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[11].ProgramName := 'Make Me an Egg, Please';
-PersistentVars.Programs[11].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[11].Commands[0].CommandString := '';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[12].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[12].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[12].ProgramName := 'Egg Pick Routine';
-PersistentVars.Programs[12].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[12].Commands[0].CommandString := '';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[13].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[13].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[13].ProgramName := 'Egg Crack Routine';
-PersistentVars.Programs[13].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[13].Commands[0].CommandString := '';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[14].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[14].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[14].ProgramName := 'Egg Flip Routine';
-PersistentVars.Programs[14].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[14].Commands[0].CommandString := '';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[15].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[15].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[15].ProgramName := 'Egg Place Routine';
-PersistentVars.Programs[15].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[15].Commands[0].CommandString := '';
-*)</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_Vision" ObjectId="fa98ae8b-a1f5-443f-972f-ae0665ecf7ea">
-                      <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
                       </interface>
                       <body>
                         <ST>
@@ -3612,57 +3752,307 @@ END_IF
                     </Method>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_Controller" ObjectId="111d7557-61e1-48d4-ad0f-48b4ac517334">
+                    <Method name="M_Init" ObjectId="229ed790-05b4-4c75-a8a2-65170cb5046e">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// check if arfbot has been initialized
+IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
+	// poses
+	PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Value := FALSE;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.X := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Y := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Z := -30.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.A := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.B := -30.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.C := 0.0;
+	
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.X := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Y := 30.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Z := -30.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.A := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.B := 30.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.C := 0.0;
+		 
+	// decoder
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.X := 300.0; // TODO need to verify all 6 of these
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.Y := 0.0;
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.Z := -400.0;
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.A := 0.0;
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.B := 0.0;
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.C := 0.0;
+	
+	// set homing offsets
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X := 167.0; // J1 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y := 42.41; // J2 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z := -57.35; // J3 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A := -169.66; // J4 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B := -94.106; // J5 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C := 171.581; // J6 initial home offset
+	
+	// set speeds
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X := 100.0; // max velocity
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.Y := 1000.0; // max accel/decel
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.Z := 1000.0; // max jerk
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.A := 1.0; // velocity factor
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.B := 0.05; // accel/decel factor
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.C := 1.0; // jerk factor
+	
+	//
+	M_BuildTests();
+	
+	//
+	_10_Drives.M_InitDrives(DefaultParameters:=TRUE);
+		 
+	// indicate initialized
+	PersistentVars.Flags[GVL.INIT_POS_IDX].Value := TRUE;
+END_IF
+
+//
+PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Comment := 'vel, acc, jerk, vel fact, acc fact, jerk fact';
+PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Comment := 'Home Offsets J1, J2, J3, J4, J5, J6';
+PersistentVars.StoredPositions[GVL.DEC_START_POS].Comment := 'NC Decoder Start Position';
+PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Comment := 'TCP Offset';
+PersistentVars.StoredPositions[GVL.PC2_POS_IDX].Comment := 'PCS 2 Offset';
+PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Comment := 'PCS 1 Offset';
+PersistentVars.StoredPositions[GVL.MCS_POS_IDX].Comment := 'MCS Offset';
+
+//	 
+PersistentVars.StoredPositions[GVL.POSE_1_IDX].Comment := 'Pose 1 coordinates';
+PersistentVars.StoredPositions[GVL.POSE_2_IDX].Comment := 'Pose 2 coordinates';
+PersistentVars.StoredPositions[GVL.POSE_3_IDX].Comment := 'Pose 3 coordinates';
+PersistentVars.StoredPositions[GVL.POSE_4_IDX].Comment := 'Pose 4 coordinates';
+PersistentVars.StoredPositions[GVL.POSE_5_IDX].Comment := 'Pose 5 coordinates';
+
+//
+PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Comment := 'Finish home at Pose';
+
+//
+PersistentVars.Flags[GVL.HOME_COMPLETE].Comment := 'Axes are homed';
+PersistentVars.Flags[GVL.HOME_COMPLETE].Value := FALSE;
+
+//
+PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_Tuning" ObjectId="7bc5b496-9c33-4d9b-b0d8-4ee9652747d2">
                       <interface>
                         <returnType>
                           <BOOL />
                         </returnType>
                         <globalVars>
-                          <variable name="_PowerRtrig">
+                          <variable name="_TriggerStopTimer">
                             <type>
-                              <derived name="R_TRIG" />
+                              <array>
+                                <dimension lower="0" upper="5" />
+                                <baseType>
+                                  <derived name="TON" />
+                                </baseType>
+                              </array>
                             </type>
                           </variable>
-                          <variable name="_PowerTimer">
+                          <variable name="_i">
                             <type>
-                              <derived name="TON" />
+                              <INT />
+                            </type>
+                          </variable>
+                          <variable name="_j">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                          <variable name="_k">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                          <variable name="_SetValues">
+                            <type>
+                              <BOOL />
                             </type>
                             <initialValue>
-                              <structValue>
-                                <value member="PT">
-                                  <simpleValue value="TIME#3s0ms" />
-                                </value>
-                              </structValue>
+                              <simpleValue value="TRUE" />
                             </initialValue>
                           </variable>
                         </globalVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
                       </interface>
                       <body>
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">
-// dont get sleepy
-Controller(sIpAddress:= '127.0.0.1', uPort:= 50013);
+// initial values
+IF _SetValues AND_THEN _10_Drives.P_DrivesInitialized THEN
+	_SetValues := FALSE;
+	
+	MoveRelative[0].Velocity := SM_Drive_PosControl_J1.fSWMaxVelocity;
+	MoveRelative[0].Acceleration := SM_Drive_PosControl_J1.fSWMaxAcceleration;
+	MoveRelative[0].Deceleration := SM_Drive_PosControl_J1.fSWMaxDeceleration;
+	MoveRelative[0].Jerk := SM_Drive_PosControl_J1.fSWMaxJerk;
+	MoveRelative[0].Distance := 5.0;
+	
+	MoveRelative[1].Velocity := SM_Drive_PosControl_J2.fSWMaxVelocity;
+	MoveRelative[1].Acceleration := SM_Drive_PosControl_J2.fSWMaxAcceleration;
+	MoveRelative[1].Deceleration := SM_Drive_PosControl_J2.fSWMaxDeceleration;
+	MoveRelative[1].Jerk := SM_Drive_PosControl_J2.fSWMaxJerk;
+	MoveRelative[1].Distance := 5.0;
+	
+	MoveRelative[2].Velocity := SM_Drive_PosControl_J3.fSWMaxVelocity;
+	MoveRelative[2].Acceleration := SM_Drive_PosControl_J3.fSWMaxAcceleration;
+	MoveRelative[2].Deceleration := SM_Drive_PosControl_J3.fSWMaxDeceleration;
+	MoveRelative[2].Jerk := SM_Drive_PosControl_J3.fSWMaxJerk;
+	MoveRelative[2].Distance := 5.0;
+	
+	MoveRelative[3].Velocity := SM_Drive_PosControl_J4.fSWMaxVelocity;
+	MoveRelative[3].Acceleration := SM_Drive_PosControl_J4.fSWMaxAcceleration;
+	MoveRelative[3].Deceleration := SM_Drive_PosControl_J4.fSWMaxDeceleration;
+	MoveRelative[3].Jerk := SM_Drive_PosControl_J4.fSWMaxJerk;
+	MoveRelative[3].Distance := 5.0;
+	
+	MoveRelative[4].Velocity := SM_Drive_PosControl_J5.fSWMaxVelocity;
+	MoveRelative[4].Acceleration := SM_Drive_PosControl_J5.fSWMaxAcceleration;
+	MoveRelative[4].Deceleration := SM_Drive_PosControl_J5.fSWMaxDeceleration;
+	MoveRelative[4].Jerk := SM_Drive_PosControl_J5.fSWMaxJerk;
+	MoveRelative[4].Distance := 5.0;
+	
+	MoveRelative[5].Velocity := SM_Drive_PosControl_J6.fSWMaxVelocity;
+	MoveRelative[5].Acceleration := SM_Drive_PosControl_J6.fSWMaxAcceleration;
+	MoveRelative[5].Deceleration := SM_Drive_PosControl_J6.fSWMaxDeceleration;
+	MoveRelative[5].Jerk := SM_Drive_PosControl_J6.fSWMaxJerk;
+	MoveRelative[5].Distance := 5.0;
+END_IF
 
-//
-IF ConnectController THEN
-	ConnectController:=FALSE;
-	Controller.M_ReadInputs();
-END_IF
-IF DisconnectController THEN
-	DisconnectController:=FALSE;
-	Controller.M_Cancel();
-END_IF
-IF ResetController THEN
-	ResetController:=FALSE;
-	Controller.M_Reset();
-END_IF
+// trace activation
+FOR _i:=0 TO 5 BY 1 DO
+	TraceStart[_i] := MoveRelative[_i].Execute;
+	_TriggerStopTimer[_i](IN:=TraceStart[_i], PT:=TraceTime);
+	TraceStop[_i] := _TriggerStopTimer[_i].Q;
+END_FOR
 
-// put two fingers on the trackpad for 3 seconds to toggle power
-_PowerTimer(IN:=Controller.P_State.Trackpads.One.Active AND Controller.P_State.Trackpads.Two.Active);
-_PowerRtrig(CLK:=_PowerTimer.Q);
-IF _PowerRtrig.Q THEN
-	GVL.PowerOn := NOT GVL.PowerOn;
-END_IF</xhtml>
+// power
+GroupPower(
+	AxisGroup:= ArfBotAxisGroup, 
+	Enable:= , 
+	bRegulatorOn:= GroupPower.Enable, 
+	bDriveStart:= GroupPower.Enable, 
+	Status=&gt; , 
+	Busy=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );
+
+// enable
+GroupEnable(
+	AxisGroup:= ArfBotAxisGroup, 
+	Execute:= GroupPower.Status, 
+	CompatibilityOptions:= , 
+	Done=&gt; , 
+	Busy=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );
+
+// move relative
+MoveRelative[0](
+	Axis:= SM_Drive_PosControl_J1, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Done=&gt; , 
+	Busy=&gt; , 
+	Active=&gt; , 
+	CommandAborted=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );
+MoveRelative[1](
+	Axis:= SM_Drive_PosControl_J2, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Done=&gt; , 
+	Busy=&gt; , 
+	Active=&gt; , 
+	CommandAborted=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );
+MoveRelative[2](
+	Axis:= SM_Drive_PosControl_J3, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Done=&gt; , 
+	Busy=&gt; , 
+	Active=&gt; , 
+	CommandAborted=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );
+MoveRelative[3](
+	Axis:= SM_Drive_PosControl_J4, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Done=&gt; , 
+	Busy=&gt; , 
+	Active=&gt; , 
+	CommandAborted=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );
+MoveRelative[4](
+	Axis:= SM_Drive_PosControl_J5, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Done=&gt; , 
+	Busy=&gt; , 
+	Active=&gt; , 
+	CommandAborted=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );
+MoveRelative[5](
+	Axis:= SM_Drive_PosControl_J6, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Done=&gt; , 
+	Busy=&gt; , 
+	Active=&gt; , 
+	CommandAborted=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -3909,18 +4299,45 @@ END_IF</xhtml>
                         <INT />
                       </type>
                     </variable>
+                    <variable name="DefaultDriveParameters">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="InitializeDrives">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="DrivesInitialized">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="FALSE" />
+                      </initialValue>
+                    </variable>
+                    <variable name="FirstScan">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="TRUE" />
+                      </initialValue>
+                    </variable>
                   </localVars>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// drive parameters
-(*SM_Drive_PosControl_J1.fMaxVelocity := PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X;
-SM_Drive_PosControl_J2.fMaxVelocity := PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X;
-SM_Drive_PosControl_J3.fMaxVelocity := PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X;
-SM_Drive_PosControl_J4.fMaxVelocity := PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X;
-SM_Drive_PosControl_J5.fMaxVelocity := PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X;
-SM_Drive_PosControl_J6.fMaxVelocity := PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X;*)
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">//
+IF FirstScan THEN
+	M_InitDrives(DefaultParameters:=FALSE);
+END_IF
 
+_M_InitDrives();
+_M_HandleDriveIO();
+
+//
 IF CalcStatistics THEN
 	PositionLag[0] := ABS(SM_Drive_PosControl_J1.fActPosition - SM_Drive_PosControl_J1.fSetPosition);
 	PositionLag[1] := ABS(SM_Drive_PosControl_J2.fActPosition - SM_Drive_PosControl_J2.fSetPosition);
@@ -3929,6 +4346,44 @@ IF CalcStatistics THEN
 	PositionLag[4] := ABS(SM_Drive_PosControl_J5.fActPosition - SM_Drive_PosControl_J5.fSetPosition);
 	PositionLag[5] := ABS(SM_Drive_PosControl_J6.fActPosition - SM_Drive_PosControl_J6.fSetPosition);
 END_IF
+
+// do not put anything below this
+FirstScan := FALSE;</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_HandleDriveIO" ObjectId="1f105a3e-ae48-4de4-9cd3-fada08b1a872">
+                      <interface>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">(*                    DMT542T Stepper Driver
+	Pulse and Direction Connection:
+	(1) Optically isolated, high level 4.5-5V or 24V, low voltage 0-0.5V
+	(2) Maximum 200 KHz input frequency
+	(3) The width of PUL signal is at least 2.5μs, duty cycle is recommended 50%
+	(4) DIR signal requires advance PUL signal minimum 5 μs in single pulse mode
+	(5) The factory setting of control signal voltage is 24V, must need to set S2 (figure 2) if it is 5V
+	
+	Enable Connection: (default no connection)
+	(1) Optically isolated, differential.
+	(2) Disable the drive by 4.5- 24V input connection; enable the drive by 0-0.5V connection (3) ENA signal requires advance DIR signal minimum 5μs in single pulse mode
+	(4) Enable time to be at least 200ms
+*)
+(*
+	J1 - 400 steps per revolution
+	J2 - 400 steps per revolution
+	J3 - 400 steps per revolution
+	J4 - 400 steps per revolution
+	J5 - 800 steps per revolution
+	J6 - 400 steps per revolution
+*)
 
 //
 HeartbeatOn(in:=NOT HeartbeatOff.Q,PT:=HeartbeatPt);
@@ -4033,36 +4488,8 @@ GVL.DigitalInput[5] := pabyRxBuffer[31].5;
 GVL.DigitalInput[6] := pabyRxBuffer[31].6;
 GVL.DigitalInput[7] := pabyRxBuffer[31].7;
 
-M_HandleDriveIO();</xhtml>
-                  </ST>
-                </body>
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_HandleDriveIO" ObjectId="1f105a3e-ae48-4de4-9cd3-fada08b1a872">
-                      <interface />
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">(*                    DMT542T Stepper Driver
-	Pulse and Direction Connection:
-	(1) Optically isolated, high level 4.5-5V or 24V, low voltage 0-0.5V
-	(2) Maximum 200 KHz input frequency
-	(3) The width of PUL signal is at least 2.5μs, duty cycle is recommended 50%
-	(4) DIR signal requires advance PUL signal minimum 5 μs in single pulse mode
-	(5) The factory setting of control signal voltage is 24V, must need to set S2 (figure 2) if it is 5V
-	
-	Enable Connection: (default no connection)
-	(1) Optically isolated, differential.
-	(2) Disable the drive by 4.5- 24V input connection; enable the drive by 0-0.5V connection (3) ENA signal requires advance DIR signal minimum 5μs in single pulse mode
-	(4) Enable time to be at least 200ms
-*)
-(*
-	J1 - 400 steps per revolution
-	J2 - 400 steps per revolution
-	J3 - 400 steps per revolution
-	J4 - 400 steps per revolution
-	J5 - 800 steps per revolution
-	J6 - 400 steps per revolution
-*)
+
+
 
 SM_Drive_PosControl_J1.in.dwActPosition := DINT_TO_DWORD(EncPosition[0]);
 SM_Drive_PosControl_J2.in.dwActPosition := DINT_TO_DWORD(EncPosition[1]);
@@ -4119,6 +4546,276 @@ tx_en := GVL.PowerOn;
                       </body>
                       <addData />
                     </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_InitDrives" ObjectId="9031c730-57b8-48ca-b284-2770517ca6ee">
+                      <interface>
+                        <globalVars>
+                          <variable name="_Step">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                          <variable name="_Done">
+                            <type>
+                              <BOOL />
+                            </type>
+                          </variable>
+                          <variable name="_SMC_SetPosControlParams">
+                            <type>
+                              <array>
+                                <dimension lower="0" upper="5" />
+                                <baseType>
+                                  <derived name="SMC_SetPosControlParams" />
+                                </baseType>
+                              </array>
+                            </type>
+                          </variable>
+                          <variable name="_i">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                          <variable name="_j">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                          <variable name="_k">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                        </globalVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+CASE _Step OF
+	0:
+		IF InitializeDrives THEN
+			InitializeDrives := FALSE;
+			//
+			FOR _i:=GVL.POSCONT_ARR_BEG TO GVL.POSCONT_ARR_END BY 1 DO
+				_SMC_SetPosControlParams[_i].bExecute := FALSE;
+			END_FOR
+			//
+			IF DefaultDriveParameters THEN
+				DefaultDriveParameters := FALSE;
+				FOR _i:=GVL.POSCONT_ARR_BEG TO GVL.POSCONT_ARR_END BY 1 DO
+					PersistentVars.PositionControllers[_i].fKp := 0.01;
+					PersistentVars.PositionControllers[_i].fPartVelPilotControl := 1.0; // 0-1
+					PersistentVars.PositionControllers[_i].fDeadTime := 2.0;
+					PersistentVars.PositionControllers[_i].fMaxPositionDiff := 0.0;
+					PersistentVars.PositionControllers[_i].fSWMaxVelocity := 30.0;
+					PersistentVars.PositionControllers[_i].fSWMaxAcceleration := 1000.0;
+					PersistentVars.PositionControllers[_i].fSWMaxDeceleration := 1000.0;
+					PersistentVars.PositionControllers[_i].fSWMaxJerk := 10000.0;
+				END_FOR
+			END_IF
+			// next, please
+			_Step := _Step + 1;
+		END_IF
+		
+	1: 
+		//
+		FOR _i:=GVL.POSCONT_ARR_BEG TO GVL.POSCONT_ARR_END BY 1 DO
+			_SMC_SetPosControlParams[_i].bExecute := TRUE;
+		END_FOR
+		// next, please
+		_Step := _Step + 1;
+		
+	2:
+		//
+		_Done := TRUE;
+		FOR _i:=GVL.POSCONT_ARR_BEG TO GVL.POSCONT_ARR_END BY 1 DO
+			IF NOT _SMC_SetPosControlParams[_i].bDone THEN
+				_Done := FALSE;
+				EXIT;
+			END_IF
+			IF _SMC_SetPosControlParams[_i].bError THEN
+				_Done := TRUE;
+				EXIT;
+			END_IF
+		END_FOR
+		IF _Done THEN
+			DrivesInitialized := TRUE;
+			// next, please
+			_Step := 0;
+		END_IF
+		
+	
+END_CASE
+
+//
+_SMC_SetPosControlParams[0](
+	Axis:= SM_Drive_PosControl_J1, 
+	bExecute:= , 
+	fKp:= PersistentVars.PositionControllers[0].fKp, 
+	fPartVelPilotControl:= PersistentVars.PositionControllers[0].fPartVelPilotControl, 
+	fDeadTime:= PersistentVars.PositionControllers[0].fDeadTime, 
+	fMaxPositionDiff:=PersistentVars.PositionControllers[0].fMaxPositionDiff, 
+	bDone=&gt; , 
+	bError=&gt; , 
+	ErrorID=&gt; );
+IF _SMC_SetPosControlParams[0].bExecute THEN
+	SM_Drive_PosControl_J1.fSWMaxVelocity 			:= PersistentVars.PositionControllers[0].fSWMaxVelocity; // 30
+	SM_Drive_PosControl_J1.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[0].fSWMaxAcceleration; // 1000
+	SM_Drive_PosControl_J1.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[0].fSWMaxDeceleration; // 1000
+	SM_Drive_PosControl_J1.fSWMaxJerk 				:= PersistentVars.PositionControllers[0].fSWMaxJerk; // 10000
+END_IF
+
+//
+_SMC_SetPosControlParams[1](
+	Axis:= SM_Drive_PosControl_J2, 
+	bExecute:= , 
+	fKp:= PersistentVars.PositionControllers[1].fKp, 
+	fPartVelPilotControl:= PersistentVars.PositionControllers[1].fPartVelPilotControl, 
+	fDeadTime:= PersistentVars.PositionControllers[1].fDeadTime, 
+	fMaxPositionDiff:=PersistentVars.PositionControllers[1].fMaxPositionDiff, 
+	bDone=&gt; , 
+	bError=&gt; , 
+	ErrorID=&gt; );
+IF _SMC_SetPosControlParams[1].bExecute THEN
+	SM_Drive_PosControl_J2.fSWMaxVelocity 			:= PersistentVars.PositionControllers[1].fSWMaxVelocity;
+	SM_Drive_PosControl_J2.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[1].fSWMaxAcceleration;
+	SM_Drive_PosControl_J2.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[1].fSWMaxDeceleration;
+	SM_Drive_PosControl_J2.fSWMaxJerk 				:= PersistentVars.PositionControllers[1].fSWMaxJerk;
+END_IF
+
+//
+_SMC_SetPosControlParams[2](
+	Axis:= SM_Drive_PosControl_J3, 
+	bExecute:= , 
+	fKp:= PersistentVars.PositionControllers[2].fKp, 
+	fPartVelPilotControl:= PersistentVars.PositionControllers[2].fPartVelPilotControl, 
+	fDeadTime:= PersistentVars.PositionControllers[2].fDeadTime, 
+	fMaxPositionDiff:=PersistentVars.PositionControllers[2].fMaxPositionDiff, 
+	bDone=&gt; , 
+	bError=&gt; , 
+	ErrorID=&gt; );
+IF _SMC_SetPosControlParams[2].bExecute THEN
+	SM_Drive_PosControl_J3.fSWMaxVelocity 			:= PersistentVars.PositionControllers[2].fSWMaxVelocity;
+	SM_Drive_PosControl_J3.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[2].fSWMaxAcceleration;
+	SM_Drive_PosControl_J3.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[2].fSWMaxDeceleration;
+	SM_Drive_PosControl_J3.fSWMaxJerk 				:= PersistentVars.PositionControllers[2].fSWMaxJerk;
+END_IF
+
+//
+_SMC_SetPosControlParams[3](
+	Axis:= SM_Drive_PosControl_J4, 
+	bExecute:= , 
+	fKp:= PersistentVars.PositionControllers[3].fKp, 
+	fPartVelPilotControl:= PersistentVars.PositionControllers[3].fPartVelPilotControl, 
+	fDeadTime:= PersistentVars.PositionControllers[3].fDeadTime, 
+	fMaxPositionDiff:=PersistentVars.PositionControllers[3].fMaxPositionDiff, 
+	bDone=&gt; , 
+	bError=&gt; , 
+	ErrorID=&gt; );
+IF _SMC_SetPosControlParams[3].bExecute THEN
+	SM_Drive_PosControl_J4.fSWMaxVelocity 			:= PersistentVars.PositionControllers[3].fSWMaxVelocity;
+	SM_Drive_PosControl_J4.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[3].fSWMaxAcceleration;
+	SM_Drive_PosControl_J4.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[3].fSWMaxDeceleration;
+	SM_Drive_PosControl_J4.fSWMaxJerk 				:= PersistentVars.PositionControllers[3].fSWMaxJerk;
+END_IF
+
+//
+_SMC_SetPosControlParams[4](
+	Axis:= SM_Drive_PosControl_J5, 
+	bExecute:= , 
+	fKp:= PersistentVars.PositionControllers[4].fKp, 
+	fPartVelPilotControl:= PersistentVars.PositionControllers[4].fPartVelPilotControl, 
+	fDeadTime:= PersistentVars.PositionControllers[4].fDeadTime, 
+	fMaxPositionDiff:=PersistentVars.PositionControllers[4].fMaxPositionDiff, 
+	bDone=&gt; , 
+	bError=&gt; , 
+	ErrorID=&gt; );
+IF _SMC_SetPosControlParams[4].bExecute THEN
+	SM_Drive_PosControl_J5.fSWMaxVelocity 			:= PersistentVars.PositionControllers[4].fSWMaxVelocity;
+	SM_Drive_PosControl_J5.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[4].fSWMaxAcceleration;
+	SM_Drive_PosControl_J5.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[4].fSWMaxDeceleration;
+	SM_Drive_PosControl_J5.fSWMaxJerk 				:= PersistentVars.PositionControllers[4].fSWMaxJerk;
+END_IF
+
+//
+_SMC_SetPosControlParams[5](
+	Axis:= SM_Drive_PosControl_J6, 
+	bExecute:= , 
+	fKp:= PersistentVars.PositionControllers[5].fKp, 
+	fPartVelPilotControl:= PersistentVars.PositionControllers[5].fPartVelPilotControl, 
+	fDeadTime:= PersistentVars.PositionControllers[5].fDeadTime, 
+	fMaxPositionDiff:=PersistentVars.PositionControllers[5].fMaxPositionDiff, 
+	bDone=&gt; , 
+	bError=&gt; , 
+	ErrorID=&gt; );
+IF _SMC_SetPosControlParams[5].bExecute THEN
+	SM_Drive_PosControl_J6.fSWMaxVelocity 			:= PersistentVars.PositionControllers[5].fSWMaxVelocity;
+	SM_Drive_PosControl_J6.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[5].fSWMaxAcceleration;
+	SM_Drive_PosControl_J6.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[5].fSWMaxDeceleration;
+	SM_Drive_PosControl_J6.fSWMaxJerk 				:= PersistentVars.PositionControllers[5].fSWMaxJerk;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_InitDrives" ObjectId="aea6e4c3-5f5a-4eff-ae8a-2de4fd010b88">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="DefaultParameters">
+                            <type>
+                              <BOOL />
+                            </type>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">DefaultDriveParameters := DefaultParameters;
+InitializeDrives := TRUE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/property" handleUnknown="implementation">
+                    <Property name="P_DrivesInitialized" ObjectId="94a33523-40bb-4d4e-8658-682c6e0ba226">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <Attributes>
+                          <Attribute Name="monitoring" Value="variable" />
+                        </Attributes>
+                      </interface>
+                      <GetAccessor>
+                        <interface>
+                          <addData>
+                            <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                              <Attributes>
+                                <Attribute Name="monitoring" Value="variable" />
+                              </Attributes>
+                            </data>
+                          </addData>
+                        </interface>
+                        <body>
+                          <ST>
+                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_DrivesInitialized := DrivesInitialized;</xhtml>
+                          </ST>
+                        </body>
+                        <addData />
+                      </GetAccessor>
+                      <addData />
+                    </Property>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>3256c2f0-e8a8-4738-aa1a-395ceff25c60</ObjectId>
@@ -4287,30 +4984,6 @@ tx_en := GVL.PowerOn;
                     <variable name="_MC_COORD_REF">
                       <type>
                         <derived name="MC_COORD_REF" />
-                      </type>
-                    </variable>
-                    <variable name="_TraceStart">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="5" />
-                          <baseType>
-                            <BOOL />
-                          </baseType>
-                        </array>
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> trace
-_TraceTrigger: ARRAY[0..5] OF BOOL;</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="_TraceStop">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="5" />
-                          <baseType>
-                            <BOOL />
-                          </baseType>
-                        </array>
                       </type>
                     </variable>
                     <variable name="_i">
@@ -4790,13 +5463,6 @@ _SMC_GroupJog2(
 	Error=&gt; , 
 	ErrorID=&gt; , 
 	CurrentPosition=&gt; Position);
-	
-// trace activation
-FOR _i:=0 TO 5 BY 1 DO
-	//_TraceTrigger[_i] := _SMC_GroupJog2.Forward[_i] OR _SMC_GroupJog2.Backward[_i];
-	_TraceStart[_i] := _SMC_GroupJog2.Forward[_i] OR _SMC_GroupJog2.Backward[_i];
-	_TraceStop[_i] := NOT _TraceStart[_i];
-END_FOR
 
 //
 CoordSystem := _SMC_GroupJog2.CoordSystem;
@@ -6396,32 +7062,13 @@ END_CASE</xhtml>
                     </variable>
                   </localVars>
                 </interface>
-                <actions>
-                  <action name="A_CmdIoMapping">
-                    <body>
-                      <ST>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml">
-//
-GVL.CmdIO.Input := GVL.DigitalInput;
-GVL.DigitalOutput := GVL.CmdIO.Output;
-
-//</xhtml>
-                      </ST>
-                    </body>
-                    <addData>
-                      <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                        <ObjectId>a2f21641-ddf0-4588-b300-185fb18e4bef</ObjectId>
-                      </data>
-                    </addData>
-                  </action>
-                </actions>
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">//
 PowerOn := GVL.PowerOn;
 
 //
-A_CmdIoMapping();
+_M_CmdIoMapping();
 
 // servo 1
 MC_Power_Servo1(
@@ -6456,6 +7103,26 @@ Execute_Servo1 := FALSE;</xhtml>
                   </ST>
                 </body>
                 <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_CmdIoMapping" ObjectId="7a603d5b-d7a4-48fb-b4a0-b8a532438cd0">
+                      <interface>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+//
+GVL.CmdIO.Input := GVL.DigitalInput;
+GVL.DigitalOutput := GVL.CmdIO.Output;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>c3b19a06-6020-44bc-8c83-cb31670bfa1a</ObjectId>
                   </data>
@@ -17387,7 +18054,8 @@ IF States[0] &lt;&gt; _HeartbeatLast THEN
 ELSE
 	_HeartbeatTimer(IN:=TRUE);
 END_IF
-Controller.Connected :=NOT _HeartbeatTimer.Q;
+Controller.Connected S= NOT _HeartbeatTimer.IN;
+Controller.Connected R= _HeartbeatTimer.Q;
 
 // clear all the data if the controller disconnects
 IF NOT Controller.Connected THEN
@@ -17469,7 +18137,7 @@ Controller.Trackpads.Two.Y					:= SHL(States[40], 4) OR SHR((States[39] AND 16#F
 
 // from kit-nya
 Controller.Battery.State					:= SHR(States[53] AND 16#F0, 4);
-Controller.Battery.Level					:= MIN((States[53] AND 16#0F) * 10 + 5, 100);
+Controller.Battery.Level					:= MIN((States[53] AND 16#0F) * 10 + 5, 100); // TODO this will show a value of 5 when controller is disconnected.
 
 // dont put anything below this
 _FirstScan := FALSE;</xhtml>
@@ -18495,7 +19163,7 @@ END_CASE</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="10204" type="std:LREAL" IndexInDevDesc="36">
                                         <Attributes />
-                                        <Value name="_x0031_0204" visiblename="PartVelocityPilotControl" desc="Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)">0</Value>
+                                        <Value name="_x0031_0204" visiblename="PartVelocityPilotControl" desc="Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)">1</Value>
                                         <Name>PartVelocityPilotControl</Name>
                                         <Description>Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)</Description>
                                       </Parameter>
@@ -18760,7 +19428,7 @@ END_CASE</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="10204" type="std:LREAL" IndexInDevDesc="36">
                                         <Attributes />
-                                        <Value name="_x0031_0204" visiblename="PartVelocityPilotControl" desc="Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)">0</Value>
+                                        <Value name="_x0031_0204" visiblename="PartVelocityPilotControl" desc="Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)">1</Value>
                                         <Name>PartVelocityPilotControl</Name>
                                         <Description>Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)</Description>
                                       </Parameter>
@@ -19020,7 +19688,7 @@ END_CASE</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="10204" type="std:LREAL" IndexInDevDesc="36">
                                         <Attributes />
-                                        <Value name="_x0031_0204" visiblename="PartVelocityPilotControl" desc="Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)">0</Value>
+                                        <Value name="_x0031_0204" visiblename="PartVelocityPilotControl" desc="Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)">1</Value>
                                         <Name>PartVelocityPilotControl</Name>
                                         <Description>Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)</Description>
                                       </Parameter>
@@ -19280,7 +19948,7 @@ END_CASE</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="10204" type="std:LREAL" IndexInDevDesc="36">
                                         <Attributes />
-                                        <Value name="_x0031_0204" visiblename="PartVelocityPilotControl" desc="Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)">0</Value>
+                                        <Value name="_x0031_0204" visiblename="PartVelocityPilotControl" desc="Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)">1</Value>
                                         <Name>PartVelocityPilotControl</Name>
                                         <Description>Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)</Description>
                                       </Parameter>
@@ -19540,7 +20208,7 @@ END_CASE</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="10204" type="std:LREAL" IndexInDevDesc="36">
                                         <Attributes />
-                                        <Value name="_x0031_0204" visiblename="PartVelocityPilotControl" desc="Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)">0</Value>
+                                        <Value name="_x0031_0204" visiblename="PartVelocityPilotControl" desc="Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)">1</Value>
                                         <Name>PartVelocityPilotControl</Name>
                                         <Description>Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)</Description>
                                       </Parameter>
@@ -19800,7 +20468,7 @@ END_CASE</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="10204" type="std:LREAL" IndexInDevDesc="36">
                                         <Attributes />
-                                        <Value name="_x0031_0204" visiblename="PartVelocityPilotControl" desc="Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)">0</Value>
+                                        <Value name="_x0031_0204" visiblename="PartVelocityPilotControl" desc="Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)">1</Value>
                                         <Name>PartVelocityPilotControl</Name>
                                         <Description>Factor for velocity pilot control with fSetVelocity (0 means no velocity pilot control, 1 means direct output of fSetVelocity)</Description>
                                       </Parameter>
@@ -20722,20 +21390,34 @@ END_CASE</xhtml>
             <Object Name="Library Manager" ObjectId="80af59fb-8d62-4f6c-95b0-580a98d81b1e" />
             <Folder Name="POU">
               <Object Name="_00_Main" ObjectId="f495872a-eb99-4e62-a111-ca71535b5152">
-                <Object Name="M_Init" ObjectId="229ed790-05b4-4c75-a8a2-65170cb5046e" />
-                <Object Name="M_Homing" ObjectId="bf4b7640-1df3-46ff-b6ca-dc416adad7e8" />
-                <Object Name="M_Processor" ObjectId="d0cb92ac-a65b-4a94-99d2-d1aa2daea05c" />
-                <Object Name="M_Cnc" ObjectId="c97e4850-18dd-453d-978c-2cd37627fe3a" />
-                <Object Name="M_Jogging" ObjectId="0244d8b9-9bfb-4b7e-b2e7-dffe5ddef546" />
-                <Object Name="M_BuildTests" ObjectId="9a5607a2-ed23-4572-beb3-b80fd95846d5" />
-                <Object Name="M_Vision" ObjectId="fa98ae8b-a1f5-443f-972f-ae0665ecf7ea" />
-                <Object Name="M_Controller" ObjectId="111d7557-61e1-48d4-ad0f-48b4ac517334" />
+                <Folder Name="private">
+                  <Object Name="_M_Cnc" ObjectId="c97e4850-18dd-453d-978c-2cd37627fe3a" />
+                  <Object Name="_M_Controller" ObjectId="111d7557-61e1-48d4-ad0f-48b4ac517334" />
+                  <Object Name="_M_Homing" ObjectId="bf4b7640-1df3-46ff-b6ca-dc416adad7e8" />
+                  <Object Name="_M_Jogging" ObjectId="0244d8b9-9bfb-4b7e-b2e7-dffe5ddef546" />
+                  <Object Name="_M_Processor" ObjectId="d0cb92ac-a65b-4a94-99d2-d1aa2daea05c" />
+                  <Object Name="_M_Vision" ObjectId="fa98ae8b-a1f5-443f-972f-ae0665ecf7ea" />
+                  <Object Name="_M_Tuning" ObjectId="7bc5b496-9c33-4d9b-b0d8-4ee9652747d2" />
+                </Folder>
+                <Folder Name="public">
+                  <Object Name="M_BuildTests" ObjectId="9a5607a2-ed23-4572-beb3-b80fd95846d5" />
+                  <Object Name="M_Init" ObjectId="229ed790-05b4-4c75-a8a2-65170cb5046e" />
+                </Folder>
               </Object>
               <Object Name="_10_Drives" ObjectId="3256c2f0-e8a8-4738-aa1a-395ceff25c60">
-                <Object Name="M_HandleDriveIO" ObjectId="1f105a3e-ae48-4de4-9cd3-fada08b1a872" />
+                <Folder Name="private">
+                  <Object Name="_M_HandleDriveIO" ObjectId="1f105a3e-ae48-4de4-9cd3-fada08b1a872" />
+                  <Object Name="_M_InitDrives" ObjectId="9031c730-57b8-48ca-b284-2770517ca6ee" />
+                </Folder>
+                <Folder Name="public">
+                  <Object Name="M_InitDrives" ObjectId="aea6e4c3-5f5a-4eff-ae8a-2de4fd010b88" />
+                </Folder>
+                <Object Name="P_DrivesInitialized" ObjectId="94a33523-40bb-4d4e-8658-682c6e0ba226" />
               </Object>
               <Object Name="_20_Io" ObjectId="c3b19a06-6020-44bc-8c83-cb31670bfa1a">
-                <Object Name="A_CmdIoMapping" ObjectId="a2f21641-ddf0-4588-b300-185fb18e4bef" />
+                <Folder Name="private">
+                  <Object Name="_M_CmdIoMapping" ObjectId="7a603d5b-d7a4-48fb-b4a0-b8a532438cd0" />
+                </Folder>
               </Object>
               <Object Name="_30_Visu" ObjectId="9462f316-faa5-42b7-be46-708f3ef2e1f0" />
               <Object Name="_40_Vision" ObjectId="168c2bce-5a06-487a-a077-28448e10fa0d" />
@@ -21047,6 +21729,7 @@ END_CASE</xhtml>
               <Object Name="DUT_StoredPosition" ObjectId="66e85fd8-6344-4340-a216-0e3ccb4605b3" />
               <Object Name="DUT_VisionRegister" ObjectId="183abbbc-75ca-4f97-a156-9832c2bf8b79" />
               <Object Name="DUT_Flags" ObjectId="22f963af-e04a-45ab-913c-8ad1ec5e38d9" />
+              <Object Name="DUT_PositionController" ObjectId="862da66f-a0ac-4f98-8a1c-2d6c546e43d9" />
             </Folder>
           </Object>
           <Object Name="SoftMotion General Axis Pool" ObjectId="fc630667-0317-4bc3-b02d-1f3af074bcd7">
