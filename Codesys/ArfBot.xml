@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-05T01:47:09.4187668" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-05T01:28:00.0456404">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-05T14:02:37.3083174" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-05T13:09:54.0669368">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -2504,6 +2504,16 @@ RESERVED: INT:=47;</xhtml>
                         <derived name="MC_GroupEnable" />
                       </type>
                     </variable>
+                    <variable name="TuneStart">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="5" />
+                          <baseType>
+                            <BOOL />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
                     <variable name="TraceStart">
                       <type>
                         <array>
@@ -3850,7 +3860,7 @@ PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';<
                           <BOOL />
                         </returnType>
                         <globalVars>
-                          <variable name="_TriggerStopTimer">
+                          <variable name="_MoveDelayTimer">
                             <type>
                               <array>
                                 <dimension lower="0" upper="5" />
@@ -3859,6 +3869,34 @@ PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';<
                                 </baseType>
                               </array>
                             </type>
+                          </variable>
+                          <variable name="_TraceTimer">
+                            <type>
+                              <array>
+                                <dimension lower="0" upper="5" />
+                                <baseType>
+                                  <derived name="TON" />
+                                </baseType>
+                              </array>
+                            </type>
+                          </variable>
+                          <variable name="_TraceStartFtrig">
+                            <type>
+                              <array>
+                                <dimension lower="0" upper="5" />
+                                <baseType>
+                                  <derived name="F_TRIG" />
+                                </baseType>
+                              </array>
+                            </type>
+                          </variable>
+                          <variable name="_MoveDelayTime">
+                            <type>
+                              <TIME />
+                            </type>
+                            <initialValue>
+                              <simpleValue value="TIME#5ms" />
+                            </initialValue>
                           </variable>
                           <variable name="_i">
                             <type>
@@ -3936,9 +3974,40 @@ END_IF
 
 // trace activation
 FOR _i:=0 TO 5 BY 1 DO
-	TraceStart[_i] := MoveRelative[_i].Execute;
-	_TriggerStopTimer[_i](IN:=TraceStart[_i], PT:=TraceTime);
-	TraceStop[_i] := _TriggerStopTimer[_i].Q;
+	
+	//
+	IF TuneStart[_i] THEN
+		TuneStart[_i] := FALSE;
+		TraceStart[_i] := TRUE; // trace will handshake this bit low
+		GroupPower.Enable := TRUE;
+	END_IF
+	
+	// TraceStart will clear after handshake. this means the trace has started collecting samples
+	// start the move delay timer to capture samples before the move
+	_TraceStartFtrig[_i](CLK:=TraceStart[_i]);
+	IF _TraceStartFtrig[_i].Q THEN
+		_MoveDelayTimer[_i].IN:=TRUE;
+	END_IF
+	
+	// once the move delay expires, start the move
+	_MoveDelayTimer[_i](PT:=_MoveDelayTime);
+	IF _MoveDelayTimer[_i].Q THEN
+		_MoveDelayTimer[_i].IN:=FALSE;
+		_TraceTimer[_i].IN:=TRUE;
+		MoveRelative[_i].Execute := TRUE;
+	END_IF
+
+	// start a timer while the move is happening
+	// when the timer expires, stop the trace
+	_TraceTimer[_i](PT:=TraceTime);
+	IF _TraceTimer[_i].Q THEN
+		_TraceTimer[_i].IN:=FALSE;
+		TraceStop[_i] := TRUE; // trace will handshake this bit
+		MoveRelative[_i].Execute := FALSE;
+		GroupPower.Enable := FALSE;
+		MoveRelative[_i].Distance := MoveRelative[_i].Distance * -1.0; // reverse direction
+	END_IF
+
 END_FOR
 
 // power
