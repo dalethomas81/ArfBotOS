@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-05T21:12:14.4679397" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-05T21:11:52.250547">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-05T23:42:24.6158095" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-05T23:26:03.7703695">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -2637,13 +2637,16 @@ RESERVED: INT:=47;</xhtml>
                         </array>
                       </type>
                     </variable>
-                    <variable name="TraceTime">
+                    <variable name="MoveDelayTime">
                       <type>
-                        <TIME />
+                        <INT />
                       </type>
                       <initialValue>
-                        <simpleValue value="TIME#50ms" />
+                        <simpleValue value="10" />
                       </initialValue>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> ms</xhtml>
+                      </documentation>
                     </variable>
                     <variable name="SMC_Homing_J1">
                       <type>
@@ -2983,277 +2986,92 @@ FirstScan:=FALSE;</xhtml>
                 </body>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_BuildTests" ObjectId="9a5607a2-ed23-4572-beb3-b80fd95846d5">
-                      <interface>
-                        <localVars>
-                          <variable name="_i">
-                            <type>
-                              <INT />
-                            </type>
-                          </variable>
-                          <variable name="_j">
-                            <type>
-                              <INT />
-                            </type>
-                          </variable>
-                          <variable name="_k">
-                            <type>
-                              <INT />
-                            </type>
-                          </variable>
-                        </localVars>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[1].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[1].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[1].ProgramName := 'Vision Pick and Place';
-PersistentVars.Programs[1].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
-PersistentVars.Programs[1].Commands[0].CommandString := 'STO 0046 +0000.00 +0000.00 +0000.00 +0090.00 +0000.00 +0000.00';
-PersistentVars.Programs[1].Commands[1].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[1].CommandString := 'DIR ABS 020 ACS LIT 00000.00 00030.00 -0030.00 00000.00 00030.00 00000.00';
-PersistentVars.Programs[1].Commands[2].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[2].CommandString := 'DIG 1 1';
-PersistentVars.Programs[1].Commands[3].CommandType := DUT_CommandType.VisionCommand;
-PersistentVars.Programs[1].Commands[3].CommandString := 'LOC 640 400 0060 001 000.0 0.8 030.0 000 Template.jpg FastTemplateMatching.py';
-PersistentVars.Programs[1].Commands[4].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[4].CommandString := 'DIG 1 0';
-PersistentVars.Programs[1].Commands[5].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[5].CommandString := 'DIR ABS 050 PC1 LIT 00000.00 00000.00 -0010.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[1].Commands[6].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[6].CommandString := 'DIR ABS 050 PC1 VAR VIS 000';
-PersistentVars.Programs[1].Commands[7].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[7].CommandString := 'SRV 1 30.0 360.0';
-PersistentVars.Programs[1].Commands[8].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[8].CommandString := 'LIN REL 050 TCS LIT 00000.00 00000.00 00010.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[1].Commands[9].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[9].CommandString := 'SRV 1 0.0 360.0';
-PersistentVars.Programs[1].Commands[10].CommandType := DUT_CommandType.PauseCommand;
-PersistentVars.Programs[1].Commands[10].CommandString := 'T#1s';
-PersistentVars.Programs[1].Commands[11].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[11].CommandString := 'LIN REL 050 TCS LIT 00000.00 00000.00 -0010.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[1].Commands[12].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[12].CommandString := 'DIR ABS 050 PC1 LIT 00000.00 00000.00 -0050.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[1].Commands[13].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[13].CommandString := 'SRV 1 30.0 360.0';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[2].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[2].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[2].ProgramName := 'PCS1 Corners';
-PersistentVars.Programs[2].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
-PersistentVars.Programs[2].Commands[0].CommandString := 'STO 0046 +0000.00 +0000.00 +0000.00 +0090.00 +0000.00 +0000.00';
-PersistentVars.Programs[2].Commands[1].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[1].CommandString := 'DIR ABS 050 PC1 LIT 0 0 0 0 0 0';
-PersistentVars.Programs[2].Commands[2].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[2].CommandString := 'LIN REL 100 TCS LIT 0.0 200.0 0.0 0.0 0.0 0.0';
-PersistentVars.Programs[2].Commands[3].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[3].CommandString := 'LIN REL 100 TCS LIT 00125.00 00000.00 00000.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[2].Commands[4].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[4].CommandString := 'LIN REL 100 TCS LIT 00000.00 -0200.00 00000.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[2].Commands[5].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[5].CommandString := 'LIN REL 100 TCS LIT -0125.00 00000.00 00000.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[2].Commands[6].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[6].CommandString := 'DIR ABS 050 ACS LIT +00 +30 -30 +00 +30 +00';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[3].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[3].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[3].ProgramName := 'Cnc Validation';
-PersistentVars.Programs[3].Commands[0].CommandType := DUT_CommandType.CncCommand;
-PersistentVars.Programs[3].Commands[0].CommandString := 'CNC_FromFile.cnc XYZ VAR STO 45';
-PersistentVars.Programs[3].Commands[1].CommandType := DUT_CommandType.CncCommand;
-PersistentVars.Programs[3].Commands[1].CommandString := 'CNC_FromFile.cnc XYZ LIT +0300.00 +0000.00 -0300.00 +0000.00 +0000.00 +0000.00';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[4].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[4].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[4].ProgramName := 'Vision Validation';
-PersistentVars.Programs[4].Commands[0].CommandType := DUT_CommandType.VisionCommand;
-PersistentVars.Programs[4].Commands[0].CommandString := 'LOC 640 400 60 1 0.0 0.8 30.0 10 Template.jpg FastTemplateMatching.py';
-PersistentVars.Programs[4].Commands[1].CommandType := DUT_CommandType.VisionCommand;
-PersistentVars.Programs[4].Commands[1].CommandString := 'LOC 640 400 60 1 0.0 0.8 30.0 4 strippers2.jpg FastTemplateMatching.py';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[5].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[5].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[5].ProgramName := 'VarSet Validation';
-PersistentVars.Programs[5].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
-PersistentVars.Programs[5].Commands[0].CommandString := 'STO 1 6.0 5.0 4.0 3.0 2.0 1.0 ';
-PersistentVars.Programs[5].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
-PersistentVars.Programs[5].Commands[1].CommandString := 'VIS 2 1 2 3 4 5 6';
-PersistentVars.Programs[5].Commands[2].CommandType := DUT_CommandType.VarSetCommand;
-PersistentVars.Programs[5].Commands[2].CommandString := 'FLG 3 1';
-
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[6].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[6].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[6].ProgramName := 'Logic Validation';
-PersistentVars.Programs[6].Commands[0].CommandType := DUT_CommandType.LogicCommand;
-PersistentVars.Programs[6].Commands[0].CommandString := 'IF INPUT 1 EQU 1 THEN OUTPUT 1 1 ELSE OUTPUT 1 0';
-PersistentVars.Programs[6].Commands[1].CommandType := DUT_CommandType.LogicCommand;
-PersistentVars.Programs[6].Commands[1].CommandString := 'IF INPUT 1 EQU 1 THEN CNTUP 1 ELSE CNTUP 2';
-PersistentVars.Programs[6].Commands[2].CommandType := DUT_CommandType.LogicCommand;
-PersistentVars.Programs[6].Commands[2].CommandString := 'IF COUNTER 2 GRE 10 THEN NOP ELSE JUMP 0';
-
-(*
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[11].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[11].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[11].ProgramName := 'Make Me an Egg, Please';
-PersistentVars.Programs[11].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[11].Commands[0].CommandString := '';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[12].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[12].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[12].ProgramName := 'Egg Pick Routine';
-PersistentVars.Programs[12].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[12].Commands[0].CommandString := '';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[13].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[13].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[13].ProgramName := 'Egg Crack Routine';
-PersistentVars.Programs[13].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[13].Commands[0].CommandString := '';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[14].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[14].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[14].ProgramName := 'Egg Flip Routine';
-PersistentVars.Programs[14].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[14].Commands[0].CommandString := '';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[15].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[15].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[15].ProgramName := 'Egg Place Routine';
-PersistentVars.Programs[15].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[15].Commands[0].CommandString := '';
-*)</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="_M_Cnc" ObjectId="c97e4850-18dd-453d-978c-2cd37627fe3a">
+                    <Method name="M_Init" ObjectId="229ed790-05b4-4c75-a8a2-65170cb5046e">
                       <interface>
                         <returnType>
                           <BOOL />
                         </returnType>
-                        <addData>
-                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
-                            <AccessModifiers Private="true" />
-                          </data>
-                        </addData>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">// track position of robot end effector to display on hmi
-TrackPosition(
-	AxisGroup:=ArfBotAxisGroup,
-	SM3_Drive_PosControl_J1:=SM_Drive_PosControl_J1,
-	SM3_Drive_PosControl_J2:=SM_Drive_PosControl_J2,
-	SM3_Drive_PosControl_J3:=SM_Drive_PosControl_J3,
-	SM3_Drive_PosControl_J4:=SM_Drive_PosControl_J4,
-	SM3_Drive_PosControl_J5:=SM_Drive_PosControl_J5,
-	SM3_Drive_PosControl_J6:=SM_Drive_PosControl_J6,
-	VisuStruct3DTrack=&gt;,
-	Arm=&gt;,
-	Elbow=&gt;,
-	Hand=&gt;);</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="_M_Controller" ObjectId="111d7557-61e1-48d4-ad0f-48b4ac517334">
-                      <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
-                        <globalVars>
-                          <variable name="_PowerRtrig">
-                            <type>
-                              <derived name="R_TRIG" />
-                            </type>
-                          </variable>
-                          <variable name="_PowerTimer">
-                            <type>
-                              <derived name="TON" />
-                            </type>
-                            <initialValue>
-                              <structValue>
-                                <value member="PT">
-                                  <simpleValue value="TIME#1s0ms" />
-                                </value>
-                              </structValue>
-                            </initialValue>
-                          </variable>
-                        </globalVars>
-                        <addData>
-                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
-                            <AccessModifiers Private="true" />
-                          </data>
-                        </addData>
                       </interface>
                       <body>
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">
-// dont get sleepy
-Controller(sIpAddress:= '127.0.0.1', uPort:= 50013);
+// check if arfbot has been initialized
+IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
+	// poses
+	PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Value := FALSE;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.X := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Y := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Z := -30.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.A := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.B := -30.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.C := 0.0;
+	
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.X := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Y := 30.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Z := -30.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.A := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.B := 30.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.C := 0.0;
+		 
+	// decoder
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.X := 300.0; // TODO need to verify all 6 of these
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.Y := 0.0;
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.Z := -400.0;
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.A := 0.0;
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.B := 0.0;
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.C := 0.0;
+	
+	// set homing offsets
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X := 167.0; // J1 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y := 42.41; // J2 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z := -57.35; // J3 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A := -169.66; // J4 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B := -94.106; // J5 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C := 171.581; // J6 initial home offset
+	
+	// set speeds
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X := 100.0; // max velocity
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.Y := 1000.0; // max accel/decel
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.Z := 1000.0; // max jerk
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.A := 1.0; // velocity factor
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.B := 0.05; // accel/decel factor
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.C := 1.0; // jerk factor
+	
+	//
+	M_BuildTests();
+	
+	//
+	_10_Drives.M_InitDrives(DefaultParameters:=TRUE);
+		 
+	// indicate initialized
+	PersistentVars.Flags[GVL.INIT_POS_IDX].Value := TRUE;
+END_IF
 
 //
-IF ConnectController THEN
-	ConnectController:=FALSE;
-	Controller.M_ReadInputs();
-END_IF
-IF DisconnectController THEN
-	DisconnectController:=FALSE;
-	Controller.M_Cancel();
-END_IF
-IF ResetController THEN
-	ResetController:=FALSE;
-	Controller.M_Reset();
-END_IF
+PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Comment := 'vel, acc, jerk, vel fact, acc fact, jerk fact';
+PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Comment := 'Home Offsets J1, J2, J3, J4, J5, J6';
+PersistentVars.StoredPositions[GVL.DEC_START_POS].Comment := 'NC Decoder Start Position';
+PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Comment := 'TCP Offset';
+PersistentVars.StoredPositions[GVL.PC2_POS_IDX].Comment := 'PCS 2 Offset';
+PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Comment := 'PCS 1 Offset';
+PersistentVars.StoredPositions[GVL.MCS_POS_IDX].Comment := 'MCS Offset';
 
-// put two fingers on the trackpad for 3 seconds to toggle power
-_PowerTimer(IN:=Controller.P_State.Connected
-				AND Controller.P_State.Buttons.Touch
-				AND Controller.P_State.Trackpads.One.Active 
-				AND Controller.P_State.Trackpads.Two.Active);
-_PowerRtrig(CLK:=_PowerTimer.Q);
-IF _PowerRtrig.Q THEN
-	GVL.PowerOn := NOT GVL.PowerOn;
-END_IF</xhtml>
+//	 
+PersistentVars.StoredPositions[GVL.POSE_1_IDX].Comment := 'Pose 1 coordinates';
+PersistentVars.StoredPositions[GVL.POSE_2_IDX].Comment := 'Pose 2 coordinates';
+PersistentVars.StoredPositions[GVL.POSE_3_IDX].Comment := 'Pose 3 coordinates';
+PersistentVars.StoredPositions[GVL.POSE_4_IDX].Comment := 'Pose 4 coordinates';
+PersistentVars.StoredPositions[GVL.POSE_5_IDX].Comment := 'Pose 5 coordinates';
+
+//
+PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Comment := 'Finish home at Pose';
+
+//
+PersistentVars.Flags[GVL.HOME_COMPLETE].Comment := 'Axes are homed';
+PersistentVars.Flags[GVL.HOME_COMPLETE].Value := FALSE;
+
+//
+PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -3690,53 +3508,6 @@ MC_GroupReset_J(
                     </Method>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="_M_Jogging" ObjectId="0244d8b9-9bfb-4b7e-b2e7-dffe5ddef546">
-                      <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
-                        <addData>
-                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
-                            <AccessModifiers Private="true" />
-                          </data>
-                        </addData>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
-// dont get sleepy
-ProcessJog(
-	AxisGroup:= ArfBotAxisGroup,
-	GroupHandler:= GroupHandler,
-	Enable:= GVL.PowerOn,
-	Reset:= GVL.Reset,
-	StoredPositions:= PersistentVars.StoredPositions,
-	VisionRegisters:= PersistentVars.VisionRegisters,
-	Flags:= PersistentVars.Flags,
-	ABC_as_ACS=&gt;,
-	CoordSystem=&gt;, 
-	Position=&gt;, 
-	Done=&gt; , 
-	Busy=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-	
-//
-IF ProcessJog.Reset THEN
-	JogStatusText := '';
-END_IF
-IF ProcessJog.Error THEN
-	JogStatusText := CONCAT('Jog Processor Error: ',
-						CONCAT(TO_STRING(ProcessJog.ErrorID),
-						CONCAT(' ', SMC_ErrorString(ProcessJog.ErrorID,
-									SMC_Language_Type.english)))) ;
-END_IF</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
                     <Method name="_M_Processor" ObjectId="d0cb92ac-a65b-4a94-99d2-d1aa2daea05c">
                       <interface>
                         <returnType>
@@ -3842,6 +3613,265 @@ ProcessPrograms(
                     </Method>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_Cnc" ObjectId="c97e4850-18dd-453d-978c-2cd37627fe3a">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">// track position of robot end effector to display on hmi
+TrackPosition(
+	AxisGroup:=ArfBotAxisGroup,
+	SM3_Drive_PosControl_J1:=SM_Drive_PosControl_J1,
+	SM3_Drive_PosControl_J2:=SM_Drive_PosControl_J2,
+	SM3_Drive_PosControl_J3:=SM_Drive_PosControl_J3,
+	SM3_Drive_PosControl_J4:=SM_Drive_PosControl_J4,
+	SM3_Drive_PosControl_J5:=SM_Drive_PosControl_J5,
+	SM3_Drive_PosControl_J6:=SM_Drive_PosControl_J6,
+	VisuStruct3DTrack=&gt;,
+	Arm=&gt;,
+	Elbow=&gt;,
+	Hand=&gt;);</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_Jogging" ObjectId="0244d8b9-9bfb-4b7e-b2e7-dffe5ddef546">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// dont get sleepy
+ProcessJog(
+	AxisGroup:= ArfBotAxisGroup,
+	GroupHandler:= GroupHandler,
+	Enable:= GVL.PowerOn,
+	Reset:= GVL.Reset,
+	StoredPositions:= PersistentVars.StoredPositions,
+	VisionRegisters:= PersistentVars.VisionRegisters,
+	Flags:= PersistentVars.Flags,
+	ABC_as_ACS=&gt;,
+	CoordSystem=&gt;, 
+	Position=&gt;, 
+	Done=&gt; , 
+	Busy=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );
+	
+//
+IF ProcessJog.Reset THEN
+	JogStatusText := '';
+END_IF
+IF ProcessJog.Error THEN
+	JogStatusText := CONCAT('Jog Processor Error: ',
+						CONCAT(TO_STRING(ProcessJog.ErrorID),
+						CONCAT(' ', SMC_ErrorString(ProcessJog.ErrorID,
+									SMC_Language_Type.english)))) ;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_BuildTests" ObjectId="9a5607a2-ed23-4572-beb3-b80fd95846d5">
+                      <interface>
+                        <localVars>
+                          <variable name="_i">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                          <variable name="_j">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                          <variable name="_k">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                        </localVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[1].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[1].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[1].ProgramName := 'Vision Pick and Place';
+PersistentVars.Programs[1].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[1].Commands[0].CommandString := 'STO 0046 +0000.00 +0000.00 +0000.00 +0090.00 +0000.00 +0000.00';
+PersistentVars.Programs[1].Commands[1].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[1].CommandString := 'DIR ABS 020 ACS LIT 00000.00 00030.00 -0030.00 00000.00 00030.00 00000.00';
+PersistentVars.Programs[1].Commands[2].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[2].CommandString := 'DIG 1 1';
+PersistentVars.Programs[1].Commands[3].CommandType := DUT_CommandType.VisionCommand;
+PersistentVars.Programs[1].Commands[3].CommandString := 'LOC 640 400 0060 001 000.0 0.8 030.0 000 Template.jpg FastTemplateMatching.py';
+PersistentVars.Programs[1].Commands[4].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[4].CommandString := 'DIG 1 0';
+PersistentVars.Programs[1].Commands[5].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[5].CommandString := 'DIR ABS 050 PC1 LIT 00000.00 00000.00 -0010.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[1].Commands[6].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[6].CommandString := 'DIR ABS 050 PC1 VAR VIS 000';
+PersistentVars.Programs[1].Commands[7].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[7].CommandString := 'SRV 1 30.0 360.0';
+PersistentVars.Programs[1].Commands[8].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[8].CommandString := 'LIN REL 050 TCS LIT 00000.00 00000.00 00010.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[1].Commands[9].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[9].CommandString := 'SRV 1 0.0 360.0';
+PersistentVars.Programs[1].Commands[10].CommandType := DUT_CommandType.PauseCommand;
+PersistentVars.Programs[1].Commands[10].CommandString := 'T#1s';
+PersistentVars.Programs[1].Commands[11].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[11].CommandString := 'LIN REL 050 TCS LIT 00000.00 00000.00 -0010.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[1].Commands[12].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[12].CommandString := 'DIR ABS 050 PC1 LIT 00000.00 00000.00 -0050.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[1].Commands[13].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[13].CommandString := 'SRV 1 30.0 360.0';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[2].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[2].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[2].ProgramName := 'PCS1 Corners';
+PersistentVars.Programs[2].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[2].Commands[0].CommandString := 'STO 0046 +0000.00 +0000.00 +0000.00 +0090.00 +0000.00 +0000.00';
+PersistentVars.Programs[2].Commands[1].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[1].CommandString := 'DIR ABS 050 PC1 LIT 0 0 0 0 0 0';
+PersistentVars.Programs[2].Commands[2].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[2].CommandString := 'LIN REL 100 TCS LIT 0.0 200.0 0.0 0.0 0.0 0.0';
+PersistentVars.Programs[2].Commands[3].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[3].CommandString := 'LIN REL 100 TCS LIT 00125.00 00000.00 00000.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[2].Commands[4].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[4].CommandString := 'LIN REL 100 TCS LIT 00000.00 -0200.00 00000.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[2].Commands[5].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[5].CommandString := 'LIN REL 100 TCS LIT -0125.00 00000.00 00000.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[2].Commands[6].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[6].CommandString := 'DIR ABS 050 ACS LIT +00 +30 -30 +00 +30 +00';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[3].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[3].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[3].ProgramName := 'Cnc Validation';
+PersistentVars.Programs[3].Commands[0].CommandType := DUT_CommandType.CncCommand;
+PersistentVars.Programs[3].Commands[0].CommandString := 'CNC_FromFile.cnc XYZ VAR STO 45';
+PersistentVars.Programs[3].Commands[1].CommandType := DUT_CommandType.CncCommand;
+PersistentVars.Programs[3].Commands[1].CommandString := 'CNC_FromFile.cnc XYZ LIT +0300.00 +0000.00 -0300.00 +0000.00 +0000.00 +0000.00';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[4].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[4].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[4].ProgramName := 'Vision Validation';
+PersistentVars.Programs[4].Commands[0].CommandType := DUT_CommandType.VisionCommand;
+PersistentVars.Programs[4].Commands[0].CommandString := 'LOC 640 400 60 1 0.0 0.8 30.0 10 Template.jpg FastTemplateMatching.py';
+PersistentVars.Programs[4].Commands[1].CommandType := DUT_CommandType.VisionCommand;
+PersistentVars.Programs[4].Commands[1].CommandString := 'LOC 640 400 60 1 0.0 0.8 30.0 4 strippers2.jpg FastTemplateMatching.py';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[5].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[5].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[5].ProgramName := 'VarSet Validation';
+PersistentVars.Programs[5].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[5].Commands[0].CommandString := 'STO 1 6.0 5.0 4.0 3.0 2.0 1.0 ';
+PersistentVars.Programs[5].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[5].Commands[1].CommandString := 'VIS 2 1 2 3 4 5 6';
+PersistentVars.Programs[5].Commands[2].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[5].Commands[2].CommandString := 'FLG 3 1';
+
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[6].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[6].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[6].ProgramName := 'Logic Validation';
+PersistentVars.Programs[6].Commands[0].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[6].Commands[0].CommandString := 'IF INPUT 1 EQU 1 THEN OUTPUT 1 1 ELSE OUTPUT 1 0';
+PersistentVars.Programs[6].Commands[1].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[6].Commands[1].CommandString := 'IF INPUT 1 EQU 1 THEN CNTUP 1 ELSE CNTUP 2';
+PersistentVars.Programs[6].Commands[2].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[6].Commands[2].CommandString := 'IF COUNTER 2 GRE 10 THEN NOP ELSE JUMP 0';
+
+(*
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[11].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[11].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[11].ProgramName := 'Make Me an Egg, Please';
+PersistentVars.Programs[11].Commands[0].CommandType := DUT_CommandType.Disabled;
+PersistentVars.Programs[11].Commands[0].CommandString := '';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[12].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[12].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[12].ProgramName := 'Egg Pick Routine';
+PersistentVars.Programs[12].Commands[0].CommandType := DUT_CommandType.Disabled;
+PersistentVars.Programs[12].Commands[0].CommandString := '';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[13].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[13].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[13].ProgramName := 'Egg Crack Routine';
+PersistentVars.Programs[13].Commands[0].CommandType := DUT_CommandType.Disabled;
+PersistentVars.Programs[13].Commands[0].CommandString := '';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[14].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[14].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[14].ProgramName := 'Egg Flip Routine';
+PersistentVars.Programs[14].Commands[0].CommandType := DUT_CommandType.Disabled;
+PersistentVars.Programs[14].Commands[0].CommandString := '';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[15].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[15].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[15].ProgramName := 'Egg Place Routine';
+PersistentVars.Programs[15].Commands[0].CommandType := DUT_CommandType.Disabled;
+PersistentVars.Programs[15].Commands[0].CommandString := '';
+*)</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
                     <Method name="_M_Vision" ObjectId="fa98ae8b-a1f5-443f-972f-ae0665ecf7ea">
                       <interface>
                         <returnType>
@@ -3869,92 +3899,65 @@ END_IF
                     </Method>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_Init" ObjectId="229ed790-05b4-4c75-a8a2-65170cb5046e">
+                    <Method name="_M_Controller" ObjectId="111d7557-61e1-48d4-ad0f-48b4ac517334">
                       <interface>
                         <returnType>
                           <BOOL />
                         </returnType>
+                        <globalVars>
+                          <variable name="_PowerRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="_PowerTimer">
+                            <type>
+                              <derived name="TON" />
+                            </type>
+                            <initialValue>
+                              <structValue>
+                                <value member="PT">
+                                  <simpleValue value="TIME#1s0ms" />
+                                </value>
+                              </structValue>
+                            </initialValue>
+                          </variable>
+                        </globalVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
                       </interface>
                       <body>
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">
-// check if arfbot has been initialized
-IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
-	// poses
-	PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Value := FALSE;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.X := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Y := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Z := -30.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.B := -30.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.C := 0.0;
-	
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.X := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Y := 30.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Z := -30.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.B := 30.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.C := 0.0;
-		 
-	// decoder
-	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.X := 300.0; // TODO need to verify all 6 of these
-	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.Y := 0.0;
-	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.Z := -400.0;
-	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.B := 0.0;
-	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.C := 0.0;
-	
-	// set homing offsets
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X := 167.0; // J1 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y := 42.41; // J2 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z := -57.35; // J3 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A := -169.66; // J4 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B := -94.106; // J5 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C := 171.581; // J6 initial home offset
-	
-	// set speeds
-	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X := 100.0; // max velocity
-	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.Y := 1000.0; // max accel/decel
-	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.Z := 1000.0; // max jerk
-	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.A := 1.0; // velocity factor
-	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.B := 0.05; // accel/decel factor
-	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.C := 1.0; // jerk factor
-	
-	//
-	M_BuildTests();
-	
-	//
-	_10_Drives.M_InitDrives(DefaultParameters:=TRUE);
-		 
-	// indicate initialized
-	PersistentVars.Flags[GVL.INIT_POS_IDX].Value := TRUE;
+// dont get sleepy
+Controller(sIpAddress:= '127.0.0.1', uPort:= 50013);
+
+//
+IF ConnectController THEN
+	ConnectController:=FALSE;
+	Controller.M_ReadInputs();
+END_IF
+IF DisconnectController THEN
+	DisconnectController:=FALSE;
+	Controller.M_Cancel();
+END_IF
+IF ResetController THEN
+	ResetController:=FALSE;
+	Controller.M_Reset();
 END_IF
 
-//
-PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Comment := 'vel, acc, jerk, vel fact, acc fact, jerk fact';
-PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Comment := 'Home Offsets J1, J2, J3, J4, J5, J6';
-PersistentVars.StoredPositions[GVL.DEC_START_POS].Comment := 'NC Decoder Start Position';
-PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Comment := 'TCP Offset';
-PersistentVars.StoredPositions[GVL.PC2_POS_IDX].Comment := 'PCS 2 Offset';
-PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Comment := 'PCS 1 Offset';
-PersistentVars.StoredPositions[GVL.MCS_POS_IDX].Comment := 'MCS Offset';
-
-//	 
-PersistentVars.StoredPositions[GVL.POSE_1_IDX].Comment := 'Pose 1 coordinates';
-PersistentVars.StoredPositions[GVL.POSE_2_IDX].Comment := 'Pose 2 coordinates';
-PersistentVars.StoredPositions[GVL.POSE_3_IDX].Comment := 'Pose 3 coordinates';
-PersistentVars.StoredPositions[GVL.POSE_4_IDX].Comment := 'Pose 4 coordinates';
-PersistentVars.StoredPositions[GVL.POSE_5_IDX].Comment := 'Pose 5 coordinates';
-
-//
-PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Comment := 'Finish home at Pose';
-
-//
-PersistentVars.Flags[GVL.HOME_COMPLETE].Comment := 'Axes are homed';
-PersistentVars.Flags[GVL.HOME_COMPLETE].Value := FALSE;
-
-//
-PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';</xhtml>
+// put two fingers on the trackpad for 3 seconds to toggle power
+_PowerTimer(IN:=Controller.P_State.Connected
+				AND Controller.P_State.Buttons.Touch
+				AND Controller.P_State.Trackpads.One.Active 
+				AND Controller.P_State.Trackpads.Two.Active);
+_PowerRtrig(CLK:=_PowerTimer.Q);
+IF _PowerRtrig.Q THEN
+	GVL.PowerOn := NOT GVL.PowerOn;
+END_IF</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -3977,16 +3980,6 @@ PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';<
                               </array>
                             </type>
                           </variable>
-                          <variable name="_TraceTimer">
-                            <type>
-                              <array>
-                                <dimension lower="0" upper="5" />
-                                <baseType>
-                                  <derived name="TON" />
-                                </baseType>
-                              </array>
-                            </type>
-                          </variable>
                           <variable name="_TraceStartFtrig">
                             <type>
                               <array>
@@ -3997,28 +3990,39 @@ PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';<
                               </array>
                             </type>
                           </variable>
-                          <variable name="_MoveDelayTime">
+                          <variable name="_MoveBusyFtrig">
                             <type>
-                              <TIME />
+                              <array>
+                                <dimension lower="0" upper="5" />
+                                <baseType>
+                                  <derived name="F_TRIG" />
+                                </baseType>
+                              </array>
                             </type>
-                            <initialValue>
-                              <simpleValue value="TIME#5ms" />
-                            </initialValue>
                           </variable>
                           <variable name="_i">
                             <type>
                               <INT />
                             </type>
+                            <documentation>
+                              <xhtml xmlns="http://www.w3.org/1999/xhtml">_MoveDelayTime: TIME:=T#10MS;</xhtml>
+                            </documentation>
                           </variable>
                           <variable name="_j">
                             <type>
                               <INT />
                             </type>
+                            <documentation>
+                              <xhtml xmlns="http://www.w3.org/1999/xhtml">_MoveDelayTime: TIME:=T#10MS;</xhtml>
+                            </documentation>
                           </variable>
                           <variable name="_k">
                             <type>
                               <INT />
                             </type>
+                            <documentation>
+                              <xhtml xmlns="http://www.w3.org/1999/xhtml">_MoveDelayTime: TIME:=T#10MS;</xhtml>
+                            </documentation>
                           </variable>
                           <variable name="_SetValues">
                             <type>
@@ -4097,19 +4101,15 @@ FOR _i:=0 TO 5 BY 1 DO
 	END_IF
 	
 	// once the move delay expires, start the move
-	_MoveDelayTimer[_i](PT:=_MoveDelayTime);
+	_MoveDelayTimer[_i](PT:=INT_TO_TIME(MoveDelayTime));
 	IF _MoveDelayTimer[_i].Q THEN
 		_MoveDelayTimer[_i].IN:=FALSE;
-		_TraceTimer[_i].IN:=TRUE;
 		MoveRelative[_i].Execute := TRUE;
 	END_IF
-
-	// start a timer while the move is happening
-	// when the timer expires, stop the trace
-	_TraceTimer[_i](PT:=TraceTime);
-	IF _TraceTimer[_i].Q THEN
-		_TraceTimer[_i].IN:=FALSE;
-		TraceStop[_i] := TRUE; // trace will handshake this bit
+	
+	//
+	_MoveBusyFtrig[_i](CLK:=MoveRelative[_i].Busy);
+	IF _MoveBusyFtrig[_i].Q THEN
 		MoveRelative[_i].Execute := FALSE;
 		GroupPower.Enable := FALSE;
 		MoveRelative[_i].Distance := MoveRelative[_i].Distance * -1.0; // reverse direction
@@ -4751,6 +4751,29 @@ tx_en := GVL.PowerOn;
                     </Method>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_InitDrives" ObjectId="aea6e4c3-5f5a-4eff-ae8a-2de4fd010b88">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="DefaultParameters">
+                            <type>
+                              <BOOL />
+                            </type>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">DefaultDriveParameters := DefaultParameters;
+InitializeDrives := TRUE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
                     <Method name="_M_InitDrives" ObjectId="9031c730-57b8-48ca-b284-2770517ca6ee">
                       <interface>
                         <globalVars>
@@ -4962,29 +4985,6 @@ IF _SMC_SetPosControlParams[5].bExecute THEN
 	SM_Drive_PosControl_J6.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[5].fSWMaxDeceleration;
 	SM_Drive_PosControl_J6.fSWMaxJerk 				:= PersistentVars.PositionControllers[5].fSWMaxJerk;
 END_IF</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_InitDrives" ObjectId="aea6e4c3-5f5a-4eff-ae8a-2de4fd010b88">
-                      <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
-                        <inputVars>
-                          <variable name="DefaultParameters">
-                            <type>
-                              <BOOL />
-                            </type>
-                          </variable>
-                        </inputVars>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">DefaultDriveParameters := DefaultParameters;
-InitializeDrives := TRUE;</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -19203,6 +19203,27 @@ END_CASE</xhtml>
                     </Method>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_EnableGroup" ObjectId="42afec78-5201-449e-b1b2-e5ed96e5c8b5">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF Enable AND NOT Error AND NOT _GroupEnabled THEN
+	M_EnableGroup := TRUE;
+	_EnableGroup := TRUE;
+	_GroupEnabled := FALSE;
+ELSE
+	M_EnableGroup := FALSE;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
                     <Method name="_M_ResetGroup" ObjectId="93550740-bce9-4d08-8c7b-68cd49bbfaa5">
                       <interface>
                         <returnType>
@@ -19242,27 +19263,6 @@ CASE _SeqResetGroup OF
 		_SeqResetGroup := 0;
 	
 END_CASE</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_EnableGroup" ObjectId="42afec78-5201-449e-b1b2-e5ed96e5c8b5">
-                      <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF Enable AND NOT Error AND NOT _GroupEnabled THEN
-	M_EnableGroup := TRUE;
-	_EnableGroup := TRUE;
-	_GroupEnabled := FALSE;
-ELSE
-	M_EnableGroup := FALSE;
-END_IF</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -22030,19 +22030,19 @@ END_IF</xhtml>
             <Object Name="Library Manager" ObjectId="80af59fb-8d62-4f6c-95b0-580a98d81b1e" />
             <Folder Name="POU">
               <Object Name="_00_Main" ObjectId="f495872a-eb99-4e62-a111-ca71535b5152">
+                <Folder Name="public">
+                  <Object Name="M_Init" ObjectId="229ed790-05b4-4c75-a8a2-65170cb5046e" />
+                  <Object Name="M_BuildTests" ObjectId="9a5607a2-ed23-4572-beb3-b80fd95846d5" />
+                </Folder>
                 <Folder Name="private">
-                  <Object Name="_M_Cnc" ObjectId="c97e4850-18dd-453d-978c-2cd37627fe3a" />
-                  <Object Name="_M_Controller" ObjectId="111d7557-61e1-48d4-ad0f-48b4ac517334" />
                   <Object Name="_M_Homing" ObjectId="bf4b7640-1df3-46ff-b6ca-dc416adad7e8" />
-                  <Object Name="_M_Jogging" ObjectId="0244d8b9-9bfb-4b7e-b2e7-dffe5ddef546" />
                   <Object Name="_M_Processor" ObjectId="d0cb92ac-a65b-4a94-99d2-d1aa2daea05c" />
+                  <Object Name="_M_Cnc" ObjectId="c97e4850-18dd-453d-978c-2cd37627fe3a" />
+                  <Object Name="_M_Jogging" ObjectId="0244d8b9-9bfb-4b7e-b2e7-dffe5ddef546" />
                   <Object Name="_M_Vision" ObjectId="fa98ae8b-a1f5-443f-972f-ae0665ecf7ea" />
+                  <Object Name="_M_Controller" ObjectId="111d7557-61e1-48d4-ad0f-48b4ac517334" />
                   <Object Name="_M_Tuning" ObjectId="7bc5b496-9c33-4d9b-b0d8-4ee9652747d2" />
                   <Object Name="_M_GroupHandler" ObjectId="39e1494b-f21b-4425-b5e3-86e0f472492e" />
-                </Folder>
-                <Folder Name="public">
-                  <Object Name="M_BuildTests" ObjectId="9a5607a2-ed23-4572-beb3-b80fd95846d5" />
-                  <Object Name="M_Init" ObjectId="229ed790-05b4-4c75-a8a2-65170cb5046e" />
                 </Folder>
               </Object>
               <Object Name="_10_Drives" ObjectId="3256c2f0-e8a8-4738-aa1a-395ceff25c60">
