@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-05T23:42:24.6158095" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-05T23:26:03.7703695">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-06T01:34:28.8786135" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-06T01:34:10.8776201">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -2901,7 +2901,7 @@ RESERVED: INT:=47;</xhtml>
                     </variable>
                     <variable name="Controller">
                       <type>
-                        <derived name="DualSense" />
+                        <derived name="FB_Controller" />
                       </type>
                       <documentation>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> controller</xhtml>
@@ -3663,6 +3663,7 @@ TrackPosition(
 ProcessJog(
 	AxisGroup:= ArfBotAxisGroup,
 	GroupHandler:= GroupHandler,
+	Controller:= Controller,
 	Enable:= GVL.PowerOn,
 	Reset:= GVL.Reset,
 	StoredPositions:= PersistentVars.StoredPositions,
@@ -5040,6 +5041,11 @@ END_IF</xhtml>
                         <derived name="FB_GroupHandler" />
                       </type>
                     </variable>
+                    <variable name="Controller">
+                      <type>
+                        <derived name="FB_Controller" />
+                      </type>
+                    </variable>
                   </inOutVars>
                   <inputVars>
                     <variable name="Enable">
@@ -5140,6 +5146,22 @@ END_IF</xhtml>
                       <type>
                         <derived name="SMC_GroupJog2" />
                       </type>
+                    </variable>
+                    <variable name="_ControllerCenter">
+                      <type>
+                        <USINT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="128" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_ControllerDeadZone">
+                      <type>
+                        <USINT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="40" />
+                      </initialValue>
                     </variable>
                     <variable name="_i">
                       <type>
@@ -5326,6 +5348,9 @@ IF _FirstScan THEN
 	
 END_IF
 
+//
+_M_HandleController();
+
 CASE _SequenceMain OF
 	STEP_DONE: // done
 		Busy := FALSE;
@@ -5438,6 +5463,90 @@ END_IF
                   </ST>
                 </body>
                 <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_HandleController" ObjectId="dcf131a0-32b4-4630-a728-b085ba029110">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+IF Enable AND_THEN Controller.P_State.Connected THEN
+	// toggle jog
+	IF Controller.P_State.Buttons.Options
+		AND_THEN Controller.P_State.Buttons.Share THEN
+			_SMC_GroupJog2.Enable := NOT _SMC_GroupJog2.Enable;
+			IF _SMC_GroupJog2.Enable THEN
+				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
+			END_IF
+	END_IF
+	
+	// teach point in MCS
+	IF Controller.P_State.Buttons.Options THEN
+		_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.MCS;
+		IF Controller.P_State.Triggers.Left.One THEN
+			// teach logic here
+		END_IF
+	ELSE
+		_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
+	END_IF
+	
+	//
+	IF Controller.P_State.Triggers.Right.Two &gt; 1 THEN
+		_SMC_GroupJog2.VelFactor := MAX(0.1, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
+	END_IF
+	
+	//
+	IF _SequenceMain = STEP_WAIT_JOG THEN
+		
+		IF NOT Controller.P_State.Triggers.Left.One THEN
+			// Controller.P_State.Joysticks.Left.X // X0-128 is -Y (Backward[1])
+			_SMC_GroupJog2.Backward[1] := Controller.P_State.Joysticks.Left.X &lt; _ControllerCenter - _ControllerDeadZone;
+			// Controller.P_State.Joysticks.Left.X // X128-256 is +Y (Forward[1])
+			_SMC_GroupJog2.Forward[1] := Controller.P_State.Joysticks.Left.X &gt; _ControllerCenter + _ControllerDeadZone;
+			// Controller.P_State.Joysticks.Left.Y // Y0-128 is +Z (Forward[2])
+			_SMC_GroupJog2.Forward[2] := Controller.P_State.Joysticks.Left.Y &lt; _ControllerCenter - _ControllerDeadZone;
+			// Controller.P_State.Joysticks.Left.Y // Y128-256 is -Z (Backward[2])
+			_SMC_GroupJog2.Backward[2] := Controller.P_State.Joysticks.Left.Y &gt; _ControllerCenter + _ControllerDeadZone;
+		ELSE
+			// Controller.P_State.Joysticks.Left.Y // Y0-128 is +X (Forward[0])
+			_SMC_GroupJog2.Forward[0] := Controller.P_State.Joysticks.Left.Y &lt; _ControllerCenter - _ControllerDeadZone;
+			// Controller.P_State.Joysticks.Left.Y // Y128-256 is -X (Backward[0])
+			_SMC_GroupJog2.Backward[0] := Controller.P_State.Joysticks.Left.Y &gt; _ControllerCenter + _ControllerDeadZone;
+		END_IF
+		
+		
+		IF NOT Controller.P_State.Triggers.Right.One THEN
+			// Controller.P_State.Joysticks.Right.X // X0-128 is -Roll (rot about x) (Backward[3])
+			_SMC_GroupJog2.Backward[3] := Controller.P_State.Joysticks.Right.X &lt; _ControllerCenter - _ControllerDeadZone;
+			// Controller.P_State.Joysticks.Right.X // X128-256 is +Roll (rot about x) (Forward[3])
+			_SMC_GroupJog2.Forward[3] := Controller.P_State.Joysticks.Right.X &gt; _ControllerCenter + _ControllerDeadZone;
+			// Controller.P_State.Joysticks.Right.Y // Y0-128 is +Pitch (rot about y) (Forward[4])
+			_SMC_GroupJog2.Forward[4] := Controller.P_State.Joysticks.Right.Y &lt; _ControllerCenter - _ControllerDeadZone;
+			// Controller.P_State.Joysticks.Right.Y // Y128-256 is -Pitch (rot about y) (Backward[4])
+			_SMC_GroupJog2.Backward[4] := Controller.P_State.Joysticks.Right.Y &gt; _ControllerCenter + _ControllerDeadZone;
+		ELSE
+			// Controller.P_State.Joysticks.Right.X // X0-128 is -Yaw (rot about z) (Backward[5])
+			_SMC_GroupJog2.Backward[5] := Controller.P_State.Joysticks.Right.X &lt; _ControllerCenter - _ControllerDeadZone;
+			// Controller.P_State.Joysticks.Right.X // X128-256 is +Yaw (rot about z) (Forward[5])
+			_SMC_GroupJog2.Forward[5] := Controller.P_State.Joysticks.Right.X &gt; _ControllerCenter + _ControllerDeadZone;
+		END_IF
+		
+	END_IF
+	
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>9ad0dd5a-e160-4345-8eee-ad9cf9bfb3eb</ObjectId>
                   </data>
@@ -17574,7 +17683,7 @@ END_IF</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="DualSense" pouType="functionBlock">
+              <pou name="FB_Controller" pouType="functionBlock">
                 <interface>
                   <localVars>
                     <variable name="Controller">
@@ -17893,7 +18002,7 @@ _FirstScan := FALSE;</xhtml>
                         </interface>
                         <body>
                           <ST>
-                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_State ref= Controller;</xhtml>
+                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_State REF= Controller;</xhtml>
                           </ST>
                         </body>
                         <addData />
@@ -22088,7 +22197,11 @@ END_IF</xhtml>
                 <Object Name="BuildMoveCmd" ObjectId="19554b2f-3ca2-4f8d-a4a2-2e3ac3119ec0" />
               </Folder>
               <Folder Name="jog">
-                <Object Name="JogProcessor" ObjectId="9ad0dd5a-e160-4345-8eee-ad9cf9bfb3eb" />
+                <Object Name="JogProcessor" ObjectId="9ad0dd5a-e160-4345-8eee-ad9cf9bfb3eb">
+                  <Folder Name="private">
+                    <Object Name="_M_HandleController" ObjectId="dcf131a0-32b4-4630-a728-b085ba029110" />
+                  </Folder>
+                </Object>
               </Folder>
               <Object Name="CommandProcessor" ObjectId="97872514-f094-4f4a-8630-59a989ffd663">
                 <Object Name="P_CurrentCommand" ObjectId="d4fb3147-2a09-4011-bb95-1eb5cd53c440" />
@@ -22223,7 +22336,7 @@ END_IF</xhtml>
                 </Object>
               </Folder>
               <Folder Name="controller">
-                <Object Name="DualSense" ObjectId="6c3bd905-e561-44be-a365-7f9abc521e72">
+                <Object Name="FB_Controller" ObjectId="6c3bd905-e561-44be-a365-7f9abc521e72">
                   <Folder Name="public">
                     <Object Name="M_ReadInputs" ObjectId="469b88c9-7a94-4eb7-be5f-342dbaafdd26" />
                   </Folder>
