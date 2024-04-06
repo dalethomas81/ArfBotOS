@@ -250,6 +250,8 @@ Command=AllowAll
 
 ##### references: 
 - https://www.codesys.com/the-system/licensing.html
+- https://help.codesys.com/webapp/_rbp_license;product=CODESYS_Control_for_Raspberry_Pi_SL
+- https://forge.codesys.com/forge/talk/Runtime/thread/1090ef8b0e/#8c32
 
 ### Tuning The Drives
 This needs to be done or the actual vs set positions will drift.
@@ -264,7 +266,7 @@ In theory, you can use any 6 axis robot that you would like with ArfBotOS. Howev
 Below are detailed instructions on how to modify the AR4 connections to work with ArfBotOS.
 TODO
 
-## Handy Bash commands
+## Handy commands
 - `pidof <process>` find the pid of a process so you can kill it
 - `sudo kill -9 <pid>` SIGINT request to stop gracefully
 - `sudo kill -15 <pid>` force kill
@@ -277,3 +279,5 @@ TODO
 - `journalctl -u <service name> -n 25` last 25 log entries
 - `journalctl -u <service name> -f` tail the logs
 - `which <executable name>` locates the path of an executable
+- `scp -r <local directory> user@host.host:<remote>` copy local files to remote
+- `sudo systemctl stop bluetooth.service` self explanatory
