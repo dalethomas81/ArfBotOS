@@ -34,7 +34,7 @@ def handle_setcolor_cmd(cmdParameters, dualsense):
         params = cmdParameters.split(',')
         dualsense.light.setColorI(int(params[0]), int(params[1]), int(params[2]))
         
-    except Except as e:
+    except Exception as e:
         print(e)
     
  # 'setMicrophoneState:True' True/False
@@ -44,7 +44,8 @@ def handle_setmicrophonestate_cmd(cmdParameters, dualsense):
     '''
     try:
         print('command currently not supported')
-    except Except as e:
+        
+    except Exception as e:
         print(e)
     
  # 'setPlayerID:4' 4/10/21/27/31 1/2/3/4/all
@@ -59,8 +60,22 @@ def handle_setplayerid_cmd(cmdParameters, dualsense):
         ALL = 31
     '''
     try:
-        print('command currently not supported')
-    except Except as e:
+        if cmdParameters == '4':
+            Player = PlayerID.PLAYER_1
+        elif cmdParameters == '10':
+            Player = PlayerID.PLAYER_2
+        elif cmdParameters == '21':
+            Player = PlayerID.PLAYER_3
+        elif cmdParameters == '27':
+            Player = PlayerID.PLAYER_4
+        elif cmdParameters == '31':
+            Player = PlayerID.ALL
+        else:
+            Player = PlayerID.PLAYER_1
+        
+        dualsense.light.setPlayerID(Player)
+        
+    except Exception as e:
         print(e)
     
  # 'setBrightness:2' 0/1/2 low/med/high
@@ -74,7 +89,8 @@ def handle_setbrightness_cmd(cmdParameters, dualsense):
     '''
     try:
         print('command currently not supported')
-    except Except as e:
+        
+    except Exception as e:
         print(e)
     
  # 'setRightMotor:255' 0-255 intensity
@@ -85,7 +101,8 @@ def handle_setrightmotor_cmd(cmdParameters, dualsense):
     '''
     try:
         print('command currently not supported')
-    except Except as e:
+        
+    except Exception as e:
         print(e)
     
  # 'setLeftMotor:255' 0-255 intensity
@@ -94,7 +111,8 @@ def handle_setleftmotor_cmd(cmdParameters, dualsense):
     '''
     try:
         print('command currently not supported')
-    except Except as e:
+        
+    except Exception as e:
         print(e)
     
  # 'setRightTriggerMode:0' see notes in function
@@ -103,7 +121,8 @@ def handle_setrighttriggermode_cmd(cmdParameters, dualsense):
     '''
     try:
         print('command currently not supported')
-    except Except as e:
+        
+    except Exception as e:
         print(e)
     
  # 'setLeftTriggerMode:0' see notes in function
@@ -124,7 +143,8 @@ def handle_setlefttriggermode_cmd(cmdParameters, dualsense):
     '''
     try:
         print('command currently not supported')
-    except Except as e:
+        
+    except Exception as e:
         print(e)
     
  # 'setRightTriggerForce:0,255' see notes in function
@@ -136,7 +156,8 @@ def handle_setrighttriggerforce_cmd(cmdParameters, dualsense):
     '''
     try:
         print('command currently not supported')
-    except Except as e:
+        
+    except Exception as e:
         print(e)
     
  # 'setLeftTriggerForce:0,255' see notes in function
@@ -145,7 +166,8 @@ def handle_setlefttriggerforce_cmd(cmdParameters, dualsense):
     '''
     try:
         print('command currently not supported')
-    except Except as e:
+        
+    except Exception as e:
         print(e)
 
 def handle_client_message(buf, dualsense):
