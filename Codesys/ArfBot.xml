@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-07T20:00:43.3010569" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-07T19:52:35.9469699">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-08T12:26:23.0728813" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-08T12:22:46.8175487">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -2600,16 +2600,6 @@ RESERVED: INT:=47;</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> tuning</xhtml>
                       </documentation>
                     </variable>
-                    <variable name="GroupPower">
-                      <type>
-                        <derived name="SMC_GroupPower" />
-                      </type>
-                    </variable>
-                    <variable name="GroupEnable">
-                      <type>
-                        <derived name="MC_GroupEnable" />
-                      </type>
-                    </variable>
                     <variable name="TuneStart">
                       <type>
                         <array>
@@ -2639,17 +2629,6 @@ RESERVED: INT:=47;</xhtml>
                           </baseType>
                         </array>
                       </type>
-                    </variable>
-                    <variable name="MoveDelayTime">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="10" />
-                      </initialValue>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> ms</xhtml>
-                      </documentation>
                     </variable>
                     <variable name="ProcessHome">
                       <type>
@@ -2767,56 +2746,6 @@ RESERVED: INT:=47;</xhtml>
                         <INT />
                       </type>
                     </variable>
-                    <variable name="Vision_CaptureImage">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_CapImgCmdAccepted">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_RunCalibration">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_RunCalCmdAccepted">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_LocatePart">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_LocPartCmdAccepted">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_StreamCamera">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_StrCamCmdAccepted">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_Cancel">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_Reset">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
                     <variable name="Controller">
                       <type>
                         <derived name="FB_Controller" />
@@ -2825,17 +2754,12 @@ RESERVED: INT:=47;</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> controller</xhtml>
                       </documentation>
                     </variable>
-                    <variable name="ConnectController">
+                    <variable name="SetColor1">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="ResetController">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="DisconnectController">
+                    <variable name="SetColor2">
                       <type>
                         <BOOL />
                       </type>
@@ -2872,287 +2796,6 @@ RESERVED: INT:=47;</xhtml>
                       </initialValue>
                     </variable>
                   </localVars>
-                  <localVars constant="true">
-                    <variable name="PlusButtonText0">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J1+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'X+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'X+'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 0-ACS 1-WCS/MCS/PC 2-WCS/MCS/PC(ABC_AS_ACS)</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="PlusButtonText1">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J2+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Y+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Y+'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="PlusButtonText2">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J3+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Z+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Z+'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="PlusButtonText3">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J4+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Pitch+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'J4+'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="PlusButtonText4">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J5+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Yaw+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'J5+'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="PlusButtonText5">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J6+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Roll+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'J6+'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="MinusButtonText0">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J1-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'X-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'X-'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="MinusButtonText1">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J2-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Y-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Y-'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="MinusButtonText2">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J3-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Z-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Z-'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="MinusButtonText3">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J4-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Pitch-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'J4-'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="MinusButtonText4">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J5-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Yaw-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'J5-'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="MinusButtonText5">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J6-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Roll-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'J6-'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                  </localVars>
                 </interface>
                 <body>
                   <ST>
@@ -3167,6 +2810,15 @@ RESERVED: INT:=47;</xhtml>
 		M_BuildTests();
 	END_IF
 {endregion}
+	
+	IF SetColor1 THEN
+		SetColor1 := FALSE;
+		Controller.M_SetColor(0,0,200);
+	END_IF
+	IF SetColor2 THEN
+		SetColor2 := FALSE;
+		Controller.M_SetColor(0,200 ,0);
+	END_IF
      
 {region "methods"}
 	_M_GroupHandler();
@@ -3797,20 +3449,6 @@ END_IF
 // dont get sleepy
 Controller(sIpAddress:= '127.0.0.1', uPort:= 50013);
 
-//
-IF ConnectController THEN
-	ConnectController:=FALSE;
-	Controller.M_ReadInputs();
-END_IF
-IF DisconnectController THEN
-	DisconnectController:=FALSE;
-	Controller.M_Cancel();
-END_IF
-IF ResetController THEN
-	ResetController:=FALSE;
-	Controller.M_Reset();
-END_IF
-
 // put two fingers on the trackpad for 3 seconds to toggle power
 _PowerTimer(IN:=Controller.P_State.Connected
 				AND Controller.P_State.Buttons.Touch
@@ -3862,29 +3500,31 @@ END_IF</xhtml>
                               </array>
                             </type>
                           </variable>
+                          <variable name="_MoveDelayTime">
+                            <type>
+                              <INT />
+                            </type>
+                            <initialValue>
+                              <simpleValue value="10" />
+                            </initialValue>
+                            <documentation>
+                              <xhtml xmlns="http://www.w3.org/1999/xhtml"> ms</xhtml>
+                            </documentation>
+                          </variable>
                           <variable name="_i">
                             <type>
                               <INT />
                             </type>
-                            <documentation>
-                              <xhtml xmlns="http://www.w3.org/1999/xhtml">_MoveDelayTime: TIME:=T#10MS;</xhtml>
-                            </documentation>
                           </variable>
                           <variable name="_j">
                             <type>
                               <INT />
                             </type>
-                            <documentation>
-                              <xhtml xmlns="http://www.w3.org/1999/xhtml">_MoveDelayTime: TIME:=T#10MS;</xhtml>
-                            </documentation>
                           </variable>
                           <variable name="_k">
                             <type>
                               <INT />
                             </type>
-                            <documentation>
-                              <xhtml xmlns="http://www.w3.org/1999/xhtml">_MoveDelayTime: TIME:=T#10MS;</xhtml>
-                            </documentation>
                           </variable>
                           <variable name="_SetValues">
                             <type>
@@ -3952,7 +3592,7 @@ FOR _i:=0 TO 5 BY 1 DO
 	IF TuneStart[_i] THEN
 		TuneStart[_i] := FALSE;
 		TraceStart[_i] := TRUE; // trace will handshake this bit low
-		GroupPower.Enable := TRUE;
+		GroupHandler.M_EnableGroup();
 	END_IF
 	
 	// TraceStart will clear after handshake. this means the trace has started collecting samples
@@ -3963,7 +3603,7 @@ FOR _i:=0 TO 5 BY 1 DO
 	END_IF
 	
 	// once the move delay expires, start the move
-	_MoveDelayTimer[_i](PT:=INT_TO_TIME(MoveDelayTime));
+	_MoveDelayTimer[_i](PT:=INT_TO_TIME(_MoveDelayTime));
 	IF _MoveDelayTimer[_i].Q THEN
 		_MoveDelayTimer[_i].IN:=FALSE;
 		MoveRelative[_i].Execute := TRUE;
@@ -3973,32 +3613,11 @@ FOR _i:=0 TO 5 BY 1 DO
 	_MoveBusyFtrig[_i](CLK:=MoveRelative[_i].Busy);
 	IF _MoveBusyFtrig[_i].Q THEN
 		MoveRelative[_i].Execute := FALSE;
-		GroupPower.Enable := FALSE;
 		MoveRelative[_i].Distance := MoveRelative[_i].Distance * -1.0; // reverse direction
 	END_IF
 
 END_FOR
 
-// power
-GroupPower(
-	AxisGroup:= ArfBotAxisGroup, 
-	Enable:= , 
-	bRegulatorOn:= GroupPower.Enable, 
-	bDriveStart:= GroupPower.Enable, 
-	Status=&gt; , 
-	Busy=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-
-// enable
-GroupEnable(
-	AxisGroup:= ArfBotAxisGroup, 
-	Execute:= GroupPower.Status, 
-	CompatibilityOptions:= , 
-	Done=&gt; , 
-	Busy=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
 
 // move relative
 MoveRelative[0](
@@ -17711,11 +17330,7 @@ END_IF*)</xhtml>
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
-// calibrate with a checkerboard
-// sudo python /var/opt/codesys/PlcLogic/Application/CalibrateCamera.py -s cal.yaml -l 24.5 -x 6 -y 9 -d false
-
-IF NOT SUPER^._Busy THEN
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy THEN
 	M_ReadInputs := TRUE;
 	
 	_Command := CONCAT('sudo python ', _ReadInputsScriptFileName);
@@ -17901,6 +17516,73 @@ Controller.Battery.Level					:= MIN((States[53] AND 16#0F) * 10 + 5, 100); // TO
 
 // dont put anything below this
 _FirstScan := FALSE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_SetColor" ObjectId="eeb0100c-2915-48d1-9f36-b75c4e907a60">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="Red">
+                            <type>
+                              <INT />
+                            </type>
+                            <initialValue>
+                              <simpleValue value="0" />
+                            </initialValue>
+                          </variable>
+                          <variable name="Green">
+                            <type>
+                              <INT />
+                            </type>
+                            <initialValue>
+                              <simpleValue value="255" />
+                            </initialValue>
+                          </variable>
+                          <variable name="Blue">
+                            <type>
+                              <INT />
+                            </type>
+                            <initialValue>
+                              <simpleValue value="0" />
+                            </initialValue>
+                          </variable>
+                        </inputVars>
+                        <localVars>
+                          <variable name="_Command">
+                            <type>
+                              <string length="255" />
+                            </type>
+                          </variable>
+                        </localVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy 
+	AND_THEN Red&gt;=0 AND_THEN Red&lt;=255
+	AND_THEN Green&gt;=0 AND_THEN Green&lt;=255
+	AND_THEN Blue&gt;=0 AND_THEN Red&lt;=Blue THEN
+		M_SetColor := TRUE;
+		
+		_Command := CONCAT('cmd: setColorI:', INT_TO_STRING(Red));
+		_Command := CONCAT(_Command, ',');
+		
+		_Command := CONCAT(_Command, INT_TO_STRING(Green));
+		_Command := CONCAT(_Command, ',');
+		
+		_Command := CONCAT(_Command, INT_TO_STRING(Blue));
+		
+		SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+		
+ELSE
+	M_SetColor := FALSE;
+	
+END_IF</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -23291,6 +22973,7 @@ END_IF</xhtml>
                 <Object Name="FB_Controller" ObjectId="6c3bd905-e561-44be-a365-7f9abc521e72">
                   <Folder Name="public">
                     <Object Name="M_ReadInputs" ObjectId="469b88c9-7a94-4eb7-be5f-342dbaafdd26" />
+                    <Object Name="M_SetColor" ObjectId="eeb0100c-2915-48d1-9f36-b75c4e907a60" />
                   </Folder>
                   <Folder Name="private">
                     <Object Name="_M_EvaluateControllerStates" ObjectId="ec5a2389-0422-417f-bd11-588f38f08844" />
