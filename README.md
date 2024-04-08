@@ -7,20 +7,33 @@ Disclaimer: The cost of the hardware in this project has been kept at a minimum 
 This section should be followed after all of the electrical, hardware, and software installations are complete.
 
 ### Homing
-1. With the power of the robot on, press the *Enable* button in the Drives Control section of the Main HMI screen ![image](Resources/images/readme/hmi-main-drives-controller.JPG)
+1. With the power of the robot on, press the *Enable* button in the Drives Control section of the Main HMI screen  
+![image](Resources/images/readme/hmi-main-drives-controller.JPG)
 2. Press the *Home* button to have the robot home in 3 stages. 
 - Stage 1: J1, J2, and J3
 - Stage 2: J4 and J5
 - Stage 3: J6
 3. The robot will end the end sequence at the MCS (x0, y0, z0), (r0, p0, y0) position.
-4. If `Flag 0` is set to true, the robot will end the homing sequence in `Pose 2' ![image](Resources/images/readme/hmi-programs-flag-pose.JPG)
+4. If `Flag 44` is set to true, the robot will end the homing sequence in `Pose 2' ![image](Resources/images/readme/hmi-programs-flag-pose.JPG)
 
 ### Zeroing the Axes Home Position
-1. After successfully homing the drives, open the *Jog* screen and enable the 
+1. After successfully homing the drives, it may be necessary to zero out the axes such that the home position of the robot is in the expected space.
+2. To zero out the axes you will first need to jog the axes into the correct position. Then you will be able to perform a one-click calibration.
+3. To do this, first open the *Jogging* screen and enable the [SMC_GroupJog2](https://content.helpme-codesys.com/en/libs/SM3_Robotics/Current/SM3_Robotics/POUs/Movement/SMC_GroupJog2.html) by pressing `ENABLE` in the *Jog* group box.
+4. Set the coordinate system to `ACS` (Axis Coordinate System) and try jogging one of the axes.
+5. Using a level, ruler, and/or compass - start jogging the axes into their correct locations.
+6. Once all axes are home, press the `SET HOME` button. This will set the current position of all axes to zero. Hint: The offsets are stored in register #44 of the stored positions and can be accessed and modified manually from the *Programs* screen.  
+![image](Resources/images/readme/homing-stored-positions.JPG)
+
 
 ### Tuning The Drives
 This needs to be done or the actual vs set positions will drift.
-TODO
+
+1. To tune the drives, you can use the traces on the *Tuning* HMI screen to see the set position vs the actual position of each axis. The semi-auto tuning feature of the software will bump the axes in alternating directions after which a recording of the values is displayed on the trace.
+2. Refer to the referenced web page below on what the different parameters of the position control loop represent.
+3. Kp, dead time, partial velocity/pilot control, max position difference/velocity/acceleration/jerk can all be set and applied to the controller from the screen.
+4. TODO video demonstration and refinement of this feature.  
+![image](Resources/images/readme/tuning-trace.JPG)
 
 ##### references:
 - https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_example_poscontrol.html
