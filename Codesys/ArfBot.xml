@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-06T01:34:28.8786135" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-06T01:34:10.8776201">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-07T20:00:43.3010569" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-07T19:52:35.9469699">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -2583,6 +2583,9 @@ RESERVED: INT:=47;</xhtml>
                       <type>
                         <derived name="FB_GroupHandler" />
                       </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> group handler for all motion fbs</xhtml>
+                      </documentation>
                     </variable>
                     <variable name="MoveRelative">
                       <type>
@@ -2648,92 +2651,22 @@ RESERVED: INT:=47;</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> ms</xhtml>
                       </documentation>
                     </variable>
-                    <variable name="SMC_Homing_J1">
+                    <variable name="ProcessHome">
                       <type>
-                        <derived name="SMC_Homing" />
+                        <derived name="FB_HomingProcessor" />
                       </type>
                       <documentation>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> homing</xhtml>
                       </documentation>
                     </variable>
-                    <variable name="SMC_Homing_J2">
+                    <variable name="HomingStatusText">
                       <type>
-                        <derived name="SMC_Homing" />
+                        <string length="255" />
                       </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> homing</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="SMC_Homing_J3">
-                      <type>
-                        <derived name="SMC_Homing" />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> homing</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="SMC_Homing_J4">
-                      <type>
-                        <derived name="SMC_Homing" />
-                      </type>
-                    </variable>
-                    <variable name="SMC_Homing_J5">
-                      <type>
-                        <derived name="SMC_Homing" />
-                      </type>
-                    </variable>
-                    <variable name="SMC_Homing_J6">
-                      <type>
-                        <derived name="SMC_Homing" />
-                      </type>
-                    </variable>
-                    <variable name="HomingSequence">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="0" />
-                      </initialValue>
-                    </variable>
-                    <variable name="SMC_GroupPower_J">
-                      <type>
-                        <derived name="SMC_GroupPower" />
-                      </type>
-                    </variable>
-                    <variable name="MC_GroupReset_J">
-                      <type>
-                        <derived name="MC_GroupReset" />
-                      </type>
-                    </variable>
-                    <variable name="MC_GroupEnable_J">
-                      <type>
-                        <derived name="MC_GroupEnable" />
-                      </type>
-                    </variable>
-                    <variable name="MC_GroupDisable_J">
-                      <type>
-                        <derived name="MC_GroupDisable" />
-                      </type>
-                    </variable>
-                    <variable name="HomingVelocityFast">
-                      <type>
-                        <LREAL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="20.0" />
-                      </initialValue>
-                    </variable>
-                    <variable name="HomingAcceleration">
-                      <type>
-                        <LREAL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="100.0" />
-                      </initialValue>
                     </variable>
                     <variable name="ProcessJog">
                       <type>
-                        <derived name="JogProcessor" />
+                        <derived name="FB_JogProcessor" />
                       </type>
                       <documentation>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> jogging</xhtml>
@@ -2743,6 +2676,14 @@ RESERVED: INT:=47;</xhtml>
                       <type>
                         <string length="255" />
                       </type>
+                    </variable>
+                    <variable name="ButtonTextIndex">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="0" />
+                      </initialValue>
                     </variable>
                     <variable name="VisuStruct3DControl_J">
                       <type>
@@ -2757,31 +2698,13 @@ RESERVED: INT:=47;</xhtml>
                         <derived name="PositionTracker" />
                       </type>
                     </variable>
-                    <variable name="PowerOn">
-                      <type>
-                        <BOOL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="FALSE" />
-                      </initialValue>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> program processor</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="_MoveCommandParser">
-                      <type>
-                        <derived name="ParseMoveCmd" />
-                      </type>
-                    </variable>
                     <variable name="ProcessMoveCommand">
                       <type>
                         <derived name="MoveCmdProcessor" />
                       </type>
-                    </variable>
-                    <variable name="ProcessMoveCommand_Execute">
-                      <type>
-                        <BOOL />
-                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> program processor</xhtml>
+                      </documentation>
                     </variable>
                     <variable name="ProcessMoveCommand_Reset">
                       <type>
@@ -2795,7 +2718,7 @@ RESERVED: INT:=47;</xhtml>
                     </variable>
                     <variable name="ProcessPrograms">
                       <type>
-                        <derived name="ProgramProcessor" />
+                        <derived name="FB_ProgramProcessor" />
                       </type>
                     </variable>
                     <variable name="ProcessCommands_Execute">
@@ -2822,11 +2745,6 @@ RESERVED: INT:=47;</xhtml>
                       </initialValue>
                     </variable>
                     <variable name="StMoveCmdPose1">
-                      <type>
-                        <derived name="ST_MoveCmd" />
-                      </type>
-                    </variable>
-                    <variable name="StMoveCmdPose2">
                       <type>
                         <derived name="ST_MoveCmd" />
                       </type>
@@ -2951,6 +2869,287 @@ RESERVED: INT:=47;</xhtml>
                       </type>
                       <initialValue>
                         <simpleValue value="TRUE" />
+                      </initialValue>
+                    </variable>
+                  </localVars>
+                  <localVars constant="true">
+                    <variable name="PlusButtonText0">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="2" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                      <initialValue>
+                        <arrayValue>
+                          <value>
+                            <simpleValue value="'J1+'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'X+'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'X+'" />
+                          </value>
+                        </arrayValue>
+                      </initialValue>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 0-ACS 1-WCS/MCS/PC 2-WCS/MCS/PC(ABC_AS_ACS)</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="PlusButtonText1">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="2" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                      <initialValue>
+                        <arrayValue>
+                          <value>
+                            <simpleValue value="'J2+'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'Y+'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'Y+'" />
+                          </value>
+                        </arrayValue>
+                      </initialValue>
+                    </variable>
+                    <variable name="PlusButtonText2">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="2" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                      <initialValue>
+                        <arrayValue>
+                          <value>
+                            <simpleValue value="'J3+'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'Z+'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'Z+'" />
+                          </value>
+                        </arrayValue>
+                      </initialValue>
+                    </variable>
+                    <variable name="PlusButtonText3">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="2" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                      <initialValue>
+                        <arrayValue>
+                          <value>
+                            <simpleValue value="'J4+'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'Pitch+'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'J4+'" />
+                          </value>
+                        </arrayValue>
+                      </initialValue>
+                    </variable>
+                    <variable name="PlusButtonText4">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="2" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                      <initialValue>
+                        <arrayValue>
+                          <value>
+                            <simpleValue value="'J5+'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'Yaw+'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'J5+'" />
+                          </value>
+                        </arrayValue>
+                      </initialValue>
+                    </variable>
+                    <variable name="PlusButtonText5">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="2" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                      <initialValue>
+                        <arrayValue>
+                          <value>
+                            <simpleValue value="'J6+'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'Roll+'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'J6+'" />
+                          </value>
+                        </arrayValue>
+                      </initialValue>
+                    </variable>
+                    <variable name="MinusButtonText0">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="2" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                      <initialValue>
+                        <arrayValue>
+                          <value>
+                            <simpleValue value="'J1-'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'X-'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'X-'" />
+                          </value>
+                        </arrayValue>
+                      </initialValue>
+                    </variable>
+                    <variable name="MinusButtonText1">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="2" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                      <initialValue>
+                        <arrayValue>
+                          <value>
+                            <simpleValue value="'J2-'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'Y-'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'Y-'" />
+                          </value>
+                        </arrayValue>
+                      </initialValue>
+                    </variable>
+                    <variable name="MinusButtonText2">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="2" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                      <initialValue>
+                        <arrayValue>
+                          <value>
+                            <simpleValue value="'J3-'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'Z-'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'Z-'" />
+                          </value>
+                        </arrayValue>
+                      </initialValue>
+                    </variable>
+                    <variable name="MinusButtonText3">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="2" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                      <initialValue>
+                        <arrayValue>
+                          <value>
+                            <simpleValue value="'J4-'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'Pitch-'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'J4-'" />
+                          </value>
+                        </arrayValue>
+                      </initialValue>
+                    </variable>
+                    <variable name="MinusButtonText4">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="2" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                      <initialValue>
+                        <arrayValue>
+                          <value>
+                            <simpleValue value="'J5-'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'Yaw-'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'J5-'" />
+                          </value>
+                        </arrayValue>
+                      </initialValue>
+                    </variable>
+                    <variable name="MinusButtonText5">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="2" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                      <initialValue>
+                        <arrayValue>
+                          <value>
+                            <simpleValue value="'J6-'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'Roll-'" />
+                          </value>
+                          <value>
+                            <simpleValue value="'J6-'" />
+                          </value>
+                        </arrayValue>
                       </initialValue>
                     </variable>
                   </localVars>
@@ -3091,417 +3290,52 @@ PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';<
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">//
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+
+IF GVL.Homing THEN
+	GVL.Homing := FALSE;
+	ProcessHome.M_StartHoming();
+END_IF
+
 IF GVL.SetHome THEN
 	GVL.SetHome := FALSE;
-	
-	// make sure we have valid position values first.
-	// we use the values from the jog processor.
-	IF ProcessJog.Busy 
-		AND_THEN ProcessJog.CoordSystem = SMC_COORD_SYSTEM.ACS // position values need to be in the axis coordinate system
-		AND_THEN NOT ProcessJog.Error THEN
-			//
-			PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X, 
-																							CurrentPosition:= _00_Main.ProcessJog.Position.v[0], 
-																							HomeSearchDirection:= SMC_Homing_J1.nDirection);
-			//
-			PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y, 
-																							CurrentPosition:= _00_Main.ProcessJog.Position.v[1], 
-																							HomeSearchDirection:= SMC_Homing_J2.nDirection);
-			//
-			PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z, 
-																							CurrentPosition:= _00_Main.ProcessJog.Position.v[2], 
-																							HomeSearchDirection:= SMC_Homing_J3.nDirection);
-			//
-			PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A, 
-																							CurrentPosition:= _00_Main.ProcessJog.Position.v[3], 
-																							HomeSearchDirection:= SMC_Homing_J4.nDirection);
-			//
-			PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B, 
-																							CurrentPosition:= _00_Main.ProcessJog.Position.v[4], 
-																							HomeSearchDirection:= SMC_Homing_J5.nDirection);
-			//
-			PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C, 
-																							CurrentPosition:= _00_Main.ProcessJog.Position.v[5], 
-																							HomeSearchDirection:= SMC_Homing_J6.nDirection);
-	END_IF
+	ProcessHome.M_SetHome();
 END_IF
 
-//
-IF NOT GVL.PowerOn AND_THEN HomingSequence &gt; 0 AND_THEN HomingSequence &lt; 999  THEN
-	HomingSequence := 999;
-END_IF
-
-//
-CASE HomingSequence OF
-  999: //
-		SMC_GroupPower_J.Enable := FALSE;
-		SMC_GroupPower_J.bDriveStart := FALSE;
-		SMC_GroupPower_J.bRegulatorOn := FALSE;
-		MC_GroupEnable_J.Execute := FALSE;
-		MC_GroupDisable_J.Execute := FALSE;
-		ProcessMoveCommand_Execute := FALSE;
-		SMC_Homing_J1.bExecute := FALSE;
-		SMC_Homing_J2.bExecute := FALSE;
-		SMC_Homing_J3.bExecute := FALSE;
-		SMC_Homing_J4.bExecute := FALSE;
-		SMC_Homing_J5.bExecute := FALSE;
-		SMC_Homing_J6.bExecute := FALSE;
-		SM_Drive_PosControl_J1.bSWLimitEnable := TRUE;
-		SM_Drive_PosControl_J2.bSWLimitEnable := TRUE;
-		SM_Drive_PosControl_J3.bSWLimitEnable := TRUE;
-		SM_Drive_PosControl_J4.bSWLimitEnable := TRUE;
-		SM_Drive_PosControl_J5.bSWLimitEnable := TRUE;
-		SM_Drive_PosControl_J6.bSWLimitEnable := TRUE;
-  		HomingSequence := 0;
-		
-	0: //
-		IF GVL.Homing THEN
-			GVL.Homing := FALSE;
-			//
-			IF GVL.PowerOn THEN
-				SMC_GroupPower_J.Enable := TRUE;
-				SMC_GroupPower_J.bDriveStart := TRUE;
-				SMC_GroupPower_J.bRegulatorOn := TRUE;
-				PersistentVars.Flags[GVL.HOME_COMPLETE].Value := FALSE;
-				HomingSequence := 5;
-			END_IF
-		END_IF
-		
-	5: // enable group
-		IF SMC_GroupPower_J.Status THEN
-			MC_GroupEnable_J.Execute := TRUE;
-			HomingSequence := 10;
-		END_IF
-		
-	10: // wait enable group
-		IF NOT MC_GroupEnable_J.Busy THEN
-			HomingSequence := 20;
-		END_IF
-		
-	20: // fast home group 1
-		SMC_Homing_J1.bExecute := TRUE;
-		SMC_Homing_J2.bExecute := TRUE;
-		SMC_Homing_J3.bExecute := TRUE;
-		SMC_Homing_J1.bReturnToZero := FALSE;
-		SMC_Homing_J2.bReturnToZero := FALSE;
-		SMC_Homing_J3.bReturnToZero := FALSE;
-		SMC_Homing_J1.fVelocitySlow := 10.0;
-		SMC_Homing_J2.fVelocitySlow := 10.0;
-		SMC_Homing_J3.fVelocitySlow := 10.0;
-		SM_Drive_PosControl_J1.bSWLimitEnable := FALSE;
-		SM_Drive_PosControl_J2.bSWLimitEnable := FALSE;
-		SM_Drive_PosControl_J3.bSWLimitEnable := FALSE;
-		HomingSequence := 30;
-	
-	30: // wait fast home group 1
-		IF SMC_Homing_J1.bDone
-			AND SMC_Homing_J2.bDone
-			AND SMC_Homing_J3.bDone THEN
-				SMC_Homing_J1.bExecute := FALSE;
-				SMC_Homing_J2.bExecute := FALSE;
-				SMC_Homing_J3.bExecute := FALSE;
-				HomingSequence := 40;
-		END_IF
-		
-	40: // slow home group 1
-		SMC_Homing_J1.bExecute := TRUE;
-		SMC_Homing_J2.bExecute := TRUE;
-		SMC_Homing_J3.bExecute := TRUE;
-		SMC_Homing_J1.bReturnToZero := TRUE;
-		SMC_Homing_J2.bReturnToZero := TRUE;
-		SMC_Homing_J3.bReturnToZero := TRUE;
-		SMC_Homing_J1.fVelocitySlow := 2.0;
-		SMC_Homing_J2.fVelocitySlow := 2.0;
-		SMC_Homing_J3.fVelocitySlow := 2.0;
-		HomingSequence := 50;
-		
-	50: // wait slow home group 1
-		IF SMC_Homing_J1.bDone
-			AND SMC_Homing_J2.bDone
-			AND SMC_Homing_J3.bDone THEN
-				SMC_Homing_J1.bExecute := FALSE;
-				SMC_Homing_J2.bExecute := FALSE;
-				SMC_Homing_J3.bExecute := FALSE;
-			HomingSequence := 60;
-		END_IF
-		
-	60: // fast home group 2
-		SMC_Homing_J4.bExecute := TRUE;
-		SMC_Homing_J5.bExecute := TRUE;
-		SMC_Homing_J4.bReturnToZero := FALSE;
-		SMC_Homing_J5.bReturnToZero := FALSE;
-		SMC_Homing_J4.fVelocitySlow := 10.0;
-		SMC_Homing_J5.fVelocitySlow := 10.0;
-		SM_Drive_PosControl_J4.bSWLimitEnable := FALSE;
-		SM_Drive_PosControl_J5.bSWLimitEnable := FALSE;
-		HomingSequence := 70;
-		
-	70: // wait fast home group 2
-		IF SMC_Homing_J4.bDone
-			AND SMC_Homing_J5.bDone THEN
-				SMC_Homing_J4.bExecute := FALSE;
-				SMC_Homing_J5.bExecute := FALSE;
-				HomingSequence := 80;
-		END_IF
-		
-	80: // slow home group 2
-		SMC_Homing_J4.bExecute := TRUE;
-		SMC_Homing_J5.bExecute := TRUE;
-		SMC_Homing_J4.bReturnToZero := TRUE;
-		SMC_Homing_J5.bReturnToZero := TRUE;
-		SMC_Homing_J4.fVelocitySlow := 2.0;
-		SMC_Homing_J5.fVelocitySlow := 2.0;
-		HomingSequence := 90;
-		
-	90: // wait slow home group 2
-		IF SMC_Homing_J4.bDone
-			AND SMC_Homing_J5.bDone THEN
-				SMC_Homing_J4.bExecute := FALSE;
-				SMC_Homing_J5.bExecute := FALSE;
-				HomingSequence := 100;
-		END_IF
-		
-	100: // fast home group 3
-		SMC_Homing_J6.bExecute := TRUE;
-		SMC_Homing_J6.bReturnToZero := FALSE;
-		SMC_Homing_J6.fVelocitySlow := 10.0;
-		SM_Drive_PosControl_J6.bSWLimitEnable := FALSE;
-		HomingSequence := 110;
-		
-	110: // wait fast home group 3
-		IF SMC_Homing_J6.bDone THEN
-			SMC_Homing_J6.bExecute := FALSE;
-			HomingSequence := 120;
-		END_IF
-		
-	120: // slow home group 3
-		SMC_Homing_J6.bExecute := TRUE;
-		SMC_Homing_J6.bReturnToZero := TRUE;
-		SMC_Homing_J6.fVelocitySlow := 2.0;
-		HomingSequence := 130;
-		
-	130: // wait slow home group 3
-		IF SMC_Homing_J6.bDone THEN
-			SMC_Homing_J6.bExecute := FALSE;
-			PersistentVars.Flags[GVL.HOME_COMPLETE].Value := TRUE;
-			IF NOT PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Value THEN
-				HomingSequence := 200;
-			ELSE
-				HomingSequence := 300;
-			END_IF
-		END_IF;
-		
-	200: // disable group
-		MC_GroupDisable_J.Execute := TRUE;
-		HomingSequence := 210;
-		
-	210: // wait disable group
-		IF NOT MC_GroupDisable_J.Busy THEN
-			HomingSequence := 999;
-		END_IF
-		
-	300: // home to pose
-		//
-		StMoveCmdPose2.MoveType 		:= DUT_Command_MoveType.DirectMove;
-		StMoveCmdPose2.PositionType 	:= DUT_Command_PositionType.AbsolutePosition;
-		StMoveCmdPose2.CoordinateType 	:= DUT_Command_CoordinateType.Literal;
-		StMoveCmdPose2.Speed 			:= 20;
-		StMoveCmdPose2.CoordSystem 		:= SMC_COORD_SYSTEM.ACS;
-		StMoveCmdPose2.CoordRef 		:= PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position;
-		//
-		ProcessMoveCommand.Command := BuildMoveCmd(StMoveCmdPose2);
-		ProcessMoveCommand.M_Start();
-		//
-		HomingSequence := 310;
-		
-	310: // wait home to pose
-		IF ProcessMoveCommand.ItfUnitMode.CurrentState = PACK_ML.State.Idle 
-			OR NOT ProcessMoveCommand_Execute THEN
-				ProcessMoveCommand_Execute := FALSE;
-				HomingSequence := 999;
-		END_IF
-
-END_CASE
-
-SMC_Homing_J1(
-	Axis:=SM_Drive_PosControl_J1 , 
-	bExecute:= ,
-	fHomePosition:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X, 
-	fVelocitySlow:= , 
-	fVelocityFast:= HomingVelocityFast, 
-	fAcceleration:= HomingAcceleration, 
-	fDeceleration:= HomingAcceleration, 
-	fJerk:= 100.0, 
-	nDirection:= MC_direction.negative, 
-	bReferenceSwitch:= NOT _10_Drives.rx_j1_limit, 
-	fSignalDelay:= , 
-	nHomingMode:= , 
-	bReturnToZero:= , 
-	bIndexOccured:= , 
-	fIndexPosition:= , 
-	bIgnoreHWLimit:= TRUE, 
-	bDone=&gt; , 
-	bBusy=&gt; , 
-	bCommandAborted=&gt; , 
-	bError=&gt; , 
-	nErrorID=&gt; , 
-	bStartLatchingIndex=&gt; );
-	
-SMC_Homing_J2(
-	Axis:=SM_Drive_PosControl_J2 , 
-	bExecute:= , 
-	fHomePosition:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y,  
-	fVelocitySlow:= , 
-	fVelocityFast:= HomingVelocityFast, 
-	fAcceleration:= HomingAcceleration, 
-	fDeceleration:= HomingAcceleration,
-	fJerk:= 100.0, 
-	nDirection:= MC_Direction.negative, 
-	bReferenceSwitch:= NOT _10_Drives.rx_j2_limit, 
-	fSignalDelay:= , 
-	nHomingMode:= , 
-	bReturnToZero:= , 
-	bIndexOccured:= , 
-	fIndexPosition:= , 
-	bIgnoreHWLimit:= TRUE, 
-	bDone=&gt; , 
-	bBusy=&gt; , 
-	bCommandAborted=&gt; , 
-	bError=&gt; , 
-	nErrorID=&gt; , 
-	bStartLatchingIndex=&gt; );
-	
-SMC_Homing_J3(
-	Axis:=SM_Drive_PosControl_J3 , 
-	bExecute:= , 
-	fHomePosition:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z, 
-	fVelocitySlow:= , 
-	fVelocityFast:= HomingVelocityFast, 
-	fAcceleration:= HomingAcceleration, 
-	fDeceleration:= HomingAcceleration,
-	fJerk:= 100.0, 
-	nDirection:= MC_Direction.positive, 
-	bReferenceSwitch:= NOT _10_Drives.rx_j3_limit, 
-	fSignalDelay:= , 
-	nHomingMode:= , 
-	bReturnToZero:= , 
-	bIndexOccured:= , 
-	fIndexPosition:= , 
-	bIgnoreHWLimit:= TRUE, 
-	bDone=&gt; , 
-	bBusy=&gt; , 
-	bCommandAborted=&gt; , 
-	bError=&gt; , 
-	nErrorID=&gt; , 
-	bStartLatchingIndex=&gt; );
-	
-SMC_Homing_J4(
-	Axis:=SM_Drive_PosControl_J4 , 
-	bExecute:= ,
-	fHomePosition:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A, 
-	fVelocitySlow:= , 
-	fVelocityFast:= HomingVelocityFast, 
-	fAcceleration:= HomingAcceleration, 
-	fDeceleration:= HomingAcceleration,
-	fJerk:= 100.0, 
-	nDirection:= MC_Direction.positive, 
-	bReferenceSwitch:= NOT _10_Drives.rx_j4_limit, 
-	fSignalDelay:= , 
-	nHomingMode:= , 
-	bReturnToZero:= , 
-	bIndexOccured:= , 
-	fIndexPosition:= , 
-	bIgnoreHWLimit:= TRUE, 
-	bDone=&gt; , 
-	bBusy=&gt; , 
-	bCommandAborted=&gt; , 
-	bError=&gt; , 
-	nErrorID=&gt; , 
-	bStartLatchingIndex=&gt; );
-	
-SMC_Homing_J5(
-	Axis:=SM_Drive_PosControl_J5 , 
-	bExecute:= , 
-	fHomePosition:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B,  
-	fVelocitySlow:= , 
-	fVelocityFast:= HomingVelocityFast, 
-	fAcceleration:= HomingAcceleration, 
-	fDeceleration:= HomingAcceleration,
-	fJerk:= 100, 
-	nDirection:= MC_Direction.positive, 
-	bReferenceSwitch:= NOT _10_Drives.rx_j5_limit, 
-	fSignalDelay:= , 
-	nHomingMode:= , 
-	bReturnToZero:= , 
-	bIndexOccured:= , 
-	fIndexPosition:= , 
-	bIgnoreHWLimit:= TRUE, 
-	bDone=&gt; , 
-	bBusy=&gt; , 
-	bCommandAborted=&gt; , 
-	bError=&gt; , 
-	nErrorID=&gt; , 
-	bStartLatchingIndex=&gt; );
-	
-SMC_Homing_J6(
-	Axis:=SM_Drive_PosControl_J6 , 
-	bExecute:= , 
-	fHomePosition:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C, 
-	fVelocitySlow:= , 
-	fVelocityFast:= HomingVelocityFast, 
-	fAcceleration:= HomingAcceleration, 
-	fDeceleration:= HomingAcceleration,
-	fJerk:= 100.0, 
-	nDirection:= MC_Direction.negative, 
-	bReferenceSwitch:= NOT _10_Drives.rx_j6_limit, 
-	fSignalDelay:= , 
-	nHomingMode:= , 
-	bReturnToZero:= , 
-	bIndexOccured:= , 
-	fIndexPosition:= , 
-	bIgnoreHWLimit:= TRUE, 
-	bDone=&gt; , 
-	bBusy=&gt; , 
-	bCommandAborted=&gt; , 
-	bError=&gt; , 
-	nErrorID=&gt; , 
-	bStartLatchingIndex=&gt; );
-
-SMC_GroupPower_J(
-	AxisGroup:= ArfBotAxisGroup, 
-	Enable:=,
-	bRegulatorOn:= SMC_GroupPower_J.Enable,
-	bDriveStart:= SMC_GroupPower_J.Enable, 
-	Status=&gt; , 
-	Busy=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-		 
-MC_GroupEnable_J(
-	AxisGroup:=ArfBotAxisGroup,
-	Execute:=,
-	CompatibilityOptions:=,
-	Done=&gt;,
-	Busy=&gt;,
-	Error=&gt;,
-	ErrorID=&gt;);
-		 
-MC_GroupDisable_J(
-	AxisGroup:=ArfBotAxisGroup,
-	Execute:=,
-	Done=&gt;,
-	Busy=&gt;,
-	Error=&gt;,
-	ErrorID=&gt;);	
-		 
-MC_GroupReset_J(
-	AxisGroup:=ArfBotAxisGroup , 
-	Execute:= GVL.Reset, 
+ProcessHome(
+	J1:= SM_Drive_PosControl_J1, 
+	J2:= SM_Drive_PosControl_J2, 
+	J3:= SM_Drive_PosControl_J3, 
+	J4:= SM_Drive_PosControl_J4, 
+	J5:= SM_Drive_PosControl_J5, 
+	J6:= SM_Drive_PosControl_J6, 
+	GroupHandler:= GroupHandler, 
+	Controller:= Controller, 
+	MoveCommandProcessor:= ProcessMoveCommand,
+	J1_Limit:= _10_Drives.rx_j1_limit, 
+	J2_Limit:= _10_Drives.rx_j2_limit, 
+	J3_Limit:= _10_Drives.rx_j3_limit, 
+	J4_Limit:= _10_Drives.rx_j4_limit, 
+	J5_Limit:= _10_Drives.rx_j5_limit, 
+	J6_Limit:= _10_Drives.rx_j6_limit, 
+	Enable:= GVL.PowerOn, 
+	Reset:= GVL.Reset, 
+	StoredPositions:= PersistentVars.StoredPositions,
+	Flags:= PersistentVars.Flags,
 	Done=&gt; , 
 	Busy=&gt; , 
 	Error=&gt; , 
-	ErrorID=&gt; );</xhtml>
+	ErrorID=&gt; );
+
+IF ProcessHome.Reset THEN
+	HomingStatusText := '';
+END_IF
+IF ProcessHome.Error THEN
+	JogStatusText := CONCAT('Homing Processor Error: ',
+						CONCAT(TO_STRING(ProcessHome.ErrorID),
+						CONCAT(' ', SMC_ErrorString(ProcessHome.ErrorID,
+									SMC_Language_Type.english)))) ;
+END_IF</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -3650,6 +3484,23 @@ TrackPosition(
                         <returnType>
                           <BOOL />
                         </returnType>
+                        <globalVars>
+                          <variable name="EnableRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="CoordSystemLast">
+                            <type>
+                              <derived name="SMC_COORD_SYSTEM" />
+                            </type>
+                          </variable>
+                          <variable name="ABC_AS_ACSLast">
+                            <type>
+                              <BOOL />
+                            </type>
+                          </variable>
+                        </globalVars>
                         <addData>
                           <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
                             <AccessModifiers Private="true" />
@@ -3671,11 +3522,21 @@ ProcessJog(
 	Flags:= PersistentVars.Flags,
 	ABC_as_ACS=&gt;,
 	CoordSystem=&gt;, 
+	Enabled=&gt;,
 	Position=&gt;, 
 	Done=&gt; , 
 	Busy=&gt; , 
 	Error=&gt; , 
 	ErrorID=&gt; );
+	
+// change the button texts on enable or a change of the coordinate system
+EnableRtrig(CLK:=ProcessJog.CoordSystem &lt;&gt; CoordSystemLast
+				OR ProcessJog.ABC_as_ACS &lt;&gt; ABC_AS_ACSLast);
+IF EnableRtrig.Q THEN
+	CoordSystemLast := ProcessJog.CoordSystem;
+	ABC_AS_ACSLast := ProcessJog.ABC_as_ACS;
+	ButtonTextIndex := F_SetJogButtons(ProcessJog.CoordSystem, ProcessJog.ABC_as_ACS);
+END_IF
 	
 //
 IF ProcessJog.Reset THEN
@@ -4650,7 +4511,7 @@ END_IF
 // index 0 is for system inputs
 rx_heartbeat 		:= pabyRxBuffer[0].0;
 rx_en 				:= pabyRxBuffer[0].1;
-rx_alarm 			:= pabyRxBuffer[0].2;
+//rx_alarm 			:= pabyRxBuffer[0].2; TODO uncomment this once drive alarm output is wired
 //rx_ 				:= pabyRxBuffer[0].3;
 //rx_ 				:= pabyRxBuffer[0].4;
 //rx_ 				:= pabyRxBuffer[0].5;
@@ -4692,9 +4553,7 @@ GVL.DigitalInput[5] := pabyRxBuffer[31].5;
 GVL.DigitalInput[6] := pabyRxBuffer[31].6;
 GVL.DigitalInput[7] := pabyRxBuffer[31].7;
 
-
-
-
+//
 SM_Drive_PosControl_J1.in.dwActPosition := DINT_TO_DWORD(EncPosition[0]);
 SM_Drive_PosControl_J2.in.dwActPosition := DINT_TO_DWORD(EncPosition[1]);
 SM_Drive_PosControl_J3.in.dwActPosition := DINT_TO_DWORD(EncPosition[2]);
@@ -4702,13 +4561,17 @@ SM_Drive_PosControl_J4.in.dwActPosition := DINT_TO_DWORD(-EncPosition[3]);
 SM_Drive_PosControl_J5.in.dwActPosition := DINT_TO_DWORD(EncPosition[4]);
 SM_Drive_PosControl_J6.in.dwActPosition := DINT_TO_DWORD(EncPosition[5]);
 
-SM_Drive_PosControl_J1.bHWLimitEnable := NOT _00_Main.SMC_Homing_J1.bBusy;
-SM_Drive_PosControl_J2.bHWLimitEnable := NOT _00_Main.SMC_Homing_J2.bBusy;
-SM_Drive_PosControl_J3.bHWLimitEnable := NOT _00_Main.SMC_Homing_J3.bBusy;
-SM_Drive_PosControl_J4.bHWLimitEnable := NOT _00_Main.SMC_Homing_J4.bBusy;
-SM_Drive_PosControl_J5.bHWLimitEnable := NOT _00_Main.SMC_Homing_J5.bBusy;
-SM_Drive_PosControl_J6.bHWLimitEnable := NOT _00_Main.SMC_Homing_J6.bBusy;
+//
+IF FirstScan THEN
+	SM_Drive_PosControl_J1.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J1.bBusy;
+	SM_Drive_PosControl_J2.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J2.bBusy;
+	SM_Drive_PosControl_J3.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J3.bBusy;
+	SM_Drive_PosControl_J4.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J4.bBusy;
+	SM_Drive_PosControl_J5.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J5.bBusy;
+	SM_Drive_PosControl_J6.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J6.bBusy;
+END_IF
 
+//
 SM_Drive_PosControl_J1.in.bLimitNeg := TRUE;
 SM_Drive_PosControl_J2.in.bLimitNeg := TRUE;
 SM_Drive_PosControl_J3.in.bLimitNeg := rx_j3_limit;
@@ -5028,7 +4891,7 @@ END_IF</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="JogProcessor" pouType="functionBlock">
+              <pou name="FB_JogProcessor" pouType="functionBlock">
                 <interface>
                   <inOutVars>
                     <variable name="AxisGroup">
@@ -5088,6 +4951,11 @@ END_IF</xhtml>
                     <variable name="Position">
                       <type>
                         <derived name="SMC_POS_REF" />
+                      </type>
+                    </variable>
+                    <variable name="Enabled">
+                      <type>
+                        <BOOL />
                       </type>
                     </variable>
                     <variable name="Done">
@@ -5204,22 +5072,6 @@ END_IF</xhtml>
                         <simpleValue value="0" />
                       </initialValue>
                     </variable>
-                    <variable name="STEP_GROUP_POWER_ON">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="22" />
-                      </initialValue>
-                    </variable>
-                    <variable name="STEP_WAIT_POWER_ON">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="24" />
-                      </initialValue>
-                    </variable>
                     <variable name="STEP_GROUP_ENABLE">
                       <type>
                         <INT />
@@ -5236,22 +5088,6 @@ END_IF</xhtml>
                         <simpleValue value="35" />
                       </initialValue>
                     </variable>
-                    <variable name="STEP_READ_POSITION">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="40" />
-                      </initialValue>
-                    </variable>
-                    <variable name="STEP_WAIT_POSITION">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="50" />
-                      </initialValue>
-                    </variable>
                     <variable name="STEP_SET_KINEMATICS">
                       <type>
                         <INT />
@@ -5266,22 +5102,6 @@ END_IF</xhtml>
                       </type>
                       <initialValue>
                         <simpleValue value="70" />
-                      </initialValue>
-                    </variable>
-                    <variable name="STEP_SET_COORD_TRANS">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="71" />
-                      </initialValue>
-                    </variable>
-                    <variable name="STEP_WAIT_COORD_TRANS">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="72" />
                       </initialValue>
                     </variable>
                     <variable name="STEP_JOG">
@@ -5316,14 +5136,6 @@ END_IF</xhtml>
                         <simpleValue value="110" />
                       </initialValue>
                     </variable>
-                    <variable name="STEP_GROUP_POWER_OFF">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="120" />
-                      </initialValue>
-                    </variable>
                   </localVars>
                 </interface>
                 <body>
@@ -5333,7 +5145,6 @@ _ExecuteFtrig(CLK:=_SMC_GroupJog2.Enable);
 _ResetRtrig(CLK:=Reset);
 
 IF _FirstScan THEN
-	_FirstScan := FALSE;
 	_SMC_GroupJog2.Velocity := 10.0;
 	_SMC_GroupJog2.Acceleration := 300.0;
 	_SMC_GroupJog2.Deceleration := 300.0;
@@ -5400,9 +5211,11 @@ CASE _SequenceMain OF
 			ErrorID := _SMC_GroupJog2.ErrorID;
 		END_IF
 		IF _ExecuteFtrig.Q THEN
-			_SequenceMain := STEP_GROUP_DISABLE;
+			//_SequenceMain := STEP_GROUP_DISABLE;
+			_SequenceMain := STEP_DONE;
 		END_IF
 		
+	// TODO: do we need to disable the group at this point? lets leave this here for now but skip it.	
 	STEP_GROUP_DISABLE:
 		IF GroupHandler.M_DisableGroup() THEN
 			_SequenceMain := STEP_WAIT_DISABLE;
@@ -5420,10 +5233,12 @@ CASE _SequenceMain OF
 	
 END_CASE
 
+//
 IF _ResetRtrig.Q AND Error THEN
 	Error := FALSE;
 	ErrorID := SMC_NO_ERROR;
 	_SequenceMain := STEP_DONE;
+	GroupHandler.M_ResetGroup();
 END_IF
 
 _SMC_GroupJog2(
@@ -5452,6 +5267,7 @@ _SMC_GroupJog2(
 //
 CoordSystem := _SMC_GroupJog2.CoordSystem;
 ABC_as_ACS := _SMC_GroupJog2.ABC_as_ACS;
+Enabled := _SMC_GroupJog2.Enable;
 
 //
 _ErrorRtrig(CLK:=GroupHandler.Error
@@ -5459,7 +5275,9 @@ _ErrorRtrig(CLK:=GroupHandler.Error
 IF _ErrorRtrig.Q THEN
 	Error := TRUE;
 END_IF
-</xhtml>
+
+// do not put anything after this
+_FirstScan := FALSE;</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -5469,6 +5287,80 @@ END_IF
                         <returnType>
                           <BOOL />
                         </returnType>
+                        <globalVars>
+                          <variable name="OptionsTimer">
+                            <type>
+                              <derived name="TON" />
+                            </type>
+                            <initialValue>
+                              <structValue>
+                                <value member="PT">
+                                  <simpleValue value="TIME#1s0ms" />
+                                </value>
+                              </structValue>
+                            </initialValue>
+                          </variable>
+                          <variable name="OptionsRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="ShareTimer">
+                            <type>
+                              <derived name="TON" />
+                            </type>
+                            <initialValue>
+                              <structValue>
+                                <value member="PT">
+                                  <simpleValue value="TIME#1s0ms" />
+                                </value>
+                              </structValue>
+                            </initialValue>
+                          </variable>
+                          <variable name="ShareRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="OptionsShareRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="R2_Last">
+                            <type>
+                              <USINT />
+                            </type>
+                          </variable>
+                          <variable name="JoyStickLeftXLast">
+                            <type>
+                              <USINT />
+                            </type>
+                          </variable>
+                          <variable name="JoyStickLeftYLast">
+                            <type>
+                              <USINT />
+                            </type>
+                          </variable>
+                          <variable name="JoyStickRightXLast">
+                            <type>
+                              <USINT />
+                            </type>
+                          </variable>
+                          <variable name="JoyStickRightYLast">
+                            <type>
+                              <USINT />
+                            </type>
+                          </variable>
+                          <variable name="FactorMin">
+                            <type>
+                              <LREAL />
+                            </type>
+                            <initialValue>
+                              <simpleValue value="0.01" />
+                            </initialValue>
+                          </variable>
+                        </globalVars>
                         <addData>
                           <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
                             <AccessModifiers Private="true" />
@@ -5477,68 +5369,145 @@ END_IF
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">//
+OptionsTimer(IN:=Controller.P_State.Buttons.Options);
+OptionsRtrig(CLK:=Controller.P_State.Buttons.Options);
+//
+ShareTimer(IN:=Controller.P_State.Buttons.Share);
+ShareRtrig(CLK:=Controller.P_State.Buttons.Share);
+//
+OptionsShareRtrig(CLK:=OptionsTimer.Q AND_THEN ShareTimer.Q);
+
+
 IF Enable AND_THEN Controller.P_State.Connected THEN
-	// toggle jog
-	IF Controller.P_State.Buttons.Options
-		AND_THEN Controller.P_State.Buttons.Share THEN
-			_SMC_GroupJog2.Enable := NOT _SMC_GroupJog2.Enable;
-			IF _SMC_GroupJog2.Enable THEN
-				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
-			END_IF
-	END_IF
 	
-	// teach point in MCS
-	IF Controller.P_State.Buttons.Options THEN
-		_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.MCS;
-		IF Controller.P_State.Triggers.Left.One THEN
-			// teach logic here
+	// toggle jog enable
+	IF OptionsShareRtrig.Q THEN
+		_SMC_GroupJog2.Enable := NOT _SMC_GroupJog2.Enable;
+		IF _SMC_GroupJog2.Enable THEN
+			_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
 		END_IF
-	ELSE
-		_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
 	END_IF
 	
-	//
-	IF Controller.P_State.Triggers.Right.Two &gt; 1 THEN
-		_SMC_GroupJog2.VelFactor := MAX(0.1, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
+	// cycle through coord system
+	IF OptionsRtrig.Q AND NOT Controller.P_State.Buttons.Share THEN
+		CASE _SMC_GroupJog2.CoordSystem OF
+			SMC_COORD_SYSTEM.ACS:
+				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.MCS;
+			SMC_COORD_SYSTEM.MCS:
+				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.PCS_1;
+			SMC_COORD_SYSTEM.PCS_1:
+				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.PCS_2;
+			SMC_COORD_SYSTEM.PCS_2:
+				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
+			SMC_COORD_SYSTEM.TCS:
+				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.WCS;
+			SMC_COORD_SYSTEM.WCS:
+				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.ACS;
+		END_CASE
+	END_IF
+	
+	// toggle the ABC as ACS setting
+	IF ShareRtrig.Q AND NOT Controller.P_State.Buttons.Options THEN
+		_SMC_GroupJog2.ABC_as_ACS := NOT _SMC_GroupJog2.ABC_as_ACS;
+	END_IF
+	
+	// set the velocity factor while the left trigger button is pressed
+	IF Controller.P_State.Dpad.Left AND_THEN Controller.P_State.Triggers.Right.Two &lt;&gt; R2_Last THEN
+		R2_Last := Controller.P_State.Triggers.Right.Two;
+		_SMC_GroupJog2.VelFactor := MAX(FactorMin, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
+	END_IF
+	// set the acceleration factor while the up dpad button is pressed
+	IF Controller.P_State.Dpad.Up AND_THEN Controller.P_State.Triggers.Right.Two &lt;&gt; R2_Last THEN
+		R2_Last := Controller.P_State.Triggers.Right.Two;
+		_SMC_GroupJog2.AccFactor := MAX(FactorMin, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
+	END_IF
+	// set the jerk factor while the right dpad button is pressed
+	IF Controller.P_State.Dpad.Right AND_THEN Controller.P_State.Triggers.Right.Two &lt;&gt; R2_Last THEN
+		R2_Last := Controller.P_State.Triggers.Right.Two;
+		_SMC_GroupJog2.JerkFactor := MAX(FactorMin, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
+	END_IF
+	// set the torque factor while the down dpad down is pressed
+	IF Controller.P_State.Dpad.Down AND_THEN Controller.P_State.Triggers.Right.Two &lt;&gt; R2_Last THEN
+		R2_Last := Controller.P_State.Triggers.Right.Two;
+		_SMC_GroupJog2.TorqueFactor := MAX(FactorMin, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
 	END_IF
 	
 	//
 	IF _SequenceMain = STEP_WAIT_JOG THEN
 		
-		IF NOT Controller.P_State.Triggers.Left.One THEN
-			// Controller.P_State.Joysticks.Left.X // X0-128 is -Y (Backward[1])
-			_SMC_GroupJog2.Backward[1] := Controller.P_State.Joysticks.Left.X &lt; _ControllerCenter - _ControllerDeadZone;
-			// Controller.P_State.Joysticks.Left.X // X128-256 is +Y (Forward[1])
-			_SMC_GroupJog2.Forward[1] := Controller.P_State.Joysticks.Left.X &gt; _ControllerCenter + _ControllerDeadZone;
-			// Controller.P_State.Joysticks.Left.Y // Y0-128 is +Z (Forward[2])
-			_SMC_GroupJog2.Forward[2] := Controller.P_State.Joysticks.Left.Y &lt; _ControllerCenter - _ControllerDeadZone;
-			// Controller.P_State.Joysticks.Left.Y // Y128-256 is -Z (Backward[2])
-			_SMC_GroupJog2.Backward[2] := Controller.P_State.Joysticks.Left.Y &gt; _ControllerCenter + _ControllerDeadZone;
-		ELSE
-			// Controller.P_State.Joysticks.Left.Y // Y0-128 is +X (Forward[0])
-			_SMC_GroupJog2.Forward[0] := Controller.P_State.Joysticks.Left.Y &lt; _ControllerCenter - _ControllerDeadZone;
-			// Controller.P_State.Joysticks.Left.Y // Y128-256 is -X (Backward[0])
-			_SMC_GroupJog2.Backward[0] := Controller.P_State.Joysticks.Left.Y &gt; _ControllerCenter + _ControllerDeadZone;
+		//
+		IF Controller.P_State.Joysticks.Left.X &lt;&gt; JoyStickLeftXLast
+			OR Controller.P_State.Joysticks.Left.Y &lt;&gt; JoyStickLeftYLast THEN
+				//
+				JoyStickLeftXLast := Controller.P_State.Joysticks.Left.X;
+				JoyStickLeftYLast := Controller.P_State.Joysticks.Left.Y;
+				//	
+				IF NOT Controller.P_State.Triggers.Left.One THEN
+					// disable
+					_SMC_GroupJog2.Forward[0] := FALSE;
+					// disable
+					_SMC_GroupJog2.Backward[0] := FALSE;
+					// Controller.P_State.Joysticks.Left.X // X0-128 is -Y (Backward[1])
+					_SMC_GroupJog2.Backward[1] := Controller.P_State.Joysticks.Left.X &lt; _ControllerCenter - _ControllerDeadZone;
+					// Controller.P_State.Joysticks.Left.X // X128-256 is +Y (Forward[1])
+					_SMC_GroupJog2.Forward[1] := Controller.P_State.Joysticks.Left.X &gt; _ControllerCenter + _ControllerDeadZone;
+					// Controller.P_State.Joysticks.Left.Y // Y0-128 is +Z (Forward[2])
+					_SMC_GroupJog2.Forward[2] := Controller.P_State.Joysticks.Left.Y &lt; _ControllerCenter - _ControllerDeadZone;
+					// Controller.P_State.Joysticks.Left.Y // Y128-256 is -Z (Backward[2])
+					_SMC_GroupJog2.Backward[2] := Controller.P_State.Joysticks.Left.Y &gt; _ControllerCenter + _ControllerDeadZone;
+				ELSE
+					// Controller.P_State.Joysticks.Left.Y // Y0-128 is +X (Forward[0])
+					_SMC_GroupJog2.Forward[0] := Controller.P_State.Joysticks.Left.Y &lt; _ControllerCenter - _ControllerDeadZone;
+					// Controller.P_State.Joysticks.Left.Y // Y128-256 is -X (Backward[0])
+					_SMC_GroupJog2.Backward[0] := Controller.P_State.Joysticks.Left.Y &gt; _ControllerCenter + _ControllerDeadZone;
+					// disable
+					_SMC_GroupJog2.Backward[1] := FALSE;
+					// disable
+					_SMC_GroupJog2.Forward[1] := FALSE;
+					// disable
+					_SMC_GroupJog2.Forward[2] := FALSE;
+					// disable])
+					_SMC_GroupJog2.Backward[2] := FALSE;
+				END_IF
 		END_IF
-		
-		
-		IF NOT Controller.P_State.Triggers.Right.One THEN
-			// Controller.P_State.Joysticks.Right.X // X0-128 is -Roll (rot about x) (Backward[3])
-			_SMC_GroupJog2.Backward[3] := Controller.P_State.Joysticks.Right.X &lt; _ControllerCenter - _ControllerDeadZone;
-			// Controller.P_State.Joysticks.Right.X // X128-256 is +Roll (rot about x) (Forward[3])
-			_SMC_GroupJog2.Forward[3] := Controller.P_State.Joysticks.Right.X &gt; _ControllerCenter + _ControllerDeadZone;
-			// Controller.P_State.Joysticks.Right.Y // Y0-128 is +Pitch (rot about y) (Forward[4])
-			_SMC_GroupJog2.Forward[4] := Controller.P_State.Joysticks.Right.Y &lt; _ControllerCenter - _ControllerDeadZone;
-			// Controller.P_State.Joysticks.Right.Y // Y128-256 is -Pitch (rot about y) (Backward[4])
-			_SMC_GroupJog2.Backward[4] := Controller.P_State.Joysticks.Right.Y &gt; _ControllerCenter + _ControllerDeadZone;
-		ELSE
-			// Controller.P_State.Joysticks.Right.X // X0-128 is -Yaw (rot about z) (Backward[5])
-			_SMC_GroupJog2.Backward[5] := Controller.P_State.Joysticks.Right.X &lt; _ControllerCenter - _ControllerDeadZone;
-			// Controller.P_State.Joysticks.Right.X // X128-256 is +Yaw (rot about z) (Forward[5])
-			_SMC_GroupJog2.Forward[5] := Controller.P_State.Joysticks.Right.X &gt; _ControllerCenter + _ControllerDeadZone;
+
+		//
+		IF Controller.P_State.Joysticks.Right.X &lt;&gt; JoyStickRightXLast
+			OR Controller.P_State.Joysticks.Right.Y &lt;&gt; JoyStickRightYLast THEN
+				//
+				JoyStickRightXLast := Controller.P_State.Joysticks.Right.X;
+				JoyStickRightYLast := Controller.P_State.Joysticks.Right.Y;
+				//				
+				IF NOT Controller.P_State.Triggers.Right.One THEN
+					// Controller.P_State.Joysticks.Right.X // X0-128 is +Roll (rot about x) (Forward[3])
+					_SMC_GroupJog2.Backward[3] := Controller.P_State.Joysticks.Right.X &gt; _ControllerCenter + _ControllerDeadZone;
+					// Controller.P_State.Joysticks.Right.X // X128-256 is -Roll (rot about x) (Backward[3])
+					_SMC_GroupJog2.Forward[3] := Controller.P_State.Joysticks.Right.X &lt; _ControllerCenter - _ControllerDeadZone;
+					// Controller.P_State.Joysticks.Right.Y // Y0-128 is +Pitch (rot about y) (Forward[4])
+					_SMC_GroupJog2.Forward[4] := Controller.P_State.Joysticks.Right.Y &lt; _ControllerCenter - _ControllerDeadZone;
+					// Controller.P_State.Joysticks.Right.Y // Y128-256 is -Pitch (rot about y) (Backward[4])
+					_SMC_GroupJog2.Backward[4] := Controller.P_State.Joysticks.Right.Y &gt; _ControllerCenter + _ControllerDeadZone;
+					// disable
+					_SMC_GroupJog2.Backward[5] := FALSE;
+					// disable
+					_SMC_GroupJog2.Forward[5] := FALSE;
+				ELSE
+					// disable
+					_SMC_GroupJog2.Backward[3] := FALSE;
+					// disable
+					_SMC_GroupJog2.Forward[3] := FALSE;
+					// disable
+					_SMC_GroupJog2.Forward[4] := FALSE;
+					// disable
+					_SMC_GroupJog2.Backward[4] := FALSE;
+					// Controller.P_State.Joysticks.Right.X // X0-128 is -Yaw (rot about z) (Backward[5])
+					_SMC_GroupJog2.Backward[5] := Controller.P_State.Joysticks.Right.X &lt; _ControllerCenter - _ControllerDeadZone;
+					// Controller.P_State.Joysticks.Right.X // X128-256 is +Yaw (rot about z) (Forward[5])
+					_SMC_GroupJog2.Forward[5] := Controller.P_State.Joysticks.Right.X &gt; _ControllerCenter + _ControllerDeadZone;
+				END_IF
 		END_IF
-		
+
 	END_IF
 	
 END_IF</xhtml>
@@ -5554,7 +5523,7 @@ END_IF</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="CommandProcessor" pouType="functionBlock">
+              <pou name="FB_CommandProcessor" pouType="functionBlock">
                 <interface>
                   <inOutVars>
                     <variable name="AxisGroup">
@@ -5589,7 +5558,7 @@ END_IF</xhtml>
                     </variable>
                     <variable name="PrgProcessor">
                       <type>
-                        <derived name="ProgramProcessor" />
+                        <derived name="FB_ProgramProcessor" />
                       </type>
                     </variable>
                   </inOutVars>
@@ -6578,7 +6547,7 @@ END_IF</xhtml>
                     <Property name="P_CurrentCommand" ObjectId="d4fb3147-2a09-4011-bb95-1eb5cd53c440">
                       <interface>
                         <returnType>
-                          <UINT />
+                          <derived name="REFERENCE TO UINT" />
                         </returnType>
                         <Attributes>
                           <Attribute Name="monitoring" Value="variable" />
@@ -6596,7 +6565,7 @@ END_IF</xhtml>
                         </interface>
                         <body>
                           <ST>
-                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_CurrentCommand := _CurrentCmdIdx;</xhtml>
+                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_CurrentCommand REF= _CurrentCmdIdx;</xhtml>
                           </ST>
                         </body>
                         <addData />
@@ -11470,11 +11439,13 @@ CASE SUPER^._SeqMain OF
 			AND _SequenceMoveDirectRelative = 0
 			AND _SequenceMoveLinearAbsolute = 0
 			AND _SequenceMoveLinearRelative = 0 THEN
-				SUPER^._SeqMain := _STEP_GROUP_DISABLE;
+				//SUPER^._SeqMain := _STEP_GROUP_DISABLE;
+				SUPER^._SeqMain := _STEP_DONE;
 		END_IF
-		
-	_STEP_GROUP_DISABLE:
-		IF GroupHandler.M_EnableGroup() THEN
+	
+	// TODO do we need to disable the group at this point? lets leave this here for now but skip it.
+	_STEP_GROUP_DISABLE: 
+		IF GroupHandler.M_DisableGroup() THEN
 			SUPER^._SeqMain := _STEP_WAIT_DISABLE;
 		ELSE
 			SUPER^.M_Error(Description:=CONCAT('Group Handler Error: ',
@@ -15357,12 +15328,12 @@ BuildVarSetCmd := _Command;</xhtml>
                   <inOutVars>
                     <variable name="PrgProcessor">
                       <type>
-                        <derived name="ProgramProcessor" />
+                        <derived name="FB_ProgramProcessor" />
                       </type>
                     </variable>
                     <variable name="CmdProcessor">
                       <type>
-                        <derived name="CommandProcessor" />
+                        <derived name="FB_CommandProcessor" />
                       </type>
                     </variable>
                     <variable name="CmdIO">
@@ -16653,52 +16624,7 @@ BuildLogicCmd := _Command;</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="F_HomeOffsetCalc" pouType="function">
-                <interface>
-                  <returnType>
-                    <LREAL />
-                  </returnType>
-                  <inputVars>
-                    <variable name="CurrentOffset">
-                      <type>
-                        <LREAL />
-                      </type>
-                    </variable>
-                    <variable name="CurrentPosition">
-                      <type>
-                        <LREAL />
-                      </type>
-                    </variable>
-                    <variable name="HomeSearchDirection">
-                      <type>
-                        <derived name="MC_Direction" />
-                      </type>
-                    </variable>
-                  </inputVars>
-                </interface>
-                <body>
-                  <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">IF HomeSearchDirection = MC_Direction.positive THEN
-	F_HomeOffsetCalc := -F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
-	
-ELSIF HomeSearchDirection = MC_Direction.negative THEN
-	F_HomeOffsetCalc := F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
-	
-ELSE
-	F_HomeOffsetCalc := CurrentOffset;
-	
-END_IF</xhtml>
-                  </ST>
-                </body>
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>ad8953b8-d17f-41b2-83c9-9901a22a0b46</ObjectId>
-                  </data>
-                </addData>
-              </pou>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="ProgramProcessor" pouType="functionBlock">
+              <pou name="FB_ProgramProcessor" pouType="functionBlock">
                 <interface>
                   <inOutVars>
                     <variable name="Programs">
@@ -16822,7 +16748,7 @@ END_IF</xhtml>
                     </variable>
                     <variable name="_ProcessCommands">
                       <type>
-                        <derived name="CommandProcessor" />
+                        <derived name="FB_CommandProcessor" />
                       </type>
                     </variable>
                     <variable name="_Commands">
@@ -17620,7 +17546,7 @@ END_IF</xhtml>
                     <Property name="P_CurrentProgram" ObjectId="3e083bec-9978-4c4c-be28-89a14e02ca1c">
                       <interface>
                         <returnType>
-                          <UINT />
+                          <derived name="REFERENCE TO UINT" />
                         </returnType>
                         <Attributes>
                           <Attribute Name="monitoring" Value="variable" />
@@ -17638,7 +17564,7 @@ END_IF</xhtml>
                         </interface>
                         <body>
                           <ST>
-                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_CurrentProgram := _CurrentPrgIdx;</xhtml>
+                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_CurrentProgram REF= _CurrentPrgIdx;</xhtml>
                           </ST>
                         </body>
                         <addData />
@@ -17650,7 +17576,7 @@ END_IF</xhtml>
                     <Property name="P_CurrentCommand" ObjectId="a9b3f86e-c7f3-46d5-b8e5-0f2f5726a9f3">
                       <interface>
                         <returnType>
-                          <derived name="DUT_Command" />
+                          <derived name="REFERENCE TO DUT_Command" />
                         </returnType>
                         <Attributes>
                           <Attribute Name="monitoring" Value="variable" />
@@ -17668,7 +17594,7 @@ END_IF</xhtml>
                         </interface>
                         <body>
                           <ST>
-                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_CurrentCommand := _ProcessCommands.ActiveCommand;</xhtml>
+                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_CurrentCommand REF= _ProcessCommands.ActiveCommand;</xhtml>
                           </ST>
                         </body>
                         <addData />
@@ -19320,7 +19246,7 @@ END_CASE</xhtml>
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF Enable AND NOT Error AND NOT _GroupEnabled THEN
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF Enable AND NOT Error THEN
 	M_EnableGroup := TRUE;
 	_EnableGroup := TRUE;
 	_GroupEnabled := FALSE;
@@ -19533,6 +19459,1054 @@ END_IF</xhtml>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>f6416d9a-a888-4f6b-9b8f-cb306c7639e1</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="F_SetJogButtons" pouType="function">
+                <interface>
+                  <returnType>
+                    <INT />
+                  </returnType>
+                  <inputVars>
+                    <variable name="CoordinateSystem">
+                      <type>
+                        <derived name="SMC_COORD_SYSTEM" />
+                      </type>
+                    </variable>
+                    <variable name="ABC_as_ACS">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </inputVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">CASE CoordinateSystem OF
+	SMC_COORD_SYSTEM.ACS:
+		F_SetJogButtons := 0;
+	SMC_COORD_SYSTEM.MCS:
+		IF ABC_as_ACS THEN
+			F_SetJogButtons := 2;
+		ELSE
+			F_SetJogButtons := 1;
+		END_IF
+	SMC_COORD_SYSTEM.PCS_1:
+		IF ABC_as_ACS THEN
+			F_SetJogButtons:= 2;
+		ELSE
+			F_SetJogButtons := 1;
+		END_IF
+	SMC_COORD_SYSTEM.PCS_2:
+		IF ABC_as_ACS THEN
+			F_SetJogButtons := 2;
+		ELSE
+			F_SetJogButtons := 1;
+		END_IF
+	SMC_COORD_SYSTEM.TCS:
+		IF ABC_as_ACS THEN
+			F_SetJogButtons := 2;
+		ELSE
+			F_SetJogButtons := 1;
+		END_IF
+	SMC_COORD_SYSTEM.WCS:
+		IF ABC_as_ACS THEN
+			F_SetJogButtons := 2;
+		ELSE
+			F_SetJogButtons := 1;
+		END_IF
+	ELSE
+		F_SetJogButtons := 0;
+		
+END_CASE</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>640ac73b-ff1c-4df1-a978-e5b05f9ea455</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="FB_HomingProcessor" pouType="functionBlock">
+                <interface>
+                  <inOutVars>
+                    <variable name="J1">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J2">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J3">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J4">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J5">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J6">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="GroupHandler">
+                      <type>
+                        <derived name="FB_GroupHandler" />
+                      </type>
+                    </variable>
+                    <variable name="Controller">
+                      <type>
+                        <derived name="FB_Controller" />
+                      </type>
+                    </variable>
+                    <variable name="MoveCommandProcessor">
+                      <type>
+                        <derived name="MoveCmdProcessor" />
+                      </type>
+                    </variable>
+                  </inOutVars>
+                  <inputVars>
+                    <variable name="J1_Limit">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="J2_Limit">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="J3_Limit">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="J4_Limit">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="J5_Limit">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="J6_Limit">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Enable">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Reset">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="StoredPositions">
+                      <type>
+                        <derived name="REFERENCE TO ARRAY [GVL.POS_ARR_BEG..GVL.POS_ARR_END] OF DUT_StoredPosition" />
+                      </type>
+                    </variable>
+                    <variable name="Flags">
+                      <type>
+                        <derived name="REFERENCE TO ARRAY [GVL.FLG_ARR_BEG..GVL.FLG_ARR_END] OF DUT_Flags" />
+                      </type>
+                    </variable>
+                  </inputVars>
+                  <outputVars>
+                    <variable name="Done">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Busy">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="Error">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="ErrorID">
+                      <type>
+                        <derived name="SMC_ERROR" />
+                      </type>
+                    </variable>
+                  </outputVars>
+                  <localVars>
+                    <variable name="_ExecuteRtrig">
+                      <type>
+                        <derived name="R_TRIG" />
+                      </type>
+                    </variable>
+                    <variable name="_ExecuteFtrig">
+                      <type>
+                        <derived name="F_TRIG" />
+                      </type>
+                    </variable>
+                    <variable name="_ResetRtrig">
+                      <type>
+                        <derived name="R_TRIG" />
+                      </type>
+                    </variable>
+                    <variable name="_ErrorRtrig">
+                      <type>
+                        <derived name="R_TRIG" />
+                      </type>
+                    </variable>
+                    <variable name="_SequenceMain">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_StartHoming">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_SMC_Homing_J1">
+                      <type>
+                        <derived name="SMC_Homing" />
+                      </type>
+                    </variable>
+                    <variable name="_SMC_Homing_J2">
+                      <type>
+                        <derived name="SMC_Homing" />
+                      </type>
+                    </variable>
+                    <variable name="_SMC_Homing_J3">
+                      <type>
+                        <derived name="SMC_Homing" />
+                      </type>
+                    </variable>
+                    <variable name="_SMC_Homing_J4">
+                      <type>
+                        <derived name="SMC_Homing" />
+                      </type>
+                    </variable>
+                    <variable name="_SMC_Homing_J5">
+                      <type>
+                        <derived name="SMC_Homing" />
+                      </type>
+                    </variable>
+                    <variable name="_SMC_Homing_J6">
+                      <type>
+                        <derived name="SMC_Homing" />
+                      </type>
+                    </variable>
+                    <variable name="_MC_SetPosition_J1">
+                      <type>
+                        <derived name="MC_SetPosition" />
+                      </type>
+                    </variable>
+                    <variable name="_MC_SetPosition_J2">
+                      <type>
+                        <derived name="MC_SetPosition" />
+                      </type>
+                    </variable>
+                    <variable name="_MC_SetPosition_J3">
+                      <type>
+                        <derived name="MC_SetPosition" />
+                      </type>
+                    </variable>
+                    <variable name="_MC_SetPosition_J4">
+                      <type>
+                        <derived name="MC_SetPosition" />
+                      </type>
+                    </variable>
+                    <variable name="_MC_SetPosition_J5">
+                      <type>
+                        <derived name="MC_SetPosition" />
+                      </type>
+                    </variable>
+                    <variable name="_MC_SetPosition_J6">
+                      <type>
+                        <derived name="MC_SetPosition" />
+                      </type>
+                    </variable>
+                    <variable name="_HomingVelocityFast">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="10.0" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_HomingVelocitySlow">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="5.0" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_HomingVelocitySlowSlow">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="1.0" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_HomingAcceleration">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="1000.0" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_HomingJerk">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="10000.0" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_PoseSpeed">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="20.0" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_MoveCommand">
+                      <type>
+                        <derived name="ST_MoveCmd" />
+                      </type>
+                    </variable>
+                    <variable name="_i">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_j">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_k">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_FirstScan">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="TRUE" />
+                      </initialValue>
+                    </variable>
+                  </localVars>
+                  <localVars constant="true">
+                    <variable name="STEP_DONE">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="9999" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_IDLE">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="0" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_GROUP_ENABLE">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="30" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_WAIT_ENABLE">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="35" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_FAST_HOME_G1">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="40" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_WAIT_FAST_HOME_G1">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="45" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_SLOW_HOME_G1">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="50" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_WAIT_SLOW_HOME_G1">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="55" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_FAST_HOME_G2">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="60" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_WAIT_FAST_HOME_G2">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="65" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_SLOW_HOME_G2">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="70" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_WAIT_SLOW_HOME_G2">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="75" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_FAST_HOME_G3">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="80" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_WAIT_FAST_HOME_G3">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="85" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_SLOW_HOME_G3">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="90" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_WAIT_SLOW_HOME_G3">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="95" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_MOVE_TO_POSE">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="1000" />
+                      </initialValue>
+                    </variable>
+                    <variable name="STEP_WAIT_MOVE_TO_POSE">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="1010" />
+                      </initialValue>
+                    </variable>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">_ExecuteRtrig(CLK:=);
+_ExecuteFtrig(CLK:=);
+_ResetRtrig(CLK:=Reset);
+
+IF _FirstScan THEN
+	//
+END_IF
+
+CASE _SequenceMain OF
+	STEP_DONE: // done
+		Busy := FALSE;
+		Done := TRUE;
+		_SequenceMain := STEP_IDLE;
+		
+		_SMC_Homing_J1.bExecute := FALSE;
+		_SMC_Homing_J2.bExecute := FALSE;
+		_SMC_Homing_J3.bExecute := FALSE;
+		_SMC_Homing_J4.bExecute := FALSE;
+		_SMC_Homing_J5.bExecute := FALSE;
+		_SMC_Homing_J6.bExecute := FALSE;
+		J1.bSWLimitEnable := TRUE;
+		J2.bSWLimitEnable := TRUE;
+		J3.bSWLimitEnable := TRUE;
+		J4.bSWLimitEnable := TRUE;
+		J5.bSWLimitEnable := TRUE;
+		J6.bSWLimitEnable := TRUE;
+		
+	STEP_IDLE: // IDLE
+		IF _StartHoming AND Enable THEN
+			_StartHoming := FALSE;
+			Busy := TRUE;
+			Done := FALSE;
+			_SequenceMain := STEP_GROUP_ENABLE;
+			Flags[GVL.HOME_COMPLETE].Value := FALSE;
+		END_IF
+		
+	STEP_GROUP_ENABLE:
+		IF GroupHandler.M_EnableGroup() THEN
+			_SequenceMain := STEP_WAIT_ENABLE;
+		ELSE
+			_SequenceMain := STEP_DONE;
+			Error := TRUE;
+			ErrorID := GroupHandler.ErrorID;
+		END_IF
+		
+	STEP_WAIT_ENABLE:
+		// TODO add timeout timer here
+		IF GroupHandler.P_GroupEnabled THEN
+			_SequenceMain := STEP_FAST_HOME_G1;
+		END_IF;
+		
+	STEP_FAST_HOME_G1:	
+		_SMC_Homing_J1.bExecute := TRUE;
+		_SMC_Homing_J2.bExecute := TRUE;
+		_SMC_Homing_J3.bExecute := TRUE;
+		_SMC_Homing_J1.bReturnToZero := FALSE;
+		_SMC_Homing_J2.bReturnToZero := FALSE;
+		_SMC_Homing_J3.bReturnToZero := FALSE;
+		_SMC_Homing_J1.fVelocitySlow := _HomingVelocitySlow;
+		_SMC_Homing_J2.fVelocitySlow := _HomingVelocitySlow;
+		_SMC_Homing_J3.fVelocitySlow := _HomingVelocitySlow;
+		J1.bSWLimitEnable := FALSE;
+		J2.bSWLimitEnable := FALSE;
+		J3.bSWLimitEnable := FALSE;
+		_SequenceMain := STEP_WAIT_FAST_HOME_G1;
+		
+	STEP_WAIT_FAST_HOME_G1: // wait fast home group 1
+		IF _SMC_Homing_J1.bDone
+			AND _SMC_Homing_J2.bDone
+			AND _SMC_Homing_J3.bDone THEN
+				_SMC_Homing_J1.bExecute := FALSE;
+				_SMC_Homing_J2.bExecute := FALSE;
+				_SMC_Homing_J3.bExecute := FALSE;
+				_SequenceMain := STEP_SLOW_HOME_G1;
+		END_IF
+		
+	STEP_SLOW_HOME_G1: // slow home group 1
+		_SMC_Homing_J1.bExecute := TRUE;
+		_SMC_Homing_J2.bExecute := TRUE;
+		_SMC_Homing_J3.bExecute := TRUE;
+		_SMC_Homing_J1.bReturnToZero := TRUE;
+		_SMC_Homing_J2.bReturnToZero := TRUE;
+		_SMC_Homing_J3.bReturnToZero := TRUE;
+		_SMC_Homing_J1.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J2.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J3.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SequenceMain := STEP_WAIT_SLOW_HOME_G1;
+		
+	STEP_WAIT_SLOW_HOME_G1:
+		IF _SMC_Homing_J1.bDone
+			AND _SMC_Homing_J2.bDone
+			AND _SMC_Homing_J3.bDone THEN
+				_SMC_Homing_J1.bExecute := FALSE;
+				_SMC_Homing_J2.bExecute := FALSE;
+				_SMC_Homing_J3.bExecute := FALSE;
+				_SequenceMain := STEP_FAST_HOME_G2;
+		END_IF
+		
+	STEP_FAST_HOME_G2:		
+		_SMC_Homing_J4.bExecute := TRUE;
+		_SMC_Homing_J5.bExecute := TRUE;
+		_SMC_Homing_J4.bReturnToZero := FALSE;
+		_SMC_Homing_J5.bReturnToZero := FALSE;
+		_SMC_Homing_J4.fVelocitySlow := _HomingVelocitySlow;
+		_SMC_Homing_J5.fVelocitySlow := _HomingVelocitySlow;
+		J4.bSWLimitEnable := FALSE;
+		J5.bSWLimitEnable := FALSE;
+		_SequenceMain := STEP_WAIT_FAST_HOME_G2;
+		
+	STEP_WAIT_FAST_HOME_G2:
+		IF _SMC_Homing_J4.bDone
+			AND _SMC_Homing_J5.bDone THEN
+				_SMC_Homing_J4.bExecute := FALSE;
+				_SMC_Homing_J5.bExecute := FALSE;
+				_SequenceMain := STEP_SLOW_HOME_G2;
+		END_IF
+		
+	STEP_SLOW_HOME_G2:
+		_SMC_Homing_J4.bExecute := TRUE;
+		_SMC_Homing_J5.bExecute := TRUE;
+		_SMC_Homing_J4.bReturnToZero := TRUE;
+		_SMC_Homing_J5.bReturnToZero := TRUE;
+		_SMC_Homing_J4.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J5.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SequenceMain := STEP_WAIT_SLOW_HOME_G2;
+		
+	STEP_WAIT_SLOW_HOME_G2:
+		IF _SMC_Homing_J4.bDone
+			AND _SMC_Homing_J5.bDone THEN
+				_SMC_Homing_J4.bExecute := FALSE;
+				_SMC_Homing_J5.bExecute := FALSE;
+				_SequenceMain := STEP_FAST_HOME_G3;
+		END_IF
+		
+	STEP_FAST_HOME_G3:
+		_SMC_Homing_J6.bExecute := TRUE;
+		_SMC_Homing_J6.bReturnToZero := FALSE;
+		_SMC_Homing_J6.fVelocitySlow := _HomingVelocitySlow;
+		J6.bSWLimitEnable := FALSE;
+		_SequenceMain := STEP_WAIT_FAST_HOME_G3;
+		
+	STEP_WAIT_FAST_HOME_G3:
+		IF _SMC_Homing_J6.bDone THEN
+			_SMC_Homing_J6.bExecute := FALSE;
+			_SequenceMain := STEP_SLOW_HOME_G3;
+		END_IF
+		
+	STEP_SLOW_HOME_G3:
+		_SMC_Homing_J6.bExecute := TRUE;
+		_SMC_Homing_J6.bReturnToZero := TRUE;
+		_SMC_Homing_J6.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SequenceMain := STEP_WAIT_SLOW_HOME_G3;
+		
+	STEP_WAIT_SLOW_HOME_G3:
+		IF _SMC_Homing_J6.bDone THEN
+			_SMC_Homing_J6.bExecute := FALSE;
+			Flags[GVL.HOME_COMPLETE].Value := TRUE;
+			IF NOT Flags[GVL.HOM_TO_POSE_IDX].Value THEN
+				_SequenceMain := STEP_DONE;
+			ELSE
+				_SequenceMain := STEP_MOVE_TO_POSE;
+			END_IF
+		END_IF;
+		
+	STEP_MOVE_TO_POSE:
+		_MoveCommand.MoveType 			:= DUT_Command_MoveType.DirectMove;
+		_MoveCommand.PositionType 		:= DUT_Command_PositionType.AbsolutePosition;
+		_MoveCommand.CoordinateType 	:= DUT_Command_CoordinateType.Literal;
+		_MoveCommand.Speed 				:= _PoseSpeed;
+		_MoveCommand.CoordSystem 		:= SMC_COORD_SYSTEM.ACS;
+		_MoveCommand.CoordRef 			:= StoredPositions[GVL.POSE_2_IDX].Position;
+		//
+		MoveCommandProcessor.Command := BuildMoveCmd(_MoveCommand);
+		MoveCommandProcessor.M_Start();
+		_SequenceMain := STEP_WAIT_MOVE_TO_POSE;
+	
+	STEP_WAIT_MOVE_TO_POSE:
+		IF MoveCommandProcessor.ItfUnitMode.CurrentState = PACK_ML.State.Idle THEN
+			_SequenceMain := STEP_DONE;
+		END_IF
+	
+END_CASE
+
+//
+IF _ResetRtrig.Q AND Error THEN
+	Error := FALSE;
+	ErrorID := SMC_NO_ERROR;
+	_SequenceMain := STEP_DONE;
+	GroupHandler.M_ResetGroup();
+END_IF
+
+//
+_ErrorRtrig(CLK:=GroupHandler.Error
+				OR _SMC_Homing_J1.bError
+				OR _SMC_Homing_J2.bError
+				OR _SMC_Homing_J3.bError
+				OR _SMC_Homing_J4.bError
+				OR _SMC_Homing_J5.bError
+				OR _SMC_Homing_J6.bError);			
+IF _ErrorRtrig.Q THEN
+	Error := TRUE;
+	IF GroupHandler.Error THEN
+		ErrorID := GroupHandler.ErrorID;
+	ELSIF _SMC_Homing_J1.bError THEN
+		ErrorID := _SMC_Homing_J1.nErrorID;
+	ELSIF _SMC_Homing_J2.bError THEN
+		ErrorID := _SMC_Homing_J2.nErrorID;
+	ELSIF _SMC_Homing_J3.bError THEN
+		ErrorID := _SMC_Homing_J3.nErrorID;
+	ELSIF _SMC_Homing_J4.bError THEN
+		ErrorID := _SMC_Homing_J4.nErrorID;
+	ELSIF _SMC_Homing_J5.bError THEN
+		ErrorID := _SMC_Homing_J5.nErrorID;
+	ELSIF _SMC_Homing_J6.bError THEN
+		ErrorID := _SMC_Homing_J6.nErrorID;
+	END_IF
+END_IF
+
+// TODO make search direction configurable for any robot
+//
+_SMC_Homing_J1(
+	Axis:=J1 , 
+	bExecute:= ,
+	fHomePosition:= StoredPositions[GVL.HOM_POS_IDX].Position.X, 
+	fVelocitySlow:= , 
+	fVelocityFast:= _HomingVelocityFast, 
+	fAcceleration:= _HomingAcceleration, 
+	fDeceleration:= _HomingAcceleration, 
+	fJerk:= _HomingJerk, 
+	nDirection:= MC_direction.negative, 
+	bReferenceSwitch:= NOT J1_Limit, 
+	fSignalDelay:= , 
+	nHomingMode:= , 
+	bReturnToZero:= , 
+	bIndexOccured:= , 
+	fIndexPosition:= , 
+	bIgnoreHWLimit:= TRUE, 
+	bDone=&gt; , 
+	bBusy=&gt; , 
+	bCommandAborted=&gt; , 
+	bError=&gt; , 
+	nErrorID=&gt; , 
+	bStartLatchingIndex=&gt; );
+	
+_SMC_Homing_J2(
+	Axis:=J2 , 
+	bExecute:= , 
+	fHomePosition:= StoredPositions[GVL.HOM_POS_IDX].Position.Y,  
+	fVelocitySlow:= , 
+	fVelocityFast:= _HomingVelocityFast, 
+	fAcceleration:= _HomingAcceleration, 
+	fDeceleration:= _HomingAcceleration,
+	fJerk:= _HomingJerk, 
+	nDirection:= MC_Direction.negative, 
+	bReferenceSwitch:= NOT J2_Limit, 
+	fSignalDelay:= , 
+	nHomingMode:= , 
+	bReturnToZero:= , 
+	bIndexOccured:= , 
+	fIndexPosition:= , 
+	bIgnoreHWLimit:= TRUE, 
+	bDone=&gt; , 
+	bBusy=&gt; , 
+	bCommandAborted=&gt; , 
+	bError=&gt; , 
+	nErrorID=&gt; , 
+	bStartLatchingIndex=&gt; );
+	
+_SMC_Homing_J3(
+	Axis:=J3 , 
+	bExecute:= , 
+	fHomePosition:= StoredPositions[GVL.HOM_POS_IDX].Position.Z, 
+	fVelocitySlow:= , 
+	fVelocityFast:= _HomingVelocityFast, 
+	fAcceleration:= _HomingAcceleration, 
+	fDeceleration:= _HomingAcceleration,
+	fJerk:= _HomingJerk, 
+	nDirection:= MC_Direction.positive, 
+	bReferenceSwitch:= NOT J3_Limit, 
+	fSignalDelay:= , 
+	nHomingMode:= , 
+	bReturnToZero:= , 
+	bIndexOccured:= , 
+	fIndexPosition:= , 
+	bIgnoreHWLimit:= TRUE, 
+	bDone=&gt; , 
+	bBusy=&gt; , 
+	bCommandAborted=&gt; , 
+	bError=&gt; , 
+	nErrorID=&gt; , 
+	bStartLatchingIndex=&gt; );
+	
+_SMC_Homing_J4(
+	Axis:=J4 , 
+	bExecute:= ,
+	fHomePosition:= StoredPositions[GVL.HOM_POS_IDX].Position.A, 
+	fVelocitySlow:= , 
+	fVelocityFast:= _HomingVelocityFast, 
+	fAcceleration:= _HomingAcceleration, 
+	fDeceleration:= _HomingAcceleration,
+	fJerk:= _HomingJerk, 
+	nDirection:= MC_Direction.positive, 
+	bReferenceSwitch:= NOT J4_Limit, 
+	fSignalDelay:= , 
+	nHomingMode:= , 
+	bReturnToZero:= , 
+	bIndexOccured:= , 
+	fIndexPosition:= , 
+	bIgnoreHWLimit:= TRUE, 
+	bDone=&gt; , 
+	bBusy=&gt; , 
+	bCommandAborted=&gt; , 
+	bError=&gt; , 
+	nErrorID=&gt; , 
+	bStartLatchingIndex=&gt; );
+	
+_SMC_Homing_J5(
+	Axis:=J5 , 
+	bExecute:= , 
+	fHomePosition:= StoredPositions[GVL.HOM_POS_IDX].Position.B,  
+	fVelocitySlow:= , 
+	fVelocityFast:= _HomingVelocityFast, 
+	fAcceleration:= _HomingAcceleration, 
+	fDeceleration:= _HomingAcceleration,
+	fJerk:= _HomingJerk, 
+	nDirection:= MC_Direction.positive, 
+	bReferenceSwitch:= NOT J5_Limit, 
+	fSignalDelay:= , 
+	nHomingMode:= , 
+	bReturnToZero:= , 
+	bIndexOccured:= , 
+	fIndexPosition:= , 
+	bIgnoreHWLimit:= TRUE, 
+	bDone=&gt; , 
+	bBusy=&gt; , 
+	bCommandAborted=&gt; , 
+	bError=&gt; , 
+	nErrorID=&gt; , 
+	bStartLatchingIndex=&gt; );
+	
+_SMC_Homing_J6(
+	Axis:=J6 , 
+	bExecute:= , 
+	fHomePosition:= StoredPositions[GVL.HOM_POS_IDX].Position.C, 
+	fVelocitySlow:= , 
+	fVelocityFast:= _HomingVelocityFast, 
+	fAcceleration:= _HomingAcceleration, 
+	fDeceleration:= _HomingAcceleration,
+	fJerk:= _HomingJerk, 
+	nDirection:= MC_Direction.negative, 
+	bReferenceSwitch:= NOT J6_Limit, 
+	fSignalDelay:= , 
+	nHomingMode:= , 
+	bReturnToZero:= , 
+	bIndexOccured:= , 
+	fIndexPosition:= , 
+	bIgnoreHWLimit:= TRUE, 
+	bDone=&gt; , 
+	bBusy=&gt; , 
+	bCommandAborted=&gt; , 
+	bError=&gt; , 
+	nErrorID=&gt; , 
+	bStartLatchingIndex=&gt; );
+	
+//
+_MC_SetPosition_J1(
+	Axis:= J1, 
+	Execute:= _MC_SetPosition_J1.Execute AND NOT _MC_SetPosition_J1.Done AND NOT _MC_SetPosition_J1.Error, 
+	Position:= 0.0, 
+	Mode:= FALSE, // true=relative false=absolute
+	Done=&gt; , 
+	Busy=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );
+_MC_SetPosition_J2(
+	Axis:= J2, 
+	Execute:= _MC_SetPosition_J2.Execute AND NOT _MC_SetPosition_J2.Done AND NOT _MC_SetPosition_J2.Error, 
+	Position:= 0.0, 
+	Mode:= FALSE, // true=relative false=absolute
+	Done=&gt; , 
+	Busy=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );
+_MC_SetPosition_J3(
+	Axis:= J3, 
+	Execute:= _MC_SetPosition_J3.Execute AND NOT _MC_SetPosition_J3.Done AND NOT _MC_SetPosition_J3.Error, 
+	Position:= 0.0, 
+	Mode:= FALSE, // true=relative false=absolute
+	Done=&gt; , 
+	Busy=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );
+_MC_SetPosition_J4(
+	Axis:= J4, 
+	Execute:= _MC_SetPosition_J4.Execute AND NOT _MC_SetPosition_J4.Done AND NOT _MC_SetPosition_J4.Error, 
+	Position:= 0.0, 
+	Mode:= FALSE, // true=relative false=absolute
+	Done=&gt; , 
+	Busy=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );
+_MC_SetPosition_J5(
+	Axis:= J5, 
+	Execute:= _MC_SetPosition_J5.Execute AND NOT _MC_SetPosition_J5.Done AND NOT _MC_SetPosition_J5.Error, 
+	Position:= 0.0, 
+	Mode:= FALSE, // true=relative false=absolute
+	Done=&gt; , 
+	Busy=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );
+_MC_SetPosition_J6(
+	Axis:= J6, 
+	Execute:= _MC_SetPosition_J6.Execute AND NOT _MC_SetPosition_J6.Done AND NOT _MC_SetPosition_J6.Error, 
+	Position:= 0.0, 
+	Mode:= FALSE, // true=relative false=absolute
+	Done=&gt; , 
+	Busy=&gt; , 
+	Error=&gt; , 
+	ErrorID=&gt; );</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_StartHoming" ObjectId="1ff714ca-aba4-448a-bc01-bf0eab578f27">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF _SequenceMain = STEP_IDLE THEN
+	M_StartHoming := TRUE;
+	_StartHoming := TRUE;
+ELSE
+	M_StartHoming := FALSE;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_SetHome" ObjectId="ac8ad3ff-e2e3-4571-99f3-004f0df0c316">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+// adjust all the persistent variables to take on the calibrated values
+StoredPositions[GVL.HOM_POS_IDX].Position.X := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X, 
+																				CurrentPosition:= J1.fActPosition, 
+																				HomeSearchDirection:= _SMC_Homing_J1.nDirection);
+
+StoredPositions[GVL.HOM_POS_IDX].Position.Y := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y, 
+																				CurrentPosition:= J2.fActPosition, 
+																				HomeSearchDirection:= _SMC_Homing_J2.nDirection);
+
+StoredPositions[GVL.HOM_POS_IDX].Position.Z := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z, 
+																				CurrentPosition:= J3.fActPosition, 
+																				HomeSearchDirection:= _SMC_Homing_J3.nDirection);
+
+StoredPositions[GVL.HOM_POS_IDX].Position.A := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A, 
+																				CurrentPosition:= J4.fActPosition, 
+																				HomeSearchDirection:= _SMC_Homing_J4.nDirection);
+
+StoredPositions[GVL.HOM_POS_IDX].Position.B := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B, 
+																				CurrentPosition:= J5.fActPosition, 
+																				HomeSearchDirection:= _SMC_Homing_J5.nDirection);
+
+StoredPositions[GVL.HOM_POS_IDX].Position.C := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C, 
+																				CurrentPosition:= J5.fActPosition, 
+																				HomeSearchDirection:= _SMC_Homing_J6.nDirection);
+
+// this isnt totally needed but will calibrate the current session without the need to rehome
+_MC_SetPosition_J1.Execute:=TRUE;
+_MC_SetPosition_J2.Execute:=TRUE;
+_MC_SetPosition_J3.Execute:=TRUE;
+_MC_SetPosition_J4.Execute:=TRUE;
+_MC_SetPosition_J5.Execute:=TRUE;
+_MC_SetPosition_J6.Execute:=TRUE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>6c30ff35-bc31-4ed8-ab4a-320ad080dc49</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="F_HomeOffsetCalc" pouType="function">
+                <interface>
+                  <returnType>
+                    <LREAL />
+                  </returnType>
+                  <inputVars>
+                    <variable name="CurrentOffset">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="CurrentPosition">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="HomeSearchDirection">
+                      <type>
+                        <derived name="MC_Direction" />
+                      </type>
+                    </variable>
+                  </inputVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">IF HomeSearchDirection = MC_Direction.positive THEN
+	F_HomeOffsetCalc := -F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
+	
+ELSIF HomeSearchDirection = MC_Direction.negative THEN
+	F_HomeOffsetCalc := F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
+	
+ELSE
+	F_HomeOffsetCalc := CurrentOffset;
+	
+END_IF</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>ad8953b8-d17f-41b2-83c9-9901a22a0b46</ObjectId>
                   </data>
                 </addData>
               </pou>
@@ -22109,29 +23083,6 @@ END_IF</xhtml>
     </configurations>
   </instances>
   <addData>
-    <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
-      <Libraries>
-        <Library Name="#VisuSymbols" Namespace="VisuSymbols" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="VisuSymbols, 4.1.0.0 (System)" />
-        <Library Name="#System_VisuElems" Namespace="VisuElems" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElems, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemMeter" Namespace="VisuElemMeter" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemMeter, 4.3.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsSpecialControls" Namespace="VisuElemsSpecialControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsSpecialControls, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsWinControls" Namespace="VisuElemsWinControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsWinControls, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemTextEditor" Namespace="VisuElemTextEditor" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTextEditor, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemTrace" Namespace="VisuElemTrace" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTrace, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuNativeControl" Namespace="VisuNativeControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuNativeControl, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsAlarm" Namespace="VisuElemsAlarm" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsAlarm, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemCamDisplayer" Namespace="VisuElemCamDisplayer" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemCamDisplayer, 4.2.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElem3DPath" Namespace="VisuElem3DPath" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElem3DPath, 4.1.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsDateTime" Namespace="VisuElemsDateTime" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsDateTime, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemXYChart" Namespace="VisuElemXYChart" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemXYChart, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.2.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <addData>
-          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-            <ObjectId>7947b9f0-2ec0-46cb-a7e5-f8f763be16e6</ObjectId>
-          </data>
-        </addData>
-      </Libraries>
-    </data>
     <data name="http://www.3s-software.com/plcopenxml/projectstructure" handleUnknown="discard">
       <ProjectStructure>
         <Object Name="Device" ObjectId="883e7752-fd50-4d5b-bb87-a92a505c0d55">
@@ -22197,13 +23148,14 @@ END_IF</xhtml>
                 <Object Name="BuildMoveCmd" ObjectId="19554b2f-3ca2-4f8d-a4a2-2e3ac3119ec0" />
               </Folder>
               <Folder Name="jog">
-                <Object Name="JogProcessor" ObjectId="9ad0dd5a-e160-4345-8eee-ad9cf9bfb3eb">
+                <Object Name="FB_JogProcessor" ObjectId="9ad0dd5a-e160-4345-8eee-ad9cf9bfb3eb">
                   <Folder Name="private">
                     <Object Name="_M_HandleController" ObjectId="dcf131a0-32b4-4630-a728-b085ba029110" />
                   </Folder>
                 </Object>
+                <Object Name="F_SetJogButtons" ObjectId="640ac73b-ff1c-4df1-a978-e5b05f9ea455" />
               </Folder>
-              <Object Name="CommandProcessor" ObjectId="97872514-f094-4f4a-8630-59a989ffd663">
+              <Object Name="FB_CommandProcessor" ObjectId="97872514-f094-4f4a-8630-59a989ffd663">
                 <Object Name="P_CurrentCommand" ObjectId="d4fb3147-2a09-4011-bb95-1eb5cd53c440" />
                 <Folder Name="public">
                   <Object Name="M_SetNextCommand" ObjectId="7318a297-a063-4ac2-856c-165720d821a4" />
@@ -22447,7 +23399,7 @@ END_IF</xhtml>
                 <Object Name="ST_LogicCmd" ObjectId="c4e12c65-0b92-43d3-a6f5-ab4569642ec6" />
               </Folder>
               <Object Name="F_AddElement" ObjectId="40f6ab40-9306-42a3-9cf6-d7249218b202" />
-              <Object Name="ProgramProcessor" ObjectId="efd5aca7-63df-4cd7-9f44-51095df5f331">
+              <Object Name="FB_ProgramProcessor" ObjectId="efd5aca7-63df-4cd7-9f44-51095df5f331">
                 <Object Name="P_CurrentProgram" ObjectId="3e083bec-9978-4c4c-be28-89a14e02ca1c" />
                 <Object Name="P_CurrentCommand" ObjectId="a9b3f86e-c7f3-46d5-b8e5-0f2f5726a9f3" />
                 <Folder Name="public">
@@ -22471,7 +23423,6 @@ END_IF</xhtml>
                 </Folder>
               </Object>
               <Object Name="F_RoundLreal" ObjectId="6e4b5325-49a6-45c7-a436-b44a2066c3ea" />
-              <Object Name="F_HomeOffsetCalc" ObjectId="ad8953b8-d17f-41b2-83c9-9901a22a0b46" />
               <Folder Name="group">
                 <Object Name="FB_GroupHandler" ObjectId="f6416d9a-a888-4f6b-9b8f-cb306c7639e1">
                   <Folder Name="private">
@@ -22491,6 +23442,15 @@ END_IF</xhtml>
                   <Object Name="P_GroupStatus" ObjectId="7660ae4b-8965-424f-b336-9965f704e650" />
                 </Object>
                 <Object Name="DUT_GroupStatus" ObjectId="8da24330-28fc-457b-af4f-78411d1da7e7" />
+              </Folder>
+              <Folder Name="home">
+                <Object Name="FB_HomingProcessor" ObjectId="6c30ff35-bc31-4ed8-ab4a-320ad080dc49">
+                  <Folder Name="public">
+                    <Object Name="M_StartHoming" ObjectId="1ff714ca-aba4-448a-bc01-bf0eab578f27" />
+                    <Object Name="M_SetHome" ObjectId="ac8ad3ff-e2e3-4571-99f3-004f0df0c316" />
+                  </Folder>
+                </Object>
+                <Object Name="F_HomeOffsetCalc" ObjectId="ad8953b8-d17f-41b2-83c9-9901a22a0b46" />
               </Folder>
             </Folder>
             <Folder Name="GVL">
@@ -22532,8 +23492,6 @@ END_IF</xhtml>
             </Object>
           </Object>
         </Object>
-        <Object Name="Library Manager" ObjectId="7947b9f0-2ec0-46cb-a7e5-f8f763be16e6" />
-        <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
       </ProjectStructure>
     </data>
   </addData>

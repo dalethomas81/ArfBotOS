@@ -21,5 +21,6 @@ ArfBotOS host a web-based HMI to make it convenient to program and control from 
 - `Forward[2]` **Z+**
 - `Forward[3]` **P+** (pitch)
 - `Forward[4]` **Y+** (yaw)
-- `Forward[5]` **R+** (roll)
+- `Forward[5]` **R+** (roll)  
+
 *Note: if you are unfamiliar with Euler angles, study [this](https://en.wikipedia.org/wiki/Euler_angles) page. Additionally, search Youtube and other sites on information about 6-axis robot coordinate systems.
