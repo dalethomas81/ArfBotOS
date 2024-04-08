@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-08T12:57:46.3190415" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-08T12:57:26.4534847">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-08T13:54:45.5081758" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-08T13:46:28.7538888">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -2800,6 +2800,16 @@ RESERVED: INT:=47;</xhtml>
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="SetMicStateOn">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="SetMicStateOff">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="_i">
                       <type>
                         <INT />
@@ -2862,6 +2872,14 @@ RESERVED: INT:=47;</xhtml>
 	IF SetPlayerIDAll THEN
 		SetPlayerIDAll := FALSE;
 		Controller.M_SetPlayerID(E_PlayerID.PlayerAll);
+	END_IF
+	IF SetMicStateOn THEN
+		SetMicStateOn := FALSE;
+		Controller.M_SetMicrophoneState(TRUE);
+	END_IF
+	IF SetMicStateOff THEN
+		SetMicStateOff := FALSE;
+		Controller.M_SetMicrophoneState(FALSE);
 	END_IF
 	
      
@@ -3502,6 +3520,11 @@ _PowerTimer(IN:=Controller.P_State.Connected
 _PowerRtrig(CLK:=_PowerTimer.Q);
 IF _PowerRtrig.Q THEN
 	GVL.PowerOn := NOT GVL.PowerOn;
+	IF GVL.PowerOn THEN
+		Controller.M_SetColor(255,0,0);
+	ELSE
+		Controller.M_SetColor(0,255,0);
+	END_IF
 END_IF</xhtml>
                         </ST>
                       </body>
@@ -5050,6 +5073,10 @@ IF Enable AND_THEN Controller.P_State.Connected THEN
 		_SMC_GroupJog2.Enable := NOT _SMC_GroupJog2.Enable;
 		IF _SMC_GroupJog2.Enable THEN
 			_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
+			Controller.M_SetPlayerID(E_PlayerID.PlayerALL);
+			Controller.M_SetMicrophoneState(TRUE);
+		ELSE
+			Controller.M_SetMicrophoneState(FALSE);
 		END_IF
 	END_IF
 	
@@ -5058,16 +5085,22 @@ IF Enable AND_THEN Controller.P_State.Connected THEN
 		CASE _SMC_GroupJog2.CoordSystem OF
 			SMC_COORD_SYSTEM.ACS:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.MCS;
+				Controller.M_SetPlayerID(E_PlayerID.Player2);
 			SMC_COORD_SYSTEM.MCS:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.PCS_1;
+				Controller.M_SetPlayerID(E_PlayerID.Player3);
 			SMC_COORD_SYSTEM.PCS_1:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.PCS_2;
+				Controller.M_SetPlayerID(E_PlayerID.Player4);
 			SMC_COORD_SYSTEM.PCS_2:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
+				Controller.M_SetPlayerID(E_PlayerID.PlayerALL);
 			SMC_COORD_SYSTEM.TCS:
-				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.WCS;
+				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.ACS; // skip WCS
+				Controller.M_SetPlayerID(E_PlayerID.Player1);
 			SMC_COORD_SYSTEM.WCS:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.ACS;
+				Controller.M_SetPlayerID(E_PlayerID.Player1);
 		END_CASE
 	END_IF
 	
@@ -17344,55 +17377,6 @@ END_IF*)</xhtml>
                 </body>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_ReadInputs" ObjectId="469b88c9-7a94-4eb7-be5f-342dbaafdd26">
-                      <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
-                        <inputVars>
-                          <variable name="uTimeout">
-                            <type>
-                              <UDINT />
-                            </type>
-                            <initialValue>
-                              <simpleValue value="60" />
-                            </initialValue>
-                            <documentation>
-                              <xhtml xmlns="http://www.w3.org/1999/xhtml">sec</xhtml>
-                            </documentation>
-                          </variable>
-                        </inputVars>
-                        <localVars constant="true">
-                          <variable name="_ReadInputsScriptFileName">
-                            <type>
-                              <string />
-                            </type>
-                            <initialValue>
-                              <simpleValue value="'/var/opt/codesys/PlcLogic/Application/Controller/test.py'" />
-                            </initialValue>
-                          </variable>
-                        </localVars>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy THEN
-	M_ReadInputs := TRUE;
-	
-	_Command := CONCAT('sudo python ', _ReadInputsScriptFileName);
-	_Command := CONCAT(_Command, ' 2&gt; ./controller_log.txt ');
-	
-	SUPER^._M_Execute(Command:=_Command, Timeout:=uTimeout);
-	
-ELSE
-	M_ReadInputs := FALSE;
-	
-END_IF</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
                     <Method name="_M_EvaluateControllerStates" ObjectId="ec5a2389-0422-417f-bd11-588f38f08844">
                       <interface>
                         <returnType>
@@ -17446,6 +17430,14 @@ END_IF</xhtml>
                               </structValue>
                             </initialValue>
                           </variable>
+                          <variable name="_Heartbeat">
+                            <type>
+                              <USINT />
+                            </type>
+                            <initialValue>
+                              <simpleValue value="0" />
+                            </initialValue>
+                          </variable>
                           <variable name="_HeartbeatLast">
                             <type>
                               <USINT />
@@ -17468,8 +17460,9 @@ END_IF</xhtml>
 END_IF
 
 //
-IF States[0] &lt;&gt; _HeartbeatLast THEN
-	_HeartbeatLast := States[0];
+_Heartbeat := States[0] OR States[7]; // States[0] appears to be bluetooth and States[7] appears to be wired
+IF _Heartbeat &lt;&gt; _HeartbeatLast THEN
+	_HeartbeatLast := _Heartbeat;
 	_HeartbeatTimer(IN:=FALSE);
 ELSE
 	_HeartbeatTimer(IN:=TRUE);
@@ -17665,6 +17658,38 @@ END_IF</xhtml>
 		
 ELSE
 	M_SetPlayerID := FALSE;
+	
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_SetMicrophoneState" ObjectId="59d971f4-160d-4206-8fd6-464272a65157">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="State">
+                            <type>
+                              <BOOL />
+                            </type>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy THEN
+	M_SetMicrophoneState := TRUE;
+	
+	_Command := CONCAT('cmd: setMicrophoneState:', BOOL_TO_STRING(State));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+		
+ELSE
+	M_SetMicrophoneState := FALSE;
 	
 END_IF</xhtml>
                         </ST>
@@ -22849,29 +22874,6 @@ END_IF</xhtml>
     </configurations>
   </instances>
   <addData>
-    <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
-      <Libraries>
-        <Library Name="#VisuSymbols" Namespace="VisuSymbols" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="VisuSymbols, 4.1.0.0 (System)" />
-        <Library Name="#System_VisuElems" Namespace="VisuElems" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElems, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemMeter" Namespace="VisuElemMeter" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemMeter, 4.3.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsSpecialControls" Namespace="VisuElemsSpecialControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsSpecialControls, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsWinControls" Namespace="VisuElemsWinControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsWinControls, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemTextEditor" Namespace="VisuElemTextEditor" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTextEditor, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemTrace" Namespace="VisuElemTrace" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTrace, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuNativeControl" Namespace="VisuNativeControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuNativeControl, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsAlarm" Namespace="VisuElemsAlarm" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsAlarm, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemCamDisplayer" Namespace="VisuElemCamDisplayer" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemCamDisplayer, 4.2.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElem3DPath" Namespace="VisuElem3DPath" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElem3DPath, 4.1.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsDateTime" Namespace="VisuElemsDateTime" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsDateTime, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemXYChart" Namespace="VisuElemXYChart" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemXYChart, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.2.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <addData>
-          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-            <ObjectId>7947b9f0-2ec0-46cb-a7e5-f8f763be16e6</ObjectId>
-          </data>
-        </addData>
-      </Libraries>
-    </data>
     <data name="http://www.3s-software.com/plcopenxml/projectstructure" handleUnknown="discard">
       <ProjectStructure>
         <Object Name="Device" ObjectId="883e7752-fd50-4d5b-bb87-a92a505c0d55">
@@ -23079,9 +23081,9 @@ END_IF</xhtml>
               <Folder Name="controller">
                 <Object Name="FB_Controller" ObjectId="6c3bd905-e561-44be-a365-7f9abc521e72">
                   <Folder Name="public">
-                    <Object Name="M_ReadInputs" ObjectId="469b88c9-7a94-4eb7-be5f-342dbaafdd26" />
                     <Object Name="M_SetColor" ObjectId="eeb0100c-2915-48d1-9f36-b75c4e907a60" />
                     <Object Name="M_SetPlayerID" ObjectId="fe5b8c1d-d289-45ab-8132-645bc019686a" />
+                    <Object Name="M_SetMicrophoneState" ObjectId="59d971f4-160d-4206-8fd6-464272a65157" />
                   </Folder>
                   <Folder Name="private">
                     <Object Name="_M_EvaluateControllerStates" ObjectId="ec5a2389-0422-417f-bd11-588f38f08844" />
@@ -23284,8 +23286,6 @@ END_IF</xhtml>
             </Object>
           </Object>
         </Object>
-        <Object Name="Library Manager" ObjectId="7947b9f0-2ec0-46cb-a7e5-f8f763be16e6" />
-        <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
       </ProjectStructure>
     </data>
   </addData>

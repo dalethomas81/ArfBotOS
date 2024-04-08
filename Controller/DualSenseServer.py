@@ -43,7 +43,10 @@ def handle_setmicrophonestate_cmd(cmdParameters, dualsense):
     dualsense.audio.setMicrophoneState(True)
     '''
     try:
-        print('command currently not supported')
+        dualsense.audio.setMicrophoneState(str_to_bool(cmdParameters))
+        
+    except ValueError:
+        pass
         
     except Exception as e:
         print(e)
@@ -252,13 +255,13 @@ def handle_connection(connection):
                 # find device and initialize
                 dualsense.init()
 
-                # set color around touchpad to red
-                dualsense.light.setColorI(255, 0, 0)
+                #  bump the motors
                 dualsense.setLeftMotor(100)
                 dualsense.setRightMotor(100)
                 time.sleep(0.250)
                 dualsense.setLeftMotor(0)
                 dualsense.setRightMotor(0)
+                time.sleep(0.250)
                 
                 # hang out here
                 while not disconnect_controller:
@@ -290,8 +293,7 @@ def handle_connection(connection):
                         #print(e)
                         continue # continue will keep running the while loop
                 
-                # set color around touchpad to green
-                dualsense.light.setColorI(0, 255, 0)
+                # bump the motors
                 dualsense.setLeftMotor(100)
                 dualsense.setRightMotor(100)
                 time.sleep(0.250)
@@ -318,9 +320,9 @@ def str_to_bool (val):
     """
     val = val.lower()
     if val in ('y', 'yes', 't', 'true', 'on', '1'):
-        return 1
+        return True
     elif val in ('n', 'no', 'f', 'false', 'off', '0'):
-        return 0
+        return False
     else:
         raise ValueError("invalid truth value %r" % (val,))
 
