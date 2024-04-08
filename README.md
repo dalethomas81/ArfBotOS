@@ -14,7 +14,7 @@ This section should be followed after all of the electrical, hardware, and softw
 - Stage 2: J4 and J5
 - Stage 3: J6
 3. The robot will end the end sequence at the MCS (x0, y0, z0), (r0, p0, y0) position.
-4. If `Flag 44` is set to true, the robot will end the homing sequence in `Pose 2' ![image](Resources/images/readme/hmi-programs-flag-pose.JPG)
+4. If `Flag 44` is set to true, the robot will end the homing sequence in `Pose 2'   ![image](Resources/images/readme/hmi-programs-flag-pose.JPG)
 
 ### Zeroing the Axes Home Position
 1. After successfully homing the drives, it may be necessary to zero out the axes such that the home position of the robot is in the expected space.
