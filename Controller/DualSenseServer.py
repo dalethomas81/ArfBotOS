@@ -25,73 +25,142 @@ def send_client_with_lock(connection, data):
     finally:
         connection_lock.release()
 
-ping = False
-def handle_client_message(buf, dualsense):
-    
-    global ping
-    ping = not ping
-    
+ # 'setColorI:0,0,255' 0-255,0-255,0-255 r,g,b
+def handle_setcolor_cmd(cmdParameters ,dualsense):
     '''
-        class LedOptions(IntFlag):
-            Off = 0x0
-            PlayerLedBrightness = 0x1
-            UninterrumpableLed = 0x2
-            Both = 0x01 | 0x02
-            
-        class PulseOptions(IntFlag):
-            Off = 0x0
-            FadeBlue = 0x1
-            FadeOut = 0x2
-            
+    dualsense.light.setColorI(0, 0, 255) 'cmd: setColorI:0,0,255'
+    '''
+    print('command currently not supported')
+    
+ # 'setMicrophoneState:True' True/False
+def handle_setmicrophonestate_cmd(cmdParameters ,dualsense):
+    '''
+    dualsense.audio.setMicrophoneState(True)
+    '''
+    print('command currently not supported')
+    
+ # 'setPlayerID:4' 4/10/21/27/31 1/2/3/4/all
+def handle_setplayerid_cmd(cmdParameters ,dualsense):
+    '''
+    dualsense.light.setPlayerID(PlayerID.PLAYER_2)
+    class PlayerID(IntFlag):
+        PLAYER_1 = 4
+        PLAYER_2 = 10
+        PLAYER_3 = 21
+        PLAYER_4 = 27
+        ALL = 31
+    '''
+    print('command currently not supported')
+    
+ # 'setBrightness:2' 0/1/2 low/med/high
+def handle_setbrightness_cmd(cmdParameters ,dualsense):
+    '''        
+        dualsense.light.setBrightness(Brightness.high)
         class Brightness(IntFlag):
             high = 0x0
             medium = 0x1
             low = 0x2
-            
-        dualsense.setLeftMotor(255)
-        dualsense.setRightMotor(100)
-
-        dualsense.triggerR.setMode(TriggerModes.Pulse_A)
-        class TriggerModes(IntFlag):
-            Off = 0x0  # no resistance
-            Rigid = 0x1  # continous resistance
-            Pulse = 0x2  # section resistance
-            Rigid_A = 0x1 | 0x20
-            Rigid_B = 0x1 | 0x04
-            Rigid_AB = 0x1 | 0x20 | 0x04
-            Pulse_A = 0x2 | 0x20
-            Pulse_B = 0x2 | 0x04
-            Pulse_AB = 0x2 | 0x20 | 0x04
-            Calibration = 0xFC
-        dualsense.triggerR.setForce(0, 200)
-        dualsense.triggerR.setForce(1, 255)
-        dualsense.triggerR.setForce(2, 175)
-        
-        dualsense.light.setColorI(0, 0, 255)
-        dualsense.audio.setMicrophoneState(True)
-        dualsense.light.setPlayerID(PlayerID.PLAYER_2)
-        class PlayerID(IntFlag):
-            PLAYER_1 = 4
-            PLAYER_2 = 10
-            PLAYER_3 = 21
-            PLAYER_4 = 27
-            ALL = 31
     '''
+    print('command currently not supported')
+    
+ # 'setRightMotor:255' 0-255 intensity
+def handle_setrightmotor_cmd(cmdParameters ,dualsense):
+    '''
+    '''
+    '''
+    dualsense.setLeftMotor(255)
+    dualsense.setRightMotor(100)
+    '''
+    print('command currently not supported')
+    
+ # 'setLeftMotor:255' 0-255 intensity
+def handle_setleftmotor_cmd(cmdParameters ,dualsense):
+    '''
+    '''
+    print('command currently not supported')
+    
+ # 'setRightTriggerMode:0' see notes in function
+def handle_setrighttriggermode_cmd(cmdParameters ,dualsense):
+    '''
+    '''
+    print('command currently not supported')
+    
+ # 'setLeftTriggerMode:0' see notes in function
+def handle_setlefttriggermode_cmd(cmdParameters ,dualsense):
+    '''
+    dualsense.triggerR.setMode(TriggerModes.Pulse_A)
+    class TriggerModes(IntFlag):
+        Off = 0x0  # no resistance
+        Rigid = 0x1  # continous resistance
+        Pulse = 0x2  # section resistance
+        Rigid_A = 0x1 | 0x20
+        Rigid_B = 0x1 | 0x04
+        Rigid_AB = 0x1 | 0x20 | 0x04
+        Pulse_A = 0x2 | 0x20
+        Pulse_B = 0x2 | 0x04
+        Pulse_AB = 0x2 | 0x20 | 0x04
+        Calibration = 0xFC
+    '''
+    print('command currently not supported')
+    
+ # 'setRightTriggerForce:0,255' see notes in function
+def handle_setrighttriggerforce_cmd(cmdParameters ,dualsense):
+    '''
+    dualsense.triggerR.setForce(0, 200)
+    dualsense.triggerR.setForce(1, 255)
+    dualsense.triggerR.setForce(2, 175)
+    '''
+    print('command currently not supported')
+    
+ # 'setLeftTriggerForce:0,255' see notes in function
+def handle_setlefttriggerforce_cmd(cmdParameters ,dualsense):
+    '''
+    '''
+    print('command currently not supported')
+
+def handle_client_message(buf, dualsense):
     
     try:
         message = buf.decode()
         if message[0:5] == 'cmd: ': # [0:5] means start at 0 index and return 5
-            #id = int(buf[5:])
-            if ping:
-                dualsense.light.setBrightness(Brightness.low)
-                dualsense.light.setColorI(0, 0, 255)
+            cmd = message[5:] # [5:] means start at index 5 and return the rest
+            colon = cmd.find(':')
+            cmdType = cmd[0:colon]
+            cmdParameters = cmd[colon+1:]
+            
+            if cmdType == 'setColorI':
+                handle_setcolor_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setMicrophoneState':
+                handle_setmicrophonestate_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setPlayerID':
+                handle_setplayerid_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setBrightness':
+                handle_setbrightness_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setRightMotor':
+                handle_setrightmotor_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setLeftMotor':
+                handle_setleftmotor_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setRightTriggerMode':
+                handle_setrighttriggermode_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setLeftTriggerMode':
+                handle_setlefttriggermode_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setRightTriggerForce':
+                handle_setrighttriggerforce_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setLeftTriggerForce':
+                handle_setlefttriggerforce_cmd(cmdParameters ,dualsense)
+                
             else:
-                dualsense.light.setBrightness(Brightness.high)
-                dualsense.light.setColorI(0, 255, 0)
-            
-            dualsense.audio.setMicrophoneState(True)
-            dualsense.light.setPlayerID(PlayerID.PLAYER_2)
-            
+                print('unknown command: ' + cmdType)
+                
     except Exception as e:
         print(e)
 

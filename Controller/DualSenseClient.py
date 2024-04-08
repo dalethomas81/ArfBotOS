@@ -24,7 +24,7 @@ def main():
             now = time.time()
             if now - start > 5:
                 start = time.time()
-                data = 'cmd: '
+                data = 'cmd: setColorI:0,0,255'
                 clientsocket.send(data.encode())
             
             # continuously read the buffer
