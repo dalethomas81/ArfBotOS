@@ -25,7 +25,7 @@ This section should be followed after all of the electrical, hardware, and softw
 - Stage 2: J4 and J5
 - Stage 3: J6
 3. The robot will end the end sequence at the MCS (x0, y0, z0), (r0, p0, y0) position.
-4. If `Flag 44` is set to true, the robot will end the homing sequence in `Pose 2` 
+4. If `Flag 44` is set to true, the robot will end the homing sequence in `Pose 2`  
 ![image](Resources/images/readme/hmi-programs-flag-pose.JPG)
 
 ### Zeroing the Axes Home Position
@@ -242,6 +242,9 @@ WantedBy=multi-user.target
 7. enter the following command to allow the controller to connect automatically:
 	`trust 12:23:34:45:56:67`
 8. enter `exit` to leave bluetooth control.
+
+#### notes:
+- The controller will work connected via USB as well in the event that bluetooth is not working.
 
 #### references:
 - https://bluedot.readthedocs.io/en/latest/pairpipi.html#using-the-command-line
