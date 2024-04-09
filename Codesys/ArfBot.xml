@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-08T13:54:45.5081758" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-08T13:46:28.7538888">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-08T18:31:35.1323916" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-08T18:23:39.7630368">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -17324,6 +17324,21 @@ END_IF</xhtml>
                         </array>
                       </type>
                     </variable>
+                    <variable name="ControllerStatesTemp">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="254" />
+                          <baseType>
+                            <BYTE />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="ReadStringTemp">
+                      <type>
+                        <string length="255" />
+                      </type>
+                    </variable>
                     <variable name="RecordLast">
                       <type>
                         <DINT />
@@ -17339,6 +17354,31 @@ END_IF</xhtml>
                             <simpleValue value="TIME#5s0ms" />
                           </value>
                         </structValue>
+                      </initialValue>
+                    </variable>
+                    <variable name="_i">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_j">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_k">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                  </localVars>
+                  <localVars constant="true">
+                    <variable name="States">
+                      <type>
+                        <string />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'states: '" />
                       </initialValue>
                     </variable>
                   </localVars>
@@ -17357,7 +17397,13 @@ END_IF</xhtml>
 // copy over controller states when a new message is received
 IF SUPER^.P_RecordNumber &lt;&gt; RecordLast THEN
 	RecordLast := SUPER^.P_RecordNumber;
-	ControllerStates := SUPER^.P_RawReadByteArray;
+	IF FIND(SUPER^.P_RawReadString, States) &gt; 0 THEN // TODO this is getting messy. need to overhaul how this works
+		ControllerStatesTemp := SUPER^.P_RawReadByteArray;
+		FOR _i:=0 TO UINT_TO_INT(SIZEOF(ControllerStates)) - LEN(States) BY 1 DO
+			ControllerStates[_i] := ControllerStatesTemp[_i + LEN(States)];
+		END_FOR
+		
+	END_IF
 END_IF
 
 //
@@ -18168,7 +18214,7 @@ _ErrorDescription := '';</xhtml>
                     <Property name="P_RawReadString" ObjectId="1f6a1927-a95b-431e-8983-0d7d73e6caa0">
                       <interface>
                         <returnType>
-                          <string />
+                          <derived name="REFERENCE TO STRING(255)" />
                         </returnType>
                         <Attributes>
                           <Attribute Name="monitoring" Value="variable" />
@@ -18186,7 +18232,7 @@ _ErrorDescription := '';</xhtml>
                         </interface>
                         <body>
                           <ST>
-                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_RawReadString := _TcpClient.strRead;</xhtml>
+                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_RawReadString REF= _TcpClient.strRead;</xhtml>
                           </ST>
                         </body>
                         <addData />
@@ -22874,6 +22920,29 @@ END_IF</xhtml>
     </configurations>
   </instances>
   <addData>
+    <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
+      <Libraries>
+        <Library Name="#VisuSymbols" Namespace="VisuSymbols" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="VisuSymbols, 4.1.0.0 (System)" />
+        <Library Name="#System_VisuElems" Namespace="VisuElems" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElems, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemMeter" Namespace="VisuElemMeter" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemMeter, 4.3.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsSpecialControls" Namespace="VisuElemsSpecialControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsSpecialControls, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsWinControls" Namespace="VisuElemsWinControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsWinControls, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemTextEditor" Namespace="VisuElemTextEditor" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTextEditor, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemTrace" Namespace="VisuElemTrace" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTrace, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuNativeControl" Namespace="VisuNativeControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuNativeControl, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsAlarm" Namespace="VisuElemsAlarm" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsAlarm, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemCamDisplayer" Namespace="VisuElemCamDisplayer" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemCamDisplayer, 4.2.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElem3DPath" Namespace="VisuElem3DPath" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElem3DPath, 4.1.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsDateTime" Namespace="VisuElemsDateTime" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsDateTime, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemXYChart" Namespace="VisuElemXYChart" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemXYChart, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.2.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>7947b9f0-2ec0-46cb-a7e5-f8f763be16e6</ObjectId>
+          </data>
+        </addData>
+      </Libraries>
+    </data>
     <data name="http://www.3s-software.com/plcopenxml/projectstructure" handleUnknown="discard">
       <ProjectStructure>
         <Object Name="Device" ObjectId="883e7752-fd50-4d5b-bb87-a92a505c0d55">
@@ -23286,6 +23355,8 @@ END_IF</xhtml>
             </Object>
           </Object>
         </Object>
+        <Object Name="Library Manager" ObjectId="7947b9f0-2ec0-46cb-a7e5-f8f763be16e6" />
+        <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
       </ProjectStructure>
     </data>
   </addData>

@@ -282,15 +282,21 @@ def handle_connection(connection):
                                 
                             else:
                                 handle_client_message(buf, dualsense)
+                                response = 'res: '
+                                send_client_with_lock(connection, response.encode())
                         
                         except socket.error as e:
                             pass
                         
                         #
-                        send_client_with_lock(connection, bytearray(dualsense.states))
+                        statesString = 'states: '
+                        statesBytes = statesString.encode()
+                        statesList = list(statesBytes)
+                        both = statesList + dualsense.states
+                        send_client_with_lock(connection, bytearray(both))
                         
                     except Exception as e:
-                        #print(e)
+                        print(e)
                         continue # continue will keep running the while loop
                 
                 # bump the motors
