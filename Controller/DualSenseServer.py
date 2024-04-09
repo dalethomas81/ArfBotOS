@@ -91,29 +91,67 @@ def handle_setbrightness_cmd(cmdParameters, dualsense):
             low = 0x2
     '''
     try:
-        print('command currently not supported')
+        if cmdParameters == '0':
+            x = Brightness.high
+        elif cmdParameters == '1':
+            x = Brightness.medium
+        elif cmdParameters == '2':
+            x = Brightness.low
+        else:
+            x = Brightness.high
+            
+        dualsense.light.setBrightness(x)
         
     except Exception as e:
         print(e)
+
+def stop_motor(dualsense, motor, duration):
+
+    global disconnect_controller
+    disconnect_controller = False
     
- # 'setRightMotor:255' 0-255 intensity
+    try:
+        start = time.time()
+        now = start
+        while now - start < float(duration) and not disconnect_controller:
+            now = time.time()
+    except Exception as e:
+        print(e)
+    finally:
+        if motor == 0:
+            dualsense.setLeftMotor(0)
+        elif motor == 1:
+            dualsense.setRightMotor(0)
+    
+
+ # 'setRightMotor:255,0.100' 0-255 intensity 0-10000 duration in s
 def handle_setrightmotor_cmd(cmdParameters, dualsense):
     '''
-    dualsense.setLeftMotor(255)
     dualsense.setRightMotor(100)
     '''
     try:
-        print('command currently not supported')
+        params = cmdParameters.split(',')
+        dualsense.setRightMotor(int(params[0]))
+        
+        timer_thread = threading.Thread(target = stop_motor, args = (dualsense,1,params[1],))
+        timer_thread.name = 'right motor timer thread'
+        timer_thread.start()
         
     except Exception as e:
         print(e)
     
- # 'setLeftMotor:255' 0-255 intensity
+ # 'setLeftMotor:255,0.100' 0-255 intensity 0-10000 duration in s
 def handle_setleftmotor_cmd(cmdParameters, dualsense):
     '''
+    dualsense.setLeftMotor(255)
     '''
     try:
-        print('command currently not supported')
+        params = cmdParameters.split(',')
+        dualsense.setLeftMotor(int(params[0]))
+        
+        timer_thread = threading.Thread(target = stop_motor, args = (dualsense,0,params[1],))
+        timer_thread.name = 'left motor timer thread'
+        timer_thread.start()
         
     except Exception as e:
         print(e)
@@ -121,6 +159,18 @@ def handle_setleftmotor_cmd(cmdParameters, dualsense):
  # 'setRightTriggerMode:0' see notes in function
 def handle_setrighttriggermode_cmd(cmdParameters, dualsense):
     '''
+    dualsense.triggerR.setMode(TriggerModes.Pulse_A)
+    class TriggerModes(IntFlag):
+        Off = 0x0  # no resistance
+        Rigid = 0x1  # continous resistance
+        Pulse = 0x2  # section resistance
+        Rigid_A = 0x1 | 0x20
+        Rigid_B = 0x1 | 0x04
+        Rigid_AB = 0x1 | 0x20 | 0x04
+        Pulse_A = 0x2 | 0x20
+        Pulse_B = 0x2 | 0x04
+        Pulse_AB = 0x2 | 0x20 | 0x04
+        Calibration = 0xFC
     '''
     try:
         print('command currently not supported')
@@ -131,7 +181,7 @@ def handle_setrighttriggermode_cmd(cmdParameters, dualsense):
  # 'setLeftTriggerMode:0' see notes in function
 def handle_setlefttriggermode_cmd(cmdParameters, dualsense):
     '''
-    dualsense.triggerR.setMode(TriggerModes.Pulse_A)
+    dualsense.triggerL.setMode(TriggerModes.Pulse_A)
     class TriggerModes(IntFlag):
         Off = 0x0  # no resistance
         Rigid = 0x1  # continous resistance
@@ -166,6 +216,9 @@ def handle_setrighttriggerforce_cmd(cmdParameters, dualsense):
  # 'setLeftTriggerForce:0,255' see notes in function
 def handle_setlefttriggerforce_cmd(cmdParameters, dualsense):
     '''
+    dualsense.triggerL.setForce(0, 200)
+    dualsense.triggerL.setForce(1, 255)
+    dualsense.triggerL.setForce(2, 175)
     '''
     try:
         print('command currently not supported')
@@ -257,8 +310,9 @@ def handle_connection(connection):
 
                 #  bump the motors
                 dualsense.setLeftMotor(100)
-                dualsense.setRightMotor(100)
-                time.sleep(0.250)
+                time.sleep(0.1)
+                dualsense.setRightMotor(200)
+                time.sleep(0.1)
                 dualsense.setLeftMotor(0)
                 dualsense.setRightMotor(0)
                 time.sleep(0.250)
@@ -300,9 +354,10 @@ def handle_connection(connection):
                         continue # continue will keep running the while loop
                 
                 # bump the motors
-                dualsense.setLeftMotor(100)
+                dualsense.setRightMotor(200)
+                time.sleep(0.1)
                 dualsense.setRightMotor(100)
-                time.sleep(0.250)
+                time.sleep(0.1)
                 dualsense.setLeftMotor(0)
                 dualsense.setRightMotor(0)
                 time.sleep(0.250)

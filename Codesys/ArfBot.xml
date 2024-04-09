@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-08T18:31:35.1323916" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-08T18:23:39.7630368">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-09T12:29:54.6842269" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-09T12:29:36.4256206">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -2499,7 +2499,7 @@ RESERVED: INT:=47;</xhtml>
               </dataType>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
-              <dataType name="E_PlayerID">
+              <dataType name="E_ControllerPlayerID">
                 <baseType>
                   <enum>
                     <values>
@@ -2520,6 +2520,53 @@ RESERVED: INT:=47;</xhtml>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>d98d4d74-0af2-4200-b2d2-a2e62489282e</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="E_ControllerBrightness">
+                <baseType>
+                  <enum>
+                    <values>
+                      <value name="High" value="0" />
+                      <value name="Med" value="1" />
+                      <value name="Low" value="2" />
+                    </values>
+                  </enum>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="qualified_only" Value="" />
+                      <Attribute Name="strict" Value="" />
+                    </Attributes>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>604af7c6-46fd-4031-b39f-42d0051195f9</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="E_ControllerMotor">
+                <baseType>
+                  <enum>
+                    <values>
+                      <value name="Left" value="0" />
+                      <value name="Right" value="1" />
+                    </values>
+                  </enum>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="qualified_only" Value="" />
+                      <Attribute Name="strict" Value="" />
+                    </Attributes>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>a6c1ccec-7589-44ea-8664-b26e13e4589c</ObjectId>
                   </data>
                 </addData>
               </dataType>
@@ -2810,6 +2857,31 @@ RESERVED: INT:=47;</xhtml>
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="SetBrightnessHigh">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="SetBrightnessMed">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="SetBrightnessLow">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="SetMotorIntensity1">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="SetMotorIntensity2">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="_i">
                       <type>
                         <INT />
@@ -2867,11 +2939,11 @@ RESERVED: INT:=47;</xhtml>
 	END_IF
 	IF SetPlayerID3 THEN
 		SetPlayerID3 := FALSE;
-		Controller.M_SetPlayerID(E_PlayerID.Player3);
+		Controller.M_SetPlayerID(E_ControllerPlayerID.Player3);
 	END_IF
 	IF SetPlayerIDAll THEN
 		SetPlayerIDAll := FALSE;
-		Controller.M_SetPlayerID(E_PlayerID.PlayerAll);
+		Controller.M_SetPlayerID(E_ControllerPlayerID.PlayerAll);
 	END_IF
 	IF SetMicStateOn THEN
 		SetMicStateOn := FALSE;
@@ -2881,7 +2953,26 @@ RESERVED: INT:=47;</xhtml>
 		SetMicStateOff := FALSE;
 		Controller.M_SetMicrophoneState(FALSE);
 	END_IF
-	
+	IF SetBrightnessHigh THEN
+		SetBrightnessHigh := FALSE;
+		Controller.M_SetBrightness(E_ControllerBrightness.High);
+	END_IF
+	IF SetBrightnessMed THEN
+		SetBrightnessMed := FALSE;
+		Controller.M_SetBrightness(E_ControllerBrightness.Med);
+	END_IF
+	IF SetBrightnessLow THEN
+		SetBrightnessLow := FALSE;
+		Controller.M_SetBrightness(E_ControllerBrightness.Low);
+	END_IF
+	IF SetMotorIntensity1 THEN
+		SetMotorIntensity1 := FALSE;
+		Controller.M_SetMotorIntensity(E_ControllerMotor.Left,255,0.500);
+	END_IF
+	IF SetMotorIntensity2 THEN
+		SetMotorIntensity2 := FALSE;
+		Controller.M_SetMotorIntensity(E_ControllerMotor.Right,100,1);
+	END_IF
      
 {region "methods"}
 	_M_GroupHandler();
@@ -3522,8 +3613,10 @@ IF _PowerRtrig.Q THEN
 	GVL.PowerOn := NOT GVL.PowerOn;
 	IF GVL.PowerOn THEN
 		Controller.M_SetColor(255,0,0);
+		Controller.M_SetBrightness(E_ControllerBrightness.High);
 	ELSE
 		Controller.M_SetColor(0,255,0);
+		Controller.M_SetBrightness(E_ControllerBrightness.Low);
 	END_IF
 END_IF</xhtml>
                         </ST>
@@ -5073,7 +5166,7 @@ IF Enable AND_THEN Controller.P_State.Connected THEN
 		_SMC_GroupJog2.Enable := NOT _SMC_GroupJog2.Enable;
 		IF _SMC_GroupJog2.Enable THEN
 			_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
-			Controller.M_SetPlayerID(E_PlayerID.PlayerALL);
+			Controller.M_SetPlayerID(E_ControllerPlayerID.PlayerALL);
 			Controller.M_SetMicrophoneState(TRUE);
 		ELSE
 			Controller.M_SetMicrophoneState(FALSE);
@@ -5085,22 +5178,22 @@ IF Enable AND_THEN Controller.P_State.Connected THEN
 		CASE _SMC_GroupJog2.CoordSystem OF
 			SMC_COORD_SYSTEM.ACS:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.MCS;
-				Controller.M_SetPlayerID(E_PlayerID.Player2);
+				Controller.M_SetPlayerID(E_ControllerPlayerID.Player2);
 			SMC_COORD_SYSTEM.MCS:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.PCS_1;
-				Controller.M_SetPlayerID(E_PlayerID.Player3);
+				Controller.M_SetPlayerID(E_ControllerPlayerID.Player3);
 			SMC_COORD_SYSTEM.PCS_1:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.PCS_2;
-				Controller.M_SetPlayerID(E_PlayerID.Player4);
+				Controller.M_SetPlayerID(E_ControllerPlayerID.Player4);
 			SMC_COORD_SYSTEM.PCS_2:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
-				Controller.M_SetPlayerID(E_PlayerID.PlayerALL);
+				Controller.M_SetPlayerID(E_ControllerPlayerID.PlayerALL);
 			SMC_COORD_SYSTEM.TCS:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.ACS; // skip WCS
-				Controller.M_SetPlayerID(E_PlayerID.Player1);
+				Controller.M_SetPlayerID(E_ControllerPlayerID.Player1);
 			SMC_COORD_SYSTEM.WCS:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.ACS;
-				Controller.M_SetPlayerID(E_PlayerID.Player1);
+				Controller.M_SetPlayerID(E_ControllerPlayerID.Player1);
 		END_CASE
 	END_IF
 	
@@ -8793,24 +8886,6 @@ END_IF</xhtml>
                         <derived name="TON" />
                       </type>
                     </variable>
-                    <variable name="_WriteRetriesMax">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="3" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_WriteRetriesCount">
-                      <type>
-                        <INT />
-                      </type>
-                    </variable>
-                    <variable name="_WriteRetry">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
                     <variable name="_WriteData">
                       <type>
                         <derived name="StringByteArray" />
@@ -8825,17 +8900,8 @@ END_IF</xhtml>
                       <type>
                         <derived name="R_TRIG" />
                       </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml">_TxString: STRING(255);
-_RxString: STRING(255);</xhtml>
-                      </documentation>
                     </variable>
                     <variable name="_ConnectStep">
-                      <type>
-                        <INT />
-                      </type>
-                    </variable>
-                    <variable name="_WriteStep">
                       <type>
                         <INT />
                       </type>
@@ -9018,58 +9084,22 @@ _RxString: STRING(255);</xhtml>
 
 {region "write"}
 	_WriteRTRIG(CLK:=_Write);
-	CASE _WriteStep OF
-			
-		WriteStep_IDLE: // IDLE
-			IF (_WriteRTRIG.Q OR _WriteRetry) AND bConnected THEN
-				_Write := FALSE;
-				_WriteRetry := FALSE;
-				_fbTcpWrite.xExecute := FALSE;
-				_WriteStep := WriteStep_DATA;
-			END_IF
-			
-		WriteStep_DATA: // DATA
-			IF _DataToWrite &lt;&gt; '' THEN
-				MemUtils.MemSet(
-					pbyBuffer:=ADR(_WriteData.bArray),
-					byValue:=0,
-					dwSize:=SIZEOF(_WriteData.bArray));
-				MemUtils.MemCpy(
-					pbyDest:=ADR(_WriteData.sString),
-					pbySrc:=ADR(_DataToWrite),
-					dwSize:=INT_TO_DWORD(LEN(_DataToWrite)));
-				_WriteStep := WriteStep_WRITE;
-			ELSE
-				_WriteStep := WriteStep_IDLE;
-			END_IF
-			
-		WriteStep_WRITE: // WRITE
+	IF _WriteRTRIG.Q THEN
+		_Write := FALSE;
+		IF bConnected AND _DataToWrite &lt;&gt; '' THEN
+			MemUtils.MemSet(	pbyBuffer:=ADR(_WriteData.bArray),
+								byValue:=0,
+								dwSize:=SIZEOF(_WriteData.bArray));
+			MemUtils.MemCpy(	pbyDest:=ADR(_WriteData.sString),
+								pbySrc:=ADR(_DataToWrite),
+								dwSize:=INT_TO_DWORD(LEN(_DataToWrite)));
 			_fbTcpWrite.xExecute := TRUE;
-			_WriteStep := WriteStep_WAIT;
-		
-		WriteStep_WAIT: // WAIT
-			IF _fbTcpWrite.xDone THEN
-				_fbTcpWrite.xExecute := FALSE;
-				_WriteRetriesCount := 0;
-				_WriteStep := WriteStep_IDLE;
-				
-			ELSIF _fbTcpWrite.xError THEN
-				IF _WriteRetriesCount &lt;= _WriteRetriesMax THEN
-					_WriteRetriesCount := _WriteRetriesCount + 1;
-					_WriteRetry := TRUE;
-					_WriteStep := WriteStep_IDLE;
-					
-				ELSIF _WriteRetriesCount &gt; _WriteRetriesMax THEN
-					_WriteRetriesCount := 0;
-					_WriteStep := WriteStep_IDLE;
-					
-				END_IF
-			END_IF
-	END_CASE
+		END_IF
+	END_IF
 	
-	bBusyWrite := ((_WriteStep &lt;&gt; WriteStep_IDLE) OR _WriteRetry) AND _fbTcpWrite.xBusy;
-	bDoneWrite := (_WriteStep = WriteStep_IDLE) AND _fbTcpWrite.xDone;
-	_fbTcpWrite(xExecute := ,
+	_fbTcpWrite(xExecute := _fbTcpWrite.xExecute AND NOT _fbTcpWrite.xDone AND NOT _fbTcpWrite.xError,
+				xBusy=&gt;bBusyWrite,
+				xDone=&gt;bDoneWrite,
 				itfConnection := _fbTcpClient.itfConnection, 
 				udiTimeOut := 1000000, // us 
 				udiSize := INT_TO_UDINT(LEN(_WriteData.sString)), 
@@ -16321,6 +16351,51 @@ BuildLogicCmd := _Command;</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="F_HomeOffsetCalc" pouType="function">
+                <interface>
+                  <returnType>
+                    <LREAL />
+                  </returnType>
+                  <inputVars>
+                    <variable name="CurrentOffset">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="CurrentPosition">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="HomeSearchDirection">
+                      <type>
+                        <derived name="MC_Direction" />
+                      </type>
+                    </variable>
+                  </inputVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">IF HomeSearchDirection = MC_Direction.positive THEN
+	F_HomeOffsetCalc := -F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
+	
+ELSIF HomeSearchDirection = MC_Direction.negative THEN
+	F_HomeOffsetCalc := F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
+	
+ELSE
+	F_HomeOffsetCalc := CurrentOffset;
+	
+END_IF</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>ad8953b8-d17f-41b2-83c9-9901a22a0b46</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
               <pou name="FB_ProgramProcessor" pouType="functionBlock">
                 <interface>
                   <inOutVars>
@@ -17356,6 +17431,91 @@ END_IF</xhtml>
                         </structValue>
                       </initialValue>
                     </variable>
+                    <variable name="_SetColor">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_Red">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="0" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_Green">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="255" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_Blue">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="0" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_SetMicrophoneState">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_MicrophoneState">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_SetPlayerID">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_PlayerID">
+                      <type>
+                        <derived name="E_ControllerPlayerID" />
+                      </type>
+                    </variable>
+                    <variable name="_SetBrightness">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_Brightness">
+                      <type>
+                        <derived name="E_ControllerBrightness" />
+                      </type>
+                    </variable>
+                    <variable name="_SetMotorIntensity">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_Motor">
+                      <type>
+                        <derived name="E_ControllerMotor" />
+                      </type>
+                    </variable>
+                    <variable name="_MotorIntensity">
+                      <type>
+                        <USINT />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 0-255</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="_MotorIntensityDuration">
+                      <type>
+                        <REAL />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> ms</xhtml>
+                      </documentation>
+                    </variable>
                     <variable name="_i">
                       <type>
                         <INT />
@@ -17370,6 +17530,14 @@ END_IF</xhtml>
                       <type>
                         <INT />
                       </type>
+                    </variable>
+                    <variable name="FirstScan">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="TRUE" />
+                      </initialValue>
                     </variable>
                   </localVars>
                   <localVars constant="true">
@@ -17408,6 +17576,11 @@ END_IF
 
 //
 _M_EvaluateControllerStates(States:=ControllerStates);
+_M_SetColor();
+_M_SetMicrophoneState();
+_M_SetPlayerID();
+_M_SetBrightness();
+_M_SetMotorIntensity();
 
 // try to reconnect to the server when data stops?
 // leave this commented out until we have a better condition
@@ -17418,7 +17591,9 @@ _M_EvaluateControllerStates(States:=ControllerStates);
 IF ReconnectTimer.Q THEN
 	ReconnectTimer(IN:=FALSE);
 	SUPER^.M_Reconnect();
-END_IF*)</xhtml>
+END_IF*)
+
+FirstScan:=FALSE;</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -17637,35 +17812,19 @@ _FirstScan := FALSE;</xhtml>
                             </initialValue>
                           </variable>
                         </inputVars>
-                        <localVars>
-                          <variable name="_Command">
-                            <type>
-                              <string length="255" />
-                            </type>
-                          </variable>
-                        </localVars>
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy 
-	AND_THEN Red&gt;=0 AND_THEN Red&lt;=255
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF Red&gt;=0 AND_THEN Red&lt;=255
 	AND_THEN Green&gt;=0 AND_THEN Green&lt;=255
-	AND_THEN Blue&gt;=0 AND_THEN Red&lt;=Blue THEN
+	AND_THEN Blue&gt;=0 AND_THEN Blue&lt;=255THEN
 		M_SetColor := TRUE;
-		
-		_Command := CONCAT('cmd: setColorI:', INT_TO_STRING(Red));
-		_Command := CONCAT(_Command, ',');
-		
-		_Command := CONCAT(_Command, INT_TO_STRING(Green));
-		_Command := CONCAT(_Command, ',');
-		
-		_Command := CONCAT(_Command, INT_TO_STRING(Blue));
-		
-		SUPER^._M_Execute(Command:=_Command, Timeout:=5);
-		
+		_SetColor:=TRUE;
+		_Red:=Red;
+		_Green:=Green;
+		_Blue:=Blue;
 ELSE
 	M_SetColor := FALSE;
-	
 END_IF</xhtml>
                         </ST>
                       </body>
@@ -17681,31 +17840,17 @@ END_IF</xhtml>
                         <inputVars>
                           <variable name="PlayerID">
                             <type>
-                              <derived name="E_PlayerID" />
+                              <derived name="E_ControllerPlayerID" />
                             </type>
                           </variable>
                         </inputVars>
-                        <localVars>
-                          <variable name="_Command">
-                            <type>
-                              <string length="255" />
-                            </type>
-                          </variable>
-                        </localVars>
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy THEN
-	M_SetPlayerID := TRUE;
-	
-	_Command := CONCAT('cmd: setPlayerID:', INT_TO_STRING(PlayerID));
-	
-	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
-		
-ELSE
-	M_SetPlayerID := FALSE;
-	
-END_IF</xhtml>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">M_SetPlayerID := TRUE;
+_PlayerID := PlayerID;
+_SetPlayerID := TRUE;
+</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -17727,16 +17872,252 @@ END_IF</xhtml>
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy THEN
-	M_SetMicrophoneState := TRUE;
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">M_SetMicrophoneState := TRUE;
+_MicrophoneState := State;
+_SetMicrophoneState := TRUE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_SetColor" ObjectId="54de39e9-a68c-4cdd-9c6b-c369236e0e6b">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <localVars>
+                          <variable name="_Command">
+                            <type>
+                              <string length="255" />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy AND_THEN _SetColor THEN
+	_SetColor := FALSE;
 	
-	_Command := CONCAT('cmd: setMicrophoneState:', BOOL_TO_STRING(State));
+	_Command := CONCAT('cmd: setColorI:', INT_TO_STRING(_Red));
+	_Command := CONCAT(_Command, ',');
+	_Command := CONCAT(_Command, INT_TO_STRING(_Green));
+	_Command := CONCAT(_Command, ',');
+	_Command := CONCAT(_Command, INT_TO_STRING(_Blue));
 	
 	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
-		
-ELSE
-	M_SetMicrophoneState := FALSE;
+	SUPER^(); // call super here so other methods see it busy.
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_SetMicrophoneState" ObjectId="04008bef-1240-44b8-b1a0-4148da719966">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <localVars>
+                          <variable name="_Command">
+                            <type>
+                              <string length="255" />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy AND _SetMicrophoneState THEN
+	_SetMicrophoneState := FALSE;
 	
+	_Command := CONCAT('cmd: setMicrophoneState:', BOOL_TO_STRING(_MicrophoneState));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_SetPlayerID" ObjectId="c145fd68-52c7-4142-a0ba-b1d06db0c33d">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <localVars>
+                          <variable name="_Command">
+                            <type>
+                              <string length="255" />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy AND _SetPlayerID THEN
+	_SetPlayerID := FALSE;
+	
+	_Command := CONCAT('cmd: setPlayerID:', INT_TO_STRING(_PlayerID));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_SetBrightness" ObjectId="90b7f945-cd7e-41a6-be53-3bd7b43fad70">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy AND _SetBrightness THEN
+	_SetBrightness := FALSE;
+	
+	_Command := CONCAT('cmd: setBrightness:', INT_TO_STRING(_Brightness));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_SetBrightness" ObjectId="ea400410-5d62-42d9-8299-464d48113d8b">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="Brightness">
+                            <type>
+                              <derived name="E_ControllerBrightness" />
+                            </type>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">M_SetBrightness := TRUE;
+_Brightness := Brightness;
+_SetBrightness := TRUE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_SetMotorIntensity" ObjectId="1764fe0e-660f-4c27-8d1f-29b1674c5009">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="Motor">
+                            <type>
+                              <derived name="E_ControllerMotor" />
+                            </type>
+                          </variable>
+                          <variable name="Intensity">
+                            <type>
+                              <USINT />
+                            </type>
+                            <documentation>
+                              <xhtml xmlns="http://www.w3.org/1999/xhtml"> 0-255</xhtml>
+                            </documentation>
+                          </variable>
+                          <variable name="Duration">
+                            <type>
+                              <REAL />
+                            </type>
+                            <documentation>
+                              <xhtml xmlns="http://www.w3.org/1999/xhtml"> s</xhtml>
+                            </documentation>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF Intensity &gt;=0 AND_THEN Intensity &lt;= 255 AND_THEN Duration &lt;= 5000 THEN
+	M_SetMotorIntensity := TRUE;
+	_SetMotorIntensity := TRUE;
+	_Motor := Motor;
+	_MotorIntensity := Intensity;
+	_MotorIntensityDuration := Duration;
+ELSE
+	M_SetMotorIntensity := FALSE;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_SetMotorIntensity" ObjectId="572923e8-2cd9-45a4-9f71-7169965a5b39">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <localVars>
+                          <variable name="_Command">
+                            <type>
+                              <string length="255" />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy AND _SetMotorIntensity THEN
+	_SetMotorIntensity := FALSE;
+	
+	IF _Motor = E_ControllerMotor.Left THEN
+		_Command := 'cmd: setLeftMotor:';
+	ELSE
+		_Command := 'cmd: setRightMotor:';
+	END_IF
+	_Command := CONCAT(_Command, USINT_TO_STRING(_MotorIntensity));
+	_Command := CONCAT(_Command, ',');
+	_Command := CONCAT(_Command, REAL_TO_STRING(_MotorIntensityDuration));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
 END_IF</xhtml>
                         </ST>
                       </body>
@@ -17903,24 +18284,17 @@ _Busy := NOT _Done;
 
 CASE _Step OF
 	0: // IDLE
-		IF _Execute AND NOT _TcpClient.bBusyWrite THEN
+		IF _Execute THEN
 			_Execute := FALSE;
-			_Step := _Step + 1;
-		ELSIF _Execute THEN
-			_Execute := FALSE;
+			IF _TcpClient._M_Write(Data:=_Command) THEN
+				_ReadRecordLast := _TcpClient.dRecordRead;
+				_Step := _Step + 1;
+			ELSE
+				_Step := 0;
+			END_IF
 		END_IF
 	
-	1: // CALL
-		_ReadRecordLast := _TcpClient.dRecordRead;
-		IF _TcpClient._M_Write(Data:=_Command) THEN
-			_Step := _Step + 1;
-		ELSE
-			_Error := TRUE;
-			_ErrorDescription := 'tcp client busy or not connected';
-			_Step := 0;
-		END_IF
-	
-	2: // WAIT
+	1: // WAIT
 		IF _TcpClient.dRecordRead &lt;&gt; _ReadRecordLast THEN
 			_ReadRecordLast := _TcpClient.dRecordRead;
 			IF find(_TcpClient.strRead, 'res: ') = 1 THEN
@@ -20231,26 +20605,6 @@ _MC_SetPosition_J6(
                 </body>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_StartHoming" ObjectId="1ff714ca-aba4-448a-bc01-bf0eab578f27">
-                      <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF _SequenceMain = STEP_IDLE THEN
-	M_StartHoming := TRUE;
-	_StartHoming := TRUE;
-ELSE
-	M_StartHoming := FALSE;
-END_IF</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
                     <Method name="M_SetHome" ObjectId="ac8ad3ff-e2e3-4571-99f3-004f0df0c316">
                       <interface>
                         <returnType>
@@ -20297,53 +20651,28 @@ _MC_SetPosition_J6.Execute:=TRUE;</xhtml>
                       <addData />
                     </Method>
                   </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_StartHoming" ObjectId="1ff714ca-aba4-448a-bc01-bf0eab578f27">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF _SequenceMain = STEP_IDLE THEN
+	M_StartHoming := TRUE;
+	_StartHoming := TRUE;
+ELSE
+	M_StartHoming := FALSE;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>6c30ff35-bc31-4ed8-ab4a-320ad080dc49</ObjectId>
-                  </data>
-                </addData>
-              </pou>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="F_HomeOffsetCalc" pouType="function">
-                <interface>
-                  <returnType>
-                    <LREAL />
-                  </returnType>
-                  <inputVars>
-                    <variable name="CurrentOffset">
-                      <type>
-                        <LREAL />
-                      </type>
-                    </variable>
-                    <variable name="CurrentPosition">
-                      <type>
-                        <LREAL />
-                      </type>
-                    </variable>
-                    <variable name="HomeSearchDirection">
-                      <type>
-                        <derived name="MC_Direction" />
-                      </type>
-                    </variable>
-                  </inputVars>
-                </interface>
-                <body>
-                  <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">IF HomeSearchDirection = MC_Direction.positive THEN
-	F_HomeOffsetCalc := -F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
-	
-ELSIF HomeSearchDirection = MC_Direction.negative THEN
-	F_HomeOffsetCalc := F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
-	
-ELSE
-	F_HomeOffsetCalc := CurrentOffset;
-	
-END_IF</xhtml>
-                  </ST>
-                </body>
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>ad8953b8-d17f-41b2-83c9-9901a22a0b46</ObjectId>
                   </data>
                 </addData>
               </pou>
@@ -23007,6 +23336,15 @@ END_IF</xhtml>
                 <Object Name="ST_MoveCmd" ObjectId="f71cc9b7-cb4b-485a-9aed-2944bbd084ca" />
                 <Object Name="BuildMoveCmd" ObjectId="19554b2f-3ca2-4f8d-a4a2-2e3ac3119ec0" />
               </Folder>
+              <Folder Name="home">
+                <Object Name="FB_HomingProcessor" ObjectId="6c30ff35-bc31-4ed8-ab4a-320ad080dc49">
+                  <Folder Name="public">
+                    <Object Name="M_SetHome" ObjectId="ac8ad3ff-e2e3-4571-99f3-004f0df0c316" />
+                    <Object Name="M_StartHoming" ObjectId="1ff714ca-aba4-448a-bc01-bf0eab578f27" />
+                  </Folder>
+                </Object>
+                <Object Name="F_HomeOffsetCalc" ObjectId="ad8953b8-d17f-41b2-83c9-9901a22a0b46" />
+              </Folder>
               <Folder Name="jog">
                 <Object Name="FB_JogProcessor" ObjectId="9ad0dd5a-e160-4345-8eee-ad9cf9bfb3eb">
                   <Folder Name="private">
@@ -23153,9 +23491,16 @@ END_IF</xhtml>
                     <Object Name="M_SetColor" ObjectId="eeb0100c-2915-48d1-9f36-b75c4e907a60" />
                     <Object Name="M_SetPlayerID" ObjectId="fe5b8c1d-d289-45ab-8132-645bc019686a" />
                     <Object Name="M_SetMicrophoneState" ObjectId="59d971f4-160d-4206-8fd6-464272a65157" />
+                    <Object Name="M_SetBrightness" ObjectId="ea400410-5d62-42d9-8299-464d48113d8b" />
+                    <Object Name="M_SetMotorIntensity" ObjectId="1764fe0e-660f-4c27-8d1f-29b1674c5009" />
                   </Folder>
                   <Folder Name="private">
                     <Object Name="_M_EvaluateControllerStates" ObjectId="ec5a2389-0422-417f-bd11-588f38f08844" />
+                    <Object Name="_M_SetColor" ObjectId="54de39e9-a68c-4cdd-9c6b-c369236e0e6b" />
+                    <Object Name="_M_SetMicrophoneState" ObjectId="04008bef-1240-44b8-b1a0-4148da719966" />
+                    <Object Name="_M_SetPlayerID" ObjectId="c145fd68-52c7-4142-a0ba-b1d06db0c33d" />
+                    <Object Name="_M_SetBrightness" ObjectId="90b7f945-cd7e-41a6-be53-3bd7b43fad70" />
+                    <Object Name="_M_SetMotorIntensity" ObjectId="572923e8-2cd9-45a4-9f71-7169965a5b39" />
                   </Folder>
                   <Object Name="P_State" ObjectId="8f9874b7-a4ba-4163-b1b5-6ca35856054f" />
                 </Object>
@@ -23172,7 +23517,9 @@ END_IF</xhtml>
                 <Object Name="ST_Accelerometer" ObjectId="609788be-6cef-4bab-b82d-0de671123a2d" />
                 <Object Name="ST_Battery" ObjectId="d7224d0e-a20c-4ec1-9d9d-a32f25c607e6" />
                 <Object Name="F_DpadState" ObjectId="c7c6193c-9fb2-4a99-8fe9-b8b80e6ab7d7" />
-                <Object Name="E_PlayerID" ObjectId="d98d4d74-0af2-4200-b2d2-a2e62489282e" />
+                <Object Name="E_ControllerPlayerID" ObjectId="d98d4d74-0af2-4200-b2d2-a2e62489282e" />
+                <Object Name="E_ControllerBrightness" ObjectId="604af7c6-46fd-4031-b39f-42d0051195f9" />
+                <Object Name="E_ControllerMotor" ObjectId="a6c1ccec-7589-44ea-8664-b26e13e4589c" />
               </Folder>
               <Folder Name="template">
                 <Object Name="Module" ObjectId="06152fa3-0ee8-42bb-9309-1b5f17657eed">
@@ -23305,15 +23652,6 @@ END_IF</xhtml>
                   <Object Name="P_GroupStatus" ObjectId="7660ae4b-8965-424f-b336-9965f704e650" />
                 </Object>
                 <Object Name="DUT_GroupStatus" ObjectId="8da24330-28fc-457b-af4f-78411d1da7e7" />
-              </Folder>
-              <Folder Name="home">
-                <Object Name="FB_HomingProcessor" ObjectId="6c30ff35-bc31-4ed8-ab4a-320ad080dc49">
-                  <Folder Name="public">
-                    <Object Name="M_StartHoming" ObjectId="1ff714ca-aba4-448a-bc01-bf0eab578f27" />
-                    <Object Name="M_SetHome" ObjectId="ac8ad3ff-e2e3-4571-99f3-004f0df0c316" />
-                  </Folder>
-                </Object>
-                <Object Name="F_HomeOffsetCalc" ObjectId="ad8953b8-d17f-41b2-83c9-9901a22a0b46" />
               </Folder>
             </Folder>
             <Folder Name="GVL">
