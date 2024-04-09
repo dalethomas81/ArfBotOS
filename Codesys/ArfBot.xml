@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-09T12:29:54.6842269" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-09T12:29:36.4256206">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-09T14:02:06.9153825" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-09T14:01:29.7326795">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -2571,6 +2571,109 @@ RESERVED: INT:=47;</xhtml>
                 </addData>
               </dataType>
             </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="E_ControllerTriggerMode">
+                <baseType>
+                  <enum>
+                    <values>
+                      <value name="Off" value="0" />
+                      <value name="Rigid" value="1" />
+                      <value name="Pulse" value="2" />
+                      <value name="Rigid_A" value="3" />
+                      <value name="Rigid_B" value="4" />
+                      <value name="Rigid_AB" value="5" />
+                      <value name="Pulse_A" value="6" />
+                      <value name="Pulse_AB" value="7" />
+                      <value name="Calibration" value="8" />
+                    </values>
+                  </enum>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/enumvaluedocumentation" handleUnknown="implementation">
+                    <EnumValueDocumentation>
+                      <EnumValue>
+                        <Name>Off</Name>
+                        <Documentation>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml"> no resistance</xhtml>
+                        </Documentation>
+                      </EnumValue>
+                      <EnumValue>
+                        <Name>Rigid</Name>
+                        <Documentation>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml"> continous resistance</xhtml>
+                        </Documentation>
+                      </EnumValue>
+                      <EnumValue>
+                        <Name>Pulse</Name>
+                        <Documentation>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml"> section resistance</xhtml>
+                        </Documentation>
+                      </EnumValue>
+                    </EnumValueDocumentation>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="qualified_only" Value="" />
+                      <Attribute Name="strict" Value="" />
+                    </Attributes>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>7cfb17e9-0adb-430c-99c4-e3a0b9b689dc</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="E_ControllerTrigger">
+                <baseType>
+                  <enum>
+                    <values>
+                      <value name="Left" value="0" />
+                      <value name="Right" value="1" />
+                    </values>
+                  </enum>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="qualified_only" Value="" />
+                      <Attribute Name="strict" Value="" />
+                    </Attributes>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>cf02ac9e-9fa8-4292-8ddb-6ba2ae2076e9</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="E_ControllerTriggerForceParameter">
+                <baseType>
+                  <enum>
+                    <values>
+                      <value name="One" value="0" />
+                      <value name="Two" value="1" />
+                      <value name="Three" value="2" />
+                      <value name="Four" value="3" />
+                      <value name="Five" value="4" />
+                      <value name="Six" value="5" />
+                      <value name="Seven" value="6" />
+                    </values>
+                  </enum>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="qualified_only" Value="" />
+                      <Attribute Name="strict" Value="" />
+                    </Attributes>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>54b4a266-7c75-4f63-967a-c2dc24d3f5bb</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/interface" handleUnknown="implementation">
               <Interface name="ITFModule" ObjectId="83e2f220-b628-4cc1-8425-5ccb3ca1431d">
                 <Methods>
@@ -2882,6 +2985,41 @@ RESERVED: INT:=47;</xhtml>
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="SetTriggerMode1">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="TriggerModeTrigger">
+                      <type>
+                        <derived name="E_ControllerTrigger" />
+                      </type>
+                    </variable>
+                    <variable name="TriggerModeMode">
+                      <type>
+                        <derived name="E_ControllerTriggerMode" />
+                      </type>
+                    </variable>
+                    <variable name="SetTriggerForce1">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="TriggerForceTrigger">
+                      <type>
+                        <derived name="E_ControllerTrigger" />
+                      </type>
+                    </variable>
+                    <variable name="TriggerForceParameter">
+                      <type>
+                        <derived name="E_ControllerTriggerForceParameter" />
+                      </type>
+                    </variable>
+                    <variable name="TriggerForceParameterIntensity">
+                      <type>
+                        <USINT />
+                      </type>
+                    </variable>
                     <variable name="_i">
                       <type>
                         <INT />
@@ -2972,6 +3110,14 @@ RESERVED: INT:=47;</xhtml>
 	IF SetMotorIntensity2 THEN
 		SetMotorIntensity2 := FALSE;
 		Controller.M_SetMotorIntensity(E_ControllerMotor.Right,100,1);
+	END_IF
+	IF SetTriggerMode1 THEN
+		SetTriggerMode1 := FALSE;
+		Controller.M_SetTriggerMode(TriggerModeTrigger, TriggerModeMode);
+	END_IF
+	IF SetTriggerForce1 THEN
+		SetTriggerForce1 := FALSE;
+		Controller.M_SetTriggerForce(TriggerForceTrigger, TriggerForceParameter, TriggerForceParameterIntensity);
 	END_IF
      
 {region "methods"}
@@ -17516,6 +17662,41 @@ END_IF</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> ms</xhtml>
                       </documentation>
                     </variable>
+                    <variable name="_SetTriggerMode">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_TriggerModeTrigger">
+                      <type>
+                        <derived name="E_ControllerTrigger" />
+                      </type>
+                    </variable>
+                    <variable name="_TriggerModeMode">
+                      <type>
+                        <derived name="E_ControllerTriggerMode" />
+                      </type>
+                    </variable>
+                    <variable name="_SetTriggerForce">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_TriggerForceTrigger">
+                      <type>
+                        <derived name="E_ControllerTrigger" />
+                      </type>
+                    </variable>
+                    <variable name="_TriggerForceParameter">
+                      <type>
+                        <derived name="E_ControllerTriggerForceParameter" />
+                      </type>
+                    </variable>
+                    <variable name="_TriggerForceIntensity">
+                      <type>
+                        <USINT />
+                      </type>
+                    </variable>
                     <variable name="_i">
                       <type>
                         <INT />
@@ -17581,6 +17762,8 @@ _M_SetMicrophoneState();
 _M_SetPlayerID();
 _M_SetBrightness();
 _M_SetMotorIntensity();
+_M_SetTriggerMode();
+_M_SetTriggerForce();
 
 // try to reconnect to the server when data stops?
 // leave this commented out until we have a better condition
@@ -18118,6 +18301,161 @@ END_IF</xhtml>
 	
 	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
 	SUPER^(); // call super here so other methods see it busy.
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_SetTriggerMode" ObjectId="cc90c045-ff13-46bd-bee3-0677bb07476d">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <localVars>
+                          <variable name="_Command">
+                            <type>
+                              <string length="255" />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+IF NOT SUPER^._Busy AND _SetTriggerMode THEN
+	_SetTriggerMode := FALSE;
+	
+	IF _TriggerModeTrigger = E_ControllerTrigger.Left THEN
+		_Command := 'cmd: setLeftTriggerMode:';
+	ELSE
+		_Command := 'cmd: setRightTriggerMode:';
+	END_IF
+	_Command := CONCAT(_Command, INT_TO_STRING(_TriggerModeMode));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_SetTriggerMode" ObjectId="9cdabd76-e674-4c87-a86d-b3798e605bb0">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="Trigger">
+                            <type>
+                              <derived name="E_ControllerTrigger" />
+                            </type>
+                          </variable>
+                          <variable name="Mode">
+                            <type>
+                              <derived name="E_ControllerTriggerMode" />
+                            </type>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">M_SetTriggerMode := TRUE;
+_SetTriggerMode := TRUE;
+_TriggerModeTrigger := Trigger;
+_TriggerModeMode := Mode;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_SetTriggerForce" ObjectId="a4252e21-370c-45c8-a3d9-1c1fe732617d">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <localVars>
+                          <variable name="_Command">
+                            <type>
+                              <string length="255" />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+IF NOT SUPER^._Busy AND _SetTriggerForce THEN
+	_SetTriggerForce := FALSE;
+	
+	IF _TriggerForceTrigger = E_ControllerTrigger.Left THEN
+		_Command := 'cmd: setLeftTriggerForce:';
+	ELSE
+		_Command := 'cmd: setRightTriggerForce:';
+	END_IF
+	_Command := CONCAT(_Command, INT_TO_STRING(_TriggerForceParameter));
+	_Command := CONCAT(_Command, ',');
+	_Command := CONCAT(_Command, USINT_TO_STRING(_TriggerForceIntensity));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_SetTriggerForce" ObjectId="2469dbae-9da4-4cf0-aaf5-0b5c14fa7e2d">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="Trigger">
+                            <type>
+                              <derived name="E_ControllerTrigger" />
+                            </type>
+                          </variable>
+                          <variable name="Parameter">
+                            <type>
+                              <derived name="E_ControllerTriggerForceParameter" />
+                            </type>
+                          </variable>
+                          <variable name="Intensity">
+                            <type>
+                              <USINT />
+                            </type>
+                            <documentation>
+                              <xhtml xmlns="http://www.w3.org/1999/xhtml"> 0-255</xhtml>
+                            </documentation>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF Intensity &gt;= 0 AND Intensity &lt;= 255 THEN
+	M_SetTriggerForce := TRUE;
+	_SetTriggerForce:=TRUE;
+	_TriggerForceTrigger := Trigger;
+	_TriggerForceParameter := Parameter;
+	_TriggerForceIntensity := Intensity;
+ELSE
+	M_SetTriggerForce := FALSE;
 END_IF</xhtml>
                         </ST>
                       </body>
@@ -23493,6 +23831,8 @@ END_IF</xhtml>
                     <Object Name="M_SetMicrophoneState" ObjectId="59d971f4-160d-4206-8fd6-464272a65157" />
                     <Object Name="M_SetBrightness" ObjectId="ea400410-5d62-42d9-8299-464d48113d8b" />
                     <Object Name="M_SetMotorIntensity" ObjectId="1764fe0e-660f-4c27-8d1f-29b1674c5009" />
+                    <Object Name="M_SetTriggerMode" ObjectId="9cdabd76-e674-4c87-a86d-b3798e605bb0" />
+                    <Object Name="M_SetTriggerForce" ObjectId="2469dbae-9da4-4cf0-aaf5-0b5c14fa7e2d" />
                   </Folder>
                   <Folder Name="private">
                     <Object Name="_M_EvaluateControllerStates" ObjectId="ec5a2389-0422-417f-bd11-588f38f08844" />
@@ -23501,6 +23841,8 @@ END_IF</xhtml>
                     <Object Name="_M_SetPlayerID" ObjectId="c145fd68-52c7-4142-a0ba-b1d06db0c33d" />
                     <Object Name="_M_SetBrightness" ObjectId="90b7f945-cd7e-41a6-be53-3bd7b43fad70" />
                     <Object Name="_M_SetMotorIntensity" ObjectId="572923e8-2cd9-45a4-9f71-7169965a5b39" />
+                    <Object Name="_M_SetTriggerMode" ObjectId="cc90c045-ff13-46bd-bee3-0677bb07476d" />
+                    <Object Name="_M_SetTriggerForce" ObjectId="a4252e21-370c-45c8-a3d9-1c1fe732617d" />
                   </Folder>
                   <Object Name="P_State" ObjectId="8f9874b7-a4ba-4163-b1b5-6ca35856054f" />
                 </Object>
@@ -23520,6 +23862,9 @@ END_IF</xhtml>
                 <Object Name="E_ControllerPlayerID" ObjectId="d98d4d74-0af2-4200-b2d2-a2e62489282e" />
                 <Object Name="E_ControllerBrightness" ObjectId="604af7c6-46fd-4031-b39f-42d0051195f9" />
                 <Object Name="E_ControllerMotor" ObjectId="a6c1ccec-7589-44ea-8664-b26e13e4589c" />
+                <Object Name="E_ControllerTriggerMode" ObjectId="7cfb17e9-0adb-430c-99c4-e3a0b9b689dc" />
+                <Object Name="E_ControllerTrigger" ObjectId="cf02ac9e-9fa8-4292-8ddb-6ba2ae2076e9" />
+                <Object Name="E_ControllerTriggerForceParameter" ObjectId="54b4a266-7c75-4f63-967a-c2dc24d3f5bb" />
               </Folder>
               <Folder Name="template">
                 <Object Name="Module" ObjectId="06152fa3-0ee8-42bb-9309-1b5f17657eed">

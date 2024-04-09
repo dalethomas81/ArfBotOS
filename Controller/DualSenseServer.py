@@ -122,7 +122,6 @@ def stop_motor(dualsense, motor, duration):
             dualsense.setLeftMotor(0)
         elif motor == 1:
             dualsense.setRightMotor(0)
-    
 
  # 'setRightMotor:255,0.100' 0-255 intensity 0-10000 duration in s
 def handle_setrightmotor_cmd(cmdParameters, dualsense):
@@ -156,7 +155,7 @@ def handle_setleftmotor_cmd(cmdParameters, dualsense):
     except Exception as e:
         print(e)
     
- # 'setRightTriggerMode:0' see notes in function
+ # 'setRightTriggerMode:0' 0-9 trigger mode
 def handle_setrighttriggermode_cmd(cmdParameters, dualsense):
     '''
     dualsense.triggerR.setMode(TriggerModes.Pulse_A)
@@ -173,12 +172,35 @@ def handle_setrighttriggermode_cmd(cmdParameters, dualsense):
         Calibration = 0xFC
     '''
     try:
-        print('command currently not supported')
+        if cmdParameters == '0':
+            x = TriggerModes.Off
+        elif cmdParameters == '1':
+            x = TriggerModes.Rigid
+        elif cmdParameters == '2':
+            x = TriggerModes.Pulse
+        elif cmdParameters == '3':
+            x = TriggerModes.Rigid_A
+        elif cmdParameters == '4':
+            x = TriggerModes.Rigid_B
+        elif cmdParameters == '5':
+            x = TriggerModes.Rigid_AB
+        elif cmdParameters == '6':
+            x = TriggerModes.Pulse_A
+        elif cmdParameters == '7':
+            x = TriggerModes.Pulse_B
+        elif cmdParameters == '8':
+            x = TriggerModes.Pulse_AB
+        elif cmdParameters == '9':
+            x = TriggerModes.Calibration
+        else:
+            x = TriggerModes.Off
+            
+        dualsense.triggerR.setMode(x)
         
     except Exception as e:
         print(e)
     
- # 'setLeftTriggerMode:0' see notes in function
+ # 'setLeftTriggerMode:0' 0-9 trigger mode
 def handle_setlefttriggermode_cmd(cmdParameters, dualsense):
     '''
     dualsense.triggerL.setMode(TriggerModes.Pulse_A)
@@ -195,12 +217,35 @@ def handle_setlefttriggermode_cmd(cmdParameters, dualsense):
         Calibration = 0xFC
     '''
     try:
-        print('command currently not supported')
+        if cmdParameters == '0':
+            x = TriggerModes.Off
+        elif cmdParameters == '1':
+            x = TriggerModes.Rigid
+        elif cmdParameters == '2':
+            x = TriggerModes.Pulse
+        elif cmdParameters == '3':
+            x = TriggerModes.Rigid_A
+        elif cmdParameters == '4':
+            x = TriggerModes.Rigid_B
+        elif cmdParameters == '5':
+            x = TriggerModes.Rigid_AB
+        elif cmdParameters == '6':
+            x = TriggerModes.Pulse_A
+        elif cmdParameters == '7':
+            x = TriggerModes.Pulse_B
+        elif cmdParameters == '8':
+            x = TriggerModes.Pulse_AB
+        elif cmdParameters == '9':
+            x = TriggerModes.Calibration
+        else:
+            x = TriggerModes.Off
+            
+        dualsense.triggerL.setMode(x)
         
     except Exception as e:
         print(e)
     
- # 'setRightTriggerForce:0,255' see notes in function
+ # 'setRightTriggerForce:0,255' 0-6 force parameter? 0-255 force intensity
 def handle_setrighttriggerforce_cmd(cmdParameters, dualsense):
     '''
     dualsense.triggerR.setForce(0, 200)
@@ -208,12 +253,13 @@ def handle_setrighttriggerforce_cmd(cmdParameters, dualsense):
     dualsense.triggerR.setForce(2, 175)
     '''
     try:
-        print('command currently not supported')
+        params = cmdParameters.split(',')
+        dualsense.triggerR.setForce(int(params[0]), int(params[1]))
         
     except Exception as e:
         print(e)
     
- # 'setLeftTriggerForce:0,255' see notes in function
+ # 'setLeftTriggerForce:0,255' 0-6 force parameter? 0-255 force intensity
 def handle_setlefttriggerforce_cmd(cmdParameters, dualsense):
     '''
     dualsense.triggerL.setForce(0, 200)
@@ -221,7 +267,10 @@ def handle_setlefttriggerforce_cmd(cmdParameters, dualsense):
     dualsense.triggerL.setForce(2, 175)
     '''
     try:
-        print('command currently not supported')
+        params = cmdParameters.split(',')
+        print(params[0])
+        print(params[1])
+        dualsense.triggerL.setForce(int(params[0]), int(params[1]))
         
     except Exception as e:
         print(e)
