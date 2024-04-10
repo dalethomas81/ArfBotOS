@@ -153,7 +153,7 @@ def get_pixel_average(corners, checkerboard):
             total = total + diff
             count = count + 1
             #print("v0:" + str(val0) + " v1:" + str(val1) + " diff:" + str(diff))
-    average = total / count
+    average = abs(total / count)
     return average
     
 def get_index_value(array, x, y, column_count):
