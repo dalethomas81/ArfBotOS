@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-09T20:52:50.9058212" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-09T20:20:19.935979">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-10T00:12:35.6293998" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-09T23:53:18.3037902">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -512,9 +512,9 @@ RESERVED: INT:=47;</xhtml>
                 <BOOL />
               </type>
             </variable>
-            <variable name="SetHome">
+            <variable name="ResetRtrig">
               <type>
-                <BOOL />
+                <derived name="R_TRIG" />
               </type>
             </variable>
             <variable name="StorePersist">
@@ -1000,9 +1000,9 @@ RESERVED: INT:=47;</xhtml>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="SetHome">
+                    <variable name="ResetRtrig">
                       <type>
-                        <BOOL />
+                        <derived name="R_TRIG" />
                       </type>
                     </variable>
                     <variable name="StorePersist">
@@ -2857,21 +2857,6 @@ RESERVED: INT:=47;</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> program processor</xhtml>
                       </documentation>
                     </variable>
-                    <variable name="ProcessCommands_Execute">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="ProcessCommand_Cancel">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="ProcessCommand_Reset">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
                     <variable name="ProcessCommand_ActiveProgram">
                       <type>
                         <UINT />
@@ -2879,11 +2864,6 @@ RESERVED: INT:=47;</xhtml>
                       <initialValue>
                         <simpleValue value="0" />
                       </initialValue>
-                    </variable>
-                    <variable name="Abort">
-                      <type>
-                        <BOOL />
-                      </type>
                     </variable>
                     <variable name="Vision_pResultRtrig">
                       <type>
@@ -2943,6 +2923,11 @@ RESERVED: INT:=47;</xhtml>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">
 {region "utility"}
+	GVL.ResetRtrig(CLK:=GVL.Reset);
+	IF GVL.ResetRtrig.Q THEN
+		GVL.Reset := FALSE;
+	END_IF
+	
 	IF FirstScan THEN
 		M_Init();	
 	END_IF
@@ -3093,7 +3078,7 @@ ProcessHome(
 	J5_Limit:= _10_Drives.rx_j5_limit, 
 	J6_Limit:= _10_Drives.rx_j6_limit, 
 	Enable:= GVL.PowerOn, 
-	Reset:= GVL.Reset, 
+	Reset:= GVL.ResetRtrig.Q, 
 	StoredPositions:= PersistentVars.StoredPositions,
 	VisionRegisters:= PersistentVars.VisionRegisters,
 	Flags:= PersistentVars.Flags,
@@ -3131,27 +3116,10 @@ END_IF</xhtml>
                       <body>
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">
-//
-IF Abort THEN
-	Abort := FALSE;
-	IF NOT GVL.PowerOn THEN
-		ProcessPrograms.M_Abort();
-	END_IF
-END_IF
-IF ProcessCommands_Execute THEN
-	ProcessCommands_Execute := FALSE;
-	IF ProcessPrograms.M_SetProgram(ProgramNumber:=ProcessCommand_ActiveProgram) THEN
-		ProcessPrograms.M_Start();
-	END_IF
-END_IF
-IF ProcessCommand_Cancel THEN
-	ProcessCommand_Cancel := FALSE;
-	ProcessPrograms.M_Stop();
-END_IF
-IF ProcessCommand_Reset OR GVL.Reset THEN
-	ProcessCommand_Reset := FALSE;
+IF GVL.ResetRtrig.Q THEN
 	ProcessPrograms.M_Home();
 END_IF
+
 ProcessPrograms(
 	Programs:=PersistentVars.Programs,
 	StoredPositions:=PersistentVars.StoredPositions,
@@ -3242,7 +3210,7 @@ ProcessJog(
 	GroupHandler:= GroupHandler,
 	Controller:= Controller,
 	Enable:= GVL.PowerOn,
-	Reset:= GVL.Reset,
+	Reset:= GVL.ResetRtrig.Q,
 	StoredPositions:= PersistentVars.StoredPositions,
 	VisionRegisters:= PersistentVars.VisionRegisters,
 	Flags:= PersistentVars.Flags,
@@ -3522,6 +3490,38 @@ END_IF
                               </structValue>
                             </initialValue>
                           </variable>
+                          <variable name="_PsButtonRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="_PsButtonFtrig">
+                            <type>
+                              <derived name="F_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="_PsButtonTimer">
+                            <type>
+                              <derived name="TON" />
+                            </type>
+                            <initialValue>
+                              <structValue>
+                                <value member="PT">
+                                  <simpleValue value="TIME#2s0ms" />
+                                </value>
+                              </structValue>
+                            </initialValue>
+                          </variable>
+                          <variable name="_PsButtonTimerRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="_Reseting">
+                            <type>
+                              <BOOL />
+                            </type>
+                          </variable>
                         </globalVars>
                         <addData>
                           <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
@@ -3556,6 +3556,27 @@ IF _PowerRtrig.Q OR _PowerFtrig.Q THEN
 		Controller.M_SetBrightness(E_ControllerBrightness.Low);
 		Controller.M_SetMotorIntensity(E_ControllerMotor.Right, 100, 0.100);
 	END_IF
+END_IF
+
+// press PS button once to reset
+_PsButtonRtrig(CLK:=Controller.P_State.Buttons.PS);
+_PsButtonFtrig(CLK:=Controller.P_State.Buttons.PS);
+IF _PsButtonRtrig.Q THEN
+	_Reseting := TRUE;
+END_IF
+IF _PsButtonFtrig.Q THEN
+	IF _Reseting THEN //  reset was not overridden by holding it down too long
+		_Reseting := FALSE;
+		GVL.Reset := TRUE;
+	END_IF
+END_IF
+
+// hold down the PS button to home
+_PsButtonTimer(IN:=Controller.P_State.Buttons.PS);
+_PsButtonTimerRtrig(CLK:=_PsButtonTimer.Q);
+IF _PsButtonTimerRtrig.Q THEN
+	_Reseting := FALSE; // ps button was held down too long so we dont reset
+	ProcessHome.M_StartHoming();
 END_IF</xhtml>
                         </ST>
                       </body>
@@ -4893,17 +4914,17 @@ _ExecuteFtrig(CLK:=_SMC_GroupJog2.Enable);
 _ResetRtrig(CLK:=Reset);
 
 IF _FirstScan THEN
-	_SMC_GroupJog2.Velocity := 10.0;
+	_SMC_GroupJog2.Velocity := 50.0;
 	_SMC_GroupJog2.Acceleration := 300.0;
 	_SMC_GroupJog2.Deceleration := 300.0;
 	_SMC_GroupJog2.Jerk := 1000.0;
 	_SMC_GroupJog2.MaxAngularDistance := 90.0;
-	_SMC_GroupJog2.MaxLinearDistance := 100.0;
+	_SMC_GroupJog2.MaxLinearDistance := 200.0;
 	_SMC_GroupJog2.AccFactor := 1.0;
 	_SMC_GroupJog2.VelFactor := 0.1;
 	_SMC_GroupJog2.JerkFactor := 1.0;
 	_SMC_GroupJog2.TorqueFactor := 1.0;
-	_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.MCS;
+	_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
 	
 END_IF
 
@@ -5099,6 +5120,26 @@ _FirstScan := FALSE;</xhtml>
                               <derived name="F_TRIG" />
                             </type>
                           </variable>
+                          <variable name="SquareButtonRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="TriangleButtonRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="CircleButtonRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="CrossButtonRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
                           <variable name="R2_Last">
                             <type>
                               <USINT />
@@ -5220,6 +5261,24 @@ IF Enable AND_THEN Controller.P_State.Connected THEN
 	IF Controller.P_State.Dpad.Down AND_THEN Controller.P_State.Triggers.Right.Two &lt;&gt; R2_Last THEN
 		R2_Last := Controller.P_State.Triggers.Right.Two;
 		_SMC_GroupJog2.TorqueFactor := MAX(FactorMin, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
+	END_IF
+	
+	// first 4 poses can be called using buttons
+	SquareButtonRtrig(CLK:=Controller.P_State.Buttons.Square);
+	IF SquareButtonRtrig.Q THEN
+		M_MoveToPose(E_Pose.One);
+	END_IF
+	TriangleButtonRtrig(CLK:=Controller.P_State.Buttons.Triangle);
+	IF TriangleButtonRtrig.Q THEN
+		M_MoveToPose(E_Pose.Two);
+	END_IF
+	CircleButtonRtrig(CLK:=Controller.P_State.Buttons.Circle);
+	IF CircleButtonRtrig.Q THEN
+		M_MoveToPose(E_Pose.Three);
+	END_IF
+	CrossButtonRtrig(CLK:=Controller.P_State.Buttons.Cross);
+	IF CrossButtonRtrig.Q THEN
+		M_MoveToPose(E_Pose.Four);
 	END_IF
 	
 	//
@@ -5357,32 +5416,6 @@ END_IF</xhtml>
                     </Method>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_ClearOffsets" ObjectId="5b18153f-c32f-4189-9485-f501f275c7f5">
-                      <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
-FOR _j:=0 TO 3 BY 1 DO
-	_OffsetExist[_j] := FALSE;
-END_FOR
-FOR _i := GVL.TCP_POS_IDX TO GVL.MCS_POS_IDX BY 1 DO
-	StoredPositions[_i].Position.X := 0.0;
-	StoredPositions[_i].Position.Y := 0.0;
-	StoredPositions[_i].Position.Z := 0.0;
-	StoredPositions[_i].Position.A := 0.0;
-	StoredPositions[_i].Position.B := 0.0;
-	StoredPositions[_i].Position.C := 0.0;
-END_FOR</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
                     <Method name="_M_HandlePose" ObjectId="043b4f3b-61e5-44ea-8800-b568d3612acd">
                       <interface>
                         <returnType>
@@ -5479,6 +5512,32 @@ _MoveCommandProcessor(
 ELSE
 	M_MoveToPose := FALSE;
 END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_ClearOffsets" ObjectId="5b18153f-c32f-4189-9485-f501f275c7f5">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+FOR _j:=0 TO 3 BY 1 DO
+	_OffsetExist[_j] := FALSE;
+END_FOR
+FOR _i := GVL.TCP_POS_IDX TO GVL.MCS_POS_IDX BY 1 DO
+	StoredPositions[_i].Position.X := 0.0;
+	StoredPositions[_i].Position.Y := 0.0;
+	StoredPositions[_i].Position.Z := 0.0;
+	StoredPositions[_i].Position.A := 0.0;
+	StoredPositions[_i].Position.B := 0.0;
+	StoredPositions[_i].Position.C := 0.0;
+END_FOR</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -23696,29 +23755,6 @@ _MoveCommandProcessor(
     </configurations>
   </instances>
   <addData>
-    <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
-      <Libraries>
-        <Library Name="#VisuSymbols" Namespace="VisuSymbols" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="VisuSymbols, 4.1.0.0 (System)" />
-        <Library Name="#System_VisuElems" Namespace="VisuElems" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElems, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemMeter" Namespace="VisuElemMeter" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemMeter, 4.3.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsSpecialControls" Namespace="VisuElemsSpecialControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsSpecialControls, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsWinControls" Namespace="VisuElemsWinControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsWinControls, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemTextEditor" Namespace="VisuElemTextEditor" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTextEditor, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemTrace" Namespace="VisuElemTrace" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTrace, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuNativeControl" Namespace="VisuNativeControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuNativeControl, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsAlarm" Namespace="VisuElemsAlarm" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsAlarm, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemCamDisplayer" Namespace="VisuElemCamDisplayer" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemCamDisplayer, 4.2.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElem3DPath" Namespace="VisuElem3DPath" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElem3DPath, 4.1.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsDateTime" Namespace="VisuElemsDateTime" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsDateTime, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemXYChart" Namespace="VisuElemXYChart" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemXYChart, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.2.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <addData>
-          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-            <ObjectId>7947b9f0-2ec0-46cb-a7e5-f8f763be16e6</ObjectId>
-          </data>
-        </addData>
-      </Libraries>
-    </data>
     <data name="http://www.3s-software.com/plcopenxml/projectstructure" handleUnknown="discard">
       <ProjectStructure>
         <Object Name="Device" ObjectId="883e7752-fd50-4d5b-bb87-a92a505c0d55">
@@ -23802,10 +23838,10 @@ _MoveCommandProcessor(
                     <Object Name="_M_CheckOffsets" ObjectId="347358c3-2be2-4bfb-955f-c6b01631848c" />
                     <Object Name="_M_HandlePose" ObjectId="043b4f3b-61e5-44ea-8800-b568d3612acd" />
                   </Folder>
+                  <Object Name="M_MoveToPose" ObjectId="5971868c-619e-47a6-ac41-0e2ed68a066a" />
                   <Folder Name="public">
                     <Object Name="M_ClearOffsets" ObjectId="5b18153f-c32f-4189-9485-f501f275c7f5" />
                   </Folder>
-                  <Object Name="M_MoveToPose" ObjectId="5971868c-619e-47a6-ac41-0e2ed68a066a" />
                 </Object>
                 <Object Name="F_SetJogButtons" ObjectId="640ac73b-ff1c-4df1-a978-e5b05f9ea455" />
                 <Object Name="E_Pose" ObjectId="b79aef52-6212-478e-b00a-eac3efda95a0" />
@@ -24157,8 +24193,6 @@ _MoveCommandProcessor(
             </Object>
           </Object>
         </Object>
-        <Object Name="Library Manager" ObjectId="7947b9f0-2ec0-46cb-a7e5-f8f763be16e6" />
-        <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
       </ProjectStructure>
     </data>
   </addData>
