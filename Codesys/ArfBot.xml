@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-10T00:12:35.6293998" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-09T23:53:18.3037902">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-10T10:19:49.4208339" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-10T10:12:45.9453285">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -5416,6 +5416,32 @@ END_IF</xhtml>
                     </Method>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_ClearOffsets" ObjectId="5b18153f-c32f-4189-9485-f501f275c7f5">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+FOR _j:=0 TO 3 BY 1 DO
+	_OffsetExist[_j] := FALSE;
+END_FOR
+FOR _i := GVL.TCP_POS_IDX TO GVL.MCS_POS_IDX BY 1 DO
+	StoredPositions[_i].Position.X := 0.0;
+	StoredPositions[_i].Position.Y := 0.0;
+	StoredPositions[_i].Position.Z := 0.0;
+	StoredPositions[_i].Position.A := 0.0;
+	StoredPositions[_i].Position.B := 0.0;
+	StoredPositions[_i].Position.C := 0.0;
+END_FOR</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
                     <Method name="_M_HandlePose" ObjectId="043b4f3b-61e5-44ea-8800-b568d3612acd">
                       <interface>
                         <returnType>
@@ -5512,32 +5538,6 @@ _MoveCommandProcessor(
 ELSE
 	M_MoveToPose := FALSE;
 END_IF</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_ClearOffsets" ObjectId="5b18153f-c32f-4189-9485-f501f275c7f5">
-                      <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
-FOR _j:=0 TO 3 BY 1 DO
-	_OffsetExist[_j] := FALSE;
-END_FOR
-FOR _i := GVL.TCP_POS_IDX TO GVL.MCS_POS_IDX BY 1 DO
-	StoredPositions[_i].Position.X := 0.0;
-	StoredPositions[_i].Position.Y := 0.0;
-	StoredPositions[_i].Position.Z := 0.0;
-	StoredPositions[_i].Position.A := 0.0;
-	StoredPositions[_i].Position.B := 0.0;
-	StoredPositions[_i].Position.C := 0.0;
-END_FOR</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -20615,6 +20615,14 @@ END_CASE</xhtml>
                         <simpleValue value="1010" />
                       </initialValue>
                     </variable>
+                    <variable name="STEP_WAIT_POSE_DONE">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="1020" />
+                      </initialValue>
+                    </variable>
                   </localVars>
                 </interface>
                 <body>
@@ -20789,6 +20797,11 @@ CASE _SequenceMain OF
 		_SequenceMain := STEP_WAIT_MOVE_TO_POSE;
 	
 	STEP_WAIT_MOVE_TO_POSE:
+		IF _MoveCommandProcessor.ItfUnitMode.CurrentState &lt;&gt; PACK_ML.State.Idle THEN
+			_SequenceMain := STEP_WAIT_POSE_DONE;
+		END_IF
+		
+	STEP_WAIT_POSE_DONE:
 		IF _MoveCommandProcessor.ItfUnitMode.CurrentState = PACK_ML.State.Idle THEN
 			_SequenceMain := STEP_DONE;
 		END_IF
@@ -21141,7 +21154,7 @@ END_IF</xhtml>
 	_MoveToPose:= FALSE;
 	//
 	IF GVL.PowerOn 
-		AND_THEN PersistentVars.Flags[GVL.HOME_COMPLETE].Value
+		AND_THEN Flags[GVL.HOME_COMPLETE].Value
 		AND_THEN NOT _MoveCommandProcessor.Busy
 		AND_THEN NOT _MoveCommandProcessor.Error THEN
 			//
@@ -21150,7 +21163,7 @@ END_IF</xhtml>
 			_MoveCommand.CoordinateType 	:= DUT_Command_CoordinateType.Literal;
 			_MoveCommand.Speed 				:= _PoseSpeed;
 			_MoveCommand.CoordSystem 		:= SMC_COORD_SYSTEM.ACS;
-			_MoveCommand.CoordRef 			:= PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position;
+			_MoveCommand.CoordRef 			:= StoredPositions[GVL.POSE_2_IDX].Position;
 			//
 			_MoveCommandProcessor.Command := BuildMoveCmd(_MoveCommand);
 			_MoveCommandProcessor.M_Start();
@@ -23755,6 +23768,29 @@ _MoveCommandProcessor(
     </configurations>
   </instances>
   <addData>
+    <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
+      <Libraries>
+        <Library Name="#VisuSymbols" Namespace="VisuSymbols" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="VisuSymbols, 4.1.0.0 (System)" />
+        <Library Name="#System_VisuElems" Namespace="VisuElems" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElems, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemMeter" Namespace="VisuElemMeter" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemMeter, 4.3.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsSpecialControls" Namespace="VisuElemsSpecialControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsSpecialControls, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsWinControls" Namespace="VisuElemsWinControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsWinControls, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemTextEditor" Namespace="VisuElemTextEditor" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTextEditor, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemTrace" Namespace="VisuElemTrace" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTrace, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuNativeControl" Namespace="VisuNativeControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuNativeControl, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsAlarm" Namespace="VisuElemsAlarm" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsAlarm, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemCamDisplayer" Namespace="VisuElemCamDisplayer" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemCamDisplayer, 4.2.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElem3DPath" Namespace="VisuElem3DPath" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElem3DPath, 4.1.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsDateTime" Namespace="VisuElemsDateTime" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsDateTime, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemXYChart" Namespace="VisuElemXYChart" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemXYChart, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.2.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>7947b9f0-2ec0-46cb-a7e5-f8f763be16e6</ObjectId>
+          </data>
+        </addData>
+      </Libraries>
+    </data>
     <data name="http://www.3s-software.com/plcopenxml/projectstructure" handleUnknown="discard">
       <ProjectStructure>
         <Object Name="Device" ObjectId="883e7752-fd50-4d5b-bb87-a92a505c0d55">
@@ -23838,10 +23874,10 @@ _MoveCommandProcessor(
                     <Object Name="_M_CheckOffsets" ObjectId="347358c3-2be2-4bfb-955f-c6b01631848c" />
                     <Object Name="_M_HandlePose" ObjectId="043b4f3b-61e5-44ea-8800-b568d3612acd" />
                   </Folder>
-                  <Object Name="M_MoveToPose" ObjectId="5971868c-619e-47a6-ac41-0e2ed68a066a" />
                   <Folder Name="public">
                     <Object Name="M_ClearOffsets" ObjectId="5b18153f-c32f-4189-9485-f501f275c7f5" />
                   </Folder>
+                  <Object Name="M_MoveToPose" ObjectId="5971868c-619e-47a6-ac41-0e2ed68a066a" />
                 </Object>
                 <Object Name="F_SetJogButtons" ObjectId="640ac73b-ff1c-4df1-a978-e5b05f9ea455" />
                 <Object Name="E_Pose" ObjectId="b79aef52-6212-478e-b00a-eac3efda95a0" />
@@ -24193,6 +24229,8 @@ _MoveCommandProcessor(
             </Object>
           </Object>
         </Object>
+        <Object Name="Library Manager" ObjectId="7947b9f0-2ec0-46cb-a7e5-f8f763be16e6" />
+        <Object Name="Project Information" ObjectId="11c0fc3a-9bcf-4dd8-ac38-efb93363e521" />
       </ProjectStructure>
     </data>
   </addData>
