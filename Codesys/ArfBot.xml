@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-07T20:00:43.3010569" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-07T19:52:35.9469699">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-10T00:12:35.6293998" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-09T23:53:18.3037902">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -507,19 +507,14 @@ RESERVED: INT:=47;</xhtml>
                 <BOOL />
               </type>
             </variable>
-            <variable name="Homing">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
             <variable name="Reset">
               <type>
                 <BOOL />
               </type>
             </variable>
-            <variable name="SetHome">
+            <variable name="ResetRtrig">
               <type>
-                <BOOL />
+                <derived name="R_TRIG" />
               </type>
             </variable>
             <variable name="StorePersist">
@@ -585,16 +580,6 @@ RESERVED: INT:=47;</xhtml>
             <variable name="Servo0Position">
               <type>
                 <BYTE />
-              </type>
-            </variable>
-            <variable name="MoveToPose">
-              <type>
-                <array>
-                  <dimension lower="0" upper="4" />
-                  <baseType>
-                    <BOOL />
-                  </baseType>
-                </array>
               </type>
             </variable>
             <addData>
@@ -1010,19 +995,14 @@ RESERVED: INT:=47;</xhtml>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="Homing">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
                     <variable name="Reset">
                       <type>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="SetHome">
+                    <variable name="ResetRtrig">
                       <type>
-                        <BOOL />
+                        <derived name="R_TRIG" />
                       </type>
                     </variable>
                     <variable name="StorePersist">
@@ -1088,16 +1068,6 @@ RESERVED: INT:=47;</xhtml>
                     <variable name="Servo0Position">
                       <type>
                         <BYTE />
-                      </type>
-                    </variable>
-                    <variable name="MoveToPose">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="4" />
-                          <baseType>
-                            <BOOL />
-                          </baseType>
-                        </array>
                       </type>
                     </variable>
                   </globalVars>
@@ -2498,6 +2468,208 @@ RESERVED: INT:=47;</xhtml>
                 </addData>
               </dataType>
             </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="E_ControllerPlayerID">
+                <baseType>
+                  <enum>
+                    <values>
+                      <value name="Player1" value="4" />
+                      <value name="Player2" value="10" />
+                      <value name="Player3" value="21" />
+                      <value name="Player4" value="27" />
+                      <value name="PlayerAll" value="31" />
+                    </values>
+                  </enum>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="qualified_only" Value="" />
+                      <Attribute Name="strict" Value="" />
+                    </Attributes>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>d98d4d74-0af2-4200-b2d2-a2e62489282e</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="E_ControllerBrightness">
+                <baseType>
+                  <enum>
+                    <values>
+                      <value name="High" value="0" />
+                      <value name="Med" value="1" />
+                      <value name="Low" value="2" />
+                    </values>
+                  </enum>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="qualified_only" Value="" />
+                      <Attribute Name="strict" Value="" />
+                    </Attributes>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>604af7c6-46fd-4031-b39f-42d0051195f9</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="E_ControllerMotor">
+                <baseType>
+                  <enum>
+                    <values>
+                      <value name="Left" value="0" />
+                      <value name="Right" value="1" />
+                    </values>
+                  </enum>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="qualified_only" Value="" />
+                      <Attribute Name="strict" Value="" />
+                    </Attributes>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>a6c1ccec-7589-44ea-8664-b26e13e4589c</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="E_ControllerTriggerMode">
+                <baseType>
+                  <enum>
+                    <values>
+                      <value name="Off" value="0" />
+                      <value name="Rigid" value="1" />
+                      <value name="Pulse" value="2" />
+                      <value name="Rigid_A" value="3" />
+                      <value name="Rigid_B" value="4" />
+                      <value name="Rigid_AB" value="5" />
+                      <value name="Pulse_A" value="6" />
+                      <value name="Pulse_AB" value="7" />
+                      <value name="Calibration" value="8" />
+                    </values>
+                  </enum>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/enumvaluedocumentation" handleUnknown="implementation">
+                    <EnumValueDocumentation>
+                      <EnumValue>
+                        <Name>Off</Name>
+                        <Documentation>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml"> no resistance</xhtml>
+                        </Documentation>
+                      </EnumValue>
+                      <EnumValue>
+                        <Name>Rigid</Name>
+                        <Documentation>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml"> continous resistance</xhtml>
+                        </Documentation>
+                      </EnumValue>
+                      <EnumValue>
+                        <Name>Pulse</Name>
+                        <Documentation>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml"> section resistance</xhtml>
+                        </Documentation>
+                      </EnumValue>
+                    </EnumValueDocumentation>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="qualified_only" Value="" />
+                      <Attribute Name="strict" Value="" />
+                    </Attributes>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>7cfb17e9-0adb-430c-99c4-e3a0b9b689dc</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="E_ControllerTrigger">
+                <baseType>
+                  <enum>
+                    <values>
+                      <value name="Left" value="0" />
+                      <value name="Right" value="1" />
+                    </values>
+                  </enum>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="qualified_only" Value="" />
+                      <Attribute Name="strict" Value="" />
+                    </Attributes>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>cf02ac9e-9fa8-4292-8ddb-6ba2ae2076e9</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="E_ControllerTriggerForceParameter">
+                <baseType>
+                  <enum>
+                    <values>
+                      <value name="One" value="0" />
+                      <value name="Two" value="1" />
+                      <value name="Three" value="2" />
+                      <value name="Four" value="3" />
+                      <value name="Five" value="4" />
+                      <value name="Six" value="5" />
+                      <value name="Seven" value="6" />
+                    </values>
+                  </enum>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="qualified_only" Value="" />
+                      <Attribute Name="strict" Value="" />
+                    </Attributes>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>54b4a266-7c75-4f63-967a-c2dc24d3f5bb</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="E_Pose">
+                <baseType>
+                  <enum>
+                    <values>
+                      <value name="One" value="0" />
+                      <value name="Two" value="1" />
+                      <value name="Three" value="2" />
+                      <value name="Four" value="3" />
+                      <value name="Five" value="4" />
+                    </values>
+                  </enum>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                    <Attributes>
+                      <Attribute Name="qualified_only" Value="" />
+                      <Attribute Name="strict" Value="" />
+                    </Attributes>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>b79aef52-6212-478e-b00a-eac3efda95a0</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/interface" handleUnknown="implementation">
               <Interface name="ITFModule" ObjectId="83e2f220-b628-4cc1-8425-5ccb3ca1431d">
                 <Methods>
@@ -2600,16 +2772,6 @@ RESERVED: INT:=47;</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> tuning</xhtml>
                       </documentation>
                     </variable>
-                    <variable name="GroupPower">
-                      <type>
-                        <derived name="SMC_GroupPower" />
-                      </type>
-                    </variable>
-                    <variable name="GroupEnable">
-                      <type>
-                        <derived name="MC_GroupEnable" />
-                      </type>
-                    </variable>
                     <variable name="TuneStart">
                       <type>
                         <array>
@@ -2639,17 +2801,6 @@ RESERVED: INT:=47;</xhtml>
                           </baseType>
                         </array>
                       </type>
-                    </variable>
-                    <variable name="MoveDelayTime">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="10" />
-                      </initialValue>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> ms</xhtml>
-                      </documentation>
                     </variable>
                     <variable name="ProcessHome">
                       <type>
@@ -2698,43 +2849,13 @@ RESERVED: INT:=47;</xhtml>
                         <derived name="PositionTracker" />
                       </type>
                     </variable>
-                    <variable name="ProcessMoveCommand">
-                      <type>
-                        <derived name="MoveCmdProcessor" />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> program processor</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="ProcessMoveCommand_Reset">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="ProcessMoveStatusText">
-                      <type>
-                        <string length="255" />
-                      </type>
-                    </variable>
                     <variable name="ProcessPrograms">
                       <type>
                         <derived name="FB_ProgramProcessor" />
                       </type>
-                    </variable>
-                    <variable name="ProcessCommands_Execute">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="ProcessCommand_Cancel">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="ProcessCommand_Reset">
-                      <type>
-                        <BOOL />
-                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> program processor</xhtml>
+                      </documentation>
                     </variable>
                     <variable name="ProcessCommand_ActiveProgram">
                       <type>
@@ -2743,16 +2864,6 @@ RESERVED: INT:=47;</xhtml>
                       <initialValue>
                         <simpleValue value="0" />
                       </initialValue>
-                    </variable>
-                    <variable name="StMoveCmdPose1">
-                      <type>
-                        <derived name="ST_MoveCmd" />
-                      </type>
-                    </variable>
-                    <variable name="Abort">
-                      <type>
-                        <BOOL />
-                      </type>
                     </variable>
                     <variable name="Vision_pResultRtrig">
                       <type>
@@ -2767,56 +2878,6 @@ RESERVED: INT:=47;</xhtml>
                         <INT />
                       </type>
                     </variable>
-                    <variable name="Vision_CaptureImage">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_CapImgCmdAccepted">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_RunCalibration">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_RunCalCmdAccepted">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_LocatePart">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_LocPartCmdAccepted">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_StreamCamera">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_StrCamCmdAccepted">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_Cancel">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Vision_Reset">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
                     <variable name="Controller">
                       <type>
                         <derived name="FB_Controller" />
@@ -2824,21 +2885,6 @@ RESERVED: INT:=47;</xhtml>
                       <documentation>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> controller</xhtml>
                       </documentation>
-                    </variable>
-                    <variable name="ConnectController">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="ResetController">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="DisconnectController">
-                      <type>
-                        <BOOL />
-                      </type>
                     </variable>
                     <variable name="_i">
                       <type>
@@ -2872,292 +2918,16 @@ RESERVED: INT:=47;</xhtml>
                       </initialValue>
                     </variable>
                   </localVars>
-                  <localVars constant="true">
-                    <variable name="PlusButtonText0">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J1+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'X+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'X+'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 0-ACS 1-WCS/MCS/PC 2-WCS/MCS/PC(ABC_AS_ACS)</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="PlusButtonText1">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J2+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Y+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Y+'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="PlusButtonText2">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J3+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Z+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Z+'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="PlusButtonText3">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J4+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Pitch+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'J4+'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="PlusButtonText4">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J5+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Yaw+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'J5+'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="PlusButtonText5">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J6+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Roll+'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'J6+'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="MinusButtonText0">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J1-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'X-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'X-'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="MinusButtonText1">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J2-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Y-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Y-'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="MinusButtonText2">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J3-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Z-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Z-'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="MinusButtonText3">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J4-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Pitch-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'J4-'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="MinusButtonText4">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J5-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Yaw-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'J5-'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                    <variable name="MinusButtonText5">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="2" />
-                          <baseType>
-                            <string />
-                          </baseType>
-                        </array>
-                      </type>
-                      <initialValue>
-                        <arrayValue>
-                          <value>
-                            <simpleValue value="'J6-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'Roll-'" />
-                          </value>
-                          <value>
-                            <simpleValue value="'J6-'" />
-                          </value>
-                        </arrayValue>
-                      </initialValue>
-                    </variable>
-                  </localVars>
                 </interface>
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">
 {region "utility"}
+	GVL.ResetRtrig(CLK:=GVL.Reset);
+	IF GVL.ResetRtrig.Q THEN
+		GVL.Reset := FALSE;
+	END_IF
+	
 	IF FirstScan THEN
 		M_Init();	
 	END_IF
@@ -3291,17 +3061,6 @@ PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';<
                       <body>
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">
-
-IF GVL.Homing THEN
-	GVL.Homing := FALSE;
-	ProcessHome.M_StartHoming();
-END_IF
-
-IF GVL.SetHome THEN
-	GVL.SetHome := FALSE;
-	ProcessHome.M_SetHome();
-END_IF
-
 ProcessHome(
 	J1:= SM_Drive_PosControl_J1, 
 	J2:= SM_Drive_PosControl_J2, 
@@ -3309,9 +3068,9 @@ ProcessHome(
 	J4:= SM_Drive_PosControl_J4, 
 	J5:= SM_Drive_PosControl_J5, 
 	J6:= SM_Drive_PosControl_J6, 
+	AxisGroup:= ArfBotAxisGroup,
 	GroupHandler:= GroupHandler, 
 	Controller:= Controller, 
-	MoveCommandProcessor:= ProcessMoveCommand,
 	J1_Limit:= _10_Drives.rx_j1_limit, 
 	J2_Limit:= _10_Drives.rx_j2_limit, 
 	J3_Limit:= _10_Drives.rx_j3_limit, 
@@ -3319,8 +3078,9 @@ ProcessHome(
 	J5_Limit:= _10_Drives.rx_j5_limit, 
 	J6_Limit:= _10_Drives.rx_j6_limit, 
 	Enable:= GVL.PowerOn, 
-	Reset:= GVL.Reset, 
+	Reset:= GVL.ResetRtrig.Q, 
 	StoredPositions:= PersistentVars.StoredPositions,
+	VisionRegisters:= PersistentVars.VisionRegisters,
 	Flags:= PersistentVars.Flags,
 	Done=&gt; , 
 	Busy=&gt; , 
@@ -3356,76 +3116,10 @@ END_IF</xhtml>
                       <body>
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">
-//
-FOR _i:=0 TO 4 BY 1 DO
-	IF GVL.MoveToPose[_i] THEN
-		GVL.MoveToPose[_i] := FALSE;
-		//
-		IF GVL.PowerOn 
-			AND_THEN PersistentVars.Flags[GVL.HOME_COMPLETE].Value
-			AND_THEN NOT ProcessMoveCommand.Busy
-			AND_THEN NOT ProcessMoveCommand.Error THEN
-				//
-				StMoveCmdPose1.MoveType 		:= DUT_Command_MoveType.DirectMove;
-				StMoveCmdPose1.PositionType 	:= DUT_Command_PositionType.AbsolutePosition;
-				StMoveCmdPose1.CoordinateType 	:= DUT_Command_CoordinateType.Literal;
-				StMoveCmdPose1.Speed 			:= 20;
-				StMoveCmdPose1.CoordSystem 		:= SMC_COORD_SYSTEM.ACS;
-				StMoveCmdPose1.CoordRef 		:= PersistentVars.StoredPositions[GVL.POSE_1_IDX + _i].Position;
-				//
-				ProcessMoveCommand.Command := BuildMoveCmd(StMoveCmdPose1);
-				ProcessMoveCommand.M_Start();
-				//
-				EXIT;
-		END_IF;
-	END_IF
-END_FOR
-// TODO need to get this removed and instead build a program for the poses
-ProcessMoveCommand(
-	StoredPositions:= PersistentVars.StoredPositions,
-	VisionRegisters:= PersistentVars.VisionRegisters,
-	Flags:= PersistentVars.Flags,
-	AxisGroup:= ArfBotAxisGroup, 
-	GroupHandler:= GroupHandler,
-	Velocity:= PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X, 
-	VelFactor:= PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.A,
-	Acceleration:= PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.Y, 
-	AccFactor:= PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.B,
-	Jerk:= PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.Z,
-	JerkFactor:= PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.C, 
-	Position=&gt; ,
-	ItfUnitMode=&gt; , 
-	Error=&gt; );
-IF ProcessMoveCommand_Reset OR GVL.Reset THEN
-	ProcessMoveCommand_Reset := FALSE;
-	ProcessMoveStatusText := '';
-	ProcessMoveCommand.M_Home();
-END_IF
-IF ProcessMoveCommand.Error THEN
-	ProcessMoveStatusText := CONCAT('Move Processor Error: ',ProcessMoveCommand.ErrorDescription) ;
-END_IF
-
-//
-IF Abort THEN
-	Abort := FALSE;
-	IF NOT GVL.PowerOn THEN
-		ProcessMoveCommand.M_Abort();
-	END_IF
-END_IF
-IF ProcessCommands_Execute THEN
-	ProcessCommands_Execute := FALSE;
-	IF ProcessPrograms.M_SetProgram(ProgramNumber:=ProcessCommand_ActiveProgram) THEN
-		ProcessPrograms.M_Start();
-	END_IF
-END_IF
-IF ProcessCommand_Cancel THEN
-	ProcessCommand_Cancel := FALSE;
-	ProcessPrograms.M_Stop();
-END_IF
-IF ProcessCommand_Reset OR GVL.Reset THEN
-	ProcessCommand_Reset := FALSE;
+IF GVL.ResetRtrig.Q THEN
 	ProcessPrograms.M_Home();
 END_IF
+
 ProcessPrograms(
 	Programs:=PersistentVars.Programs,
 	StoredPositions:=PersistentVars.StoredPositions,
@@ -3516,7 +3210,7 @@ ProcessJog(
 	GroupHandler:= GroupHandler,
 	Controller:= Controller,
 	Enable:= GVL.PowerOn,
-	Reset:= GVL.Reset,
+	Reset:= GVL.ResetRtrig.Q,
 	StoredPositions:= PersistentVars.StoredPositions,
 	VisionRegisters:= PersistentVars.VisionRegisters,
 	Flags:= PersistentVars.Flags,
@@ -3620,18 +3314,20 @@ END_FOR
 PersistentVars.Programs[2].ProgramName := 'PCS1 Corners';
 PersistentVars.Programs[2].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
 PersistentVars.Programs[2].Commands[0].CommandString := 'STO 0046 +0000.00 +0000.00 +0000.00 +0090.00 +0000.00 +0000.00';
-PersistentVars.Programs[2].Commands[1].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[1].CommandString := 'DIR ABS 050 PC1 LIT 0 0 0 0 0 0';
+PersistentVars.Programs[2].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[2].Commands[1].CommandString := 'STO 0048 +0283.23 -0066.77 +0195.00 -0127.52 +0179.00 +0102.00';
 PersistentVars.Programs[2].Commands[2].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[2].CommandString := 'LIN REL 100 TCS LIT 0.0 200.0 0.0 0.0 0.0 0.0';
+PersistentVars.Programs[2].Commands[2].CommandString := 'DIR ABS 050 PC1 LIT 0 0 0 0 0 0';
 PersistentVars.Programs[2].Commands[3].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[3].CommandString := 'LIN REL 100 TCS LIT 00125.00 00000.00 00000.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[2].Commands[3].CommandString := 'LIN REL 100 TCS LIT 0.0 200.0 0.0 0.0 0.0 0.0';
 PersistentVars.Programs[2].Commands[4].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[4].CommandString := 'LIN REL 100 TCS LIT 00000.00 -0200.00 00000.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[2].Commands[4].CommandString := 'LIN REL 100 TCS LIT 00125.00 00000.00 00000.00 00000.00 00000.00 00000.00';
 PersistentVars.Programs[2].Commands[5].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[5].CommandString := 'LIN REL 100 TCS LIT -0125.00 00000.00 00000.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[2].Commands[5].CommandString := 'LIN REL 100 TCS LIT 00000.00 -0200.00 00000.00 00000.00 00000.00 00000.00';
 PersistentVars.Programs[2].Commands[6].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[2].Commands[6].CommandString := 'DIR ABS 050 ACS LIT +00 +30 -30 +00 +30 +00';
+PersistentVars.Programs[2].Commands[6].CommandString := 'LIN REL 100 TCS LIT -0125.00 00000.00 00000.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[2].Commands[7].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[7].CommandString := 'DIR ABS 050 ACS LIT +00 +30 -30 +00 +30 +00';
 
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
@@ -3772,6 +3468,16 @@ END_IF
                               <derived name="R_TRIG" />
                             </type>
                           </variable>
+                          <variable name="_PowerFtrig">
+                            <type>
+                              <derived name="F_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="_PowerTimerRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
                           <variable name="_PowerTimer">
                             <type>
                               <derived name="TON" />
@@ -3783,6 +3489,38 @@ END_IF
                                 </value>
                               </structValue>
                             </initialValue>
+                          </variable>
+                          <variable name="_PsButtonRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="_PsButtonFtrig">
+                            <type>
+                              <derived name="F_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="_PsButtonTimer">
+                            <type>
+                              <derived name="TON" />
+                            </type>
+                            <initialValue>
+                              <structValue>
+                                <value member="PT">
+                                  <simpleValue value="TIME#2s0ms" />
+                                </value>
+                              </structValue>
+                            </initialValue>
+                          </variable>
+                          <variable name="_PsButtonTimerRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="_Reseting">
+                            <type>
+                              <BOOL />
+                            </type>
                           </variable>
                         </globalVars>
                         <addData>
@@ -3797,28 +3535,48 @@ END_IF
 // dont get sleepy
 Controller(sIpAddress:= '127.0.0.1', uPort:= 50013);
 
-//
-IF ConnectController THEN
-	ConnectController:=FALSE;
-	Controller.M_ReadInputs();
-END_IF
-IF DisconnectController THEN
-	DisconnectController:=FALSE;
-	Controller.M_Cancel();
-END_IF
-IF ResetController THEN
-	ResetController:=FALSE;
-	Controller.M_Reset();
-END_IF
-
 // put two fingers on the trackpad for 3 seconds to toggle power
 _PowerTimer(IN:=Controller.P_State.Connected
 				AND Controller.P_State.Buttons.Touch
 				AND Controller.P_State.Trackpads.One.Active 
 				AND Controller.P_State.Trackpads.Two.Active);
-_PowerRtrig(CLK:=_PowerTimer.Q);
-IF _PowerRtrig.Q THEN
+_PowerTimerRtrig(CLK:=_PowerTimer.Q);
+IF _PowerTimerRtrig.Q THEN
 	GVL.PowerOn := NOT GVL.PowerOn;
+END_IF
+_PowerRtrig(CLK:=GVL.PowerOn);
+_PowerFtrig(CLK:=GVL.PowerOn);
+IF _PowerRtrig.Q OR _PowerFtrig.Q THEN
+	IF GVL.PowerOn THEN
+		Controller.M_SetColor(255,0,0);
+		Controller.M_SetBrightness(E_ControllerBrightness.High);
+		Controller.M_SetMotorIntensity(E_ControllerMotor.Left, 100, 0.100);
+	ELSE
+		Controller.M_SetColor(0,255,0);
+		Controller.M_SetBrightness(E_ControllerBrightness.Low);
+		Controller.M_SetMotorIntensity(E_ControllerMotor.Right, 100, 0.100);
+	END_IF
+END_IF
+
+// press PS button once to reset
+_PsButtonRtrig(CLK:=Controller.P_State.Buttons.PS);
+_PsButtonFtrig(CLK:=Controller.P_State.Buttons.PS);
+IF _PsButtonRtrig.Q THEN
+	_Reseting := TRUE;
+END_IF
+IF _PsButtonFtrig.Q THEN
+	IF _Reseting THEN //  reset was not overridden by holding it down too long
+		_Reseting := FALSE;
+		GVL.Reset := TRUE;
+	END_IF
+END_IF
+
+// hold down the PS button to home
+_PsButtonTimer(IN:=Controller.P_State.Buttons.PS);
+_PsButtonTimerRtrig(CLK:=_PsButtonTimer.Q);
+IF _PsButtonTimerRtrig.Q THEN
+	_Reseting := FALSE; // ps button was held down too long so we dont reset
+	ProcessHome.M_StartHoming();
 END_IF</xhtml>
                         </ST>
                       </body>
@@ -3862,29 +3620,31 @@ END_IF</xhtml>
                               </array>
                             </type>
                           </variable>
+                          <variable name="_MoveDelayTime">
+                            <type>
+                              <INT />
+                            </type>
+                            <initialValue>
+                              <simpleValue value="10" />
+                            </initialValue>
+                            <documentation>
+                              <xhtml xmlns="http://www.w3.org/1999/xhtml"> ms</xhtml>
+                            </documentation>
+                          </variable>
                           <variable name="_i">
                             <type>
                               <INT />
                             </type>
-                            <documentation>
-                              <xhtml xmlns="http://www.w3.org/1999/xhtml">_MoveDelayTime: TIME:=T#10MS;</xhtml>
-                            </documentation>
                           </variable>
                           <variable name="_j">
                             <type>
                               <INT />
                             </type>
-                            <documentation>
-                              <xhtml xmlns="http://www.w3.org/1999/xhtml">_MoveDelayTime: TIME:=T#10MS;</xhtml>
-                            </documentation>
                           </variable>
                           <variable name="_k">
                             <type>
                               <INT />
                             </type>
-                            <documentation>
-                              <xhtml xmlns="http://www.w3.org/1999/xhtml">_MoveDelayTime: TIME:=T#10MS;</xhtml>
-                            </documentation>
                           </variable>
                           <variable name="_SetValues">
                             <type>
@@ -3952,7 +3712,7 @@ FOR _i:=0 TO 5 BY 1 DO
 	IF TuneStart[_i] THEN
 		TuneStart[_i] := FALSE;
 		TraceStart[_i] := TRUE; // trace will handshake this bit low
-		GroupPower.Enable := TRUE;
+		GroupHandler.M_EnableGroup();
 	END_IF
 	
 	// TraceStart will clear after handshake. this means the trace has started collecting samples
@@ -3963,7 +3723,7 @@ FOR _i:=0 TO 5 BY 1 DO
 	END_IF
 	
 	// once the move delay expires, start the move
-	_MoveDelayTimer[_i](PT:=INT_TO_TIME(MoveDelayTime));
+	_MoveDelayTimer[_i](PT:=INT_TO_TIME(_MoveDelayTime));
 	IF _MoveDelayTimer[_i].Q THEN
 		_MoveDelayTimer[_i].IN:=FALSE;
 		MoveRelative[_i].Execute := TRUE;
@@ -3973,32 +3733,11 @@ FOR _i:=0 TO 5 BY 1 DO
 	_MoveBusyFtrig[_i](CLK:=MoveRelative[_i].Busy);
 	IF _MoveBusyFtrig[_i].Q THEN
 		MoveRelative[_i].Execute := FALSE;
-		GroupPower.Enable := FALSE;
 		MoveRelative[_i].Distance := MoveRelative[_i].Distance * -1.0; // reverse direction
 	END_IF
 
 END_FOR
 
-// power
-GroupPower(
-	AxisGroup:= ArfBotAxisGroup, 
-	Enable:= , 
-	bRegulatorOn:= GroupPower.Enable, 
-	bDriveStart:= GroupPower.Enable, 
-	Status=&gt; , 
-	Busy=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-
-// enable
-GroupEnable(
-	AxisGroup:= ArfBotAxisGroup, 
-	Execute:= GroupPower.Status, 
-	CompatibilityOptions:= , 
-	Done=&gt; , 
-	Busy=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
 
 // move relative
 MoveRelative[0](
@@ -5000,6 +4739,11 @@ END_IF</xhtml>
                         <derived name="R_TRIG" />
                       </type>
                     </variable>
+                    <variable name="_EnableFtrig">
+                      <type>
+                        <derived name="F_TRIG" />
+                      </type>
+                    </variable>
                     <variable name="_SequenceMain">
                       <type>
                         <INT />
@@ -5030,6 +4774,31 @@ END_IF</xhtml>
                       <initialValue>
                         <simpleValue value="40" />
                       </initialValue>
+                    </variable>
+                    <variable name="_OffsetExist">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="(GVL.MCS_POS_IDX - GVL.TCP_POS_IDX)" />
+                          <baseType>
+                            <BOOL />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="_MoveToPose">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="(GVL.POSE_5_IDX - GVL.POSE_1_IDX)" />
+                          <baseType>
+                            <BOOL />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="_MoveCommandProcessor">
+                      <type>
+                        <derived name="MoveCmdProcessor" />
+                      </type>
                     </variable>
                     <variable name="_i">
                       <type>
@@ -5145,33 +4914,43 @@ _ExecuteFtrig(CLK:=_SMC_GroupJog2.Enable);
 _ResetRtrig(CLK:=Reset);
 
 IF _FirstScan THEN
-	_SMC_GroupJog2.Velocity := 10.0;
+	_SMC_GroupJog2.Velocity := 50.0;
 	_SMC_GroupJog2.Acceleration := 300.0;
 	_SMC_GroupJog2.Deceleration := 300.0;
 	_SMC_GroupJog2.Jerk := 1000.0;
 	_SMC_GroupJog2.MaxAngularDistance := 90.0;
-	_SMC_GroupJog2.MaxLinearDistance := 100.0;
+	_SMC_GroupJog2.MaxLinearDistance := 200.0;
 	_SMC_GroupJog2.AccFactor := 1.0;
 	_SMC_GroupJog2.VelFactor := 0.1;
 	_SMC_GroupJog2.JerkFactor := 1.0;
 	_SMC_GroupJog2.TorqueFactor := 1.0;
-	_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.MCS;
+	_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
 	
 END_IF
 
 //
 _M_HandleController();
+_M_HandlePose();
 
+//
+_EnableFtrig(CLK:=Enable);
+IF _EnableFtrig.Q THEN
+	_SMC_GroupJog2.Enable := FALSE;
+END_IF
+
+//
 CASE _SequenceMain OF
 	STEP_DONE: // done
 		Busy := FALSE;
 		Done := TRUE;
 		_SequenceMain := STEP_IDLE;
+		_MoveCommandProcessor.M_Home();
 		
 	STEP_IDLE: // IDLE
 		IF _ExecuteRtrig.Q AND Enable THEN
 			Busy := TRUE;
 			Done := FALSE;
+			_M_CheckOffsets();
 			_SequenceMain := STEP_GROUP_ENABLE;
 		END_IF
 		
@@ -5239,6 +5018,7 @@ IF _ResetRtrig.Q AND Error THEN
 	ErrorID := SMC_NO_ERROR;
 	_SequenceMain := STEP_DONE;
 	GroupHandler.M_ResetGroup();
+	_MoveCommandProcessor.M_Home();
 END_IF
 
 _SMC_GroupJog2(
@@ -5271,8 +5051,11 @@ Enabled := _SMC_GroupJog2.Enable;
 
 //
 _ErrorRtrig(CLK:=GroupHandler.Error
-				OR _SMC_GroupJog2.Error);			
+				OR _SMC_GroupJog2.Error
+				OR _MoveCommandProcessor.Error);			
 IF _ErrorRtrig.Q THEN
+	// TODO need to rework how error messages are handled (globally)
+	// if the move command processor has an error, we dont know what it is.
 	Error := TRUE;
 END_IF
 
@@ -5327,6 +5110,36 @@ _FirstScan := FALSE;</xhtml>
                               <derived name="R_TRIG" />
                             </type>
                           </variable>
+                          <variable name="JogEnabledRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="JogEnabledFtrig">
+                            <type>
+                              <derived name="F_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="SquareButtonRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="TriangleButtonRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="CircleButtonRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
+                          <variable name="CrossButtonRtrig">
+                            <type>
+                              <derived name="R_TRIG" />
+                            </type>
+                          </variable>
                           <variable name="R2_Last">
                             <type>
                               <USINT />
@@ -5377,6 +5190,8 @@ ShareTimer(IN:=Controller.P_State.Buttons.Share);
 ShareRtrig(CLK:=Controller.P_State.Buttons.Share);
 //
 OptionsShareRtrig(CLK:=OptionsTimer.Q AND_THEN ShareTimer.Q);
+JogEnabledRtrig(CLK:=_SMC_GroupJog2.Enable);
+JogEnabledFtrig(CLK:=_SMC_GroupJog2.Enable);
 
 
 IF Enable AND_THEN Controller.P_State.Connected THEN
@@ -5384,8 +5199,17 @@ IF Enable AND_THEN Controller.P_State.Connected THEN
 	// toggle jog enable
 	IF OptionsShareRtrig.Q THEN
 		_SMC_GroupJog2.Enable := NOT _SMC_GroupJog2.Enable;
+	END_IF
+	IF JogEnabledRtrig.Q OR JogEnabledFtrig.Q THEN
 		IF _SMC_GroupJog2.Enable THEN
 			_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
+			Controller.M_SetTriggerMode(E_ControllerTrigger.Right, E_ControllerTriggerMode.Rigid);
+			Controller.M_SetTriggerForce(E_ControllerTrigger.Right, E_ControllerTriggerForceParameter.One, 0);
+			Controller.M_SetPlayerID(E_ControllerPlayerID.PlayerALL);
+			Controller.M_SetMicrophoneState(TRUE);
+		ELSE
+			Controller.M_SetTriggerMode(E_ControllerTrigger.Right, E_ControllerTriggerMode.Off);
+			Controller.M_SetMicrophoneState(FALSE);
 		END_IF
 	END_IF
 	
@@ -5394,16 +5218,22 @@ IF Enable AND_THEN Controller.P_State.Connected THEN
 		CASE _SMC_GroupJog2.CoordSystem OF
 			SMC_COORD_SYSTEM.ACS:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.MCS;
+				Controller.M_SetPlayerID(E_ControllerPlayerID.Player2);
 			SMC_COORD_SYSTEM.MCS:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.PCS_1;
+				Controller.M_SetPlayerID(E_ControllerPlayerID.Player3);
 			SMC_COORD_SYSTEM.PCS_1:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.PCS_2;
+				Controller.M_SetPlayerID(E_ControllerPlayerID.Player4);
 			SMC_COORD_SYSTEM.PCS_2:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
+				Controller.M_SetPlayerID(E_ControllerPlayerID.PlayerALL);
 			SMC_COORD_SYSTEM.TCS:
-				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.WCS;
+				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.ACS; // skip WCS
+				Controller.M_SetPlayerID(E_ControllerPlayerID.Player1);
 			SMC_COORD_SYSTEM.WCS:
 				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.ACS;
+				Controller.M_SetPlayerID(E_ControllerPlayerID.Player1);
 		END_CASE
 	END_IF
 	
@@ -5431,6 +5261,24 @@ IF Enable AND_THEN Controller.P_State.Connected THEN
 	IF Controller.P_State.Dpad.Down AND_THEN Controller.P_State.Triggers.Right.Two &lt;&gt; R2_Last THEN
 		R2_Last := Controller.P_State.Triggers.Right.Two;
 		_SMC_GroupJog2.TorqueFactor := MAX(FactorMin, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
+	END_IF
+	
+	// first 4 poses can be called using buttons
+	SquareButtonRtrig(CLK:=Controller.P_State.Buttons.Square);
+	IF SquareButtonRtrig.Q THEN
+		M_MoveToPose(E_Pose.One);
+	END_IF
+	TriangleButtonRtrig(CLK:=Controller.P_State.Buttons.Triangle);
+	IF TriangleButtonRtrig.Q THEN
+		M_MoveToPose(E_Pose.Two);
+	END_IF
+	CircleButtonRtrig(CLK:=Controller.P_State.Buttons.Circle);
+	IF CircleButtonRtrig.Q THEN
+		M_MoveToPose(E_Pose.Three);
+	END_IF
+	CrossButtonRtrig(CLK:=Controller.P_State.Buttons.Cross);
+	IF CrossButtonRtrig.Q THEN
+		M_MoveToPose(E_Pose.Four);
 	END_IF
 	
 	//
@@ -5511,6 +5359,185 @@ IF Enable AND_THEN Controller.P_State.Connected THEN
 	END_IF
 	
 END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_CheckOffsets" ObjectId="347358c3-2be2-4bfb-955f-c6b01631848c">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <localVars>
+                          <variable name="_i">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                          <variable name="_j">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                          <variable name="_k">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF _SMC_GroupJog2.Enable THEN
+	FOR _j:=0 TO GVL.MCS_POS_IDX-GVL.TCP_POS_IDX BY 1 DO
+		_OffsetExist[_j] := FALSE;
+	END_FOR
+	FOR _i := GVL.TCP_POS_IDX TO GVL.MCS_POS_IDX BY 1 DO
+		IF StoredPositions[_i].Position.X &lt;&gt; 0
+			OR_ELSE StoredPositions[_i].Position.Y &lt;&gt; 0
+			OR_ELSE StoredPositions[_i].Position.Z &lt;&gt; 0
+			OR_ELSE StoredPositions[_i].Position.A &lt;&gt; 0
+			OR_ELSE StoredPositions[_i].Position.B &lt;&gt; 0
+			OR_ELSE StoredPositions[_i].Position.C &lt;&gt; 0 THEN
+				_OffsetExist[_i - GVL.TCP_POS_IDX] := TRUE;
+		END_IF
+	END_FOR
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_HandlePose" ObjectId="043b4f3b-61e5-44ea-8800-b568d3612acd">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <localVars>
+                          <variable name="_MoveCommand">
+                            <type>
+                              <derived name="ST_MoveCmd" />
+                            </type>
+                          </variable>
+                          <variable name="_PoseSpeed">
+                            <type>
+                              <LREAL />
+                            </type>
+                            <initialValue>
+                              <simpleValue value="20.0" />
+                            </initialValue>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">FOR _i:=0 TO GVL.POSE_5_IDX - GVL.POSE_1_IDX BY 1 DO
+	IF _MoveToPose[_i] THEN
+		_MoveToPose[_i] := FALSE;
+		//
+		IF GVL.PowerOn 
+			AND_THEN PersistentVars.Flags[GVL.HOME_COMPLETE].Value
+			AND_THEN NOT _MoveCommandProcessor.Busy
+			AND_THEN NOT _MoveCommandProcessor.Error THEN
+				//
+				_MoveCommand.MoveType 			:= DUT_Command_MoveType.DirectMove;
+				_MoveCommand.PositionType 		:= DUT_Command_PositionType.AbsolutePosition;
+				_MoveCommand.CoordinateType 	:= DUT_Command_CoordinateType.Literal;
+				_MoveCommand.Speed 				:= _PoseSpeed;
+				_MoveCommand.CoordSystem 		:= SMC_COORD_SYSTEM.ACS;
+				_MoveCommand.CoordRef 			:= PersistentVars.StoredPositions[GVL.POSE_1_IDX + _i].Position;
+				//
+				_MoveCommandProcessor.Command := BuildMoveCmd(_MoveCommand);
+				_MoveCommandProcessor.M_Start();
+				//
+				EXIT;
+		END_IF;
+	END_IF
+END_FOR
+
+_MoveCommandProcessor(
+	StoredPositions:= StoredPositions,
+	VisionRegisters:= VisionRegisters,
+	Flags:= Flags,
+	AxisGroup:= AxisGroup, 
+	GroupHandler:= GroupHandler,
+	Velocity:= StoredPositions[GVL.SPEEDS_IDX].Position.X, 
+	VelFactor:= StoredPositions[GVL.SPEEDS_IDX].Position.A,
+	Acceleration:= StoredPositions[GVL.SPEEDS_IDX].Position.Y, 
+	AccFactor:= StoredPositions[GVL.SPEEDS_IDX].Position.B,
+	Jerk:= StoredPositions[GVL.SPEEDS_IDX].Position.Z,
+	JerkFactor:= StoredPositions[GVL.SPEEDS_IDX].Position.C, 
+	Position=&gt; ,
+	ItfUnitMode=&gt; , 
+	Error=&gt; );</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_MoveToPose" ObjectId="5971868c-619e-47a6-ac41-0e2ed68a066a">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="Pose">
+                            <type>
+                              <derived name="E_Pose" />
+                            </type>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF Enabled 
+	AND NOT _MoveCommandProcessor.Busy
+	AND NOT _MoveCommandProcessor.Error THEN
+		M_MoveToPose := TRUE;
+		_MoveToPose[Pose] := TRUE;
+ELSE
+	M_MoveToPose := FALSE;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_ClearOffsets" ObjectId="5b18153f-c32f-4189-9485-f501f275c7f5">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+FOR _j:=0 TO 3 BY 1 DO
+	_OffsetExist[_j] := FALSE;
+END_FOR
+FOR _i := GVL.TCP_POS_IDX TO GVL.MCS_POS_IDX BY 1 DO
+	StoredPositions[_i].Position.X := 0.0;
+	StoredPositions[_i].Position.Y := 0.0;
+	StoredPositions[_i].Position.Z := 0.0;
+	StoredPositions[_i].Position.A := 0.0;
+	StoredPositions[_i].Position.B := 0.0;
+	StoredPositions[_i].Position.C := 0.0;
+END_FOR</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -9096,24 +9123,6 @@ END_IF</xhtml>
                         <derived name="TON" />
                       </type>
                     </variable>
-                    <variable name="_WriteRetriesMax">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="3" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_WriteRetriesCount">
-                      <type>
-                        <INT />
-                      </type>
-                    </variable>
-                    <variable name="_WriteRetry">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
                     <variable name="_WriteData">
                       <type>
                         <derived name="StringByteArray" />
@@ -9128,17 +9137,8 @@ END_IF</xhtml>
                       <type>
                         <derived name="R_TRIG" />
                       </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml">_TxString: STRING(255);
-_RxString: STRING(255);</xhtml>
-                      </documentation>
                     </variable>
                     <variable name="_ConnectStep">
-                      <type>
-                        <INT />
-                      </type>
-                    </variable>
-                    <variable name="_WriteStep">
                       <type>
                         <INT />
                       </type>
@@ -9321,58 +9321,22 @@ _RxString: STRING(255);</xhtml>
 
 {region "write"}
 	_WriteRTRIG(CLK:=_Write);
-	CASE _WriteStep OF
-			
-		WriteStep_IDLE: // IDLE
-			IF (_WriteRTRIG.Q OR _WriteRetry) AND bConnected THEN
-				_Write := FALSE;
-				_WriteRetry := FALSE;
-				_fbTcpWrite.xExecute := FALSE;
-				_WriteStep := WriteStep_DATA;
-			END_IF
-			
-		WriteStep_DATA: // DATA
-			IF _DataToWrite &lt;&gt; '' THEN
-				MemUtils.MemSet(
-					pbyBuffer:=ADR(_WriteData.bArray),
-					byValue:=0,
-					dwSize:=SIZEOF(_WriteData.bArray));
-				MemUtils.MemCpy(
-					pbyDest:=ADR(_WriteData.sString),
-					pbySrc:=ADR(_DataToWrite),
-					dwSize:=INT_TO_DWORD(LEN(_DataToWrite)));
-				_WriteStep := WriteStep_WRITE;
-			ELSE
-				_WriteStep := WriteStep_IDLE;
-			END_IF
-			
-		WriteStep_WRITE: // WRITE
+	IF _WriteRTRIG.Q THEN
+		_Write := FALSE;
+		IF bConnected AND _DataToWrite &lt;&gt; '' THEN
+			MemUtils.MemSet(	pbyBuffer:=ADR(_WriteData.bArray),
+								byValue:=0,
+								dwSize:=SIZEOF(_WriteData.bArray));
+			MemUtils.MemCpy(	pbyDest:=ADR(_WriteData.sString),
+								pbySrc:=ADR(_DataToWrite),
+								dwSize:=INT_TO_DWORD(LEN(_DataToWrite)));
 			_fbTcpWrite.xExecute := TRUE;
-			_WriteStep := WriteStep_WAIT;
-		
-		WriteStep_WAIT: // WAIT
-			IF _fbTcpWrite.xDone THEN
-				_fbTcpWrite.xExecute := FALSE;
-				_WriteRetriesCount := 0;
-				_WriteStep := WriteStep_IDLE;
-				
-			ELSIF _fbTcpWrite.xError THEN
-				IF _WriteRetriesCount &lt;= _WriteRetriesMax THEN
-					_WriteRetriesCount := _WriteRetriesCount + 1;
-					_WriteRetry := TRUE;
-					_WriteStep := WriteStep_IDLE;
-					
-				ELSIF _WriteRetriesCount &gt; _WriteRetriesMax THEN
-					_WriteRetriesCount := 0;
-					_WriteStep := WriteStep_IDLE;
-					
-				END_IF
-			END_IF
-	END_CASE
+		END_IF
+	END_IF
 	
-	bBusyWrite := ((_WriteStep &lt;&gt; WriteStep_IDLE) OR _WriteRetry) AND _fbTcpWrite.xBusy;
-	bDoneWrite := (_WriteStep = WriteStep_IDLE) AND _fbTcpWrite.xDone;
-	_fbTcpWrite(xExecute := ,
+	_fbTcpWrite(xExecute := _fbTcpWrite.xExecute AND NOT _fbTcpWrite.xDone AND NOT _fbTcpWrite.xError,
+				xBusy=&gt;bBusyWrite,
+				xDone=&gt;bDoneWrite,
 				itfConnection := _fbTcpClient.itfConnection, 
 				udiTimeOut := 1000000, // us 
 				udiSize := INT_TO_UDINT(LEN(_WriteData.sString)), 
@@ -9467,6 +9431,7 @@ _RxString: STRING(255);</xhtml>
                       <body>
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">IF bConnected AND NOT bBusyWrite THEN
+	bBusyWrite := TRUE; // do this as a workaround to show "busy" ASAP to let callers know to hold back
 	_Write:=TRUE;
 	_DataToWrite:=Data;
 	_M_Write := TRUE;
@@ -16624,6 +16589,51 @@ BuildLogicCmd := _Command;</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="F_HomeOffsetCalc" pouType="function">
+                <interface>
+                  <returnType>
+                    <LREAL />
+                  </returnType>
+                  <inputVars>
+                    <variable name="CurrentOffset">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="CurrentPosition">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="HomeSearchDirection">
+                      <type>
+                        <derived name="MC_Direction" />
+                      </type>
+                    </variable>
+                  </inputVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">IF HomeSearchDirection = MC_Direction.positive THEN
+	F_HomeOffsetCalc := -F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
+	
+ELSIF HomeSearchDirection = MC_Direction.negative THEN
+	F_HomeOffsetCalc := F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
+	
+ELSE
+	F_HomeOffsetCalc := CurrentOffset;
+	
+END_IF</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>ad8953b8-d17f-41b2-83c9-9901a22a0b46</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
               <pou name="FB_ProgramProcessor" pouType="functionBlock">
                 <interface>
                   <inOutVars>
@@ -17627,6 +17637,21 @@ END_IF</xhtml>
                         </array>
                       </type>
                     </variable>
+                    <variable name="ControllerStatesTemp">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="254" />
+                          <baseType>
+                            <BYTE />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="ReadStringTemp">
+                      <type>
+                        <string length="255" />
+                      </type>
+                    </variable>
                     <variable name="RecordLast">
                       <type>
                         <DINT />
@@ -17642,6 +17667,159 @@ END_IF</xhtml>
                             <simpleValue value="TIME#5s0ms" />
                           </value>
                         </structValue>
+                      </initialValue>
+                    </variable>
+                    <variable name="_SetColor">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_Red">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="0" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_Green">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="255" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_Blue">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="0" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_SetMicrophoneState">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_MicrophoneState">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_SetPlayerID">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_PlayerID">
+                      <type>
+                        <derived name="E_ControllerPlayerID" />
+                      </type>
+                    </variable>
+                    <variable name="_SetBrightness">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_Brightness">
+                      <type>
+                        <derived name="E_ControllerBrightness" />
+                      </type>
+                    </variable>
+                    <variable name="_SetMotorIntensity">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_Motor">
+                      <type>
+                        <derived name="E_ControllerMotor" />
+                      </type>
+                    </variable>
+                    <variable name="_MotorIntensity">
+                      <type>
+                        <USINT />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> 0-255</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="_MotorIntensityDuration">
+                      <type>
+                        <REAL />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> ms</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="_SetTriggerMode">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_TriggerModeTrigger">
+                      <type>
+                        <derived name="E_ControllerTrigger" />
+                      </type>
+                    </variable>
+                    <variable name="_TriggerModeMode">
+                      <type>
+                        <derived name="E_ControllerTriggerMode" />
+                      </type>
+                    </variable>
+                    <variable name="_SetTriggerForce">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_TriggerForceTrigger">
+                      <type>
+                        <derived name="E_ControllerTrigger" />
+                      </type>
+                    </variable>
+                    <variable name="_TriggerForceParameter">
+                      <type>
+                        <derived name="E_ControllerTriggerForceParameter" />
+                      </type>
+                    </variable>
+                    <variable name="_TriggerForceIntensity">
+                      <type>
+                        <USINT />
+                      </type>
+                    </variable>
+                    <variable name="_i">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_j">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_k">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="FirstScan">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="TRUE" />
+                      </initialValue>
+                    </variable>
+                  </localVars>
+                  <localVars constant="true">
+                    <variable name="States">
+                      <type>
+                        <string />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'states: '" />
                       </initialValue>
                     </variable>
                   </localVars>
@@ -17660,11 +17838,24 @@ END_IF</xhtml>
 // copy over controller states when a new message is received
 IF SUPER^.P_RecordNumber &lt;&gt; RecordLast THEN
 	RecordLast := SUPER^.P_RecordNumber;
-	ControllerStates := SUPER^.P_RawReadByteArray;
+	IF FIND(SUPER^.P_RawReadString, States) &gt; 0 THEN // TODO this is getting messy. need to overhaul how this works
+		ControllerStatesTemp := SUPER^.P_RawReadByteArray;
+		FOR _i:=0 TO UINT_TO_INT(SIZEOF(ControllerStates)) - LEN(States) BY 1 DO
+			ControllerStates[_i] := ControllerStatesTemp[_i + LEN(States)];
+		END_FOR
+		
+	END_IF
 END_IF
 
 //
 _M_EvaluateControllerStates(States:=ControllerStates);
+_M_SetColor();
+_M_SetMicrophoneState();
+_M_SetPlayerID();
+_M_SetBrightness();
+_M_SetMotorIntensity();
+_M_SetTriggerMode();
+_M_SetTriggerForce();
 
 // try to reconnect to the server when data stops?
 // leave this commented out until we have a better condition
@@ -17675,63 +17866,12 @@ _M_EvaluateControllerStates(States:=ControllerStates);
 IF ReconnectTimer.Q THEN
 	ReconnectTimer(IN:=FALSE);
 	SUPER^.M_Reconnect();
-END_IF*)</xhtml>
+END_IF*)
+
+FirstScan:=FALSE;</xhtml>
                   </ST>
                 </body>
                 <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_ReadInputs" ObjectId="469b88c9-7a94-4eb7-be5f-342dbaafdd26">
-                      <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
-                        <inputVars>
-                          <variable name="uTimeout">
-                            <type>
-                              <UDINT />
-                            </type>
-                            <initialValue>
-                              <simpleValue value="60" />
-                            </initialValue>
-                            <documentation>
-                              <xhtml xmlns="http://www.w3.org/1999/xhtml">sec</xhtml>
-                            </documentation>
-                          </variable>
-                        </inputVars>
-                        <localVars constant="true">
-                          <variable name="_ReadInputsScriptFileName">
-                            <type>
-                              <string />
-                            </type>
-                            <initialValue>
-                              <simpleValue value="'/var/opt/codesys/PlcLogic/Application/Controller/test.py'" />
-                            </initialValue>
-                          </variable>
-                        </localVars>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
-// calibrate with a checkerboard
-// sudo python /var/opt/codesys/PlcLogic/Application/CalibrateCamera.py -s cal.yaml -l 24.5 -x 6 -y 9 -d false
-
-IF NOT SUPER^._Busy THEN
-	M_ReadInputs := TRUE;
-	
-	_Command := CONCAT('sudo python ', _ReadInputsScriptFileName);
-	_Command := CONCAT(_Command, ' 2&gt; ./controller_log.txt ');
-	
-	SUPER^._M_Execute(Command:=_Command, Timeout:=uTimeout);
-	
-ELSE
-	M_ReadInputs := FALSE;
-	
-END_IF</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
                     <Method name="_M_EvaluateControllerStates" ObjectId="ec5a2389-0422-417f-bd11-588f38f08844">
                       <interface>
@@ -17786,6 +17926,14 @@ END_IF</xhtml>
                               </structValue>
                             </initialValue>
                           </variable>
+                          <variable name="_Heartbeat">
+                            <type>
+                              <USINT />
+                            </type>
+                            <initialValue>
+                              <simpleValue value="0" />
+                            </initialValue>
+                          </variable>
                           <variable name="_HeartbeatLast">
                             <type>
                               <USINT />
@@ -17808,8 +17956,9 @@ END_IF</xhtml>
 END_IF
 
 //
-IF States[0] &lt;&gt; _HeartbeatLast THEN
-	_HeartbeatLast := States[0];
+_Heartbeat := States[0] OR States[7]; // States[0] appears to be bluetooth and States[7] appears to be wired
+IF _Heartbeat &lt;&gt; _HeartbeatLast THEN
+	_HeartbeatLast := _Heartbeat;
 	_HeartbeatTimer(IN:=FALSE);
 ELSE
 	_HeartbeatTimer(IN:=TRUE);
@@ -17901,6 +18050,505 @@ Controller.Battery.Level					:= MIN((States[53] AND 16#0F) * 10 + 5, 100); // TO
 
 // dont put anything below this
 _FirstScan := FALSE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_SetColor" ObjectId="eeb0100c-2915-48d1-9f36-b75c4e907a60">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="Red">
+                            <type>
+                              <INT />
+                            </type>
+                            <initialValue>
+                              <simpleValue value="0" />
+                            </initialValue>
+                          </variable>
+                          <variable name="Green">
+                            <type>
+                              <INT />
+                            </type>
+                            <initialValue>
+                              <simpleValue value="255" />
+                            </initialValue>
+                          </variable>
+                          <variable name="Blue">
+                            <type>
+                              <INT />
+                            </type>
+                            <initialValue>
+                              <simpleValue value="0" />
+                            </initialValue>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF Red&gt;=0 AND_THEN Red&lt;=255
+	AND_THEN Green&gt;=0 AND_THEN Green&lt;=255
+	AND_THEN Blue&gt;=0 AND_THEN Blue&lt;=255THEN
+		M_SetColor := TRUE;
+		_SetColor:=TRUE;
+		_Red:=Red;
+		_Green:=Green;
+		_Blue:=Blue;
+ELSE
+	M_SetColor := FALSE;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_SetPlayerID" ObjectId="fe5b8c1d-d289-45ab-8132-645bc019686a">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="PlayerID">
+                            <type>
+                              <derived name="E_ControllerPlayerID" />
+                            </type>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">M_SetPlayerID := TRUE;
+_PlayerID := PlayerID;
+_SetPlayerID := TRUE;
+</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_SetMicrophoneState" ObjectId="59d971f4-160d-4206-8fd6-464272a65157">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="State">
+                            <type>
+                              <BOOL />
+                            </type>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">M_SetMicrophoneState := TRUE;
+_MicrophoneState := State;
+_SetMicrophoneState := TRUE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_SetColor" ObjectId="54de39e9-a68c-4cdd-9c6b-c369236e0e6b">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <localVars>
+                          <variable name="_Command">
+                            <type>
+                              <string length="255" />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy AND_THEN _SetColor THEN
+	_SetColor := FALSE;
+	
+	_Command := CONCAT('cmd: setColorI:', INT_TO_STRING(_Red));
+	_Command := CONCAT(_Command, ',');
+	_Command := CONCAT(_Command, INT_TO_STRING(_Green));
+	_Command := CONCAT(_Command, ',');
+	_Command := CONCAT(_Command, INT_TO_STRING(_Blue));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_SetMicrophoneState" ObjectId="04008bef-1240-44b8-b1a0-4148da719966">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <localVars>
+                          <variable name="_Command">
+                            <type>
+                              <string length="255" />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy AND _SetMicrophoneState THEN
+	_SetMicrophoneState := FALSE;
+	
+	_Command := CONCAT('cmd: setMicrophoneState:', BOOL_TO_STRING(_MicrophoneState));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_SetPlayerID" ObjectId="c145fd68-52c7-4142-a0ba-b1d06db0c33d">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <localVars>
+                          <variable name="_Command">
+                            <type>
+                              <string length="255" />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy AND _SetPlayerID THEN
+	_SetPlayerID := FALSE;
+	
+	_Command := CONCAT('cmd: setPlayerID:', INT_TO_STRING(_PlayerID));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_SetBrightness" ObjectId="90b7f945-cd7e-41a6-be53-3bd7b43fad70">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy AND _SetBrightness THEN
+	_SetBrightness := FALSE;
+	
+	_Command := CONCAT('cmd: setBrightness:', INT_TO_STRING(_Brightness));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_SetBrightness" ObjectId="ea400410-5d62-42d9-8299-464d48113d8b">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="Brightness">
+                            <type>
+                              <derived name="E_ControllerBrightness" />
+                            </type>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">M_SetBrightness := TRUE;
+_Brightness := Brightness;
+_SetBrightness := TRUE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_SetMotorIntensity" ObjectId="1764fe0e-660f-4c27-8d1f-29b1674c5009">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="Motor">
+                            <type>
+                              <derived name="E_ControllerMotor" />
+                            </type>
+                          </variable>
+                          <variable name="Intensity">
+                            <type>
+                              <USINT />
+                            </type>
+                            <documentation>
+                              <xhtml xmlns="http://www.w3.org/1999/xhtml"> 0-255</xhtml>
+                            </documentation>
+                          </variable>
+                          <variable name="Duration">
+                            <type>
+                              <REAL />
+                            </type>
+                            <documentation>
+                              <xhtml xmlns="http://www.w3.org/1999/xhtml"> s</xhtml>
+                            </documentation>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF Intensity &gt;=0 AND_THEN Intensity &lt;= 255 AND_THEN Duration &lt;= 5000 THEN
+	M_SetMotorIntensity := TRUE;
+	_SetMotorIntensity := TRUE;
+	_Motor := Motor;
+	_MotorIntensity := Intensity;
+	_MotorIntensityDuration := Duration;
+ELSE
+	M_SetMotorIntensity := FALSE;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_SetMotorIntensity" ObjectId="572923e8-2cd9-45a4-9f71-7169965a5b39">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <localVars>
+                          <variable name="_Command">
+                            <type>
+                              <string length="255" />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT SUPER^._Busy AND _SetMotorIntensity THEN
+	_SetMotorIntensity := FALSE;
+	
+	IF _Motor = E_ControllerMotor.Left THEN
+		_Command := 'cmd: setLeftMotor:';
+	ELSE
+		_Command := 'cmd: setRightMotor:';
+	END_IF
+	_Command := CONCAT(_Command, USINT_TO_STRING(_MotorIntensity));
+	_Command := CONCAT(_Command, ',');
+	_Command := CONCAT(_Command, REAL_TO_STRING(_MotorIntensityDuration));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_SetTriggerMode" ObjectId="cc90c045-ff13-46bd-bee3-0677bb07476d">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <localVars>
+                          <variable name="_Command">
+                            <type>
+                              <string length="255" />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+IF NOT SUPER^._Busy AND _SetTriggerMode THEN
+	_SetTriggerMode := FALSE;
+	
+	IF _TriggerModeTrigger = E_ControllerTrigger.Left THEN
+		_Command := 'cmd: setLeftTriggerMode:';
+	ELSE
+		_Command := 'cmd: setRightTriggerMode:';
+	END_IF
+	_Command := CONCAT(_Command, INT_TO_STRING(_TriggerModeMode));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_SetTriggerMode" ObjectId="9cdabd76-e674-4c87-a86d-b3798e605bb0">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="Trigger">
+                            <type>
+                              <derived name="E_ControllerTrigger" />
+                            </type>
+                          </variable>
+                          <variable name="Mode">
+                            <type>
+                              <derived name="E_ControllerTriggerMode" />
+                            </type>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">M_SetTriggerMode := TRUE;
+_SetTriggerMode := TRUE;
+_TriggerModeTrigger := Trigger;
+_TriggerModeMode := Mode;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_SetTriggerForce" ObjectId="a4252e21-370c-45c8-a3d9-1c1fe732617d">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <localVars>
+                          <variable name="_Command">
+                            <type>
+                              <string length="255" />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+IF NOT SUPER^._Busy AND _SetTriggerForce THEN
+	_SetTriggerForce := FALSE;
+	
+	IF _TriggerForceTrigger = E_ControllerTrigger.Left THEN
+		_Command := 'cmd: setLeftTriggerForce:';
+	ELSE
+		_Command := 'cmd: setRightTriggerForce:';
+	END_IF
+	_Command := CONCAT(_Command, INT_TO_STRING(_TriggerForceParameter));
+	_Command := CONCAT(_Command, ',');
+	_Command := CONCAT(_Command, USINT_TO_STRING(_TriggerForceIntensity));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_SetTriggerForce" ObjectId="2469dbae-9da4-4cf0-aaf5-0b5c14fa7e2d">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="Trigger">
+                            <type>
+                              <derived name="E_ControllerTrigger" />
+                            </type>
+                          </variable>
+                          <variable name="Parameter">
+                            <type>
+                              <derived name="E_ControllerTriggerForceParameter" />
+                            </type>
+                          </variable>
+                          <variable name="Intensity">
+                            <type>
+                              <USINT />
+                            </type>
+                            <documentation>
+                              <xhtml xmlns="http://www.w3.org/1999/xhtml"> 0-255</xhtml>
+                            </documentation>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF Intensity &gt;= 0 AND Intensity &lt;= 255 THEN
+	M_SetTriggerForce := TRUE;
+	_SetTriggerForce:=TRUE;
+	_TriggerForceTrigger := Trigger;
+	_TriggerForceParameter := Parameter;
+	_TriggerForceIntensity := Intensity;
+ELSE
+	M_SetTriggerForce := FALSE;
+END_IF</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -18066,24 +18714,17 @@ _Busy := NOT _Done;
 
 CASE _Step OF
 	0: // IDLE
-		IF _Execute AND NOT _TcpClient.bBusyWrite THEN
+		IF _Execute THEN
 			_Execute := FALSE;
-			_Step := _Step + 1;
-		ELSIF _Execute THEN
-			_Execute := FALSE;
+			IF _TcpClient._M_Write(Data:=_Command) THEN
+				_ReadRecordLast := _TcpClient.dRecordRead;
+				_Step := _Step + 1;
+			ELSE
+				_Step := 0;
+			END_IF
 		END_IF
 	
-	1: // CALL
-		_ReadRecordLast := _TcpClient.dRecordRead;
-		IF _TcpClient._M_Write(Data:=_Command) THEN
-			_Step := _Step + 1;
-		ELSE
-			_Error := TRUE;
-			_ErrorDescription := 'tcp client busy or not connected';
-			_Step := 0;
-		END_IF
-	
-	2: // WAIT
+	1: // WAIT
 		IF _TcpClient.dRecordRead &lt;&gt; _ReadRecordLast THEN
 			_ReadRecordLast := _TcpClient.dRecordRead;
 			IF find(_TcpClient.strRead, 'res: ') = 1 THEN
@@ -18377,7 +19018,7 @@ _ErrorDescription := '';</xhtml>
                     <Property name="P_RawReadString" ObjectId="1f6a1927-a95b-431e-8983-0d7d73e6caa0">
                       <interface>
                         <returnType>
-                          <string />
+                          <derived name="REFERENCE TO STRING(255)" />
                         </returnType>
                         <Attributes>
                           <Attribute Name="monitoring" Value="variable" />
@@ -18395,7 +19036,7 @@ _ErrorDescription := '';</xhtml>
                         </interface>
                         <body>
                           <ST>
-                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_RawReadString := _TcpClient.strRead;</xhtml>
+                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_RawReadString REF= _TcpClient.strRead;</xhtml>
                           </ST>
                         </body>
                         <addData />
@@ -19564,6 +20205,11 @@ END_CASE</xhtml>
                         <derived name="AXIS_REF_SM3" />
                       </type>
                     </variable>
+                    <variable name="AxisGroup">
+                      <type>
+                        <derived name="AXIS_GROUP_REF_SM3" />
+                      </type>
+                    </variable>
                     <variable name="GroupHandler">
                       <type>
                         <derived name="FB_GroupHandler" />
@@ -19572,11 +20218,6 @@ END_CASE</xhtml>
                     <variable name="Controller">
                       <type>
                         <derived name="FB_Controller" />
-                      </type>
-                    </variable>
-                    <variable name="MoveCommandProcessor">
-                      <type>
-                        <derived name="MoveCmdProcessor" />
                       </type>
                     </variable>
                   </inOutVars>
@@ -19624,6 +20265,11 @@ END_CASE</xhtml>
                     <variable name="StoredPositions">
                       <type>
                         <derived name="REFERENCE TO ARRAY [GVL.POS_ARR_BEG..GVL.POS_ARR_END] OF DUT_StoredPosition" />
+                      </type>
+                    </variable>
+                    <variable name="VisionRegisters">
+                      <type>
+                        <derived name="REFERENCE TO ARRAY [GVL.VIS_ARR_BEG..GVL.VIS_ARR_END] OF DUT_VisionRegister" />
                       </type>
                     </variable>
                     <variable name="Flags">
@@ -19785,17 +20431,19 @@ END_CASE</xhtml>
                         <simpleValue value="10000.0" />
                       </initialValue>
                     </variable>
-                    <variable name="_PoseSpeed">
+                    <variable name="_MoveToPose">
                       <type>
-                        <LREAL />
+                        <BOOL />
                       </type>
-                      <initialValue>
-                        <simpleValue value="20.0" />
-                      </initialValue>
                     </variable>
                     <variable name="_MoveCommand">
                       <type>
                         <derived name="ST_MoveCmd" />
+                      </type>
+                    </variable>
+                    <variable name="_MoveCommandProcessor">
+                      <type>
+                        <derived name="MoveCmdProcessor" />
                       </type>
                     </variable>
                     <variable name="_i">
@@ -19983,6 +20631,7 @@ CASE _SequenceMain OF
 	STEP_DONE: // done
 		Busy := FALSE;
 		Done := TRUE;
+		_MoveCommandProcessor.M_Home();
 		_SequenceMain := STEP_IDLE;
 		
 		_SMC_Homing_J1.bExecute := FALSE;
@@ -20136,23 +20785,17 @@ CASE _SequenceMain OF
 		END_IF;
 		
 	STEP_MOVE_TO_POSE:
-		_MoveCommand.MoveType 			:= DUT_Command_MoveType.DirectMove;
-		_MoveCommand.PositionType 		:= DUT_Command_PositionType.AbsolutePosition;
-		_MoveCommand.CoordinateType 	:= DUT_Command_CoordinateType.Literal;
-		_MoveCommand.Speed 				:= _PoseSpeed;
-		_MoveCommand.CoordSystem 		:= SMC_COORD_SYSTEM.ACS;
-		_MoveCommand.CoordRef 			:= StoredPositions[GVL.POSE_2_IDX].Position;
-		//
-		MoveCommandProcessor.Command := BuildMoveCmd(_MoveCommand);
-		MoveCommandProcessor.M_Start();
+		_MoveToPose := TRUE;
 		_SequenceMain := STEP_WAIT_MOVE_TO_POSE;
 	
 	STEP_WAIT_MOVE_TO_POSE:
-		IF MoveCommandProcessor.ItfUnitMode.CurrentState = PACK_ML.State.Idle THEN
+		IF _MoveCommandProcessor.ItfUnitMode.CurrentState = PACK_ML.State.Idle THEN
 			_SequenceMain := STEP_DONE;
 		END_IF
 	
 END_CASE
+
+_M_HandlePose();
 
 //
 IF _ResetRtrig.Q AND Error THEN
@@ -20160,6 +20803,7 @@ IF _ResetRtrig.Q AND Error THEN
 	ErrorID := SMC_NO_ERROR;
 	_SequenceMain := STEP_DONE;
 	GroupHandler.M_ResetGroup();
+	_MoveCommandProcessor.M_Home();
 END_IF
 
 //
@@ -20169,7 +20813,8 @@ _ErrorRtrig(CLK:=GroupHandler.Error
 				OR _SMC_Homing_J3.bError
 				OR _SMC_Homing_J4.bError
 				OR _SMC_Homing_J5.bError
-				OR _SMC_Homing_J6.bError);			
+				OR _SMC_Homing_J6.bError
+				OR _MoveCommandProcessor.Error);			
 IF _ErrorRtrig.Q THEN
 	Error := TRUE;
 	IF GroupHandler.Error THEN
@@ -20186,6 +20831,9 @@ IF _ErrorRtrig.Q THEN
 		ErrorID := _SMC_Homing_J5.nErrorID;
 	ELSIF _SMC_Homing_J6.bError THEN
 		ErrorID := _SMC_Homing_J6.nErrorID;
+	ELSIF _MoveCommandProcessor.Error THEN
+		// TODO need to rework how error messages are handled (globally)
+		// if the move command processor has an error, we dont know what it is.
 	END_IF
 END_IF
 
@@ -20394,26 +21042,6 @@ _MC_SetPosition_J6(
                 </body>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_StartHoming" ObjectId="1ff714ca-aba4-448a-bc01-bf0eab578f27">
-                      <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF _SequenceMain = STEP_IDLE THEN
-	M_StartHoming := TRUE;
-	_StartHoming := TRUE;
-ELSE
-	M_StartHoming := FALSE;
-END_IF</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
                     <Method name="M_SetHome" ObjectId="ac8ad3ff-e2e3-4571-99f3-004f0df0c316">
                       <interface>
                         <returnType>
@@ -20460,53 +21088,97 @@ _MC_SetPosition_J6.Execute:=TRUE;</xhtml>
                       <addData />
                     </Method>
                   </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_StartHoming" ObjectId="1ff714ca-aba4-448a-bc01-bf0eab578f27">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF _SequenceMain = STEP_IDLE THEN
+	M_StartHoming := TRUE;
+	_StartHoming := TRUE;
+ELSE
+	M_StartHoming := FALSE;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_HandlePose" ObjectId="8dbad245-108d-44dc-844d-47ebe55e9287">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <localVars>
+                          <variable name="_MoveCommand">
+                            <type>
+                              <derived name="ST_MoveCmd" />
+                            </type>
+                          </variable>
+                          <variable name="_PoseSpeed">
+                            <type>
+                              <LREAL />
+                            </type>
+                            <initialValue>
+                              <simpleValue value="20.0" />
+                            </initialValue>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF _MoveToPose THEN
+	_MoveToPose:= FALSE;
+	//
+	IF GVL.PowerOn 
+		AND_THEN PersistentVars.Flags[GVL.HOME_COMPLETE].Value
+		AND_THEN NOT _MoveCommandProcessor.Busy
+		AND_THEN NOT _MoveCommandProcessor.Error THEN
+			//
+			_MoveCommand.MoveType 			:= DUT_Command_MoveType.DirectMove;
+			_MoveCommand.PositionType 		:= DUT_Command_PositionType.AbsolutePosition;
+			_MoveCommand.CoordinateType 	:= DUT_Command_CoordinateType.Literal;
+			_MoveCommand.Speed 				:= _PoseSpeed;
+			_MoveCommand.CoordSystem 		:= SMC_COORD_SYSTEM.ACS;
+			_MoveCommand.CoordRef 			:= PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position;
+			//
+			_MoveCommandProcessor.Command := BuildMoveCmd(_MoveCommand);
+			_MoveCommandProcessor.M_Start();
+	END_IF;
+END_IF
+
+_MoveCommandProcessor(
+	StoredPositions:= StoredPositions,
+	VisionRegisters:= VisionRegisters,
+	Flags:= Flags,
+	AxisGroup:= AxisGroup, 
+	GroupHandler:= GroupHandler,
+	Velocity:= StoredPositions[GVL.SPEEDS_IDX].Position.X, 
+	VelFactor:= StoredPositions[GVL.SPEEDS_IDX].Position.A,
+	Acceleration:= StoredPositions[GVL.SPEEDS_IDX].Position.Y, 
+	AccFactor:= StoredPositions[GVL.SPEEDS_IDX].Position.B,
+	Jerk:= StoredPositions[GVL.SPEEDS_IDX].Position.Z,
+	JerkFactor:= StoredPositions[GVL.SPEEDS_IDX].Position.C, 
+	Position=&gt; ,
+	ItfUnitMode=&gt; , 
+	Error=&gt; );</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>6c30ff35-bc31-4ed8-ab4a-320ad080dc49</ObjectId>
-                  </data>
-                </addData>
-              </pou>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="F_HomeOffsetCalc" pouType="function">
-                <interface>
-                  <returnType>
-                    <LREAL />
-                  </returnType>
-                  <inputVars>
-                    <variable name="CurrentOffset">
-                      <type>
-                        <LREAL />
-                      </type>
-                    </variable>
-                    <variable name="CurrentPosition">
-                      <type>
-                        <LREAL />
-                      </type>
-                    </variable>
-                    <variable name="HomeSearchDirection">
-                      <type>
-                        <derived name="MC_Direction" />
-                      </type>
-                    </variable>
-                  </inputVars>
-                </interface>
-                <body>
-                  <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">IF HomeSearchDirection = MC_Direction.positive THEN
-	F_HomeOffsetCalc := -F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
-	
-ELSIF HomeSearchDirection = MC_Direction.negative THEN
-	F_HomeOffsetCalc := F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
-	
-ELSE
-	F_HomeOffsetCalc := CurrentOffset;
-	
-END_IF</xhtml>
-                  </ST>
-                </body>
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>ad8953b8-d17f-41b2-83c9-9901a22a0b46</ObjectId>
                   </data>
                 </addData>
               </pou>
@@ -23147,13 +23819,32 @@ END_IF</xhtml>
                 <Object Name="ST_MoveCmd" ObjectId="f71cc9b7-cb4b-485a-9aed-2944bbd084ca" />
                 <Object Name="BuildMoveCmd" ObjectId="19554b2f-3ca2-4f8d-a4a2-2e3ac3119ec0" />
               </Folder>
+              <Folder Name="home">
+                <Object Name="FB_HomingProcessor" ObjectId="6c30ff35-bc31-4ed8-ab4a-320ad080dc49">
+                  <Folder Name="public">
+                    <Object Name="M_SetHome" ObjectId="ac8ad3ff-e2e3-4571-99f3-004f0df0c316" />
+                    <Object Name="M_StartHoming" ObjectId="1ff714ca-aba4-448a-bc01-bf0eab578f27" />
+                  </Folder>
+                  <Folder Name="private">
+                    <Object Name="_M_HandlePose" ObjectId="8dbad245-108d-44dc-844d-47ebe55e9287" />
+                  </Folder>
+                </Object>
+                <Object Name="F_HomeOffsetCalc" ObjectId="ad8953b8-d17f-41b2-83c9-9901a22a0b46" />
+              </Folder>
               <Folder Name="jog">
                 <Object Name="FB_JogProcessor" ObjectId="9ad0dd5a-e160-4345-8eee-ad9cf9bfb3eb">
                   <Folder Name="private">
                     <Object Name="_M_HandleController" ObjectId="dcf131a0-32b4-4630-a728-b085ba029110" />
+                    <Object Name="_M_CheckOffsets" ObjectId="347358c3-2be2-4bfb-955f-c6b01631848c" />
+                    <Object Name="_M_HandlePose" ObjectId="043b4f3b-61e5-44ea-8800-b568d3612acd" />
+                  </Folder>
+                  <Object Name="M_MoveToPose" ObjectId="5971868c-619e-47a6-ac41-0e2ed68a066a" />
+                  <Folder Name="public">
+                    <Object Name="M_ClearOffsets" ObjectId="5b18153f-c32f-4189-9485-f501f275c7f5" />
                   </Folder>
                 </Object>
                 <Object Name="F_SetJogButtons" ObjectId="640ac73b-ff1c-4df1-a978-e5b05f9ea455" />
+                <Object Name="E_Pose" ObjectId="b79aef52-6212-478e-b00a-eac3efda95a0" />
               </Folder>
               <Object Name="FB_CommandProcessor" ObjectId="97872514-f094-4f4a-8630-59a989ffd663">
                 <Object Name="P_CurrentCommand" ObjectId="d4fb3147-2a09-4011-bb95-1eb5cd53c440" />
@@ -23290,10 +23981,23 @@ END_IF</xhtml>
               <Folder Name="controller">
                 <Object Name="FB_Controller" ObjectId="6c3bd905-e561-44be-a365-7f9abc521e72">
                   <Folder Name="public">
-                    <Object Name="M_ReadInputs" ObjectId="469b88c9-7a94-4eb7-be5f-342dbaafdd26" />
+                    <Object Name="M_SetColor" ObjectId="eeb0100c-2915-48d1-9f36-b75c4e907a60" />
+                    <Object Name="M_SetPlayerID" ObjectId="fe5b8c1d-d289-45ab-8132-645bc019686a" />
+                    <Object Name="M_SetMicrophoneState" ObjectId="59d971f4-160d-4206-8fd6-464272a65157" />
+                    <Object Name="M_SetBrightness" ObjectId="ea400410-5d62-42d9-8299-464d48113d8b" />
+                    <Object Name="M_SetMotorIntensity" ObjectId="1764fe0e-660f-4c27-8d1f-29b1674c5009" />
+                    <Object Name="M_SetTriggerMode" ObjectId="9cdabd76-e674-4c87-a86d-b3798e605bb0" />
+                    <Object Name="M_SetTriggerForce" ObjectId="2469dbae-9da4-4cf0-aaf5-0b5c14fa7e2d" />
                   </Folder>
                   <Folder Name="private">
                     <Object Name="_M_EvaluateControllerStates" ObjectId="ec5a2389-0422-417f-bd11-588f38f08844" />
+                    <Object Name="_M_SetColor" ObjectId="54de39e9-a68c-4cdd-9c6b-c369236e0e6b" />
+                    <Object Name="_M_SetMicrophoneState" ObjectId="04008bef-1240-44b8-b1a0-4148da719966" />
+                    <Object Name="_M_SetPlayerID" ObjectId="c145fd68-52c7-4142-a0ba-b1d06db0c33d" />
+                    <Object Name="_M_SetBrightness" ObjectId="90b7f945-cd7e-41a6-be53-3bd7b43fad70" />
+                    <Object Name="_M_SetMotorIntensity" ObjectId="572923e8-2cd9-45a4-9f71-7169965a5b39" />
+                    <Object Name="_M_SetTriggerMode" ObjectId="cc90c045-ff13-46bd-bee3-0677bb07476d" />
+                    <Object Name="_M_SetTriggerForce" ObjectId="a4252e21-370c-45c8-a3d9-1c1fe732617d" />
                   </Folder>
                   <Object Name="P_State" ObjectId="8f9874b7-a4ba-4163-b1b5-6ca35856054f" />
                 </Object>
@@ -23310,6 +24014,12 @@ END_IF</xhtml>
                 <Object Name="ST_Accelerometer" ObjectId="609788be-6cef-4bab-b82d-0de671123a2d" />
                 <Object Name="ST_Battery" ObjectId="d7224d0e-a20c-4ec1-9d9d-a32f25c607e6" />
                 <Object Name="F_DpadState" ObjectId="c7c6193c-9fb2-4a99-8fe9-b8b80e6ab7d7" />
+                <Object Name="E_ControllerPlayerID" ObjectId="d98d4d74-0af2-4200-b2d2-a2e62489282e" />
+                <Object Name="E_ControllerBrightness" ObjectId="604af7c6-46fd-4031-b39f-42d0051195f9" />
+                <Object Name="E_ControllerMotor" ObjectId="a6c1ccec-7589-44ea-8664-b26e13e4589c" />
+                <Object Name="E_ControllerTriggerMode" ObjectId="7cfb17e9-0adb-430c-99c4-e3a0b9b689dc" />
+                <Object Name="E_ControllerTrigger" ObjectId="cf02ac9e-9fa8-4292-8ddb-6ba2ae2076e9" />
+                <Object Name="E_ControllerTriggerForceParameter" ObjectId="54b4a266-7c75-4f63-967a-c2dc24d3f5bb" />
               </Folder>
               <Folder Name="template">
                 <Object Name="Module" ObjectId="06152fa3-0ee8-42bb-9309-1b5f17657eed">
@@ -23442,15 +24152,6 @@ END_IF</xhtml>
                   <Object Name="P_GroupStatus" ObjectId="7660ae4b-8965-424f-b336-9965f704e650" />
                 </Object>
                 <Object Name="DUT_GroupStatus" ObjectId="8da24330-28fc-457b-af4f-78411d1da7e7" />
-              </Folder>
-              <Folder Name="home">
-                <Object Name="FB_HomingProcessor" ObjectId="6c30ff35-bc31-4ed8-ab4a-320ad080dc49">
-                  <Folder Name="public">
-                    <Object Name="M_StartHoming" ObjectId="1ff714ca-aba4-448a-bc01-bf0eab578f27" />
-                    <Object Name="M_SetHome" ObjectId="ac8ad3ff-e2e3-4571-99f3-004f0df0c316" />
-                  </Folder>
-                </Object>
-                <Object Name="F_HomeOffsetCalc" ObjectId="ad8953b8-d17f-41b2-83c9-9901a22a0b46" />
               </Folder>
             </Folder>
             <Folder Name="GVL">

@@ -25,6 +25,302 @@ def send_client_with_lock(connection, data):
     finally:
         connection_lock.release()
 
+ # 'setColorI:0,0,255' 0-255,0-255,0-255 r,g,b
+def handle_setcolor_cmd(cmdParameters, dualsense):
+    '''
+    dualsense.light.setColorI(0, 0, 255) 'cmd: setColorI:0,0,255'
+    '''
+    try:
+        params = cmdParameters.split(',')
+        dualsense.light.setColorI(int(params[0]), int(params[1]), int(params[2]))
+        
+    except Exception as e:
+        print(e)
+    
+ # 'setMicrophoneState:True' True/False
+def handle_setmicrophonestate_cmd(cmdParameters, dualsense):
+    '''
+    dualsense.audio.setMicrophoneState(True)
+    '''
+    try:
+        dualsense.audio.setMicrophoneState(str_to_bool(cmdParameters))
+        
+    except ValueError:
+        pass
+        
+    except Exception as e:
+        print(e)
+    
+ # 'setPlayerID:4' 4/10/21/27/31 1/2/3/4/all
+def handle_setplayerid_cmd(cmdParameters, dualsense):
+    '''
+    dualsense.light.setPlayerID(PlayerID.PLAYER_2)
+    class PlayerID(IntFlag):
+        PLAYER_1 = 4
+        PLAYER_2 = 10
+        PLAYER_3 = 21
+        PLAYER_4 = 27
+        ALL = 31
+    '''
+    try:
+        if cmdParameters == '4':
+            Player = PlayerID.PLAYER_1
+        elif cmdParameters == '10':
+            Player = PlayerID.PLAYER_2
+        elif cmdParameters == '21':
+            Player = PlayerID.PLAYER_3
+        elif cmdParameters == '27':
+            Player = PlayerID.PLAYER_4
+        elif cmdParameters == '31':
+            Player = PlayerID.ALL
+        else:
+            Player = PlayerID.PLAYER_1
+        
+        dualsense.light.setPlayerID(Player)
+        
+    except Exception as e:
+        print(e)
+    
+ # 'setBrightness:2' 0/1/2 low/med/high
+def handle_setbrightness_cmd(cmdParameters, dualsense):
+    '''        
+        dualsense.light.setBrightness(Brightness.high)
+        class Brightness(IntFlag):
+            high = 0x0
+            medium = 0x1
+            low = 0x2
+    '''
+    try:
+        if cmdParameters == '0':
+            x = Brightness.high
+        elif cmdParameters == '1':
+            x = Brightness.medium
+        elif cmdParameters == '2':
+            x = Brightness.low
+        else:
+            x = Brightness.high
+            
+        dualsense.light.setBrightness(x)
+        
+    except Exception as e:
+        print(e)
+
+def stop_motor(dualsense, motor, duration):
+
+    global disconnect_controller
+    disconnect_controller = False
+    
+    try:
+        start = time.time()
+        now = start
+        while now - start < float(duration) and not disconnect_controller:
+            now = time.time()
+    except Exception as e:
+        print(e)
+    finally:
+        if motor == 0:
+            dualsense.setLeftMotor(0)
+        elif motor == 1:
+            dualsense.setRightMotor(0)
+
+ # 'setRightMotor:255,0.100' 0-255 intensity 0-10000 duration in s
+def handle_setrightmotor_cmd(cmdParameters, dualsense):
+    '''
+    dualsense.setRightMotor(100)
+    '''
+    try:
+        params = cmdParameters.split(',')
+        dualsense.setRightMotor(int(params[0]))
+        
+        timer_thread = threading.Thread(target = stop_motor, args = (dualsense,1,params[1],))
+        timer_thread.name = 'right motor timer thread'
+        timer_thread.start()
+        
+    except Exception as e:
+        print(e)
+    
+ # 'setLeftMotor:255,0.100' 0-255 intensity 0-10000 duration in s
+def handle_setleftmotor_cmd(cmdParameters, dualsense):
+    '''
+    dualsense.setLeftMotor(255)
+    '''
+    try:
+        params = cmdParameters.split(',')
+        dualsense.setLeftMotor(int(params[0]))
+        
+        timer_thread = threading.Thread(target = stop_motor, args = (dualsense,0,params[1],))
+        timer_thread.name = 'left motor timer thread'
+        timer_thread.start()
+        
+    except Exception as e:
+        print(e)
+    
+ # 'setRightTriggerMode:0' 0-9 trigger mode
+def handle_setrighttriggermode_cmd(cmdParameters, dualsense):
+    '''
+    dualsense.triggerR.setMode(TriggerModes.Pulse_A)
+    class TriggerModes(IntFlag):
+        Off = 0x0  # no resistance
+        Rigid = 0x1  # continous resistance
+        Pulse = 0x2  # section resistance
+        Rigid_A = 0x1 | 0x20
+        Rigid_B = 0x1 | 0x04
+        Rigid_AB = 0x1 | 0x20 | 0x04
+        Pulse_A = 0x2 | 0x20
+        Pulse_B = 0x2 | 0x04
+        Pulse_AB = 0x2 | 0x20 | 0x04
+        Calibration = 0xFC
+    '''
+    try:
+        if cmdParameters == '0':
+            x = TriggerModes.Off
+        elif cmdParameters == '1':
+            x = TriggerModes.Rigid
+        elif cmdParameters == '2':
+            x = TriggerModes.Pulse
+        elif cmdParameters == '3':
+            x = TriggerModes.Rigid_A
+        elif cmdParameters == '4':
+            x = TriggerModes.Rigid_B
+        elif cmdParameters == '5':
+            x = TriggerModes.Rigid_AB
+        elif cmdParameters == '6':
+            x = TriggerModes.Pulse_A
+        elif cmdParameters == '7':
+            x = TriggerModes.Pulse_B
+        elif cmdParameters == '8':
+            x = TriggerModes.Pulse_AB
+        elif cmdParameters == '9':
+            x = TriggerModes.Calibration
+        else:
+            x = TriggerModes.Off
+            
+        dualsense.triggerR.setMode(x)
+        
+    except Exception as e:
+        print(e)
+    
+ # 'setLeftTriggerMode:0' 0-9 trigger mode
+def handle_setlefttriggermode_cmd(cmdParameters, dualsense):
+    '''
+    dualsense.triggerL.setMode(TriggerModes.Pulse_A)
+    class TriggerModes(IntFlag):
+        Off = 0x0  # no resistance
+        Rigid = 0x1  # continous resistance
+        Pulse = 0x2  # section resistance
+        Rigid_A = 0x1 | 0x20
+        Rigid_B = 0x1 | 0x04
+        Rigid_AB = 0x1 | 0x20 | 0x04
+        Pulse_A = 0x2 | 0x20
+        Pulse_B = 0x2 | 0x04
+        Pulse_AB = 0x2 | 0x20 | 0x04
+        Calibration = 0xFC
+    '''
+    try:
+        if cmdParameters == '0':
+            x = TriggerModes.Off
+        elif cmdParameters == '1':
+            x = TriggerModes.Rigid
+        elif cmdParameters == '2':
+            x = TriggerModes.Pulse
+        elif cmdParameters == '3':
+            x = TriggerModes.Rigid_A
+        elif cmdParameters == '4':
+            x = TriggerModes.Rigid_B
+        elif cmdParameters == '5':
+            x = TriggerModes.Rigid_AB
+        elif cmdParameters == '6':
+            x = TriggerModes.Pulse_A
+        elif cmdParameters == '7':
+            x = TriggerModes.Pulse_B
+        elif cmdParameters == '8':
+            x = TriggerModes.Pulse_AB
+        elif cmdParameters == '9':
+            x = TriggerModes.Calibration
+        else:
+            x = TriggerModes.Off
+            
+        dualsense.triggerL.setMode(x)
+        
+    except Exception as e:
+        print(e)
+    
+ # 'setRightTriggerForce:0,255' 0-6 force parameter? 0-255 force intensity
+def handle_setrighttriggerforce_cmd(cmdParameters, dualsense):
+    '''
+    dualsense.triggerR.setForce(0, 200)
+    dualsense.triggerR.setForce(1, 255)
+    dualsense.triggerR.setForce(2, 175)
+    '''
+    try:
+        params = cmdParameters.split(',')
+        dualsense.triggerR.setForce(int(params[0]), int(params[1]))
+        
+    except Exception as e:
+        print(e)
+    
+ # 'setLeftTriggerForce:0,255' 0-6 force parameter? 0-255 force intensity
+def handle_setlefttriggerforce_cmd(cmdParameters, dualsense):
+    '''
+    dualsense.triggerL.setForce(0, 200)
+    dualsense.triggerL.setForce(1, 255)
+    dualsense.triggerL.setForce(2, 175)
+    '''
+    try:
+        params = cmdParameters.split(',')
+        print(params[0])
+        print(params[1])
+        dualsense.triggerL.setForce(int(params[0]), int(params[1]))
+        
+    except Exception as e:
+        print(e)
+
+def handle_client_message(buf, dualsense):
+    
+    try:
+        message = buf.decode()
+        if message[0:5] == 'cmd: ': # [0:5] means start at 0 index and return 5
+            cmd = message[5:] # [5:] means start at index 5 and return the rest
+            colon = cmd.find(':')
+            cmdType = cmd[0:colon]
+            cmdParameters = cmd[colon+1:]
+            
+            if cmdType == 'setColorI':
+                handle_setcolor_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setMicrophoneState':
+                handle_setmicrophonestate_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setPlayerID':
+                handle_setplayerid_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setBrightness':
+                handle_setbrightness_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setRightMotor':
+                handle_setrightmotor_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setLeftMotor':
+                handle_setleftmotor_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setRightTriggerMode':
+                handle_setrighttriggermode_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setLeftTriggerMode':
+                handle_setlefttriggermode_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setRightTriggerForce':
+                handle_setrighttriggerforce_cmd(cmdParameters ,dualsense)
+                
+            elif cmdType == 'setLeftTriggerForce':
+                handle_setlefttriggerforce_cmd(cmdParameters ,dualsense)
+                
+            else:
+                print('unknown command: ' + cmdType)
+                
+    except Exception as e:
+        print(e)
+
 disconnect_controller = False
 def handle_connection(connection):
 
@@ -51,6 +347,7 @@ def handle_connection(connection):
                     if len(buf) == 0:
                         #print("client disconnected")
                         break
+                        
                 except socket.error as e:
                     pass
 
@@ -60,13 +357,14 @@ def handle_connection(connection):
                 # find device and initialize
                 dualsense.init()
 
-                # set color around touchpad to red
-                dualsense.light.setColorI(255, 0, 0)
+                #  bump the motors
                 dualsense.setLeftMotor(100)
-                dualsense.setRightMotor(100)
-                time.sleep(0.250)
+                time.sleep(0.1)
+                dualsense.setRightMotor(200)
+                time.sleep(0.1)
                 dualsense.setLeftMotor(0)
                 dualsense.setRightMotor(0)
+                time.sleep(0.250)
                 
                 # hang out here
                 while not disconnect_controller:
@@ -84,24 +382,34 @@ def handle_connection(connection):
                             buf = connection.recv(1024, 0x40) # 0x40 = MSG_DONTWAIT
                             if len(buf) == 0:
                                 break
+                                
+                            else:
+                                handle_client_message(buf, dualsense)
+                                response = 'res: '
+                                send_client_with_lock(connection, response.encode())
                         
                         except socket.error as e:
                             pass
                         
                         #
-                        send_client_with_lock(connection, bytearray(dualsense.states))
+                        statesString = 'states: '
+                        statesBytes = statesString.encode()
+                        statesList = list(statesBytes)
+                        both = statesList + dualsense.states
+                        send_client_with_lock(connection, bytearray(both))
                         
                     except Exception as e:
-                        #print(e)
+                        print(e)
                         continue # continue will keep running the while loop
                 
-                # set color around touchpad to red
-                dualsense.light.setColorI(0, 255, 0)
-                dualsense.setLeftMotor(100)
+                # bump the motors
+                dualsense.setRightMotor(200)
+                time.sleep(0.1)
                 dualsense.setRightMotor(100)
-                time.sleep(0.250)
+                time.sleep(0.1)
                 dualsense.setLeftMotor(0)
                 dualsense.setRightMotor(0)
+                time.sleep(0.250)
                 
                 # close device
                 dualsense.close()
@@ -122,9 +430,9 @@ def str_to_bool (val):
     """
     val = val.lower()
     if val in ('y', 'yes', 't', 'true', 'on', '1'):
-        return 1
+        return True
     elif val in ('n', 'no', 'f', 'false', 'off', '0'):
-        return 0
+        return False
     else:
         raise ValueError("invalid truth value %r" % (val,))
 

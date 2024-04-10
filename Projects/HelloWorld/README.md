@@ -2,14 +2,14 @@
 If you have ArfBotOS running and want to test out the robot, follow the instructions below to create your first program. Additionally, you will need to have tuned the drives and mastered the robot before proceeding. Please follow the relevant procedure located in the sub-folders of the [Robots](/Robots) directory. For the AR4 robot, those documents are located [here](/Robots/AR4).
 
 ## HMI
-ArfBotOS host a web-based HMI to make it convenient to program and control from any device. If you followed the installation procedure correctly, the website for ArfBotOS should be http://arfbot:8080/webvisu.htm
+ArfBotOS host a web-based HMI to make it convenient to program and control from any device. If you followed the installation procedure, the website for ArfBotOS should be http://arfbot:8080/webvisu.htm
 
 ## Homing
 1. Navigate to the the HMI and enable the robot by pressing the *Enable* button on the top left. You should hear the drives enable.
 
 2. Make sure the robot has enough space to move and home the robot by pressing the *Home* button. Once the robot finishes homing the green *Homed* light will illuminate. 
 
-3. Once the robot is homed it should end up with all axis at their 0 degree position.
+3. Once the robot is homed it should end up with all axes at the 0 degree position.
 
 ## Jogging
 1. Navigate to the *JOGGING* screen and notice the *Pose* buttons on the left side. There are 5 dedicated position registers for storing pose positions. Two of these positions are initialized when ArfBotOS boots for the first time. Press **Pose 1** to move the robot. *Note: the pose positions can be found on the PROGRAMS screen in Stored Positions 34-38*
@@ -24,3 +24,11 @@ ArfBotOS host a web-based HMI to make it convenient to program and control from 
 - `Forward[5]` **R+** (roll)  
 
 *Note: if you are unfamiliar with Euler angles, study [this](https://en.wikipedia.org/wiki/Euler_angles) page. Additionally, search Youtube and other sites on information about 6-axis robot coordinate systems.
+
+## Demo Programs
+On initialization for the first time, ArfBotOS will load demo programs into the memory. Hint: you can delete and modify these programs as you like. You can restore ArfBotOS back to factory by cleraring `Flag 49` and restarting.  
+![image](Resources/images/readme/hmi-programs-flag-initialized.JPG)
+
+1. From the *Main* HMI screen, select the PCS1 Corners program and press start.
+2. The robot will begin moving to the PCS_1 Coordinate system and will run the TCP along all for corners and the return to Pose 2.  
+![image](Resources/images/readme/hmi-main-pcs-corners.JPG)
