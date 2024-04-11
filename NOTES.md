@@ -1,8 +1,7 @@
 # Notes
 
 ## TODO
-add home to controller
-add poses to controller
+add counters, registers, inputs, and outputs to HMI
 enabling jog opens jog hmi
 
 controller:
@@ -34,3 +33,6 @@ camera
 - `which <executable name>` locates the path of an executable
 - `scp -r <local directory> user@host.host:<remote>` copy local files to remote
 - `sudo systemctl stop bluetooth.service` self explanatory
+- `sudo ufw allow 9999` open a port
+- `sudo apt-get install ufw`
+- `sudo ufw enable `
