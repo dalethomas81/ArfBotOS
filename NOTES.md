@@ -1,6 +1,11 @@
 # Notes
 
 ## TODO
+
+section in wiki on arduino
+
+add vision parts counts results in wiki
+
 add counters, registers, inputs, and outputs to HMI
 enabling jog opens jog hmi
 
