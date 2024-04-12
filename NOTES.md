@@ -1,8 +1,38 @@
 # Notes
 
 ## TODO
-add home to controller
-add poses to controller
+
+teensy
+input 8 gpio 34
+input 9 gpio 35
+input 10 gpio 40
+input 11 gpio 41
+output 8 gpio 12
+output 9 gpio 13
+output 10 gpio 32
+output 11 gpio 33
+
+pi
+input 0 gpio 4
+input 1 gpio 5
+input 2 gpio 6
+input 3 gpio 13
+input 4 gpio 17
+input 5 gpio 22
+input 6 gpio 26
+input 7 gpio 27
+output 0 gpio 12
+output 1 gpio 16
+output 2 gpio 18
+output 3 gpio 20
+output 4 gpio 21
+output 5 gpio 23
+output 6 gpio 24
+output 7 gpio 25
+
+add vision parts counts results in wiki
+
+add counters, registers, inputs, and outputs to HMI
 enabling jog opens jog hmi
 
 controller:
@@ -34,3 +64,6 @@ camera
 - `which <executable name>` locates the path of an executable
 - `scp -r <local directory> user@host.host:<remote>` copy local files to remote
 - `sudo systemctl stop bluetooth.service` self explanatory
+- `sudo ufw allow 9999` open a port
+- `sudo apt-get install ufw`
+- `sudo ufw enable `
