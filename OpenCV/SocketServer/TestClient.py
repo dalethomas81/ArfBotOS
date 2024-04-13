@@ -31,7 +31,10 @@ def main():
         clientsocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         clientsocket.connect(('192.168.1.73', PORT))
         
-        data = 'sudo python /var/opt/codesys/PlcLogic/Application/Vision/CaptureImage.py -s /var/opt/codesys/PlcLogic/Application/Vision/CapturedImage.jpg -w 2016 -h 2000 2> ./vision_log.txt'
+        #data = 'sudo python /var/opt/codesys/PlcLogic/Application/Vision/CaptureImage.py -s /var/opt/codesys/PlcLogic/Application/Vision/CapturedImage.jpg -w 640 -h 400 2> ./vision_log.txt'
+        
+        data = 'sudo python /var/opt/codesys/PlcLogic/Application/Vision/FastTemplateMatching.py -s /var/opt/codesys/PlcLogic/Application/Vision/outputimage.bmp -t /var/opt/codesys/PlcLogic/Application/Vision/Templates/battery.jpg -i 5 -j 0.0 -k 0.8 -l 90.0 -d True'
+        
         clientsocket.send(data.encode())
         
         #

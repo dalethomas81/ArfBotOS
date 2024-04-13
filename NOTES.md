@@ -66,4 +66,8 @@ camera
 - `sudo systemctl stop bluetooth.service` self explanatory
 - `sudo ufw allow 9999` open a port
 - `sudo apt-get install ufw`
-- `sudo ufw enable `
+- `sudo ufw enable`
+- `raspinfo`
+- `sudo apt-get install i2c-tools`
+- `sudo i2cdetect -y 4` (4 is the bus to read)
+- `ls /dev` (see all i2c buses)
