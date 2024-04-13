@@ -97,7 +97,14 @@ def file(filename):
         filename,
         as_attachment=False # when True you can click on link and download
     )
-
+    
+@app.route('/output')
+def output():
+    return send_from_directory(
+        '/var/opt/codesys/PlcLogic/visu/',
+        'outputimage.jpg',
+        as_attachment=False # when True you can click on link and download
+    )
 
 # index
 '''
