@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-13T13:34:48.4593301" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-13T13:13:14.021355">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-13T15:39:12.8031335" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-13T15:36:03.2774012">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -2898,6 +2898,14 @@ RESERVED: INT:=47;</xhtml>
                         <simpleValue value="0" />
                       </initialValue>
                     </variable>
+                    <variable name="ActiveCommandDetails">
+                      <type>
+                        <string length="255" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="''" />
+                      </initialValue>
+                    </variable>
                     <variable name="Controller">
                       <type>
                         <derived name="FB_Controller" />
@@ -3151,9 +3159,20 @@ ProcessPrograms(
 	Servo3:= AdafruitPwm03,
 	Servo4:= AdafruitPwm04,
 	Enable:= GVL.PowerOn AND PersistentVars.Flags[GVL.HOME_COMPLETE].Value,
-	ActiveCommand =&gt; ,
 	Error=&gt; ,
-	StatusText=&gt;);</xhtml>
+	StatusText=&gt;);
+
+// for displaying on the HMI
+// PGM: &lt;number&gt; CMD: &lt;number&gt; Type: &lt;type&gt; Command: &lt;command&gt; Comment: &lt;comment&gt;
+ActiveCommandDetails := CONCAT('PGM: ', UINT_TO_STRING(ProcessPrograms.P_CurrentProgram));
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' CMD: ');
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, UINT_TO_STRING(ProcessPrograms.P_CurrentCommandIndex));
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' ');
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, TO_STRING(ProcessPrograms.P_CurrentCommand.CommandType));
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, ': ');
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandString);
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' Comment: ');
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandComment);</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -5599,11 +5618,6 @@ END_IF</xhtml>
                         <derived name="ItfModule" />
                       </type>
                     </variable>
-                    <variable name="ActiveCommand">
-                      <type>
-                        <derived name="DUT_Command" />
-                      </type>
-                    </variable>
                     <variable name="StatusText">
                       <type>
                         <string length="255" />
@@ -5629,6 +5643,11 @@ END_IF</xhtml>
                     <variable name="_UnitModeCurrentState">
                       <type>
                         <derived name="PACK_ML.State" />
+                      </type>
+                    </variable>
+                    <variable name="_ActiveCommand">
+                      <type>
+                        <derived name="DUT_Command" />
                       </type>
                     </variable>
                     <variable name="_CurrentCmdIdx">
@@ -6190,7 +6209,7 @@ CASE _SeqMain OF
 				
 				// wait for executing
 				IF ItfActiveModule.PropCurrentState = PACK_ML.State.Execute THEN
-					ActiveCommand := _Commands[_CurrentCmdIdx];
+					_ActiveCommand := _Commands[_CurrentCmdIdx];
 					_CurrentCmdIdx := _CurrentCmdIdx + 1;
 					_SeqMain := _STEP_WAIT;
 				END_IF
@@ -6563,7 +6582,7 @@ END_IF</xhtml>
                     </Method>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/property" handleUnknown="implementation">
-                    <Property name="P_CurrentCommand" ObjectId="d4fb3147-2a09-4011-bb95-1eb5cd53c440">
+                    <Property name="P_CurrentCommandIndex" ObjectId="d4fb3147-2a09-4011-bb95-1eb5cd53c440">
                       <interface>
                         <returnType>
                           <derived name="REFERENCE TO UINT" />
@@ -6584,7 +6603,37 @@ END_IF</xhtml>
                         </interface>
                         <body>
                           <ST>
-                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_CurrentCommand REF= _CurrentCmdIdx;</xhtml>
+                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_CurrentCommandIndex REF= _CurrentCmdIdx;</xhtml>
+                          </ST>
+                        </body>
+                        <addData />
+                      </GetAccessor>
+                      <addData />
+                    </Property>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/property" handleUnknown="implementation">
+                    <Property name="P_CurrentCommand" ObjectId="49585069-1976-4ffb-8b46-f97b3eeaff68">
+                      <interface>
+                        <returnType>
+                          <derived name="REFERENCE TO DUT_Command" />
+                        </returnType>
+                        <Attributes>
+                          <Attribute Name="monitoring" Value="variable" />
+                        </Attributes>
+                      </interface>
+                      <GetAccessor>
+                        <interface>
+                          <addData>
+                            <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                              <Attributes>
+                                <Attribute Name="monitoring" Value="variable" />
+                              </Attributes>
+                            </data>
+                          </addData>
+                        </interface>
+                        <body>
+                          <ST>
+                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_CurrentCommand REF= _ActiveCommand;</xhtml>
                           </ST>
                         </body>
                         <addData />
@@ -10640,6 +10689,8 @@ CASE SUPER^._SeqMain OF
                                         uTimeout:=_VisionCommandParser.stCommand.Timeout);
 			
 			DUT_Command_VisionType.LocatePart: //
+				_PartsCount := 0;
+				LogicCmdIO.Register[_VisionCommandParser.stCommand.Locate.ResultPosition] := 0;
 				_Vision.M_LocatePart( 	iImageWidth:= _VisionCommandParser.stCommand.ImageWidth, 
 										iImageHeight:= _VisionCommandParser.stCommand.ImageHeight, 
 										iMaxPos:= _VisionCommandParser.stCommand.Locate.MaxParts, 
@@ -10705,7 +10756,6 @@ CASE SUPER^._SeqMain OF
 				//VisionStateText := CONCAT(VisionStateText, '\n');
 				//VisionStateText := CONCAT(VisionStateText, _VisionResult);
 				_VisionObjectIndex := 0;
-				_PartsCount := 0;
 				WHILE FIND(STR1:=_VisionResult,STR2:='obj:') &gt; 0 
 					AND _VisionObjectIndex &lt;= _VisionCommandParser.stCommand.Locate.MaxParts 
 					AND _VisionObjectIndex + _VisionCommandParser.stCommand.Locate.ResultPosition &lt; GVL.VIS_ARR_END DO
@@ -15877,11 +15927,11 @@ CASE SUPER^._SeqMain OF
 		IF _ThenFunctionProcessed THEN
 			PrgProcessor.M_CallProgram(	ProgramNumber:= INT_TO_UINT(_ParseLogicCmd.stCommand.THEN_Function_Idx), 
 										ReturnProgram:= PrgProcessor.P_CurrentProgram, 
-										ReturnCommand:= CmdProcessor.P_CurrentCommand);
+										ReturnCommand:= CmdProcessor.P_CurrentCommandIndex);
 		ELSE
 			PrgProcessor.M_CallProgram(	ProgramNumber:= INT_TO_UINT(_ParseLogicCmd.stCommand.ELSE_Function_Idx), 
 										ReturnProgram:= PrgProcessor.P_CurrentProgram, 
-										ReturnCommand:= CmdProcessor.P_CurrentCommand);
+										ReturnCommand:= CmdProcessor.P_CurrentCommandIndex);
 		END_IF
 		// next, please
 		SUPER^._SeqMain := _STEP_DONE;
@@ -16852,11 +16902,6 @@ END_IF</xhtml>
                         <derived name="ItfModule" />
                       </type>
                     </variable>
-                    <variable name="ActiveCommand">
-                      <type>
-                        <derived name="DUT_Command" />
-                      </type>
-                    </variable>
                     <variable name="StatusText">
                       <type>
                         <string length="255" />
@@ -17070,7 +17115,6 @@ _ProcessCommands(
 	Servo4:= Servo4,
 	PrgProcessor:= THIS^,
 	Enable:= Enable,
-	ActiveCommand =&gt; ActiveCommand,
 	Error=&gt; ,
 	StatusText=&gt;StatusText);	
 
@@ -17760,7 +17804,37 @@ END_IF</xhtml>
                         </interface>
                         <body>
                           <ST>
-                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_CurrentCommand REF= _ProcessCommands.ActiveCommand;</xhtml>
+                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_CurrentCommand REF= _ProcessCommands.P_CurrentCommand;</xhtml>
+                          </ST>
+                        </body>
+                        <addData />
+                      </GetAccessor>
+                      <addData />
+                    </Property>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/property" handleUnknown="implementation">
+                    <Property name="P_CurrentCommandIndex" ObjectId="281f805b-eec8-45a7-8dbb-820c1b32fafe">
+                      <interface>
+                        <returnType>
+                          <derived name="REFERENCE TO UINT" />
+                        </returnType>
+                        <Attributes>
+                          <Attribute Name="monitoring" Value="variable" />
+                        </Attributes>
+                      </interface>
+                      <GetAccessor>
+                        <interface>
+                          <addData>
+                            <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                              <Attributes>
+                                <Attribute Name="monitoring" Value="variable" />
+                              </Attributes>
+                            </data>
+                          </addData>
+                        </interface>
+                        <body>
+                          <ST>
+                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_CurrentCommandIndex REF= _ProcessCommands.P_CurrentCommandIndex;</xhtml>
                           </ST>
                         </body>
                         <addData />
@@ -24281,7 +24355,7 @@ _MoveCommandProcessor(
                 <Object Name="E_Pose" ObjectId="b79aef52-6212-478e-b00a-eac3efda95a0" />
               </Folder>
               <Object Name="FB_CommandProcessor" ObjectId="97872514-f094-4f4a-8630-59a989ffd663">
-                <Object Name="P_CurrentCommand" ObjectId="d4fb3147-2a09-4011-bb95-1eb5cd53c440" />
+                <Object Name="P_CurrentCommandIndex" ObjectId="d4fb3147-2a09-4011-bb95-1eb5cd53c440" />
                 <Folder Name="public">
                   <Object Name="M_SetNextCommand" ObjectId="7318a297-a063-4ac2-856c-165720d821a4" />
                   <Object Name="M_SetCommands" ObjectId="b6f598fc-4eb1-4dc6-b9b6-f064109879cc" />
@@ -24301,6 +24375,7 @@ _MoveCommandProcessor(
                   <Object Name="M_Stopping" ObjectId="b76b8c76-e672-465e-b5bc-a2cc80d6ee6f" />
                   <Object Name="M_Clearing" ObjectId="766fbc5b-b0ec-40a6-bc48-5f02adefd0a5" />
                 </Folder>
+                <Object Name="P_CurrentCommand" ObjectId="49585069-1976-4ffb-8b46-f97b3eeaff68" />
               </Object>
               <Folder Name="cnc">
                 <Object Name="ST_CncCmd" ObjectId="bfbed99a-036f-4373-a7be-6feb43a2d296" />
@@ -24571,6 +24646,7 @@ _MoveCommandProcessor(
                   <Object Name="M_Stopping" ObjectId="8dfa3f47-4636-4136-86b1-d7e826dcf51a" />
                   <Object Name="M_Clearing" ObjectId="22f71b16-1005-4eeb-9083-a836421fff95" />
                 </Folder>
+                <Object Name="P_CurrentCommandIndex" ObjectId="281f805b-eec8-45a7-8dbb-820c1b32fafe" />
               </Object>
               <Object Name="F_RoundLreal" ObjectId="6e4b5325-49a6-45c7-a436-b44a2066c3ea" />
               <Folder Name="group">
