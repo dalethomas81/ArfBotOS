@@ -946,15 +946,14 @@ def main(m_matSrc, m_matDst, savelocation, iMaxPos, dMaxOverlap, dScore, dTolera
         ############################
         matNewSrc = 255 - m_matRoi
         vecMatSrcPyr = buildPyramid(matNewSrc, iTopLayer)
-        cv2.imshow("1", matNewSrc)
-        cv2.moveWindow("1", 0, 0)
+        #cv2.imshow("matNewSrc", matNewSrc)
+        #cv2.moveWindow("1", 0, 0)
     else:
-        #cv2.imshow("1", m_matRoi)
+        #cv2.imshow("m_matRoi", m_matRoi)
         #cv2.waitKey(0)
         vecMatSrcPyr = buildPyramid(m_matRoi, iTopLayer)
-        #cv2.imshow("1", vecMatSrcPyr)
+        #cv2.imshow("vecMatSrcPyr", vecMatSrcPyr)
         #cv2.waitKey(0)
-
 
     pTemplData = m_TemplData
 
