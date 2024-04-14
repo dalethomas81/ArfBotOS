@@ -71,3 +71,4 @@ camera
 - `sudo apt-get install i2c-tools`
 - `sudo i2cdetect -y 4` (4 is the bus to read)
 - `ls /dev` (see all i2c buses)
+

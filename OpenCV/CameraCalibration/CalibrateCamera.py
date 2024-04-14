@@ -11,45 +11,21 @@ import time
 import datetime
 import os
 import math
-#import multiprocessing
 
 def capture_image(debug, width, height):
     if debug:
         image = cv2.imread("Input.jpg") # temporary while we run on windows to develop
 
     else:
-        #import libcamera
         from picamera2 import Picamera2
         camera = Picamera2()
         config = camera.create_preview_configuration(main={"size": (width, height), "format": "RGB888"})
-        #config["transform"] = libcamera.Transform(hflip=1, vflip=1)
         camera.configure(config)
         camera.start()
         time.sleep(0.1)
         image = camera.capture_array()
         camera.stop()
         camera.close()
-        
-        
-        '''
-        from picamera.array import PiRGBArray
-        from picamera import PiCamera
-        # initialize the camera and grab a reference to the raw camera capture
-        camera = PiCamera()
-        rawCapture = PiRGBArray(camera)
-
-        # allow the camera to warmup
-        time.sleep(0.1)
-
-        # grab an image from the camera
-        camera.resolution = (width, height) #max is(3280, 2464)
-        #camera.annotate_text = "ArfBot Vision v1.0"
-        camera.capture(rawCapture, format="bgr")#, use_video_port=True)
-        image = rawCapture.array
-        
-        # release resources
-        camera.close()
-        '''
 
     return image
 
@@ -135,9 +111,7 @@ def load_roi_data(path):
     top_left = cv_file.getNode("top_left").mat()
     bot_right = cv_file.getNode("bot_right").mat()
     cv_file.release()
-    
     return [top_left, bot_right]
-
 
 # get the average pixel count between corners
 # use this to get the pixel per mm ratio
@@ -152,7 +126,6 @@ def get_pixel_average(corners, checkerboard):
             diff = val1 - val0
             total = total + diff
             count = count + 1
-            #print("v0:" + str(val0) + " v1:" + str(val1) + " diff:" + str(diff))
     average = abs(total / count)
     return average
     
@@ -165,17 +138,40 @@ def get_rotation_offset(corners, checkerboard):
     
     x1 = get_index_value(corners,0,0,checkerboard[0])
     x2 = get_index_value(corners,0,checkerboard[1]-1,checkerboard[0])
+    
     rotation_offset = 0
     
     if x1[0] == x2[0]:
-        rotation_offset = 0
+        if x1[1] > x2[1]:
+            rotation_offset = 180
+        else:
+            rotation_offset = 0
+            
+    if x1[1] == x2[1]:
+        if x1[0] > x2[0]:
+            rotation_offset = 90
+        else:
+            rotation_offset = -90
+            
     elif x1[0] > x2[0]:
-        rotation_offset = math.tan((x1[0]-x2[0])/(x2[1]-x1[1]))
-        rotation_offset = math.degrees(rotation_offset)
+        if x1[1] < x2[1]:   # quadrant III
+            rotation_offset = math.atan((x1[0]-x2[0])/(x2[1]-x1[1]))
+            rotation_offset = math.degrees(rotation_offset)
+            
+        else:               # quadrant II
+            rotation_offset = math.atan((x1[0]-x2[0])/(x1[1]-x2[1]))
+            rotation_offset = math.degrees(rotation_offset)
+            rotation_offset = -rotation_offset
+            
     elif x1[0] < x2[0]:
-        rotation_offset = math.tan((x2[0]-x1[0])/(x2[1]-x1[1]))
-        rotation_offset = math.degrees(rotation_offset)
-        rotation_offset = -rotation_offset
+        if x1[1] < x2[1]:   # quadrant IV
+            rotation_offset = math.atan((x2[0]-x1[0])/(x2[1]-x1[1]))
+            rotation_offset = math.degrees(rotation_offset)
+            rotation_offset = -rotation_offset
+            
+        else:               # quadrant I
+            rotation_offset = math.atan((x2[0]-x1[0])/(x1[1]-x2[1]))
+            rotation_offset = math.degrees(rotation_offset)
         
     return rotation_offset
     
@@ -186,6 +182,41 @@ def get_top_left(corners, checkerboard):
 def get_bot_right(corners, checkerboard):
     coordinates = get_index_value(corners,checkerboard[0]-1,checkerboard[1]-1,checkerboard[0])
     return coordinates
+
+# https://savvycalculator.com/rotation-calculator-new-coordinates-by-rotation/
+# formula to rotate coordinates around 0,0 counter-clockwise
+# x’ = x * cos(θ) – y * sin(θ) y’ = x * sin(θ) + y * cos(θ)
+def ptRotatePt2f(ptInput, ptOrg, dAngle): # angle is in radians / rotates ccw for pos vals
+    dWidth = ptOrg[0] * 2
+    dHeight = ptOrg[1] * 2
+    dY1 = dHeight - ptInput[1]
+    dY2 = dHeight - ptOrg[1]
+    dX = (ptInput[0] - ptOrg[0]) * math.cos(dAngle) - (dY1 - ptOrg[1]) * math.sin(dAngle) + ptOrg[0]
+    dY = (ptInput[0] - ptOrg[0]) * math.sin(dAngle) + (dY1 - ptOrg[1]) * math.cos(dAngle) + dY2
+    dY = -dY + dHeight
+    return np.array([dX, dY])
+    
+def drawOrientation(image, origin, rotation):
+    # y-green x-red z-blue
+    start_point = (int(origin[0]), int(origin[1]))
+    
+    x = origin.copy()
+    x[0] += 100
+    y = origin.copy()
+    y[1] += 100
+    
+    xr = ptRotatePt2f(x, origin, math.radians(-rotation))
+    xe = (int(xr[0]), int(xr[1]))
+    yr = ptRotatePt2f(y, origin, math.radians(-rotation))
+    ye = (int(yr[0]), int(yr[1]))
+
+    thickness = 3
+    color = (0, 0, 255)
+    image = cv2.arrowedLine(image, start_point, xe, color, thickness)
+    color = (0, 255, 0)
+    image = cv2.arrowedLine(image, start_point, ye, color, thickness)
+    
+    return image
 
 def main(checkerboard, squaresize, resultfile, debug, width, height):
     # stop the iteration when specified
@@ -245,6 +276,8 @@ def main(checkerboard, squaresize, resultfile, debug, width, height):
         image = cv2.drawChessboardCorners(image, 
                                           checkerboard, 
                                           corners2, ret)
+        
+        image = drawOrientation(image, origin, rotation_offset)
 
         # Perform camera calibration by
         # passing the value of above found out 3D points (threedpoints)
