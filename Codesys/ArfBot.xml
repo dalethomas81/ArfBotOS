@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-13T15:39:12.8031335" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-13T15:36:03.2774012">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-14T20:39:04.6015617" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-14T20:27:07.8026819">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -7930,7 +7930,12 @@ stCommand.PauseTime := STRING_TO_TIME(_CmdParams[0]);</xhtml>
                         <string />
                       </type>
                     </variable>
-                    <variable name="OutputImageUrl">
+                    <variable name="VisionSystemUrl">
+                      <type>
+                        <string />
+                      </type>
+                    </variable>
+                    <variable name="VisionOutputImageUrl">
                       <type>
                         <string />
                       </type>
@@ -7963,12 +7968,13 @@ IF  PersistentVars.VisionSystemIpAddress &lt;&gt; VisionSystemIpAddress_Last THE
 	IF PersistentVars.VisionSystemIpAddress = LocalIpAddress THEN
 		// https://forge.codesys.com/forge/talk/Runtime/thread/61d60a9fb7/
 		SysSockGetHostName(szHostName:=HostName, diNameLen:=SIZEOF(HostName));
-		OutputImageUrl := CONCAT('http://', HostName);
+		VisionSystemUrl := CONCAT('http://', HostName);
 	ELSE
-		OutputImageUrl := CONCAT('http://', PersistentVars.VisionSystemIpAddress);
+		VisionSystemUrl := CONCAT('http://', PersistentVars.VisionSystemIpAddress);
 	END_IF
 	//
-	OutputImageUrl := CONCAT(OutputImageUrl, ':5000/output');
+	VisionSystemUrl := CONCAT(VisionSystemUrl, ':5000');
+	VisionOutputImageUrl := CONCAT(VisionSystemUrl,'/output');
 END_IF
 
 //

@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 
 {% block content %}
+	<head>
+		<style>
+			canvas {
+				cursor: crosshair;
+				border: 1px solid #000000;
+			}
+		</style>
+	</head>
     <h1>Create Template</h1>
 
     <div id="results">
@@ -11,6 +19,12 @@
 
 	<div id="images">
 		<img id="cameraimage" src="{{ url_for('captured_image') }}" draggable="false">
+		
+		<!--
+		<canvas id="canvas" width="800" height="500"></canvas>
+		<div id="output"></div>
+		-->
+		
     </div>
 	
     <div class='container'>
@@ -31,7 +45,7 @@
         </form>
     </div>
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script type=text/javascript>
     
         var offsetLeft = 0; var offsetTop = 0;
@@ -40,7 +54,50 @@
         var endPointX = 0; var endPointY = 0;
         var startPoint = [0.0, 0.0]; var endPoint = [0.0, 0.0];
 		var captureWidth = 640; var captureHeight = 400;
+		
+		/*
+		//Canvas
+		// https://jsfiddle.net/richardcwc/ukqhf54k/
+		var canvas = document.getElementById('canvas');
+		var ctx = canvas.getContext('2d');
+		//Variables
+		var canvasx = $(canvas).offset().left;
+		var canvasy = $(canvas).offset().top;
+		var last_mousex = last_mousey = 0;
+		var mousex = mousey = 0;
+		var mousedown = false;
 
+		//Mousedown
+		$(canvas).on('mousedown', function(e) {
+			last_mousex = parseInt(e.clientX-canvasx);
+			last_mousey = parseInt(e.clientY-canvasy);
+			mousedown = true;
+		});
+
+		//Mouseup
+		$(canvas).on('mouseup', function(e) {
+			mousedown = false;
+		});
+
+		//Mousemove
+		$(canvas).on('mousemove', function(e) {
+			mousex = parseInt(e.clientX-canvasx);
+			mousey = parseInt(e.clientY-canvasy);
+			if(mousedown) {
+				ctx.clearRect(0,0,canvas.width,canvas.height); //clear canvas
+				ctx.beginPath();
+				var width = mousex-last_mousex;
+				var height = mousey-last_mousey;
+				ctx.rect(last_mousex,last_mousey,width,height);
+				ctx.strokeStyle = 'black';
+				ctx.lineWidth = 10;
+				ctx.stroke();
+			}
+			//Output
+			$('#output').html('current: '+mousex+', '+mousey+'<br/>last: '+last_mousex+', '+last_mousey+'<br/>mousedown: '+mousedown);
+		});
+		*/
+		
         // https://stackoverflow.com/questions/42601478/flask-calling-python-function-on-button-onclick-event
         $(function() {
             $('a#capture').on('click', function(e) {
