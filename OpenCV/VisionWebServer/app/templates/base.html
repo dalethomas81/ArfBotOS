@@ -5,10 +5,13 @@
         {% else %}
         <title>vision</title>
         {% endif %}
+		<style>
+			body{text-align: center;background: LightGrey;}
+		</style>
     </head>
     <body>
         <div>
-            Vision:
+            Directory:
             <a href="{{ url_for('template') }}">Template</a>
             <a href="{{ url_for('files') }}">Files</a>
         </div>
