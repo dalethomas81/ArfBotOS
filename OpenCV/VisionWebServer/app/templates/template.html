@@ -9,13 +9,18 @@
         <p id="current">current: x: , y:</p>
     </div>
 
-    <img id="cameraimage" src="{{ url_for('captured_image') }}" draggable="false">
-    <img id="cropped" src="{{ url_for('cropped') }}" draggable="false">
-    
+	<div id="images">
+		<img id="cameraimage" src="{{ url_for('captured_image') }}" draggable="false">
+    </div>
+	
     <div class='container'>
         <form>
             <a href=# id=capture><button class='btn btn-default'>Capture Image</button></a>
             <a href=# id=crop><button class='btn btn-default'>Crop Image</button></a>
+			
+			<input type="number" id="width" name="width" min="100" max="5000">
+			<input type="number" id="height" name="height" min="100" max="5000">
+			
         </form>
     </div>
     <div class='container'>
@@ -34,7 +39,7 @@
         var startPointX = 0; var startPointY = 0;
         var endPointX = 0; var endPointY = 0;
         var startPoint = [0.0, 0.0]; var endPoint = [0.0, 0.0];
-		var captureWidth = 300; var captureHeight = 300;
+		var captureWidth = 640; var captureHeight = 400;
 
         // https://stackoverflow.com/questions/42601478/flask-calling-python-function-on-button-onclick-event
         $(function() {
@@ -72,25 +77,56 @@
 
         function refreshCameraImage() {
             console.log("reloaded captured image")
+			captureWidth = document.getElementById("width").value;
+			captureHeight = document.getElementById("height").value;
 			// append date so browser cache doesnt show stale image
             document.getElementById('cameraimage').src = "{{ url_for('captured_image') }}" + "?width="+captureWidth+"&height="+captureHeight+"&uid=" + new Date().getTime();
         }
         function refreshCroppedImage() {
-            console.log("reloaded cropped image")
-            document.getElementById('cropped').src = "{{ url_for('cropped') }}" + "?top_left="+startPoint+"&bot_right="+endPoint+"&uid=" + new Date().getTime();
+			const container = document.getElementById('images')
+			// delete the old one
+			const element = document.getElementById('cropped');
+			if (element != null) {
+				element.remove();
+			}
+			let img = document.createElement('img')
+			img.id = 'cropped'
+			// wire-up the load event
+			img.addEventListener('load', () => {
+				container.appendChild(img)   
+			})
+			// this will kick off loading of the image
+			img.setAttribute('src', "{{ url_for('cropped') }}" + "?top_left="+startPoint+"&bot_right="+endPoint+"&uid=" + new Date().getTime()) 
         }
         function saveCroppedImage() {
             //console.log("saved cropped image")
             $.get("{{ url_for('save_template') }}"+"/"+template_filename.value+".jpg",function(data,status) {
                 //
             },'html');
+			alert("Template is saved. Please see the Files page to manage templates.");
         }
-        
-        // offsets are off is page refreshes and the scroll is not at the top
+
+        // offsets are off if page refreshes and the scroll is not at the top
         // adding this to force it to the top as a workaround for now
-        window.onbeforeunload = function () {
-            window.scrollTo(0, 0);
-        }
+		window.addEventListener('beforeunload', (event) => {
+			// Cancel the event as stated by the standard.
+			// this generates a pop-up asking the user to confirm before leaving the page
+			//event.preventDefault();
+			//
+			window.scrollTo(0, 0);
+			// Chrome requires returnValue to be set.
+			event.returnValue = '';
+		});
+		
+		// window.onload = (event) => { onLoadEvent(); } // doesnt work
+		window.addEventListener("load", onLoadEvent);
+		function onLoadEvent() {
+			var w = document.getElementById("width");
+			var h = document.getElementById("height");
+			w.value = captureWidth;
+			h.value = captureHeight;
+		}
+		
 
         // getting the position of the image on the page
         document.getElementById("cameraimage").addEventListener("load", getRect);
