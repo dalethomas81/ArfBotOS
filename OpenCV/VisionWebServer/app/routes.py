@@ -3,6 +3,8 @@ from app import app
 from app.forms import TemplateForm
 #from app.forms import LoginForm, TemplateForm
 
+from flask import request
+
 import cv2
 from picamera2 import Picamera2
 from picamera2.encoders import JpegEncoder
@@ -146,16 +148,24 @@ def template():
 # captured image
 @app.route('/captured_image')
 def captured_image():
-    return Response(gen_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    # https://stackoverflow.com/questions/24892035/how-can-i-get-the-named-parameters-from-a-url-using-flask
+    width = request.args.get('width', default = 640, type = int)
+    height = request.args.get('height', default = 400, type = int)
+    #print(width)
+    #print(height)
+    
+    return Response(gen_frames(width, height), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
 # cropped
-@app.route('/cropped') # TODO this is causing the webpage to wait loading until we have a cropped image
-@app.route('/cropped/<top_left>/<bot_right>')
-def cropped(top_left=None, bot_right=None):
-    
-    #print(top_left)
-    #print(bot_right)
+@app.route('/cropped')
+def cropped():
+    # https://stackoverflow.com/questions/24892035/how-can-i-get-the-named-parameters-from-a-url-using-flask
+    # https://flask.palletsprojects.com/en/3.0.x/api/#flask.Request.args
+    top_left = request.args.get('top_left')#, default = [0,0], type = None)
+    bot_right = request.args.get('bot_right')#, default = [640,400], type = None)
+    print(top_left)
+    print(bot_right)
 
     return Response(crop_template(top_left, bot_right), mimetype='multipart/x-mixed-replace; boundary=frame')
 
@@ -216,11 +226,12 @@ def crop_image(image, top_left, bot_right):
 
 
 # gen frames
-def gen_frames():  # generate frame by frame from camera
+def gen_frames(width, height):  # generate frame by frame from camera
     global out, capture, rec_frame, buffer, frame, capArray
 
     camera = Picamera2()
-    config = camera.create_preview_configuration(main={"size": (640, 400), "format": "RGB888"}) # 640, 400
+    #config = camera.create_preview_configuration(main={"size": (640, 400), "format": "RGB888"}) # 640, 400
+    config = camera.create_preview_configuration(main={"size": (int(width), int(height)), "format": "RGB888"}) # 640, 400
     camera.configure(config)
     camera.start()
     time.sleep(0.1)

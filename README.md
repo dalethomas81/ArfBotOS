@@ -1,5 +1,5 @@
 # ArfBotOS
-ArfBotOS is an operating system for a 6 axis robot running on CoDeSys, Arduino, and OpenCV. One of the main intentions of ArfBotOS is to give an example of how a typical industrial control system is programmed in IEC-61131. This will give good experience to new Automation and Controls engineers. Please see the wiki [here](https://github.com/dalethomas81/ArfBotOS/wiki) for more.
+ArfBotOS is an operating system for a 6-axis robot and vision system running on CoDeSys, Arduino, and OpenCV. One of the main intentions of ArfBotOS is to give an example of how a typical industrial control system is programmed in IEC-61131 (structured text). This will give good experience to new Automation and Controls engineers. Please see the wiki [here](https://github.com/dalethomas81/ArfBotOS/wiki) for more.
 
 ArfBotOS has a web-base HMI that is hosted via what is known in CoDeSys as a 'Visu'. From the **Main** HMI screen you can select a program to run and view its movement from the *Process Viewer* group box.  
 <img src="Resources/images/readme/hmi-main-pcs-corners.JPG" alt="menu" width="600"/> 
