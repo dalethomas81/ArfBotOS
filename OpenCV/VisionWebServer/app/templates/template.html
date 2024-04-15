@@ -34,6 +34,7 @@
         var startPointX = 0; var startPointY = 0;
         var endPointX = 0; var endPointY = 0;
         var startPoint = [0.0, 0.0]; var endPoint = [0.0, 0.0];
+		var captureWidth = 300; var captureHeight = 300;
 
         // https://stackoverflow.com/questions/42601478/flask-calling-python-function-on-button-onclick-event
         $(function() {
@@ -71,11 +72,12 @@
 
         function refreshCameraImage() {
             console.log("reloaded captured image")
-            document.getElementById('cameraimage').src = "{{ url_for('captured_image') }}?"+new Date().getTime();
+			// append date so browser cache doesnt show stale image
+            document.getElementById('cameraimage').src = "{{ url_for('captured_image') }}" + "?width="+captureWidth+"&height="+captureHeight+"&uid=" + new Date().getTime();
         }
         function refreshCroppedImage() {
             console.log("reloaded cropped image")
-            document.getElementById('cropped').src = "{{ url_for('cropped') }}"+"/"+startPoint+"/"+endPoint;
+            document.getElementById('cropped').src = "{{ url_for('cropped') }}" + "?top_left="+startPoint+"&bot_right="+endPoint+"&uid=" + new Date().getTime();
         }
         function saveCroppedImage() {
             //console.log("saved cropped image")
@@ -162,7 +164,11 @@
 
         // capture the realtime coordinates of the mouse pointer
         function printMousePos(event) {
-            document.getElementById('current').innerHTML = "current x: " + event.pageX + ", y: " + event.pageY;
+            if (event.pageX > offsetLeft && event.pageY > offsetTop 
+                && event.pageX < offsetLeft + offsetWidth 
+                && event.pageY < offsetTop + offsetHeight) {
+					document.getElementById('current').innerHTML = "current x: " + (event.pageX - offsetLeft) + ", y: " + (event.pageY - offsetTop);
+				}
         }
         
         document.addEventListener("mousedown", captureStartPoint);
