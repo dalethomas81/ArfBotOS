@@ -228,21 +228,21 @@ def crop_image(image, top_left, bot_right):
 # gen frames
 def gen_frames(width, height):  # generate frame by frame from camera
     global out, capture, rec_frame, buffer, frame, capArray
+    
+    # https://github.com/raspberrypi/picamera2/discussions/702#discussioncomment-5965577
+    with Picamera2() as camera: 
+        config = camera.create_preview_configuration(main={"size": (int(width), int(height)), "format": "RGB888"}) # 640, 400
+        camera.configure(config)
+        camera.start()
+        time.sleep(0.1)
+        capArray = camera.capture_array()
+        camera.stop()
+        camera.close()
 
-    camera = Picamera2()
-    #config = camera.create_preview_configuration(main={"size": (640, 400), "format": "RGB888"}) # 640, 400
-    config = camera.create_preview_configuration(main={"size": (int(width), int(height)), "format": "RGB888"}) # 640, 400
-    camera.configure(config)
-    camera.start()
-    time.sleep(0.1)
-    capArray = camera.capture_array()
-    camera.stop()
-    camera.close()
-
-    try:
-        ret, buffer = cv2.imencode('.jpg', capArray)
-        frame = buffer.tobytes()
-        yield (b'--frame\r\n'
-                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-    except Exception as e:
-        pass
+        try:
+            ret, buffer = cv2.imencode('.jpg', capArray)
+            frame = buffer.tobytes()
+            yield (b'--frame\r\n'
+                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        except Exception as e:
+            pass
