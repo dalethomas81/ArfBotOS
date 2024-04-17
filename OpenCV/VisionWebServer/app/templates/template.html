@@ -115,11 +115,23 @@
 		$(canvas).on('mouseup', function(e) {
 			mousedown = false;
 			
-			startPoint[0] = last_mousex;
-			startPoint[1] = last_mousey;
+			// account for starting the click and drag from right to left or left to right
+			if (last_mousex < mousex){
+				startPoint[0] = last_mousex;
+				endPoint[0] = mousex;
+			} else {
+				startPoint[0] = mousex;
+				endPoint[0] = last_mousex;
+			}
 			
-			endPoint[0] = mousex;
-			endPoint[1] = mousey;
+			// account for starting the click and drag from up to down or down to up
+			if (last_mousey < mousey){
+				startPoint[1] = last_mousey;
+				endPoint[1] = mousey;
+			} else {
+				startPoint[1] = mousey;
+				endPoint[1] = last_mousey;
+			}
 			
 			refreshCroppedImage();
 			
