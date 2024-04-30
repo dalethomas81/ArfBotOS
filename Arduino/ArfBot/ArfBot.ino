@@ -35,26 +35,30 @@ const int input2Pin = 40;
 const int input3Pin = 41;
 
 const int output0Pin = 12;
-const int output1Pin = 13;
+const int output1Pin = 17;
 const int output2Pin = 32;
 const int output3Pin = 33;
 
 const int J1_EncPinA = 14;
 const int J1_EncPinB = 15;
-const int J2_EncPinA = 39;
-const int J2_EncPinB = 38;
-const int J3_EncPinA = 37;
-const int J3_EncPinB = 36;
+const int J2_EncPinA = 38;
+const int J2_EncPinB = 39;
+const int J3_EncPinA = 36;
+const int J3_EncPinB = 37;
 const int J4_EncPinA = 20;
 const int J4_EncPinB = 21;
-const int J5_EncPinA = 23;
-const int J5_EncPinB = 22;
+const int J5_EncPinA = 22;
+const int J5_EncPinB = 23;
 const int J6_EncPinA = 24;
 const int J6_EncPinB = 25;
 
 const int DriveEnablePin = 16;
-const int DriveAlarmPin = 17;
+//const int DriveAlarmPin = 17;
 
+const int HeartbeatLed = 13;
+
+// NOTE: make sure to use external pullup resistors for i2c pins
+// 4.7k or 10k will work
 // pin 18 reserved for i2c
 // pin 19 reserved for i2c
 
@@ -134,7 +138,9 @@ void setup() {
   pinMode(output3Pin, OUTPUT); digitalWriteFast(output3Pin, HIGH);
 
   pinMode(DriveEnablePin, OUTPUT); digitalWriteFast(DriveEnablePin, LOW);
-  pinMode(DriveAlarmPin, INPUT_PULLUP);
+  //pinMode(DriveAlarmPin, INPUT_PULLUP);
+
+  pinMode(HeartbeatLed, OUTPUT); digitalWriteFast(HeartbeatLed, LOW);
   
 }
 
@@ -170,6 +176,7 @@ void loop() {
   rx_heartb_wdog = millis();
   if (rx_heartbeat != rx_heartbeat_last) {
     // reset watchdog timer
+    digitalWriteFast(HeartbeatLed, (rx_heartbeat ? HIGH : LOW));
     rx_heartbeat_last = rx_heartbeat;
     rx_heartb_wdog_last = rx_heartb_wdog;
     rx_heartbeat_lost = false;
@@ -339,7 +346,7 @@ void handleInputs(){
   tx_input2 = !input2.read();
   tx_input3 = !input3.read();
 
-  tx_alarm = digitalReadFast(DriveAlarmPin);
+  //tx_alarm = digitalReadFast(DriveAlarmPin);
 
 }
 

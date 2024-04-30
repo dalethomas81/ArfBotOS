@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-14T20:39:04.6015617" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-14T20:27:07.8026819">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-29T22:46:18.5467633" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-29T22:45:56.6240216">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -3018,12 +3018,12 @@ IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
 	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.C := 0.0;
 	
 	// set homing offsets
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X := 167.0; // J1 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y := 42.41; // J2 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z := -57.35; // J3 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A := -169.66; // J4 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B := -94.106; // J5 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C := 171.581; // J6 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X := 179.29; // J1 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y := 36.74; // J2 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z := -59.25; // J3 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A := -194.38; // J4 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B := 102.41; // J5 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C := 166.611; // J6 initial home offset
 	
 	// set speeds
 	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X := 100.0; // max velocity
@@ -4307,7 +4307,7 @@ GVL.DigitalInput[11] := pabyRxBuffer[31].3;
 SM_Drive_PosControl_J1.in.dwActPosition := DINT_TO_DWORD(EncPosition[0]);
 SM_Drive_PosControl_J2.in.dwActPosition := DINT_TO_DWORD(EncPosition[1]);
 SM_Drive_PosControl_J3.in.dwActPosition := DINT_TO_DWORD(EncPosition[2]);
-SM_Drive_PosControl_J4.in.dwActPosition := DINT_TO_DWORD(-EncPosition[3]);
+SM_Drive_PosControl_J4.in.dwActPosition := DINT_TO_DWORD(EncPosition[3]);
 SM_Drive_PosControl_J5.in.dwActPosition := DINT_TO_DWORD(EncPosition[4]);
 SM_Drive_PosControl_J6.in.dwActPosition := DINT_TO_DWORD(EncPosition[5]);
 
@@ -4326,14 +4326,14 @@ SM_Drive_PosControl_J1.in.bLimitNeg := TRUE;
 SM_Drive_PosControl_J2.in.bLimitNeg := TRUE;
 SM_Drive_PosControl_J3.in.bLimitNeg := rx_j3_limit;
 SM_Drive_PosControl_J4.in.bLimitNeg := rx_j4_limit;
-SM_Drive_PosControl_J5.in.bLimitNeg := rx_j5_limit;
+SM_Drive_PosControl_J5.in.bLimitNeg := TRUE;
 SM_Drive_PosControl_J6.in.bLimitNeg := TRUE;
 
 SM_Drive_PosControl_J1.in.bLimitPos := rx_j1_limit;
 SM_Drive_PosControl_J2.in.bLimitPos := rx_j2_limit;
 SM_Drive_PosControl_J3.in.bLimitPos := TRUE;
 SM_Drive_PosControl_J4.in.bLimitPos := TRUE;
-SM_Drive_PosControl_J5.in.bLimitPos := TRUE;
+SM_Drive_PosControl_J5.in.bLimitPos := rx_j5_limit;
 SM_Drive_PosControl_J6.in.bLimitPos := rx_j6_limit;
 
 SM_Drive_PosControl_J1.in.bDriveStartRealState := rx_en;
@@ -4350,7 +4350,7 @@ SM_Drive_PosControl_J6.in.bDriveStartRealState := rx_en;
 SM_Drive_PosControl_J6.in.bRegulatorRealState := rx_en;
 
 // convert degrees per second to revolutions per second as that is what the drives take
-SetVelocity[0] := LREAL_TO_REAL(-SM_Drive_PosControl_J1.out.fSetVelocity / 360.0); 
+SetVelocity[0] := LREAL_TO_REAL(SM_Drive_PosControl_J1.out.fSetVelocity / 360.0); 
 SetVelocity[1] := LREAL_TO_REAL(SM_Drive_PosControl_J2.out.fSetVelocity / 360.0);
 SetVelocity[2] := LREAL_TO_REAL(SM_Drive_PosControl_J3.out.fSetVelocity / 360.0);
 SetVelocity[3] := LREAL_TO_REAL(SM_Drive_PosControl_J4.out.fSetVelocity / 360.0);
@@ -21223,7 +21223,7 @@ _SMC_Homing_J5(
 	fAcceleration:= _HomingAcceleration, 
 	fDeceleration:= _HomingAcceleration,
 	fJerk:= _HomingJerk, 
-	nDirection:= MC_Direction.positive, 
+	nDirection:= MC_Direction.negative, 
 	bReferenceSwitch:= NOT J5_Limit, 
 	fSignalDelay:= , 
 	nHomingMode:= , 
@@ -21996,7 +21996,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="1052" type="std:DINT" IndexInDevDesc="18">
                                         <Attributes />
-                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">-9</Value>
+                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">9</Value>
                                         <Name>iRatioTechUnitsNum</Name>
                                         <Description>conversion inc./tech.units numerator</Description>
                                       </Parameter>
@@ -22032,7 +22032,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="5006" type="std:BOOL" IndexInDevDesc="25">
                                         <Attributes />
-                                        <Value name="_x0035_006" visiblename="InvertDirection">TRUE</Value>
+                                        <Value name="_x0035_006" visiblename="InvertDirection">FALSE</Value>
                                         <Name>InvertDirection</Name>
                                       </Parameter>
                                     </ParameterSection>
@@ -22256,7 +22256,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="1052" type="std:DINT" IndexInDevDesc="18">
                                         <Attributes />
-                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">-9</Value>
+                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">9</Value>
                                         <Name>iRatioTechUnitsNum</Name>
                                         <Description>conversion inc./tech.units numerator</Description>
                                       </Parameter>
@@ -22292,7 +22292,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="5006" type="std:BOOL" IndexInDevDesc="25">
                                         <Attributes />
-                                        <Value name="_x0035_006" visiblename="InvertDirection">TRUE</Value>
+                                        <Value name="_x0035_006" visiblename="InvertDirection">FALSE</Value>
                                         <Name>InvertDirection</Name>
                                       </Parameter>
                                     </ParameterSection>
@@ -22516,7 +22516,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="1052" type="std:DINT" IndexInDevDesc="18">
                                         <Attributes />
-                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">-15</Value>
+                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">15</Value>
                                         <Name>iRatioTechUnitsNum</Name>
                                         <Description>conversion inc./tech.units numerator</Description>
                                       </Parameter>
@@ -22552,7 +22552,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="5006" type="std:BOOL" IndexInDevDesc="25">
                                         <Attributes />
-                                        <Value name="_x0035_006" visiblename="InvertDirection">TRUE</Value>
+                                        <Value name="_x0035_006" visiblename="InvertDirection">FALSE</Value>
                                         <Name>InvertDirection</Name>
                                       </Parameter>
                                     </ParameterSection>
@@ -22595,7 +22595,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="10105" type="std:BOOL" IndexInDevDesc="32">
                                         <Attributes />
-                                        <Value name="_x0031_0105" visiblename="DirectionInverted">FALSE</Value>
+                                        <Value name="_x0031_0105" visiblename="DirectionInverted">TRUE</Value>
                                         <Name>DirectionInverted</Name>
                                       </Parameter>
                                     </ParameterSection>
@@ -23115,7 +23115,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="10105" type="std:BOOL" IndexInDevDesc="32">
                                         <Attributes />
-                                        <Value name="_x0031_0105" visiblename="DirectionInverted">FALSE</Value>
+                                        <Value name="_x0031_0105" visiblename="DirectionInverted">TRUE</Value>
                                         <Name>DirectionInverted</Name>
                                       </Parameter>
                                     </ParameterSection>
