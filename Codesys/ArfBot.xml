@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-29T22:46:18.5467633" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-29T22:45:56.6240216">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-30T22:39:04.7467078" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-30T22:22:42.2283908">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -4230,22 +4230,30 @@ FOR jointIdx := 0 TO 5 BY 1 DO
 					dwSize:=SIZEOF(SetVelocity[jointIdx]));
 	bufferIdx := bufferIdx + 4;
 END_FOR
+
 //pabyTxBuffer[25]:=;
-//pabyTxBuffer[26]:=;
+
+// index 26 will be for gpio byte (bits 0 through 7)
+pabyTxBuffer[26].0 := GVL.DigitalOutput[8];
+pabyTxBuffer[26].1 := GVL.DigitalOutput[9];
+pabyTxBuffer[26].2 := GVL.DigitalOutput[10];
+pabyTxBuffer[26].3 := GVL.DigitalOutput[11];
+//pabyTxBuffer[26].4 := ;
+//pabyTxBuffer[26].5 := ;
+//pabyTxBuffer[26].6 := ;
+//pabyTxBuffer[26].7 := ;
+
 //pabyTxBuffer[27]:=;
 //pabyTxBuffer[28]:=;
 //pabyTxBuffer[29]:=;
-//pabyTxBuffer[30]:=;
 
-// index 31 will be for gpio byte (bits 0 through 7)
-pabyTxBuffer[31].0 := GVL.DigitalOutput[8];
-pabyTxBuffer[31].1 := GVL.DigitalOutput[9];
-pabyTxBuffer[31].2 := GVL.DigitalOutput[10];
-pabyTxBuffer[31].3 := GVL.DigitalOutput[11];
-//pabyTxBuffer[31].4 := ;
-//pabyTxBuffer[31].5 := ;
-//pabyTxBuffer[31].6 := ;
-//pabyTxBuffer[31].7 := ;
+// Tx buffer index 30 and 31 will be for crc
+// calc crc here
+TxCrc := _M_CalculateCrc(ADR(pabyTxBuffer), 30);
+// append calc crc to tx buffer
+MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[30]), 
+				pbySrc:=ADR(TxCrc), 
+				dwSize:=2);
 
 // read and write to drive
 IF TransferTrigger THEN
@@ -4257,51 +4265,62 @@ IF TransferTrigger THEN
 					nBufferLen:=transferlenrx);
 END_IF
 
-// handle inputs
-// index 0 is for system inputs
-rx_heartbeat 		:= pabyRxBuffer[0].0;
-rx_en 				:= pabyRxBuffer[0].1;
-//rx_alarm 			:= pabyRxBuffer[0].2; TODO uncomment this once drive alarm output is wired
-//rx_ 				:= pabyRxBuffer[0].3;
-//rx_ 				:= pabyRxBuffer[0].4;
-//rx_ 				:= pabyRxBuffer[0].5;
-//rx_ 				:= pabyRxBuffer[0].6;
-rx_heartbeat_lost 	:= pabyRxBuffer[0].7;
+// copy crc from rx buffer
+MEMUtils.MemCpy(pbyDest:=ADR(RxCrc), 
+				pbySrc:=ADR(pabyRxBuffer[30]), 
+				dwSize:=2);
 
-// index 1 through 24 is for encoder data from drive
-bufferIdx := 1;
-FOR jointIdx := 0 TO 5 BY 1 DO
-	MEMUtils.MemCpy(pbyDest:=ADR(EncPosition[jointIdx]), 
-					pbySrc:=ADR(pabyRxBuffer[bufferIdx]), 
-					dwSize:=SIZEOF(EncPosition[jointIdx]));
-	bufferIdx := bufferIdx + 4;
-END_FOR
-
-// index 25 will be for limit switch inputs
-rx_j1_limit := pabyRxBuffer[25].0;
-rx_j2_limit := pabyRxBuffer[25].1;
-rx_j3_limit := pabyRxBuffer[25].2;
-rx_j4_limit := pabyRxBuffer[25].3;
-rx_j5_limit := pabyRxBuffer[25].4;
-rx_j6_limit := pabyRxBuffer[25].5;
-//rx_ := pabyRxBuffer[25].6;
-//rx_ := pabyRxBuffer[25].7;
-
-//rx_ := pabyRxBuffer[27];
-//rx_ := pabyRxBuffer[28];
-//rx_ := pabyRxBuffer[29];
-//rx_ := pabyRxBuffer[30];
-//rx_ := pabyRxBuffer[31];
-
-// index 31 will be for gpio byte (bits 0 through 7)
-GVL.DigitalInput[8] := pabyRxBuffer[31].0;
-GVL.DigitalInput[9] := pabyRxBuffer[31].1;
-GVL.DigitalInput[10] := pabyRxBuffer[31].2;
-GVL.DigitalInput[11] := pabyRxBuffer[31].3;
-// := pabyRxBuffer[31].4;
-// := pabyRxBuffer[31].5;
-// := pabyRxBuffer[31].6;
-// := pabyRxBuffer[31].7;
+// compare calc crc with rx crc
+IF RxCrc = _M_CalculateCrc(ADR(pabyRxBuffer), 30) THEN
+	// handle inputs
+	// index 0 is for system inputs
+	rx_heartbeat 		:= pabyRxBuffer[0].0;
+	rx_en 				:= pabyRxBuffer[0].1;
+	//rx_alarm 			:= pabyRxBuffer[0].2; TODO uncomment this once drive alarm output is wired
+	//rx_ 				:= pabyRxBuffer[0].3;
+	//rx_ 				:= pabyRxBuffer[0].4;
+	//rx_ 				:= pabyRxBuffer[0].5;
+	//rx_ 				:= pabyRxBuffer[0].6;
+	rx_heartbeat_lost 	:= pabyRxBuffer[0].7;
+	
+	// index 1 through 24 is for encoder data from drive
+	bufferIdx := 1;
+	FOR jointIdx := 0 TO 5 BY 1 DO
+		MEMUtils.MemCpy(pbyDest:=ADR(EncPosition[jointIdx]), 
+						pbySrc:=ADR(pabyRxBuffer[bufferIdx]), 
+						dwSize:=SIZEOF(EncPosition[jointIdx]));
+		bufferIdx := bufferIdx + 4;
+	END_FOR
+	
+	// index 25 will be for limit switch inputs
+	rx_j1_limit := pabyRxBuffer[25].0;
+	rx_j2_limit := pabyRxBuffer[25].1;
+	rx_j3_limit := pabyRxBuffer[25].2;
+	rx_j4_limit := pabyRxBuffer[25].3;
+	rx_j5_limit := pabyRxBuffer[25].4;
+	rx_j6_limit := pabyRxBuffer[25].5;
+	//rx_ := pabyRxBuffer[25].6;
+	//rx_ := pabyRxBuffer[25].7;
+	
+	// index 36 will be for gpio byte (bits 0 through 7)
+	GVL.DigitalInput[8] := pabyRxBuffer[26].0;
+	GVL.DigitalInput[9] := pabyRxBuffer[26].1;
+	GVL.DigitalInput[10] := pabyRxBuffer[26].2;
+	GVL.DigitalInput[11] := pabyRxBuffer[26].3;
+	// := pabyRxBuffer[26].4;
+	// := pabyRxBuffer[26].5;
+	// := pabyRxBuffer[26].6;
+	// := pabyRxBuffer[26].7;
+	
+	//rx_ := pabyRxBuffer[27];
+	//rx_ := pabyRxBuffer[28];
+	//rx_ := pabyRxBuffer[29];
+	
+	// Rx buffer index 30 and 31 will be for crc
+ELSE
+	// increment crc mismatch counter
+	CrcMisCount := CrcMisCount + 1;
+END_IF
 
 //
 SM_Drive_PosControl_J1.in.dwActPosition := DINT_TO_DWORD(EncPosition[0]);
@@ -4599,6 +4618,82 @@ IF _SMC_SetPosControlParams[5].bExecute THEN
 	SM_Drive_PosControl_J6.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[5].fSWMaxDeceleration;
 	SM_Drive_PosControl_J6.fSWMaxJerk 				:= PersistentVars.PositionControllers[5].fSWMaxJerk;
 END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_CalculateCrc" ObjectId="3079feb8-27d2-466b-aa82-f65eb24dfcd2">
+                      <interface>
+                        <returnType>
+                          <UINT />
+                        </returnType>
+                        <inputVars>
+                          <variable name="data">
+                            <type>
+                              <pointer>
+                                <baseType>
+                                  <BYTE />
+                                </baseType>
+                              </pointer>
+                            </type>
+                          </variable>
+                          <variable name="length">
+                            <type>
+                              <UINT />
+                            </type>
+                          </variable>
+                        </inputVars>
+                        <localVars>
+                          <variable name="curr_crc">
+                            <type>
+                              <UINT />
+                            </type>
+                          </variable>
+                          <variable name="sum1">
+                            <type>
+                              <USINT />
+                            </type>
+                          </variable>
+                          <variable name="sum2">
+                            <type>
+                              <USINT />
+                            </type>
+                          </variable>
+                          <variable name="_i">
+                            <type>
+                              <UINT />
+                            </type>
+                          </variable>
+                          <variable name="_j">
+                            <type>
+                              <UINT />
+                            </type>
+                          </variable>
+                          <variable name="_k">
+                            <type>
+                              <UINT />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">// https://www.tutorialspoint.com/cyclic-redundancy-check-crc-in-arduino
+curr_crc := 16#0000;
+sum1 := UINT_TO_USINT(curr_crc);
+sum2 := UINT_TO_USINT(SHR(curr_crc, 8));
+FOR _i:=0 TO length - 1 BY 1 DO
+	sum1 := (sum1 + data[_i]) MOD 255;
+	sum2 := (sum2 + sum1) MOD 255;
+END_FOR
+_M_CalculateCrc := SHL(sum2, 8) OR sum1;</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -24295,6 +24390,7 @@ _MoveCommandProcessor(
                 <Folder Name="private">
                   <Object Name="_M_HandleDriveIO" ObjectId="1f105a3e-ae48-4de4-9cd3-fada08b1a872" />
                   <Object Name="_M_InitDrives" ObjectId="9031c730-57b8-48ca-b284-2770517ca6ee" />
+                  <Object Name="_M_CalculateCrc" ObjectId="3079feb8-27d2-466b-aa82-f65eb24dfcd2" />
                 </Folder>
                 <Folder Name="public">
                   <Object Name="M_InitDrives" ObjectId="aea6e4c3-5f5a-4eff-ae8a-2de4fd010b88" />
