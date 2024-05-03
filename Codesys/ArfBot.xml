@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-14T20:39:04.6015617" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-14T20:27:07.8026819">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-05-02T23:30:10.1803644" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-02T23:24:26.4520552">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -2999,14 +2999,14 @@ IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
 	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Y := 0.0;
 	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Z := -30.0;
 	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.B := -30.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.B := 30.0;
 	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.C := 0.0;
 	
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.X := 0.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Y := 30.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Z := -30.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.B := 30.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.B := -30.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.C := 0.0;
 		 
 	// decoder
@@ -3018,12 +3018,12 @@ IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
 	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.C := 0.0;
 	
 	// set homing offsets
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X := 167.0; // J1 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y := 42.41; // J2 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z := -57.35; // J3 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A := -169.66; // J4 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B := -94.106; // J5 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C := 171.581; // J6 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X := 179.29; // J1 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y := 36.74; // J2 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z := -59.25; // J3 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A := -194.38; // J4 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B := 102.41; // J5 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C := 166.611; // J6 initial home offset
 	
 	// set speeds
 	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X := 100.0; // max velocity
@@ -4230,22 +4230,30 @@ FOR jointIdx := 0 TO 5 BY 1 DO
 					dwSize:=SIZEOF(SetVelocity[jointIdx]));
 	bufferIdx := bufferIdx + 4;
 END_FOR
+
 //pabyTxBuffer[25]:=;
-//pabyTxBuffer[26]:=;
+
+// index 26 will be for gpio byte (bits 0 through 7)
+pabyTxBuffer[26].0 := GVL.DigitalOutput[8];
+pabyTxBuffer[26].1 := GVL.DigitalOutput[9];
+pabyTxBuffer[26].2 := GVL.DigitalOutput[10];
+pabyTxBuffer[26].3 := GVL.DigitalOutput[11];
+//pabyTxBuffer[26].4 := ;
+//pabyTxBuffer[26].5 := ;
+//pabyTxBuffer[26].6 := ;
+//pabyTxBuffer[26].7 := ;
+
 //pabyTxBuffer[27]:=;
 //pabyTxBuffer[28]:=;
 //pabyTxBuffer[29]:=;
-//pabyTxBuffer[30]:=;
 
-// index 31 will be for gpio byte (bits 0 through 7)
-pabyTxBuffer[31].0 := GVL.DigitalOutput[8];
-pabyTxBuffer[31].1 := GVL.DigitalOutput[9];
-pabyTxBuffer[31].2 := GVL.DigitalOutput[10];
-pabyTxBuffer[31].3 := GVL.DigitalOutput[11];
-//pabyTxBuffer[31].4 := ;
-//pabyTxBuffer[31].5 := ;
-//pabyTxBuffer[31].6 := ;
-//pabyTxBuffer[31].7 := ;
+// Tx buffer index 30 and 31 will be for crc
+// calc crc here
+TxCrc := _M_CalculateCrc(ADR(pabyTxBuffer), 30);
+// append calc crc to tx buffer
+MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[30]), 
+				pbySrc:=ADR(TxCrc), 
+				dwSize:=2);
 
 // read and write to drive
 IF TransferTrigger THEN
@@ -4257,57 +4265,68 @@ IF TransferTrigger THEN
 					nBufferLen:=transferlenrx);
 END_IF
 
-// handle inputs
-// index 0 is for system inputs
-rx_heartbeat 		:= pabyRxBuffer[0].0;
-rx_en 				:= pabyRxBuffer[0].1;
-//rx_alarm 			:= pabyRxBuffer[0].2; TODO uncomment this once drive alarm output is wired
-//rx_ 				:= pabyRxBuffer[0].3;
-//rx_ 				:= pabyRxBuffer[0].4;
-//rx_ 				:= pabyRxBuffer[0].5;
-//rx_ 				:= pabyRxBuffer[0].6;
-rx_heartbeat_lost 	:= pabyRxBuffer[0].7;
+// copy crc from rx buffer
+MEMUtils.MemCpy(pbyDest:=ADR(RxCrc), 
+				pbySrc:=ADR(pabyRxBuffer[30]), 
+				dwSize:=2);
 
-// index 1 through 24 is for encoder data from drive
-bufferIdx := 1;
-FOR jointIdx := 0 TO 5 BY 1 DO
-	MEMUtils.MemCpy(pbyDest:=ADR(EncPosition[jointIdx]), 
-					pbySrc:=ADR(pabyRxBuffer[bufferIdx]), 
-					dwSize:=SIZEOF(EncPosition[jointIdx]));
-	bufferIdx := bufferIdx + 4;
-END_FOR
-
-// index 25 will be for limit switch inputs
-rx_j1_limit := pabyRxBuffer[25].0;
-rx_j2_limit := pabyRxBuffer[25].1;
-rx_j3_limit := pabyRxBuffer[25].2;
-rx_j4_limit := pabyRxBuffer[25].3;
-rx_j5_limit := pabyRxBuffer[25].4;
-rx_j6_limit := pabyRxBuffer[25].5;
-//rx_ := pabyRxBuffer[25].6;
-//rx_ := pabyRxBuffer[25].7;
-
-//rx_ := pabyRxBuffer[27];
-//rx_ := pabyRxBuffer[28];
-//rx_ := pabyRxBuffer[29];
-//rx_ := pabyRxBuffer[30];
-//rx_ := pabyRxBuffer[31];
-
-// index 31 will be for gpio byte (bits 0 through 7)
-GVL.DigitalInput[8] := pabyRxBuffer[31].0;
-GVL.DigitalInput[9] := pabyRxBuffer[31].1;
-GVL.DigitalInput[10] := pabyRxBuffer[31].2;
-GVL.DigitalInput[11] := pabyRxBuffer[31].3;
-// := pabyRxBuffer[31].4;
-// := pabyRxBuffer[31].5;
-// := pabyRxBuffer[31].6;
-// := pabyRxBuffer[31].7;
+// compare calc crc with rx crc
+IF RxCrc = _M_CalculateCrc(ADR(pabyRxBuffer), 30) THEN
+	// handle inputs
+	// index 0 is for system inputs
+	rx_heartbeat 		:= pabyRxBuffer[0].0;
+	rx_en 				:= pabyRxBuffer[0].1;
+	//rx_alarm 			:= pabyRxBuffer[0].2; TODO uncomment this once drive alarm output is wired
+	//rx_ 				:= pabyRxBuffer[0].3;
+	//rx_ 				:= pabyRxBuffer[0].4;
+	//rx_ 				:= pabyRxBuffer[0].5;
+	//rx_ 				:= pabyRxBuffer[0].6;
+	rx_heartbeat_lost 	:= pabyRxBuffer[0].7;
+	
+	// index 1 through 24 is for encoder data from drive
+	bufferIdx := 1;
+	FOR jointIdx := 0 TO 5 BY 1 DO
+		MEMUtils.MemCpy(pbyDest:=ADR(EncPosition[jointIdx]), 
+						pbySrc:=ADR(pabyRxBuffer[bufferIdx]), 
+						dwSize:=SIZEOF(EncPosition[jointIdx]));
+		bufferIdx := bufferIdx + 4;
+	END_FOR
+	
+	// index 25 will be for limit switch inputs
+	rx_j1_limit := pabyRxBuffer[25].0;
+	rx_j2_limit := pabyRxBuffer[25].1;
+	rx_j3_limit := pabyRxBuffer[25].2;
+	rx_j4_limit := pabyRxBuffer[25].3;
+	rx_j5_limit := pabyRxBuffer[25].4;
+	rx_j6_limit := pabyRxBuffer[25].5;
+	//rx_ := pabyRxBuffer[25].6;
+	//rx_ := pabyRxBuffer[25].7;
+	
+	// index 36 will be for gpio byte (bits 0 through 7)
+	GVL.DigitalInput[8] := pabyRxBuffer[26].0;
+	GVL.DigitalInput[9] := pabyRxBuffer[26].1;
+	GVL.DigitalInput[10] := pabyRxBuffer[26].2;
+	GVL.DigitalInput[11] := pabyRxBuffer[26].3;
+	// := pabyRxBuffer[26].4;
+	// := pabyRxBuffer[26].5;
+	// := pabyRxBuffer[26].6;
+	// := pabyRxBuffer[26].7;
+	
+	//rx_ := pabyRxBuffer[27];
+	//rx_ := pabyRxBuffer[28];
+	//rx_ := pabyRxBuffer[29];
+	
+	// Rx buffer index 30 and 31 will be for crc
+ELSE
+	// increment crc mismatch counter
+	CrcMisCount := CrcMisCount + 1;
+END_IF
 
 //
 SM_Drive_PosControl_J1.in.dwActPosition := DINT_TO_DWORD(EncPosition[0]);
 SM_Drive_PosControl_J2.in.dwActPosition := DINT_TO_DWORD(EncPosition[1]);
 SM_Drive_PosControl_J3.in.dwActPosition := DINT_TO_DWORD(EncPosition[2]);
-SM_Drive_PosControl_J4.in.dwActPosition := DINT_TO_DWORD(-EncPosition[3]);
+SM_Drive_PosControl_J4.in.dwActPosition := DINT_TO_DWORD(EncPosition[3]);
 SM_Drive_PosControl_J5.in.dwActPosition := DINT_TO_DWORD(EncPosition[4]);
 SM_Drive_PosControl_J6.in.dwActPosition := DINT_TO_DWORD(EncPosition[5]);
 
@@ -4326,14 +4345,14 @@ SM_Drive_PosControl_J1.in.bLimitNeg := TRUE;
 SM_Drive_PosControl_J2.in.bLimitNeg := TRUE;
 SM_Drive_PosControl_J3.in.bLimitNeg := rx_j3_limit;
 SM_Drive_PosControl_J4.in.bLimitNeg := rx_j4_limit;
-SM_Drive_PosControl_J5.in.bLimitNeg := rx_j5_limit;
+SM_Drive_PosControl_J5.in.bLimitNeg := TRUE;
 SM_Drive_PosControl_J6.in.bLimitNeg := TRUE;
 
 SM_Drive_PosControl_J1.in.bLimitPos := rx_j1_limit;
 SM_Drive_PosControl_J2.in.bLimitPos := rx_j2_limit;
 SM_Drive_PosControl_J3.in.bLimitPos := TRUE;
 SM_Drive_PosControl_J4.in.bLimitPos := TRUE;
-SM_Drive_PosControl_J5.in.bLimitPos := TRUE;
+SM_Drive_PosControl_J5.in.bLimitPos := rx_j5_limit;
 SM_Drive_PosControl_J6.in.bLimitPos := rx_j6_limit;
 
 SM_Drive_PosControl_J1.in.bDriveStartRealState := rx_en;
@@ -4350,7 +4369,7 @@ SM_Drive_PosControl_J6.in.bDriveStartRealState := rx_en;
 SM_Drive_PosControl_J6.in.bRegulatorRealState := rx_en;
 
 // convert degrees per second to revolutions per second as that is what the drives take
-SetVelocity[0] := LREAL_TO_REAL(-SM_Drive_PosControl_J1.out.fSetVelocity / 360.0); 
+SetVelocity[0] := LREAL_TO_REAL(SM_Drive_PosControl_J1.out.fSetVelocity / 360.0); 
 SetVelocity[1] := LREAL_TO_REAL(SM_Drive_PosControl_J2.out.fSetVelocity / 360.0);
 SetVelocity[2] := LREAL_TO_REAL(SM_Drive_PosControl_J3.out.fSetVelocity / 360.0);
 SetVelocity[3] := LREAL_TO_REAL(SM_Drive_PosControl_J4.out.fSetVelocity / 360.0);
@@ -4599,6 +4618,82 @@ IF _SMC_SetPosControlParams[5].bExecute THEN
 	SM_Drive_PosControl_J6.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[5].fSWMaxDeceleration;
 	SM_Drive_PosControl_J6.fSWMaxJerk 				:= PersistentVars.PositionControllers[5].fSWMaxJerk;
 END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_CalculateCrc" ObjectId="3079feb8-27d2-466b-aa82-f65eb24dfcd2">
+                      <interface>
+                        <returnType>
+                          <UINT />
+                        </returnType>
+                        <inputVars>
+                          <variable name="data">
+                            <type>
+                              <pointer>
+                                <baseType>
+                                  <BYTE />
+                                </baseType>
+                              </pointer>
+                            </type>
+                          </variable>
+                          <variable name="length">
+                            <type>
+                              <UINT />
+                            </type>
+                          </variable>
+                        </inputVars>
+                        <localVars>
+                          <variable name="curr_crc">
+                            <type>
+                              <UINT />
+                            </type>
+                          </variable>
+                          <variable name="sum1">
+                            <type>
+                              <USINT />
+                            </type>
+                          </variable>
+                          <variable name="sum2">
+                            <type>
+                              <USINT />
+                            </type>
+                          </variable>
+                          <variable name="_i">
+                            <type>
+                              <UINT />
+                            </type>
+                          </variable>
+                          <variable name="_j">
+                            <type>
+                              <UINT />
+                            </type>
+                          </variable>
+                          <variable name="_k">
+                            <type>
+                              <UINT />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">// https://www.tutorialspoint.com/cyclic-redundancy-check-crc-in-arduino
+curr_crc := 16#0000;
+sum1 := UINT_TO_USINT(curr_crc);
+sum2 := UINT_TO_USINT(SHR(curr_crc, 8));
+FOR _i:=0 TO length - 1 BY 1 DO
+	sum1 := (sum1 + data[_i]) MOD 255;
+	sum2 := (sum2 + sum1) MOD 255;
+END_FOR
+_M_CalculateCrc := SHL(sum2, 8) OR sum1;</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -21223,7 +21318,7 @@ _SMC_Homing_J5(
 	fAcceleration:= _HomingAcceleration, 
 	fDeceleration:= _HomingAcceleration,
 	fJerk:= _HomingJerk, 
-	nDirection:= MC_Direction.positive, 
+	nDirection:= MC_Direction.negative, 
 	bReferenceSwitch:= NOT J5_Limit, 
 	fSignalDelay:= , 
 	nHomingMode:= , 
@@ -21352,7 +21447,7 @@ StoredPositions[GVL.HOM_POS_IDX].Position.B := F_HomeOffsetCalc(	CurrentOffset:=
 																				HomeSearchDirection:= _SMC_Homing_J5.nDirection);
 
 StoredPositions[GVL.HOM_POS_IDX].Position.C := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C, 
-																				CurrentPosition:= J5.fActPosition, 
+																				CurrentPosition:= J6.fActPosition, 
 																				HomeSearchDirection:= _SMC_Homing_J6.nDirection);
 
 // this isnt totally needed but will calibrate the current session without the need to rehome
@@ -21996,7 +22091,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="1052" type="std:DINT" IndexInDevDesc="18">
                                         <Attributes />
-                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">-9</Value>
+                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">9</Value>
                                         <Name>iRatioTechUnitsNum</Name>
                                         <Description>conversion inc./tech.units numerator</Description>
                                       </Parameter>
@@ -22032,7 +22127,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="5006" type="std:BOOL" IndexInDevDesc="25">
                                         <Attributes />
-                                        <Value name="_x0035_006" visiblename="InvertDirection">TRUE</Value>
+                                        <Value name="_x0035_006" visiblename="InvertDirection">FALSE</Value>
                                         <Name>InvertDirection</Name>
                                       </Parameter>
                                     </ParameterSection>
@@ -22256,7 +22351,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="1052" type="std:DINT" IndexInDevDesc="18">
                                         <Attributes />
-                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">-9</Value>
+                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">9</Value>
                                         <Name>iRatioTechUnitsNum</Name>
                                         <Description>conversion inc./tech.units numerator</Description>
                                       </Parameter>
@@ -22292,7 +22387,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="5006" type="std:BOOL" IndexInDevDesc="25">
                                         <Attributes />
-                                        <Value name="_x0035_006" visiblename="InvertDirection">TRUE</Value>
+                                        <Value name="_x0035_006" visiblename="InvertDirection">FALSE</Value>
                                         <Name>InvertDirection</Name>
                                       </Parameter>
                                     </ParameterSection>
@@ -22516,7 +22611,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="1052" type="std:DINT" IndexInDevDesc="18">
                                         <Attributes />
-                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">-15</Value>
+                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">15</Value>
                                         <Name>iRatioTechUnitsNum</Name>
                                         <Description>conversion inc./tech.units numerator</Description>
                                       </Parameter>
@@ -22552,7 +22647,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="5006" type="std:BOOL" IndexInDevDesc="25">
                                         <Attributes />
-                                        <Value name="_x0035_006" visiblename="InvertDirection">TRUE</Value>
+                                        <Value name="_x0035_006" visiblename="InvertDirection">FALSE</Value>
                                         <Name>InvertDirection</Name>
                                       </Parameter>
                                     </ParameterSection>
@@ -22595,7 +22690,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="10105" type="std:BOOL" IndexInDevDesc="32">
                                         <Attributes />
-                                        <Value name="_x0031_0105" visiblename="DirectionInverted">FALSE</Value>
+                                        <Value name="_x0031_0105" visiblename="DirectionInverted">TRUE</Value>
                                         <Name>DirectionInverted</Name>
                                       </Parameter>
                                     </ParameterSection>
@@ -23115,7 +23210,7 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="10105" type="std:BOOL" IndexInDevDesc="32">
                                         <Attributes />
-                                        <Value name="_x0031_0105" visiblename="DirectionInverted">FALSE</Value>
+                                        <Value name="_x0031_0105" visiblename="DirectionInverted">TRUE</Value>
                                         <Name>DirectionInverted</Name>
                                       </Parameter>
                                     </ParameterSection>
@@ -24295,6 +24390,7 @@ _MoveCommandProcessor(
                 <Folder Name="private">
                   <Object Name="_M_HandleDriveIO" ObjectId="1f105a3e-ae48-4de4-9cd3-fada08b1a872" />
                   <Object Name="_M_InitDrives" ObjectId="9031c730-57b8-48ca-b284-2770517ca6ee" />
+                  <Object Name="_M_CalculateCrc" ObjectId="3079feb8-27d2-466b-aa82-f65eb24dfcd2" />
                 </Folder>
                 <Folder Name="public">
                   <Object Name="M_InitDrives" ObjectId="aea6e4c3-5f5a-4eff-ae8a-2de4fd010b88" />

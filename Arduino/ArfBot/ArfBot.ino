@@ -6,8 +6,8 @@
 #include <Servo.h>
 
 unsigned long timer1, timer1_last;
-byte I2C_TxBuffer[32]; // i2c has max 32 byte
-byte I2C_RxBuffer[32]; // i2c has max 32 byte
+uint8_t I2C_TxBuffer[32]; // i2c has max 32 byte
+uint8_t I2C_RxBuffer[32]; // i2c has max 32 byte
 
 const int J1_PulsePin = 0;
 const int J1_DirPin   = 1;
@@ -35,38 +35,47 @@ const int input2Pin = 40;
 const int input3Pin = 41;
 
 const int output0Pin = 12;
-const int output1Pin = 13;
+const int output1Pin = 17;
 const int output2Pin = 32;
 const int output3Pin = 33;
 
 const int J1_EncPinA = 14;
 const int J1_EncPinB = 15;
-const int J2_EncPinA = 39;
-const int J2_EncPinB = 38;
-const int J3_EncPinA = 37;
-const int J3_EncPinB = 36;
+const int J2_EncPinA = 38;
+const int J2_EncPinB = 39;
+const int J3_EncPinA = 36;
+const int J3_EncPinB = 37;
 const int J4_EncPinA = 20;
 const int J4_EncPinB = 21;
-const int J5_EncPinA = 23;
-const int J5_EncPinB = 22;
+const int J5_EncPinA = 22;
+const int J5_EncPinB = 23;
 const int J6_EncPinA = 24;
 const int J6_EncPinB = 25;
 
 const int DriveEnablePin = 16;
-const int DriveAlarmPin = 17;
+//const int DriveAlarmPin = 17;
 
+const int HeartbeatLed = 13;
+
+// NOTE: make sure to use external pullup resistors for i2c pins
+// 4.7k or 10k will work
 // pin 18 reserved for i2c
 // pin 19 reserved for i2c
 
 union u_pto {
-  byte b[4];
+  uint8_t b[4];
   float fval;
 } SetVelocity[6];
 
 union u_enc {
-  byte b[4];
+  uint8_t b[4];
   long lval;
 } EncPosition[6];
+
+union u_crc {
+  uint8_t b[2];
+  uint16_t u;
+} TxCrc, RxCrc;
 
 PTO J1(J1_DirPin, J1_PulsePin); // dirPin, pulsePin
 PTO J2(J2_DirPin, J2_PulsePin);
@@ -134,7 +143,9 @@ void setup() {
   pinMode(output3Pin, OUTPUT); digitalWriteFast(output3Pin, HIGH);
 
   pinMode(DriveEnablePin, OUTPUT); digitalWriteFast(DriveEnablePin, LOW);
-  pinMode(DriveAlarmPin, INPUT_PULLUP);
+  //pinMode(DriveAlarmPin, INPUT_PULLUP);
+
+  pinMode(HeartbeatLed, OUTPUT); digitalWriteFast(HeartbeatLed, LOW);
   
 }
 
@@ -170,6 +181,7 @@ void loop() {
   rx_heartb_wdog = millis();
   if (rx_heartbeat != rx_heartbeat_last) {
     // reset watchdog timer
+    digitalWriteFast(HeartbeatLed, (rx_heartbeat ? HIGH : LOW));
     rx_heartbeat_last = rx_heartbeat;
     rx_heartb_wdog_last = rx_heartb_wdog;
     rx_heartbeat_lost = false;
@@ -210,15 +222,32 @@ void loop() {
   }
 }
 
+bool rxMutex;
 void receiveEvent(int length){
-  int i = 0;
-  while(Wire.available()) // loop through all but the last
-  {
-    I2C_RxBuffer[i++] = Wire.read();
+  // check if buffer is already being read
+  if (!rxMutex){
+    // lock the rx buffer
+    rxMutex = true;
+    // parse the rx buffer
+    int i = 0;
+    while(Wire.available()) // loop through all but the last
+    {
+      I2C_RxBuffer[i++] = Wire.read();
+    }
+    // calculate crc of rx buffer
+    RxCrc.u = calculateChecksum(I2C_RxBuffer, 30);
+    // unlock the rx buffer
+    rxMutex = false;
   }
 }
 
 void requestEvent() {
+
+  // calculate checksum and append to tx buffer
+  TxCrc.u = calculateChecksum(I2C_TxBuffer,30);
+  I2C_TxBuffer[30] = TxCrc.b[0];
+  I2C_TxBuffer[31] = TxCrc.b[1];
+
   Wire.write(I2C_TxBuffer,32);
 }
 
@@ -260,69 +289,82 @@ void handleTx(){
   //I2C_TxBuffer[25] = I2C_TxBuffer[25] | (tx_ ? B01000000 : B00000000);
   //I2C_TxBuffer[25] = I2C_TxBuffer[25] | (tx_ ? B10000000 : B00000000);
 
-  //I2C_TxBuffer[26]
+  // byte 26 is used for gpio 0 through 7
+  I2C_TxBuffer[26] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
+  I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_input0 ? B00000001 : B00000000);
+  I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_input1 ? B00000010 : B00000000);
+  I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_input2 ? B00000100 : B00000000);
+  I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_input3 ? B00001000 : B00000000);
+  //I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_ ? B00010000 : B00000000);
+  //I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_ ? B00100000 : B00000000);
+  //I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_ ? B01000000 : B00000000);
+  //I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_ ? B10000000 : B00000000);
+
   //I2C_TxBuffer[27]
   //I2C_TxBuffer[28]
   //I2C_TxBuffer[29]
-  //I2C_TxBuffer[30]
 
-  // byte 31 is used for gpio 0 through 7
-  I2C_TxBuffer[31] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
-  I2C_TxBuffer[31] = I2C_TxBuffer[31] | (tx_input0 ? B00000001 : B00000000);
-  I2C_TxBuffer[31] = I2C_TxBuffer[31] | (tx_input1 ? B00000010 : B00000000);
-  I2C_TxBuffer[31] = I2C_TxBuffer[31] | (tx_input2 ? B00000100 : B00000000);
-  I2C_TxBuffer[31] = I2C_TxBuffer[31] | (tx_input3 ? B00001000 : B00000000);
-  //I2C_TxBuffer[31] = I2C_TxBuffer[31] | (tx_ ? B00010000 : B00000000);
-  //I2C_TxBuffer[31] = I2C_TxBuffer[31] | (tx_ ? B00100000 : B00000000);
-  //I2C_TxBuffer[31] = I2C_TxBuffer[31] | (tx_ ? B01000000 : B00000000);
-  //I2C_TxBuffer[31] = I2C_TxBuffer[31] | (tx_ ? B10000000 : B00000000);
+  // tx buffer index 30 and 31 will be for crc
+
 }
 
 void handleRx(){
-  
-  // byte 0 is used for misc command bits
-  rx_heartbeat  = I2C_RxBuffer[0] & B00000001;
-  rx_en         = I2C_RxBuffer[0] & B00000010;
-  rx_homing     = I2C_RxBuffer[0] & B00000100;
-  //rx_ = I2C_RxBuffer[0] & B00001000;
-  //rx_ = I2C_RxBuffer[0] & B00010000;
-  //rx_ = I2C_RxBuffer[0] & B00100000;
-  //rx_ = I2C_RxBuffer[0] & B01000000;
-  //rx_ = I2C_RxBuffer[0] & B10000000;
+  // check if buffer is already being read
+  if (!rxMutex){
+    // lock the rx buffer
+    //rxMutex = true;
+    // compare calc crc with rx crc
+    if (RxCrc.b[0] == I2C_RxBuffer[30] && RxCrc.b[1] == I2C_RxBuffer[31]) {
+      
+      // byte 0 is used for misc command bits
+      rx_heartbeat  = I2C_RxBuffer[0] & B00000001;
+      rx_en         = I2C_RxBuffer[0] & B00000010;
+      rx_homing     = I2C_RxBuffer[0] & B00000100;
+      //rx_ = I2C_RxBuffer[0] & B00001000;
+      //rx_ = I2C_RxBuffer[0] & B00010000;
+      //rx_ = I2C_RxBuffer[0] & B00100000;
+      //rx_ = I2C_RxBuffer[0] & B01000000;
+      //rx_ = I2C_RxBuffer[0] & B10000000;
 
-  // bytes 1 through 24 are used for velocity
-  int k=1;
-  for (int i=0;i<=5;i++){
-    for (int j=0;j<=3;j++){
-      SetVelocity[i].b[j]=I2C_RxBuffer[k++];
+      // bytes 1 through 24 are used for velocity
+      int k=1;
+      for (int i=0;i<=5;i++){
+        for (int j=0;j<=3;j++){
+          SetVelocity[i].b[j]=I2C_RxBuffer[k++];
+        }
+      }
+
+      // all drive are 200 pulses per revolution but we microstep so these are higher
+      // need to multiply the gear ration by ppr to get the desired output translation
+      J1.run(SetVelocity[0].fval, 10 * (60/15) * 400); // gear * pulley * ppr
+      J2.run(SetVelocity[1].fval, 50 * 400);
+      J3.run(SetVelocity[2].fval, 50 * 400);
+      J4.run(SetVelocity[3].fval, (3969/289) * (28/10) * 600); // gear * pulley * ppr (note manual shows 400 but its actually 600 ppr)
+      J5.run(SetVelocity[4].fval, 9.81748 * 800); // 25*pi/8
+      J6.run(SetVelocity[5].fval, (3591/187) * 400); // gear ratio * ppr
+
+      //I2C_RxBuffer[25]
+      
+      rx_output0 = I2C_RxBuffer[26] & B00000001;
+      rx_output1 = I2C_RxBuffer[26] & B00000010;
+      rx_output2 = I2C_RxBuffer[26] & B00000100;
+      rx_output3 = I2C_RxBuffer[26] & B00001000;
+      //rx_ = I2C_RxBuffer[26] & B00010000;
+      //rx_ = I2C_RxBuffer[26] & B00100000;
+      //rx_ = I2C_RxBuffer[26] & B01000000;
+      //rx_ = I2C_RxBuffer[26] & B10000000;
+      
+      //I2C_RxBuffer[27]
+      //I2C_RxBuffer[28]
+      //I2C_RxBuffer[29]
+
+      // 30 and 31 are reserved for crc
     }
+    
+    // unlock the rx buffer
+    //rxMutex = false;
   }
 
-  // all drive are 200 pulses per revolution but we microstep so these are higher
-  // need to multiply the gear ration by ppr to get the desired output translation
-  J1.run(SetVelocity[0].fval, 10 * (60/15) * 400); // gear * pulley * ppr
-  J2.run(SetVelocity[1].fval, 50 * 400);
-  J3.run(SetVelocity[2].fval, 50 * 400);
-  J4.run(SetVelocity[3].fval, (3969/289) * (28/10) * 600); // gear * pulley * ppr (note manual shows 400 but its actually 600 ppr)
-  J5.run(SetVelocity[4].fval, 9.81748 * 800); // 25*pi/8
-  J6.run(SetVelocity[5].fval, (3591/187) * 400); // gear ratio * ppr
-
-  //I2C_RxBuffer[25]
-  //I2C_RxBuffer[26]
-  //I2C_RxBuffer[27]
-  //I2C_RxBuffer[28]
-  //I2C_RxBuffer[29]
-  //I2C_RxBuffer[30]
-  
-  rx_output0 = I2C_RxBuffer[31] & B00000001;
-  rx_output1 = I2C_RxBuffer[31] & B00000010;
-  rx_output2 = I2C_RxBuffer[31] & B00000100;
-  rx_output3 = I2C_RxBuffer[31] & B00001000;
-  //rx_ = I2C_RxBuffer[31] & B00010000;
-  //rx_ = I2C_RxBuffer[31] & B00100000;
-  //rx_ = I2C_RxBuffer[31] & B01000000;
-  //rx_ = I2C_RxBuffer[31] & B10000000;
-  
 }
 
 void handleInputs(){
@@ -339,7 +381,7 @@ void handleInputs(){
   tx_input2 = !input2.read();
   tx_input3 = !input3.read();
 
-  tx_alarm = digitalReadFast(DriveAlarmPin);
+  //tx_alarm = digitalReadFast(DriveAlarmPin);
 
 }
 
@@ -357,7 +399,19 @@ void handleSerial(){
   Serial.print(" ");
   Serial.print(rx_heartbeat);
   Serial.print(" ");
-  Serial.print(rx_heartbeat_lost);
+  Serial.print(TxCrc.u);
+  Serial.print(" ");
+  Serial.print(TxCrc.b[0]);
+  Serial.print(" ");
+  Serial.print(TxCrc.b[1]);
+  Serial.print(" ");
+  Serial.print(RxCrc.u);
+  Serial.print(" ");
+  Serial.print(RxCrc.b[0]);
+  Serial.print(" ");
+  Serial.print(RxCrc.b[1]);
+  Serial.println();
+  /*Serial.print(rx_heartbeat_lost);
   Serial.print(" ");
   Serial.print(rx_en);
   Serial.print(" ");
@@ -367,5 +421,20 @@ void handleSerial(){
   Serial.print(" ");
   Serial.print(SetVelocity[5].fval);
   Serial.print(" ");
-  Serial.println(I2C_RxBuffer[25]);
+  Serial.println(I2C_RxBuffer[25]);*/
+}
+
+// https://www.tutorialspoint.com/cyclic-redundancy-check-crc-in-arduino
+uint16_t calculateChecksum(uint8_t * data, uint16_t length)
+{
+   uint16_t curr_crc = 0x0000;
+   uint8_t sum1 = (uint8_t) curr_crc;
+   uint8_t sum2 = (uint8_t) (curr_crc >> 8);
+   int index;
+   for(index = 0; index < length; index = index+1)
+   {
+      sum1 = (sum1 + data[index]) % 255;
+      sum2 = (sum2 + sum1) % 255;
+   }
+   return (sum2 << 8) | sum1;
 }
