@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-04-30T22:39:04.7467078" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-04-30T22:22:42.2283908">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-05-02T23:30:10.1803644" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-02T23:24:26.4520552">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -2999,14 +2999,14 @@ IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
 	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Y := 0.0;
 	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Z := -30.0;
 	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.B := -30.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.B := 30.0;
 	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.C := 0.0;
 	
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.X := 0.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Y := 30.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Z := -30.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.B := 30.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.B := -30.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.C := 0.0;
 		 
 	// decoder
@@ -21447,7 +21447,7 @@ StoredPositions[GVL.HOM_POS_IDX].Position.B := F_HomeOffsetCalc(	CurrentOffset:=
 																				HomeSearchDirection:= _SMC_Homing_J5.nDirection);
 
 StoredPositions[GVL.HOM_POS_IDX].Position.C := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C, 
-																				CurrentPosition:= J5.fActPosition, 
+																				CurrentPosition:= J6.fActPosition, 
 																				HomeSearchDirection:= _SMC_Homing_J6.nDirection);
 
 // this isnt totally needed but will calibrate the current session without the need to rehome
