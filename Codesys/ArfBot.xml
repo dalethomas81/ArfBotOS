@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-05-05T11:39:49.2587716" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-05T11:08:25.7311039">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-05-05T15:07:47.9645211" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-05T14:31:17.4150746">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -3883,26 +3883,6 @@ GroupHandler(
               <pou name="_10_Drives" pouType="program">
                 <interface>
                   <localVars>
-                    <variable name="SetVelocity">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="5" />
-                          <baseType>
-                            <REAL />
-                          </baseType>
-                        </array>
-                      </type>
-                    </variable>
-                    <variable name="EncPosition">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="5" />
-                          <baseType>
-                            <DINT />
-                          </baseType>
-                        </array>
-                      </type>
-                    </variable>
                     <variable name="CalcStatistics">
                       <type>
                         <BOOL />
@@ -3920,101 +3900,6 @@ GroupHandler(
                           </baseType>
                         </array>
                       </type>
-                    </variable>
-                    <variable name="bufferIdx">
-                      <type>
-                        <INT />
-                      </type>
-                    </variable>
-                    <variable name="jointIdx">
-                      <type>
-                        <INT />
-                      </type>
-                    </variable>
-                    <variable name="HeartbeatOn">
-                      <type>
-                        <derived name="TON" />
-                      </type>
-                    </variable>
-                    <variable name="HeartbeatOff">
-                      <type>
-                        <derived name="TON" />
-                      </type>
-                    </variable>
-                    <variable name="HeartbeatPt">
-                      <type>
-                        <TIME />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="TIME#1s0ms" />
-                      </initialValue>
-                    </variable>
-                    <variable name="SysLTime">
-                      <type>
-                        <derived name="LTIME" />
-                      </type>
-                    </variable>
-                    <variable name="SysLTimeLast">
-                      <type>
-                        <derived name="LTIME" />
-                      </type>
-                    </variable>
-                    <variable name="TransferTime">
-                      <type>
-                        <derived name="LTIME" />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="LTIME#100us0ns" />
-                      </initialValue>
-                    </variable>
-                    <variable name="TransferTrigger">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="pabyTxBuffer">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="31" />
-                          <baseType>
-                            <BYTE />
-                          </baseType>
-                        </array>
-                      </type>
-                    </variable>
-                    <variable name="pabyRxBuffer">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="31" />
-                          <baseType>
-                            <BYTE />
-                          </baseType>
-                        </array>
-                      </type>
-                    </variable>
-                    <variable name="transferlentx">
-                      <type>
-                        <UDINT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="32" />
-                      </initialValue>
-                    </variable>
-                    <variable name="transferlenrx">
-                      <type>
-                        <UDINT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="32" />
-                      </initialValue>
-                    </variable>
-                    <variable name="i2caddress">
-                      <type>
-                        <USINT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="8" />
-                      </initialValue>
                     </variable>
                     <variable name="rx_heartbeat">
                       <type>
@@ -4069,49 +3954,6 @@ GroupHandler(
                     <variable name="rx_j6_limit">
                       <type>
                         <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="TestMove_J6">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="PosStart1_J6">
-                      <type>
-                        <DINT />
-                      </type>
-                    </variable>
-                    <variable name="PosStart2_J6">
-                      <type>
-                        <DINT />
-                      </type>
-                    </variable>
-                    <variable name="PosEnd1_J6">
-                      <type>
-                        <DINT />
-                      </type>
-                    </variable>
-                    <variable name="PosEnd2_J6">
-                      <type>
-                        <DINT />
-                      </type>
-                    </variable>
-                    <variable name="TestMoveWaitTimer">
-                      <type>
-                        <derived name="TON" />
-                      </type>
-                    </variable>
-                    <variable name="TestMoveWaitTimerPT">
-                      <type>
-                        <TIME />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="TIME#2s0ms" />
-                      </initialValue>
-                    </variable>
-                    <variable name="TestMoveStep">
-                      <type>
-                        <INT />
                       </type>
                     </variable>
                     <variable name="DefaultDriveParameters">
@@ -4178,8 +4020,7 @@ FirstScan := FALSE;</xhtml>
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
-//
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">//
 HeartbeatOn(in:=NOT HeartbeatOff.Q,PT:=HeartbeatPt);
 HeartbeatOff(in:=HeartbeatOn.Q,PT:=HeartbeatPt);
 
@@ -4228,18 +4069,18 @@ pabyTxBuffer[26].3 := GVL.DigitalOutput[11];
 
 // Tx buffer index 30 and 31 will be for crc
 // calc crc here
-TxCrc := _M_CalculateCrc(ADR(pabyTxBuffer), 30);
+TxCrc := F_Checksum(ADR(pabyTxBuffer), 30);
 // append calc crc to tx buffer
 MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[30]), 
 				pbySrc:=ADR(TxCrc), 
 				dwSize:=2);
 
-// read and write to drive
+// read and write to i2c bus
 IF TransferTrigger THEN
-	I2C_master.write(usiAddress:=i2caddress,
+	I2C_master_Bus1.write(usiAddress:=i2caddress,
 					pbyBuffer:=ADR(pabyTxBuffer),
 					nBufferLen:=transferlentx);
-	I2C_master.read(usiAddress:=i2caddress,
+	I2C_master_Bus1.read(usiAddress:=i2caddress,
 					pbyBuffer:=ADR(pabyRxBuffer),
 					nBufferLen:=transferlenrx);
 END_IF
@@ -4250,7 +4091,7 @@ MEMUtils.MemCpy(pbyDest:=ADR(RxCrc),
 				dwSize:=2);
 
 // compare calc crc with rx crc
-IF RxCrc = _M_CalculateCrc(ADR(pabyRxBuffer), 30) THEN
+IF RxCrc = F_Checksum(ADR(pabyRxBuffer), 30) THEN
 	// handle inputs
 	// index 0 is for system inputs
 	rx_heartbeat 		:= pabyRxBuffer[0].0;
@@ -4298,7 +4139,7 @@ IF RxCrc = _M_CalculateCrc(ADR(pabyRxBuffer), 30) THEN
 	// Rx buffer index 30 and 31 will be for crc
 ELSE
 	// increment crc mismatch counter
-	CrcMisCount := CrcMisCount + 1;
+	ChecksumMisCount := ChecksumMisCount + 1;
 END_IF
 
 // https://docs.google.com/spreadsheets/d/1S5TOxwbAx8pTMUdoWMnyC9WPfphhtUME/edit#gid=595805457
@@ -4597,82 +4438,6 @@ IF _SMC_SetPosControlParams[5].bExecute THEN
 	SM_Drive_PosControl_J6.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[5].fSWMaxDeceleration;
 	SM_Drive_PosControl_J6.fSWMaxJerk 				:= PersistentVars.PositionControllers[5].fSWMaxJerk;
 END_IF</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="_M_CalculateCrc" ObjectId="3079feb8-27d2-466b-aa82-f65eb24dfcd2">
-                      <interface>
-                        <returnType>
-                          <UINT />
-                        </returnType>
-                        <inputVars>
-                          <variable name="data">
-                            <type>
-                              <pointer>
-                                <baseType>
-                                  <BYTE />
-                                </baseType>
-                              </pointer>
-                            </type>
-                          </variable>
-                          <variable name="length">
-                            <type>
-                              <UINT />
-                            </type>
-                          </variable>
-                        </inputVars>
-                        <localVars>
-                          <variable name="curr_crc">
-                            <type>
-                              <UINT />
-                            </type>
-                          </variable>
-                          <variable name="sum1">
-                            <type>
-                              <USINT />
-                            </type>
-                          </variable>
-                          <variable name="sum2">
-                            <type>
-                              <USINT />
-                            </type>
-                          </variable>
-                          <variable name="_i">
-                            <type>
-                              <UINT />
-                            </type>
-                          </variable>
-                          <variable name="_j">
-                            <type>
-                              <UINT />
-                            </type>
-                          </variable>
-                          <variable name="_k">
-                            <type>
-                              <UINT />
-                            </type>
-                          </variable>
-                        </localVars>
-                        <addData>
-                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
-                            <AccessModifiers Private="true" />
-                          </data>
-                        </addData>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">// https://www.tutorialspoint.com/cyclic-redundancy-check-crc-in-arduino
-curr_crc := 16#0000;
-sum1 := UINT_TO_USINT(curr_crc);
-sum2 := UINT_TO_USINT(SHR(curr_crc, 8));
-FOR _i:=0 TO length - 1 BY 1 DO
-	sum1 := (sum1 + data[_i]) MOD 255;
-	sum2 := (sum2 + sum1) MOD 255;
-END_FOR
-_M_CalculateCrc := SHL(sum2, 8) OR sum1;</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -7252,6 +7017,7 @@ END_CASE</xhtml>
 PowerOn := GVL.PowerOn;
 
 //
+_M_HandleRemoteIO();
 _M_CmdIoMapping();
 
 // servo 1
@@ -7302,6 +7068,105 @@ Execute_Servo1 := FALSE;</xhtml>
 //
 GVL.CmdIO.Input := GVL.DigitalInput;
 GVL.DigitalOutput := GVL.CmdIO.Output;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_HandleRemoteIO" ObjectId="95e27eb3-1cc7-4783-8f9f-46fca05a221d">
+                      <interface>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">//
+HeartbeatOn(in:=NOT HeartbeatOff.Q,PT:=HeartbeatPt);
+HeartbeatOff(in:=HeartbeatOn.Q,PT:=HeartbeatPt);
+
+// need to use system time to transfer faster than 1ms
+SysLTime := LTIME();
+IF SysLTime - SysLTimeLast &gt; TransferTime THEN
+	SysLTimeLast := SysLTime;
+	TransferTrigger := NOT TransferTrigger;
+END_IF
+
+// handle outputs
+// index 0 is for system outputs
+pabyTxBuffer[0].0:=HeartbeatOn.Q; 	// heartbeat
+pabyTxBuffer[0].1:=tx_en; 			// enable
+// pabyTxBuffer[0].2:=;
+// pabyTxBuffer[0].3:=;
+// pabyTxBuffer[0].4:=;
+// pabyTxBuffer[0].5:=;
+// pabyTxBuffer[0].6:=;
+// pabyTxBuffer[0].7:=;
+
+//
+(*bufferIdx := 1;
+FOR jointIdx := 0 TO 5 BY 1 DO
+	MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[bufferIdx]), 
+					pbySrc:=ADR(SetVelocity[jointIdx]), 
+					dwSize:=SIZEOF(SetVelocity[jointIdx]));
+	bufferIdx := bufferIdx + 4;
+END_FOR*)
+
+//pabyTxBuffer[25]:=;
+
+//
+//pabyTxBuffer[26].0 := ;
+//pabyTxBuffer[26].1 := ;
+//pabyTxBuffer[26].2 := ;
+//pabyTxBuffer[26].3 := ;
+//pabyTxBuffer[26].4 := ;
+//pabyTxBuffer[26].5 := ;
+//pabyTxBuffer[26].6 := ;
+//pabyTxBuffer[26].7 := ;
+
+// Tx buffer index 30 and 31 will be for crc
+// calc crc here
+TxCrc := F_Checksum(ADR(pabyTxBuffer), 30);
+// append calc crc to tx buffer
+MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[30]), 
+				pbySrc:=ADR(TxCrc), 
+				dwSize:=2);
+
+// read and write to i2c bus
+IF TransferTrigger THEN
+	I2C_master_Bus2.write(usiAddress:=i2caddress,
+					pbyBuffer:=ADR(pabyTxBuffer),
+					nBufferLen:=transferlentx);
+	I2C_master_Bus2.read(usiAddress:=i2caddress,
+					pbyBuffer:=ADR(pabyRxBuffer),
+					nBufferLen:=transferlenrx);
+END_IF
+
+// copy crc from rx buffer
+MEMUtils.MemCpy(pbyDest:=ADR(RxCrc), 
+				pbySrc:=ADR(pabyRxBuffer[30]), 
+				dwSize:=2);
+
+// compare calc crc with rx crc
+IF RxCrc = F_Checksum(ADR(pabyRxBuffer), 30) THEN
+	// handle inputs
+	// index 0 is for system inputs
+	rx_heartbeat 		:= pabyRxBuffer[0].0;
+	rx_en 				:= pabyRxBuffer[0].1;
+	//rx_   			:= pabyRxBuffer[0].2;
+	//rx_ 				:= pabyRxBuffer[0].3;
+	//rx_ 				:= pabyRxBuffer[0].4;
+	//rx_ 				:= pabyRxBuffer[0].5;
+	//rx_ 				:= pabyRxBuffer[0].6;
+	//rx_ 				:= pabyRxBuffer[0].7;
+	
+ELSE
+	// increment crc mismatch counter
+	ChecksumMisCount := ChecksumMisCount + 1;
+END_IF</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -21536,6 +21401,81 @@ _MoveCommandProcessor(
                 </addData>
               </pou>
             </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="F_Checksum" pouType="function">
+                <interface>
+                  <returnType>
+                    <UINT />
+                  </returnType>
+                  <inputVars>
+                    <variable name="data">
+                      <type>
+                        <pointer>
+                          <baseType>
+                            <BYTE />
+                          </baseType>
+                        </pointer>
+                      </type>
+                    </variable>
+                    <variable name="length">
+                      <type>
+                        <UINT />
+                      </type>
+                    </variable>
+                  </inputVars>
+                  <localVars>
+                    <variable name="curr_crc">
+                      <type>
+                        <UINT />
+                      </type>
+                    </variable>
+                    <variable name="sum1">
+                      <type>
+                        <USINT />
+                      </type>
+                    </variable>
+                    <variable name="sum2">
+                      <type>
+                        <USINT />
+                      </type>
+                    </variable>
+                    <variable name="_i">
+                      <type>
+                        <UINT />
+                      </type>
+                    </variable>
+                    <variable name="_j">
+                      <type>
+                        <UINT />
+                      </type>
+                    </variable>
+                    <variable name="_k">
+                      <type>
+                        <UINT />
+                      </type>
+                    </variable>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// https://www.tutorialspoint.com/cyclic-redundancy-check-crc-in-arduino
+curr_crc := 16#0000;
+sum1 := UINT_TO_USINT(curr_crc);
+sum2 := UINT_TO_USINT(SHR(curr_crc, 8));
+FOR _i:=0 TO length - 1 BY 1 DO
+	sum1 := (sum1 + data[_i]) MOD 255;
+	sum2 := (sum2 + sum1) MOD 255;
+END_FOR
+F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>8c4a2130-c24f-42dc-952f-31bdbb96ab6c</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/union" handleUnknown="implementation">
               <union name="StringByteArray">
                 <variable name="bArray">
@@ -23305,7 +23245,7 @@ _MoveCommandProcessor(
                   </data>
                   <data name="configurations" handleUnknown="discard">
                     <configurations>
-                      <configuration name="I2C_master">
+                      <configuration name="I2C_master_Bus1">
                         <addData>
                           <data name="Device" handleUnknown="discard">
                             <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
@@ -23343,7 +23283,7 @@ _MoveCommandProcessor(
                           </data>
                         </addData>
                       </configuration>
-                      <configuration name="I2C_master_1">
+                      <configuration name="I2C_master_Bus2">
                         <addData>
                           <data name="Device" handleUnknown="discard">
                             <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
@@ -24156,7 +24096,6 @@ _MoveCommandProcessor(
                 <Folder Name="private">
                   <Object Name="_M_HandleDriveIO" ObjectId="1f105a3e-ae48-4de4-9cd3-fada08b1a872" />
                   <Object Name="_M_InitDrives" ObjectId="9031c730-57b8-48ca-b284-2770517ca6ee" />
-                  <Object Name="_M_CalculateCrc" ObjectId="3079feb8-27d2-466b-aa82-f65eb24dfcd2" />
                 </Folder>
                 <Folder Name="public">
                   <Object Name="M_InitDrives" ObjectId="aea6e4c3-5f5a-4eff-ae8a-2de4fd010b88" />
@@ -24166,6 +24105,7 @@ _MoveCommandProcessor(
               <Object Name="_20_Io" ObjectId="c3b19a06-6020-44bc-8c83-cb31670bfa1a">
                 <Folder Name="private">
                   <Object Name="_M_CmdIoMapping" ObjectId="7a603d5b-d7a4-48fb-b4a0-b8a532438cd0" />
+                  <Object Name="_M_HandleRemoteIO" ObjectId="95e27eb3-1cc7-4783-8f9f-46fca05a221d" />
                 </Folder>
               </Object>
               <Object Name="_30_Visu" ObjectId="9462f316-faa5-42b7-be46-708f3ef2e1f0" />
@@ -24537,6 +24477,7 @@ _MoveCommandProcessor(
                 </Object>
                 <Object Name="DUT_GroupStatus" ObjectId="8da24330-28fc-457b-af4f-78411d1da7e7" />
               </Folder>
+              <Object Name="F_Checksum" ObjectId="8c4a2130-c24f-42dc-952f-31bdbb96ab6c" />
             </Folder>
             <Folder Name="GVL">
               <Object Name="GVL" ObjectId="1430d1bd-aa92-442c-bf72-190d0e907494" />
@@ -24566,8 +24507,8 @@ _MoveCommandProcessor(
           </Object>
           <Object Name="SPI" ObjectId="ab0b7e43-88f3-412a-8ad5-c024c7dfcf48" />
           <Object Name="I²C" ObjectId="c2edcee5-4e0d-445e-b13d-3228dc92e777">
-            <Object Name="I2C_master" ObjectId="0d68f8a7-0c8b-4cf2-b293-138cca1d9584" />
-            <Object Name="I2C_master_1" ObjectId="106bf2de-1790-4fa9-beb8-3ed0788c8a1e">
+            <Object Name="I2C_master_Bus1" ObjectId="0d68f8a7-0c8b-4cf2-b293-138cca1d9584" />
+            <Object Name="I2C_master_Bus2" ObjectId="106bf2de-1790-4fa9-beb8-3ed0788c8a1e">
               <Object Name="Adafruit_PWM" ObjectId="99583010-7870-4ffd-80d0-4fcc781d22de">
                 <Object Name="AdafruitPwm01" ObjectId="2182a2d1-7df5-495b-8c4b-608638e832d5" />
                 <Object Name="AdafruitPwm02" ObjectId="e805981a-0706-4f9f-a4b4-7a048e65c79f" />
