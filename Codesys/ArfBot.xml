@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-05-02T23:30:10.1803644" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-02T23:24:26.4520552">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-05-05T11:39:49.2587716" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-05T11:08:25.7311039">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -4178,28 +4178,7 @@ FirstScan := FALSE;</xhtml>
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">(*                    DMT542T Stepper Driver
-	Pulse and Direction Connection:
-	(1) Optically isolated, high level 4.5-5V or 24V, low voltage 0-0.5V
-	(2) Maximum 200 KHz input frequency
-	(3) The width of PUL signal is at least 2.5μs, duty cycle is recommended 50%
-	(4) DIR signal requires advance PUL signal minimum 5 μs in single pulse mode
-	(5) The factory setting of control signal voltage is 24V, must need to set S2 (figure 2) if it is 5V
-	
-	Enable Connection: (default no connection)
-	(1) Optically isolated, differential.
-	(2) Disable the drive by 4.5- 24V input connection; enable the drive by 0-0.5V connection (3) ENA signal requires advance DIR signal minimum 5μs in single pulse mode
-	(4) Enable time to be at least 200ms
-*)
-(*
-	J1 - 400 steps per revolution
-	J2 - 400 steps per revolution
-	J3 - 400 steps per revolution
-	J4 - 400 steps per revolution
-	J5 - 800 steps per revolution
-	J6 - 400 steps per revolution
-*)
-
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
 //
 HeartbeatOn(in:=NOT HeartbeatOff.Q,PT:=HeartbeatPt);
 HeartbeatOff(in:=HeartbeatOn.Q,PT:=HeartbeatPt);
@@ -4322,13 +4301,13 @@ ELSE
 	CrcMisCount := CrcMisCount + 1;
 END_IF
 
-//
+// https://docs.google.com/spreadsheets/d/1S5TOxwbAx8pTMUdoWMnyC9WPfphhtUME/edit#gid=595805457
 SM_Drive_PosControl_J1.in.dwActPosition := DINT_TO_DWORD(EncPosition[0]);
 SM_Drive_PosControl_J2.in.dwActPosition := DINT_TO_DWORD(EncPosition[1]);
 SM_Drive_PosControl_J3.in.dwActPosition := DINT_TO_DWORD(EncPosition[2]);
-SM_Drive_PosControl_J4.in.dwActPosition := DINT_TO_DWORD(EncPosition[3]);
+SM_Drive_PosControl_J4.in.dwActPosition := DINT_TO_DWORD(EncPosition[3]); // spec sheet is wrong. ratio is 16:1
 SM_Drive_PosControl_J5.in.dwActPosition := DINT_TO_DWORD(EncPosition[4]);
-SM_Drive_PosControl_J6.in.dwActPosition := DINT_TO_DWORD(EncPosition[5]);
+SM_Drive_PosControl_J6.in.dwActPosition := DINT_TO_DWORD(EncPosition[5]); // spec sheet for ratio is wrong its not 19+38/187 it is 20+38/187
 
 //
 IF FirstScan THEN
@@ -13778,8 +13757,8 @@ SUPER^._UnitMode.Reset();</xhtml>
                       <addData>
                         <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                           <Attributes>
-                            <Attribute Name="noinit" />
                             <Attribute Name="instance-path" Value="" />
+                            <Attribute Name="noinit" />
                           </Attributes>
                         </data>
                       </addData>
@@ -22605,19 +22584,19 @@ _MoveCommandProcessor(
                                       <Description />
                                       <Parameter ParameterId="1051" type="std:DWORD" IndexInDevDesc="17">
                                         <Attributes />
-                                        <Value name="_x0031_051" visiblename="dwRatioTechUnitsDenom" desc="conversion inc./tech.units denominator">6409</Value>
+                                        <Value name="_x0031_051" visiblename="dwRatioTechUnitsDenom" desc="conversion inc./tech.units denominator">4480</Value>
                                         <Name>dwRatioTechUnitsDenom</Name>
                                         <Description>conversion inc./tech.units denominator</Description>
                                       </Parameter>
                                       <Parameter ParameterId="1052" type="std:DINT" IndexInDevDesc="18">
                                         <Attributes />
-                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">15</Value>
+                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">9</Value>
                                         <Name>iRatioTechUnitsNum</Name>
                                         <Description>conversion inc./tech.units numerator</Description>
                                       </Parameter>
                                       <Parameter ParameterId="5000" type="std:DINT" IndexInDevDesc="19">
                                         <Attributes />
-                                        <Value name="_x0035_000" visiblename="ScalingIncs">153816</Value>
+                                        <Value name="_x0035_000" visiblename="ScalingIncs">4000</Value>
                                         <Name>ScalingIncs</Name>
                                       </Parameter>
                                       <Parameter ParameterId="5001" type="std:DINT" IndexInDevDesc="20">
@@ -22627,12 +22606,12 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="5002" type="std:DINT" IndexInDevDesc="21">
                                         <Attributes />
-                                        <Value name="_x0035_002" visiblename="ScalingMotorTurns2">1</Value>
+                                        <Value name="_x0035_002" visiblename="ScalingMotorTurns2">224</Value>
                                         <Name>ScalingMotorTurns2</Name>
                                       </Parameter>
                                       <Parameter ParameterId="5003" type="std:DINT" IndexInDevDesc="22">
                                         <Attributes />
-                                        <Value name="_x0035_003" visiblename="ScalingGearOutput1">1</Value>
+                                        <Value name="_x0035_003" visiblename="ScalingGearOutput1">5</Value>
                                         <Name>ScalingGearOutput1</Name>
                                       </Parameter>
                                       <Parameter ParameterId="5004" type="std:DINT" IndexInDevDesc="23">
@@ -23125,19 +23104,19 @@ _MoveCommandProcessor(
                                       <Description />
                                       <Parameter ParameterId="1051" type="std:DWORD" IndexInDevDesc="17">
                                         <Attributes />
-                                        <Value name="_x0031_051" visiblename="dwRatioTechUnitsDenom" desc="conversion inc./tech.units denominator">76813</Value>
+                                        <Value name="_x0031_051" visiblename="dwRatioTechUnitsDenom" desc="conversion inc./tech.units denominator">10775</Value>
                                         <Name>dwRatioTechUnitsDenom</Name>
                                         <Description>conversion inc./tech.units denominator</Description>
                                       </Parameter>
                                       <Parameter ParameterId="1052" type="std:DINT" IndexInDevDesc="18">
                                         <Attributes />
-                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">360</Value>
+                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">48</Value>
                                         <Name>iRatioTechUnitsNum</Name>
                                         <Description>conversion inc./tech.units numerator</Description>
                                       </Parameter>
                                       <Parameter ParameterId="5000" type="std:DINT" IndexInDevDesc="19">
                                         <Attributes />
-                                        <Value name="_x0035_000" visiblename="ScalingIncs">76813</Value>
+                                        <Value name="_x0035_000" visiblename="ScalingIncs">4000</Value>
                                         <Name>ScalingIncs</Name>
                                       </Parameter>
                                       <Parameter ParameterId="5001" type="std:DINT" IndexInDevDesc="20">
@@ -23147,12 +23126,12 @@ _MoveCommandProcessor(
                                       </Parameter>
                                       <Parameter ParameterId="5002" type="std:DINT" IndexInDevDesc="21">
                                         <Attributes />
-                                        <Value name="_x0035_002" visiblename="ScalingMotorTurns2">1</Value>
+                                        <Value name="_x0035_002" visiblename="ScalingMotorTurns2">1293</Value>
                                         <Name>ScalingMotorTurns2</Name>
                                       </Parameter>
                                       <Parameter ParameterId="5003" type="std:DINT" IndexInDevDesc="22">
                                         <Attributes />
-                                        <Value name="_x0035_003" visiblename="ScalingGearOutput1">1</Value>
+                                        <Value name="_x0035_003" visiblename="ScalingGearOutput1">64</Value>
                                         <Name>ScalingGearOutput1</Name>
                                       </Parameter>
                                       <Parameter ParameterId="5004" type="std:DINT" IndexInDevDesc="23">
@@ -23269,222 +23248,9 @@ _MoveCommandProcessor(
                   </data>
                 </addData>
               </configuration>
-              <configuration name="GPIOs_B_Pi2">
+              <configuration name="&lt;Empty&gt;">
                 <addData>
-                  <data name="Device" handleUnknown="discard">
-                    <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
-                      <DeviceType>
-                        <DeviceIdentification>
-                          <Type>504</Type>
-                          <Id>0000 0001</Id>
-                          <Version>4.11.0.0</Version>
-                        </DeviceIdentification>
-                        <Connector moduleType="504" role="child" interface="Raspberry.GPIOs" connectorId="1">
-                          <HostParameterSet>
-                            <Parameter ParameterId="4" type="local:GPIOType" IndexInDevDesc="0">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0034_" visiblename="GPIO4" onlineaccess="read" desc="configuration of GPIO4">2#000</Value>
-                              <Name>GPIO4</Name>
-                              <Description>configuration of GPIO4</Description>
-                            </Parameter>
-                            <Parameter ParameterId="5" type="local:GPIOType" IndexInDevDesc="1">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0035_" visiblename="GPIO5" onlineaccess="read" desc="configuration of GPIO5">2#000</Value>
-                              <Name>GPIO5</Name>
-                              <Description>configuration of GPIO5</Description>
-                            </Parameter>
-                            <Parameter ParameterId="6" type="local:GPIOType" IndexInDevDesc="2">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0036_" visiblename="GPIO6" onlineaccess="read" desc="configuration of GPIO6">2#000</Value>
-                              <Name>GPIO6</Name>
-                              <Description>configuration of GPIO6</Description>
-                            </Parameter>
-                            <Parameter ParameterId="12" type="local:GPIOType" IndexInDevDesc="3">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0031_2" visiblename="GPIO12" onlineaccess="read" desc="configuration of GPIO12">2#001</Value>
-                              <Name>GPIO12</Name>
-                              <Description>configuration of GPIO12</Description>
-                            </Parameter>
-                            <Parameter ParameterId="13" type="local:GPIOType" IndexInDevDesc="4">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0031_3" visiblename="GPIO13" onlineaccess="read" desc="configuration of GPIO13">2#000</Value>
-                              <Name>GPIO13</Name>
-                              <Description>configuration of GPIO13</Description>
-                            </Parameter>
-                            <Parameter ParameterId="16" type="local:GPIOType" IndexInDevDesc="5">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0031_6" visiblename="GPIO16" onlineaccess="read" desc="configuration of GPIO16">2#001</Value>
-                              <Name>GPIO16</Name>
-                              <Description>configuration of GPIO16</Description>
-                            </Parameter>
-                            <Parameter ParameterId="17" type="local:GPIOType" IndexInDevDesc="6">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0031_7" visiblename="GPIO17" onlineaccess="read" desc="configuration of GPIO17">2#000</Value>
-                              <Name>GPIO17</Name>
-                              <Description>configuration of GPIO17</Description>
-                            </Parameter>
-                            <Parameter ParameterId="18" type="local:GPIOType" IndexInDevDesc="7">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0031_8" visiblename="GPIO18" onlineaccess="read" desc="configuration of GPIO18">2#001</Value>
-                              <Name>GPIO18</Name>
-                              <Description>configuration of GPIO18</Description>
-                            </Parameter>
-                            <Parameter ParameterId="19" type="local:GPIOType" IndexInDevDesc="8">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0031_9" visiblename="GPIO19" onlineaccess="read" desc="configuration of GPIO19">255</Value>
-                              <Name>GPIO19</Name>
-                              <Description>configuration of GPIO19</Description>
-                            </Parameter>
-                            <Parameter ParameterId="20" type="local:GPIOType" IndexInDevDesc="9">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0032_0" visiblename="GPIO20" onlineaccess="read" desc="configuration of GPIO20">2#001</Value>
-                              <Name>GPIO20</Name>
-                              <Description>configuration of GPIO20</Description>
-                            </Parameter>
-                            <Parameter ParameterId="21" type="local:GPIOType" IndexInDevDesc="10">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0032_1" visiblename="GPIO21" onlineaccess="read" desc="configuration of GPIO21">2#001</Value>
-                              <Name>GPIO21</Name>
-                              <Description>configuration of GPIO21</Description>
-                            </Parameter>
-                            <Parameter ParameterId="22" type="local:GPIOType" IndexInDevDesc="11">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0032_2" visiblename="GPIO22" onlineaccess="read" desc="configuration of GPIO22">2#000</Value>
-                              <Name>GPIO22</Name>
-                              <Description>configuration of GPIO22</Description>
-                            </Parameter>
-                            <Parameter ParameterId="23" type="local:GPIOType" IndexInDevDesc="12">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0032_3" visiblename="GPIO23" onlineaccess="read" desc="configuration of GPIO23">2#001</Value>
-                              <Name>GPIO23</Name>
-                              <Description>configuration of GPIO23</Description>
-                            </Parameter>
-                            <Parameter ParameterId="24" type="local:GPIOType" IndexInDevDesc="13">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0032_4" visiblename="GPIO24" onlineaccess="read" desc="configuration of GPIO24">2#001</Value>
-                              <Name>GPIO24</Name>
-                              <Description>configuration of GPIO24</Description>
-                            </Parameter>
-                            <Parameter ParameterId="25" type="local:GPIOType" IndexInDevDesc="14">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0032_5" visiblename="GPIO25" onlineaccess="read" desc="configuration of GPIO25">2#001</Value>
-                              <Name>GPIO25</Name>
-                              <Description>configuration of GPIO25</Description>
-                            </Parameter>
-                            <Parameter ParameterId="26" type="local:GPIOType" IndexInDevDesc="15">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0032_6" visiblename="GPIO26" onlineaccess="read" desc="configuration of GPIO26">2#000</Value>
-                              <Name>GPIO26</Name>
-                              <Description>configuration of GPIO26</Description>
-                            </Parameter>
-                            <Parameter ParameterId="27" type="local:GPIOType" IndexInDevDesc="16">
-                              <Attributes onlineaccess="read" />
-                              <Value name="_x0032_7" visiblename="GPIO27" onlineaccess="read" desc="configuration of GPIO27">2#000</Value>
-                              <Name>GPIO27</Name>
-                              <Description>configuration of GPIO27</Description>
-                            </Parameter>
-                            <Parameter ParameterId="1000" type="local:BITFIELD_GPIO" IndexInDevDesc="17">
-                              <Attributes channel="input" />
-                              <Value name="_x0031_000" visiblename="digital inputs (GPIO0..GPIO31)">
-                                <Element name="Bit0" visiblename="Bit0" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit1" visiblename="Bit1" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit2" visiblename="Bit2" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit3" visiblename="Bit3" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit4" visiblename="Bit4" onlineaccess="read" />
-                                <Element name="Bit5" visiblename="Bit5" onlineaccess="read" />
-                                <Element name="Bit6" visiblename="Bit6" onlineaccess="read" />
-                                <Element name="Bit7" visiblename="Bit7" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit8" visiblename="Bit8" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit9" visiblename="Bit9" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit10" visiblename="Bit10" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit11" visiblename="Bit11" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit12" visiblename="Bit12" onlineaccess="read" />
-                                <Element name="Bit13" visiblename="Bit13" onlineaccess="read" />
-                                <Element name="Bit14" visiblename="Bit14" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit15" visiblename="Bit15" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit16" visiblename="Bit16" onlineaccess="read" />
-                                <Element name="Bit17" visiblename="Bit17" onlineaccess="read" />
-                                <Element name="Bit18" visiblename="Bit18" onlineaccess="read" />
-                                <Element name="Bit19" visiblename="Bit19" onlineaccess="read" />
-                                <Element name="Bit20" visiblename="Bit20" onlineaccess="read" />
-                                <Element name="Bit21" visiblename="Bit21" onlineaccess="read" />
-                                <Element name="Bit22" visiblename="Bit22" onlineaccess="read" />
-                                <Element name="Bit23" visiblename="Bit23" onlineaccess="read" />
-                                <Element name="Bit24" visiblename="Bit24" onlineaccess="read" />
-                                <Element name="Bit25" visiblename="Bit25" onlineaccess="read" />
-                                <Element name="Bit26" visiblename="Bit26" onlineaccess="read" />
-                                <Element name="Bit27" visiblename="Bit27" onlineaccess="read" />
-                                <Element name="Bit28" visiblename="Bit28" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit29" visiblename="Bit29" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit30" visiblename="Bit30" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit31" visiblename="Bit31" offlineaccess="none" onlineaccess="none" />
-                              </Value>
-                              <Name>digital inputs (GPIO0..GPIO31)</Name>
-                              <Mapping>
-                                <Element name="Bit4">Application.GVL.DigitalInput[0]</Element>
-                                <Element name="Bit5">Application.GVL.DigitalInput[1]</Element>
-                                <Element name="Bit6">Application.GVL.DigitalInput[2]</Element>
-                                <Element name="Bit13">Application.GVL.DigitalInput[3]</Element>
-                                <Element name="Bit17">Application.GVL.DigitalInput[4]</Element>
-                                <Element name="Bit22">Application.GVL.DigitalInput[5]</Element>
-                                <Element name="Bit26">Application.GVL.DigitalInput[6]</Element>
-                                <Element name="Bit27">Application.GVL.DigitalInput[7]</Element>
-                              </Mapping>
-                            </Parameter>
-                            <Parameter ParameterId="2000" type="local:BITFIELD_GPIO" IndexInDevDesc="18">
-                              <Attributes channel="output" />
-                              <Value name="_x0032_000" visiblename="digital outputs (GPIO0..GPIO31)">
-                                <Element name="Bit0" visiblename="Bit0" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit1" visiblename="Bit1" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit2" visiblename="Bit2" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit3" visiblename="Bit3" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit4" visiblename="Bit4" onlineaccess="read" />
-                                <Element name="Bit5" visiblename="Bit5" onlineaccess="read" />
-                                <Element name="Bit6" visiblename="Bit6" onlineaccess="read" />
-                                <Element name="Bit7" visiblename="Bit7" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit8" visiblename="Bit8" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit9" visiblename="Bit9" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit10" visiblename="Bit10" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit11" visiblename="Bit11" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit12" visiblename="Bit12" onlineaccess="read" />
-                                <Element name="Bit13" visiblename="Bit13" onlineaccess="read" />
-                                <Element name="Bit14" visiblename="Bit14" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit15" visiblename="Bit15" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit16" visiblename="Bit16" onlineaccess="read" />
-                                <Element name="Bit17" visiblename="Bit17" onlineaccess="read" />
-                                <Element name="Bit18" visiblename="Bit18" onlineaccess="read" />
-                                <Element name="Bit19" visiblename="Bit19" onlineaccess="read" />
-                                <Element name="Bit20" visiblename="Bit20" onlineaccess="read" />
-                                <Element name="Bit21" visiblename="Bit21" onlineaccess="read" />
-                                <Element name="Bit22" visiblename="Bit22" onlineaccess="read" />
-                                <Element name="Bit23" visiblename="Bit23" onlineaccess="read" />
-                                <Element name="Bit24" visiblename="Bit24" onlineaccess="read" />
-                                <Element name="Bit25" visiblename="Bit25" onlineaccess="read" />
-                                <Element name="Bit26" visiblename="Bit26" onlineaccess="read" />
-                                <Element name="Bit27" visiblename="Bit27" onlineaccess="read" />
-                                <Element name="Bit28" visiblename="Bit28" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit29" visiblename="Bit29" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit30" visiblename="Bit30" offlineaccess="none" onlineaccess="none" />
-                                <Element name="Bit31" visiblename="Bit31" offlineaccess="none" onlineaccess="none" />
-                              </Value>
-                              <Name>digital outputs (GPIO0..GPIO31)</Name>
-                              <Mapping>
-                                <Element name="Bit12">Application.GVL.DigitalOutput[0]</Element>
-                                <Element name="Bit16">Application.GVL.DigitalOutput[1]</Element>
-                                <Element name="Bit18">Application.GVL.DigitalOutput[2]</Element>
-                                <Element name="Bit20">Application.GVL.DigitalOutput[3]</Element>
-                                <Element name="Bit21">Application.GVL.DigitalOutput[4]</Element>
-                                <Element name="Bit23">Application.GVL.DigitalOutput[5]</Element>
-                                <Element name="Bit24">Application.GVL.DigitalOutput[6]</Element>
-                                <Element name="Bit25">Application.GVL.DigitalOutput[7]</Element>
-                              </Mapping>
-                            </Parameter>
-                          </HostParameterSet>
-                        </Connector>
-                        <DeviceParameterSet />
-                      </DeviceType>
-                    </Device>
-                  </data>
+                  <data name="Device" handleUnknown="discard" />
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>1d76930d-dbe3-4129-812f-57306b665b04</ObjectId>
                   </data>
@@ -24793,7 +24559,7 @@ _MoveCommandProcessor(
             <Object Name="SM_Drive_PosControl_J5" ObjectId="8e6e96ef-66e6-4d72-a717-6ed80b7f1646" />
             <Object Name="SM_Drive_PosControl_J6" ObjectId="90c3ab61-cd9a-4b37-bdc1-631c2a20f394" />
           </Object>
-          <Object Name="GPIOs_B_Pi2" ObjectId="1d76930d-dbe3-4129-812f-57306b665b04" />
+          <Object Name="&lt;Empty&gt;" ObjectId="1d76930d-dbe3-4129-812f-57306b665b04" />
           <Object Name="Onewire" ObjectId="aeb0c6fd-1757-44be-b1c8-b73c4e8df34b" />
           <Object Name="Camera device" ObjectId="4da383cb-6693-45c8-bc67-395a66a39986">
             <Object Name="&lt;Empty&gt;" ObjectId="b91cf46f-75cf-4d77-9b22-4d133d910165" />

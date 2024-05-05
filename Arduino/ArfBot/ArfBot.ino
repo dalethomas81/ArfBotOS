@@ -334,14 +334,18 @@ void handleRx(){
         }
       }
 
-      // all drive are 200 pulses per revolution but we microstep so these are higher
-      // need to multiply the gear ration by ppr to get the desired output translation
+      // https://docs.google.com/spreadsheets/d/1S5TOxwbAx8pTMUdoWMnyC9WPfphhtUME/edit#gid=595805457
+      // all drives are 200 pulses per revolution but we microstep so these are higher
+      // need to multiply the gear ratio by ppr to get the desired output translation
       J1.run(SetVelocity[0].fval, 10 * (60/15) * 400); // gear * pulley * ppr
       J2.run(SetVelocity[1].fval, 50 * 400);
       J3.run(SetVelocity[2].fval, 50 * 400);
-      J4.run(SetVelocity[3].fval, (3969/289) * (28/10) * 600); // gear * pulley * ppr (note manual shows 400 but its actually 600 ppr)
+      // spec sheet for ratio is wrong its not 13+212/289 it is 16
+      // manual shows 400 but its actually 600 ppr
+      J4.run(SetVelocity[3].fval, 16 * (28/10) * 600); // gear * pulley * ppr
       J5.run(SetVelocity[4].fval, 9.81748 * 800); // 25*pi/8
-      J6.run(SetVelocity[5].fval, (3591/187) * 400); // gear ratio * ppr
+      // spec sheet for ratio is wrong its not 19+38/187 it is 20+38/187
+      J6.run(SetVelocity[5].fval, (1293/64) * 400); // gear ratio * ppr
 
       //I2C_RxBuffer[25]
       
