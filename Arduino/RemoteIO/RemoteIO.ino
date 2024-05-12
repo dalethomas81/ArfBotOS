@@ -9,20 +9,49 @@ unsigned long timer1, timer1_last;
 uint8_t I2C_TxBuffer[32]; // i2c has max 32 byte
 uint8_t I2C_RxBuffer[32]; // i2c has max 32 byte
 
-const int input0Pin = 0;
-const int input1Pin = 1;
-const int input2Pin = 2;
-const int input3Pin = 3;
-const int output0Pin = 4;
-const int output1Pin = 5;
-const int output2Pin = 6;
-const int output3Pin = 7;
-const int HeartbeatLed = 13;
-
-// NOTE: make sure to use external pullup resistors for i2c pins
-// 4.7k or 10k will work
-// pin 18 reserved for i2c
-// pin 19 reserved for i2c
+// https://www.pjrc.com/teensy/pinout.html
+const int input0Pin = 0; // D0 | PWM | RX1
+const int input1Pin = 1; // D1 | PWM | TX1
+const int input2Pin = 2; // D2 | PWM
+const int input3Pin = 3; // D3 | PWM
+const int output0Pin = 4; // D4 | PWM
+const int output1Pin = 5; // D5 | PWM
+const int output2Pin = 6; // D6 | PWM
+const int output3Pin = 7; // D7 | PWM | RX2
+const int pwm0Pin = 8; // D8 | PWM | TX2
+const int pwm1Pin = 9; // D9 | PWM
+const int pwm2Pin = 10; // D10 | PWM
+const int pwm3Pin = 11; // D11 | PWM
+//const int  = 12; // D12 | PWM
+const int HeartbeatLed = 13; // D13 | PWM | LED
+//const int  = 14; // D14 | A0 | PWM | TX3
+//const int  = 15; // D15 | A1 | PWM | RX3
+//const int  = 16; // D16 | A2 | SCL1 | RX4
+//const int  = 17; // D17 | A3 | SDA1 | TX4
+//const int  = 18; // D18 | A4 | PWM | SDA | RESERVED FOR I2C
+//const int  = 19; // D19 | A5 | PWM | SCL | RESERVED FOR I2C
+//const int  = 20; // D20 | A6 | TX5
+//const int  = 21; // D21 | A7 | RX5
+//const int  = 22; // D22 | A8 | PWM
+//const int  = 23; // D23 | A9 | PWM
+//const int  = 24; // D24 | A10 | PWM | SCL2 | TX6
+//const int  = 25; // D25 | A11 | PWM | SDA2 | RX6
+//const int  = 26; // D26 | A12 | 
+//const int  = 27; // D27 | A13 | 
+//const int  = 28; // D28 | PWM | RX7
+//const int  = 29; // D29 | PWM | TX7
+//const int  = 30; // D30 | 
+//const int  = 31; // D31 | 
+//const int  = 32; // D32 | 
+//const int  = 33; // D33 | PWM
+//const int  = 34; // D34 | RX8
+//const int  = 35; // D35 | TX8
+//const int  = 36; // D36 | PWM
+//const int  = 37; // D37 | PWM
+//const int  = 38; // D38 | A14
+//const int  = 39; // D39 | A15
+//const int  = 40; // D40 | A16
+//const int  = 41; // D41 | A17
 
 union u_crc {
   uint8_t b[2];
@@ -44,6 +73,9 @@ InputDebounced input1(input1Pin, INPUT_PULLUP, 1);
 InputDebounced input2(input2Pin, INPUT_PULLUP, 1);
 InputDebounced input3(input3Pin, INPUT_PULLUP, 1);
 
+Servo Pwm0, Pwm1, Pwm2, Pwm3;
+uint8_t rx_Pwm0, rx_Pwm1, rx_Pwm2, rx_Pwm3;
+
 bool tx_input0, tx_input1, tx_input2, tx_input3;
 bool rx_output0, rx_output1, rx_output2, rx_output3;
 
@@ -53,28 +85,38 @@ void setup() {
   Wire.onReceive(receiveEvent); // register event
   Wire.onRequest(requestEvent);
   
-  Serial.begin(115200);           // start serial for output
+  Serial.begin(115200); // start serial for output
 
   timer1 = millis();
   timer1_last = timer1;
   
+  //
   input0.init();
   input1.init();
   input2.init();
   input3.init();
 
+  //
   pinMode(output0Pin, OUTPUT); digitalWriteFast(output0Pin, HIGH);
   pinMode(output1Pin, OUTPUT); digitalWriteFast(output1Pin, HIGH);
   pinMode(output2Pin, OUTPUT); digitalWriteFast(output2Pin, HIGH);
   pinMode(output3Pin, OUTPUT); digitalWriteFast(output3Pin, HIGH);
 
+  //
   pinMode(HeartbeatLed, OUTPUT); digitalWriteFast(HeartbeatLed, LOW);
+
+  //
+  Pwm0.attach(pwm0Pin);
+  Pwm1.attach(pwm1Pin);
+  Pwm2.attach(pwm2Pin);
+  Pwm3.attach(pwm3Pin);
   
 }
 
 bool tx_heartbeat, rx_heartbeat, rx_heartbeat_last, rx_heartbeat_lost;
 bool tx_en, rx_en, rx_en_last;
 unsigned long rx_heartb_wdog, rx_heartb_wdog_last;
+bool OutputsEnabled;
 void loop() {
 
   handleTx();
@@ -93,14 +135,15 @@ void loop() {
   if (rx_heartb_wdog - rx_heartb_wdog_last > 2000){
     // heartbeat from master controller was lost
     rx_heartbeat_lost = true;
+    digitalWriteFast(HeartbeatLed, LOW);
   }
 
   if (rx_en != rx_en_last || rx_heartbeat_lost){
     rx_en_last = rx_en;
     if (rx_en && !rx_heartbeat_lost){
-      //
+      OutputsEnabled = true;
     } else {
-      //
+      OutputsEnabled = false;
     }
   }
 
@@ -191,14 +234,19 @@ void handleRx(){
       //rx_ = I2C_RxBuffer[0] & B01000000;
       //rx_ = I2C_RxBuffer[0] & B10000000;
       
-      rx_output0 = I2C_RxBuffer[26] & B00000001;
-      rx_output1 = I2C_RxBuffer[26] & B00000010;
-      rx_output2 = I2C_RxBuffer[26] & B00000100;
-      rx_output3 = I2C_RxBuffer[26] & B00001000;
-      //rx_ = I2C_RxBuffer[26] & B00010000;
-      //rx_ = I2C_RxBuffer[26] & B00100000;
-      //rx_ = I2C_RxBuffer[26] & B01000000;
-      //rx_ = I2C_RxBuffer[26] & B10000000;
+      rx_output0 = I2C_RxBuffer[1] & B00000001;
+      rx_output1 = I2C_RxBuffer[1] & B00000010;
+      rx_output2 = I2C_RxBuffer[1] & B00000100;
+      rx_output3 = I2C_RxBuffer[1] & B00001000;
+      //rx_ = I2C_RxBuffer[1] & B00010000;
+      //rx_ = I2C_RxBuffer[1] & B00100000;
+      //rx_ = I2C_RxBuffer[1] & B01000000;
+      //rx_ = I2C_RxBuffer[1] & B10000000;
+
+      rx_Pwm0 = constrain(I2C_RxBuffer[2], 0 , 180);
+      rx_Pwm1 = constrain(I2C_RxBuffer[3], 0 , 180);
+      rx_Pwm2 = constrain(I2C_RxBuffer[4], 0 , 180);
+      rx_Pwm3 = constrain(I2C_RxBuffer[5], 0 , 180);
       
       //I2C_RxBuffer[27]
       //I2C_RxBuffer[28]
@@ -224,10 +272,43 @@ void handleInputs(){
 
 void handleOutputs(){
 
-  digitalWriteFast(output0Pin, !rx_output0);
-  digitalWriteFast(output1Pin, !rx_output1);
-  digitalWriteFast(output2Pin, !rx_output2);
-  digitalWriteFast(output3Pin, !rx_output3);
+  if (OutputsEnabled){
+    digitalWriteFast(output0Pin, !rx_output0);
+    digitalWriteFast(output1Pin, !rx_output1);
+    digitalWriteFast(output2Pin, !rx_output2);
+    digitalWriteFast(output3Pin, !rx_output3);
+
+    if (Pwm0.attached()){    
+      Pwm0.write(rx_Pwm0);
+    } else {
+      Pwm0.attach(pwm0Pin);
+    }
+    if (Pwm1.attached()){    
+      Pwm1.write(rx_Pwm1);
+    } else {
+      Pwm1.attach(pwm1Pin);
+    }
+    if (Pwm2.attached()){    
+      Pwm2.write(rx_Pwm2);
+    } else {
+      Pwm2.attach(pwm2Pin);
+    }
+    if (Pwm3.attached()){    
+      Pwm3.write(rx_Pwm3);
+    } else {
+      Pwm3.attach(pwm3Pin);
+    }
+  } 
+  else {
+    digitalWriteFast(output0Pin, true);
+    digitalWriteFast(output1Pin, true);
+    digitalWriteFast(output2Pin, true);
+    digitalWriteFast(output3Pin, true);
+    Pwm0.detach();
+    Pwm1.detach();
+    Pwm2.detach();
+    Pwm3.detach();
+  }
 
 }
 

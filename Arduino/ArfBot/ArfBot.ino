@@ -109,6 +109,7 @@ bool rx_output0, rx_output1, rx_output2, rx_output3;
 
 void setup() {
 
+  Wire.setClock(400000);
   Wire.begin(8); // join i2c bus with address 8
   Wire.onReceive(receiveEvent); // register event
   Wire.onRequest(requestEvent);
@@ -306,13 +307,30 @@ void handleTx(){
 
   // tx buffer index 30 and 31 will be for crc
 
+  // calculate checksum and append to tx buffer
+  TxCrc.u = calculateChecksum(I2C_TxBuffer,30);
+  I2C_TxBuffer[30] = TxCrc.b[0];
+  I2C_TxBuffer[31] = TxCrc.b[1];
+
+  //Serial.write(I2C_TxBuffer,32);
+
 }
 
-void handleRx(){
+void handleRx(){  // check if buffer is already being read
   // check if buffer is already being read
-  if (!rxMutex){
+  //if (!rxMutex){
     // lock the rx buffer
     //rxMutex = true;
+    
+    // parse the rx buffer
+    /*int i = 0;
+    while(Serial.available())
+    {
+      I2C_RxBuffer[i++] = Serial.read();
+    }*/
+    // calculate crc of rx buffer
+    RxCrc.u = calculateChecksum(I2C_RxBuffer, 30);
+
     // compare calc crc with rx crc
     if (RxCrc.b[0] == I2C_RxBuffer[30] && RxCrc.b[1] == I2C_RxBuffer[31]) {
       
@@ -367,8 +385,7 @@ void handleRx(){
     
     // unlock the rx buffer
     //rxMutex = false;
-  }
-
+  //}
 }
 
 void handleInputs(){

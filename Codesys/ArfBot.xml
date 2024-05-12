@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-05-05T15:07:47.9645211" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-05T14:31:17.4150746">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-05-12T10:37:04.9116994" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-12T10:00:38.7722121">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -60,7 +60,7 @@
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
                 <TaskSettings KindOfTask="Cyclic" Interval="50" IntervalUnit="µs" WithinSPSTimeSlicing="true">
-                  <Watchdog Enabled="false" TimeUnit="ms" />
+                  <Watchdog Enabled="false" Time="10" TimeUnit="ms" Sensitivity="1" />
                 </TaskSettings>
               </data>
               <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
@@ -99,7 +99,7 @@
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
                 <TaskSettings KindOfTask="Cyclic" Interval="20" IntervalUnit="ms" WithinSPSTimeSlicing="true">
-                  <Watchdog Enabled="false" TimeUnit="ms" Sensitivity="1" />
+                  <Watchdog Enabled="false" Time="10" TimeUnit="ms" Sensitivity="1" />
                 </TaskSettings>
               </data>
               <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
@@ -2999,14 +2999,14 @@ IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
 	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Y := 0.0;
 	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Z := -30.0;
 	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.B := 30.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.B := -30.0;
 	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.C := 0.0;
 	
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.X := 0.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Y := 30.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Z := -30.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.B := -30.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.B := 30.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.C := 0.0;
 		 
 	// decoder
@@ -3022,7 +3022,7 @@ IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
 	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y := 36.74; // J2 initial home offset
 	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z := -59.25; // J3 initial home offset
 	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A := -194.38; // J4 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B := 102.41; // J5 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B := -102.41; // J5 initial home offset
 	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C := 166.611; // J6 initial home offset
 	
 	// set speeds
@@ -3154,6 +3154,7 @@ ProcessPrograms(
 	Flags:=PersistentVars.Flags,
 	AxisGroup:= ArfBotAxisGroup,
 	GroupHandler:= GroupHandler,
+	CmdIO:=GVL.CmdIO,
 	Servo1:= AdafruitPwm01,
 	Servo2:= AdafruitPwm02,
 	Servo3:= AdafruitPwm03,
@@ -4077,13 +4078,81 @@ MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[30]),
 
 // read and write to i2c bus
 IF TransferTrigger THEN
+	
+	
 	I2C_master_Bus1.write(usiAddress:=i2caddress,
 					pbyBuffer:=ADR(pabyTxBuffer),
 					nBufferLen:=transferlentx);
 	I2C_master_Bus1.read(usiAddress:=i2caddress,
 					pbyBuffer:=ADR(pabyRxBuffer),
 					nBufferLen:=transferlenrx);
+	
+	//
+	(*IF Com1Seq = 0 THEN
+		IF hCom &lt;&gt; systypes2.RTS_INVALID_HANDLE THEN
+			Com1Seq := 2;
+		ELSE
+			Com1Seq := 1;
+		END_IF
+	END_IF*)
+	
 END_IF
+
+(*ReadTimeoutTimer(IN:=Com1Seq=3, PT:=ReadTimeout);
+CASE Com1Seq OF
+	0:
+		//Com1Seq := Com1Seq + 1;
+	1:
+		hCom := SysComOpen(sPort:= ComPort , pResult:= ADR(Result));
+		IF hCom &lt;&gt; systypes2.RTS_INVALID_HANDLE THEN
+			// Configure the connection
+			csComSettings.byParity := SYS_NOPARITY;
+			csComSettings.byStopBits := SYS_ONESTOPBIT;
+			csComSettings.sPort := ComPort;
+			csComSettings.ulBaudrate := BaudRate;// SYS_COM_BAUDRATE.SYS_BR_115200;
+			csComSettings.ulBufferSize := 0;
+			csComSettings.ulTimeout := SYS_COM_TIMEOUT.SYS_NOWAIT;
+			Result := SysComSetSettings(hCom:= hCom, pSettings:= ADR(csComSettings) , pSettingsEx:= 0);
+			Com1Seq := Com1Seq + 1;
+		END_IF
+		
+	2:
+		// Write data
+		dwWritten := SysComWrite(
+								hCom:= hCom,
+								pbyBuffer:= ADR(pabyTxBuffer)+dwOffset,	
+								ulSize:= SIZEOF(pabyTxBuffer)-dwOffset,
+								ulTimeout:= 0,
+								pResult:= ADR(Result) );
+								
+		//dwOffset := dwOffset + dwWritten;
+		
+		//IF dwOffset &gt;= SIZEOF(pabyTxBuffer) THEN
+			//Com1Seq := Com1Seq + 1;
+			//dwOffset := 0;
+		//END_IF
+		
+	//3: 
+		//
+		SysComPurge(hCom:=hCom);
+		
+		// Read data
+		dwRead := SysComRead(
+							hCom:= hCom,
+							pbyBuffer:= ADR(pabyRxBuffer),
+							ulSize:= SIZEOF(pabyRxBuffer),
+							ulTimeout:= 5,
+							pResult:= ADR(Result));
+		//IF dwRead &gt;= SIZEOF(pabyRxBuffer) OR ReadTimeoutTimer.Q THEN
+			Com1Seq := 0;
+		//END_IF
+		
+	3:
+		//
+		SysComClose(hCom:=hCom);
+		Com1Seq := 0;
+	
+END_CASE*)
 
 // copy crc from rx buffer
 MEMUtils.MemCpy(pbyDest:=ADR(RxCrc), 
@@ -4197,7 +4266,8 @@ SetVelocity[4] := LREAL_TO_REAL(SM_Drive_PosControl_J5.out.fSetVelocity / 360.0)
 SetVelocity[5] := LREAL_TO_REAL(SM_Drive_PosControl_J6.out.fSetVelocity / 360.0);
 
 tx_en := GVL.PowerOn;
-</xhtml>
+
+FirstScan := FALSE;</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -4287,7 +4357,7 @@ CASE _Step OF
 			IF DefaultDriveParameters THEN
 				DefaultDriveParameters := FALSE;
 				FOR _i:=GVL.POSCONT_ARR_BEG TO GVL.POSCONT_ARR_END BY 1 DO
-					PersistentVars.PositionControllers[_i].fKp := 0.01;
+					PersistentVars.PositionControllers[_i].fKp := 0.03;
 					PersistentVars.PositionControllers[_i].fPartVelPilotControl := 1.0; // 0-1
 					PersistentVars.PositionControllers[_i].fDeadTime := 2.0;
 					PersistentVars.PositionControllers[_i].fMaxPositionDiff := 0.0;
@@ -5413,6 +5483,11 @@ END_IF</xhtml>
                         <derived name="FB_GroupHandler" />
                       </type>
                     </variable>
+                    <variable name="CmdIO">
+                      <type>
+                        <derived name="ST_LogicCmdIO" />
+                      </type>
+                    </variable>
                     <variable name="Servo1">
                       <type>
                         <derived name="AXIS_REF_SM3" />
@@ -5709,7 +5784,7 @@ _ProcessOutputCommand(
 	StoredPositions:= SUPER^.StoredPositions,
 	VisionRegisters:= SUPER^.VisionRegisters,
 	Flags:= SUPER^.Flags,
-	Outputs:= GVL.DigitalOutput,
+	Outputs:= CmdIO.Output,
 	Servo1:= Servo1, 
 	Servo2:= Servo2, 
 	Servo3:= Servo3, 
@@ -5753,7 +5828,7 @@ _ProcessLogicCommand(
 	ItfUnitMode=&gt;, 
 	Error=&gt; , 
 	ErrorDescription=&gt; , 
-	CmdIO:= GVL.CmdIO);
+	CmdIO:= CmdIO);
 	
 _FirstScan := FALSE;</xhtml>
                   </ST>
@@ -7118,14 +7193,14 @@ END_FOR*)
 //pabyTxBuffer[25]:=;
 
 //
-//pabyTxBuffer[26].0 := ;
-//pabyTxBuffer[26].1 := ;
-//pabyTxBuffer[26].2 := ;
-//pabyTxBuffer[26].3 := ;
-//pabyTxBuffer[26].4 := ;
-//pabyTxBuffer[26].5 := ;
-//pabyTxBuffer[26].6 := ;
-//pabyTxBuffer[26].7 := ;
+pabyTxBuffer[1].0 := GVL.DigitalOutput[0];
+pabyTxBuffer[1].1 := GVL.DigitalOutput[1];
+pabyTxBuffer[1].2 := GVL.DigitalOutput[2];
+pabyTxBuffer[1].3 := GVL.DigitalOutput[3];
+pabyTxBuffer[1].4 := GVL.DigitalOutput[4];
+pabyTxBuffer[1].5 := GVL.DigitalOutput[5];
+pabyTxBuffer[1].6 := GVL.DigitalOutput[6];
+pabyTxBuffer[1].7 := GVL.DigitalOutput[7];
 
 // Tx buffer index 30 and 31 will be for crc
 // calc crc here
@@ -13622,8 +13697,8 @@ SUPER^._UnitMode.Reset();</xhtml>
                       <addData>
                         <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                           <Attributes>
-                            <Attribute Name="instance-path" Value="" />
                             <Attribute Name="noinit" />
+                            <Attribute Name="instance-path" Value="" />
                           </Attributes>
                         </data>
                       </addData>
@@ -16808,6 +16883,11 @@ END_IF</xhtml>
                         <derived name="FB_GroupHandler" />
                       </type>
                     </variable>
+                    <variable name="CmdIO">
+                      <type>
+                        <derived name="ST_LogicCmdIO" />
+                      </type>
+                    </variable>
                     <variable name="Servo1">
                       <type>
                         <derived name="AXIS_REF_SM3" />
@@ -17054,6 +17134,7 @@ _ProcessCommands(
 	Flags:=SUPER^.Flags,
 	AxisGroup:= AxisGroup,
 	GroupHandler:= GroupHandler,
+	CmdIO:=CmdIO,
 	Servo1:= Servo1,
 	Servo2:= Servo2,
 	Servo3:= Servo3,
@@ -21162,7 +21243,7 @@ _SMC_Homing_J5(
 	fAcceleration:= _HomingAcceleration, 
 	fDeceleration:= _HomingAcceleration,
 	fJerk:= _HomingJerk, 
-	nDirection:= MC_Direction.negative, 
+	nDirection:= MC_Direction.positive, 
 	bReferenceSwitch:= NOT J5_Limit, 
 	fSignalDelay:= , 
 	nHomingMode:= , 
@@ -21550,6 +21631,8 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                 <Library Name="#VisuUtils" Namespace="VU" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="Visu Utils, * (System)" />
                 <Library Name="#OMAC_PackML_State_Machine" Namespace="PACK_ML" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="OMAC PackML State Machine, * (3S - Smart Software Solutions GmbH)" />
                 <Library Name="IoDrvGPIO, 4.11.0.0 (CODESYS)" Namespace="IoDrvGPIO" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" />
+                <Library Name="Serial Communication, 3.5.17.0 (3S - Smart Software Solutions GmbH)" Namespace="Serial_Communication" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+                <Library Name="#SysCom" Namespace="SysCom" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="SysCom, * (System)" />
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>80af59fb-8d62-4f6c-95b0-580a98d81b1e</ObjectId>
@@ -22790,7 +22873,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1052" type="std:DINT" IndexInDevDesc="18">
                                         <Attributes />
-                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">36</Value>
+                                        <Value name="_x0031_052" visiblename="iRatioTechUnitsNum" desc="conversion inc./tech.units numerator">-36</Value>
                                         <Name>iRatioTechUnitsNum</Name>
                                         <Description>conversion inc./tech.units numerator</Description>
                                       </Parameter>
@@ -22826,7 +22909,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="5006" type="std:BOOL" IndexInDevDesc="25">
                                         <Attributes />
-                                        <Value name="_x0035_006" visiblename="InvertDirection">FALSE</Value>
+                                        <Value name="_x0035_006" visiblename="InvertDirection">TRUE</Value>
                                         <Name>InvertDirection</Name>
                                       </Parameter>
                                     </ParameterSection>
