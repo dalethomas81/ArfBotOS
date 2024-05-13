@@ -337,6 +337,9 @@ def handle_connection(connection):
         disconnect_controller = False
         
         #
+        start = time.time()
+        
+        #
         while not disconnect_controller:
             
             try:
@@ -370,17 +373,19 @@ def handle_connection(connection):
                 while not disconnect_controller:
                     
                     #
-                    time.sleep(0.1) # take a nap so you dont overload the cpu
+                    time.sleep(0.01) # take a nap so you dont overload the cpu
 
                     try:
                         #
                         if not dualsense.connected:
+                            time.sleep(0.5)
                             break
                         
                         # test connection to client
                         try:
                             buf = connection.recv(1024, 0x40) # 0x40 = MSG_DONTWAIT
                             if len(buf) == 0:
+                                time.sleep(0.5)
                                 break
                                 
                             else:
@@ -389,17 +394,21 @@ def handle_connection(connection):
                                 send_client_with_lock(connection, response.encode())
                         
                         except socket.error as e:
+                            time.sleep(0.5)
                             pass
                         
-                        #
-                        statesString = 'states: '
-                        statesBytes = statesString.encode()
-                        statesList = list(statesBytes)
-                        both = statesList + dualsense.states
-                        send_client_with_lock(connection, bytearray(both))
+                        # send an update on a cycle
+                        now = time.time()
+                        if now - start > 0.05:
+                            start = time.time()
+                            statesString = 'states: '
+                            statesBytes = statesString.encode()
+                            statesList = list(statesBytes)
+                            both = statesList + dualsense.states
+                            send_client_with_lock(connection, bytearray(both))
                         
                     except Exception as e:
-                        print(e)
+                        #print(e)
                         continue # continue will keep running the while loop
                 
                 # bump the motors
@@ -475,7 +484,7 @@ def main():
         while not shutdown:
             
             #
-            time.sleep(0.001)
+            time.sleep(0.1)
             
             #
             try:

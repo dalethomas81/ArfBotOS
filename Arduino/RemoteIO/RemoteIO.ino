@@ -81,6 +81,7 @@ bool rx_output0, rx_output1, rx_output2, rx_output3;
 
 void setup() {
 
+  Wire.setClock(400000);
   Wire.begin(8); // join i2c bus with address 8
   Wire.onReceive(receiveEvent); // register event
   Wire.onRequest(requestEvent);
