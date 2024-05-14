@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-05-12T17:29:34.0243874" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-12T17:29:16.1082073">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-05-13T23:44:04.6828591" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-13T22:36:29.4155818">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -29,20 +29,15 @@
     <configurations>
       <configuration name="Device">
         <resource name="Application">
-          <task name="MainTask" interval="PT0.003S" priority="1">
+          <task name="MainTask" interval="PT0.001S" priority="1">
             <pouInstance name="_00_Main" typeName="">
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
-              </documentation>
-            </pouInstance>
-            <pouInstance name="_20_Io" typeName="">
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml" />
               </documentation>
             </pouInstance>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
-                <TaskSettings KindOfTask="Cyclic" Interval="3" IntervalUnit="ms" WithinSPSTimeSlicing="true">
+                <TaskSettings KindOfTask="Cyclic" Interval="1" IntervalUnit="ms" WithinSPSTimeSlicing="true">
                   <Watchdog Enabled="false" TimeUnit="ms" Sensitivity="1" />
                 </TaskSettings>
               </data>
@@ -51,12 +46,7 @@
               </data>
             </addData>
           </task>
-          <task name="SoftMotion_PlanningTask" interval="PT0.00005S" priority="15">
-            <pouInstance name="_10_Drives" typeName="">
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
-              </documentation>
-            </pouInstance>
+          <task name="SoftMotion_PlanningTask" interval="PT0.00005S" priority="2">
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
                 <TaskSettings KindOfTask="Cyclic" Interval="50" IntervalUnit="µs" WithinSPSTimeSlicing="true">
@@ -104,6 +94,28 @@
               </data>
               <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                 <ObjectId>38fa2b4a-d999-444c-83ca-1f85ed269224</ObjectId>
+              </data>
+            </addData>
+          </task>
+          <task name="ComsTask" interval="PT0.006S" priority="1">
+            <pouInstance name="_10_Drives" typeName="">
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+              </documentation>
+            </pouInstance>
+            <pouInstance name="_20_Io" typeName="">
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+              </documentation>
+            </pouInstance>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
+                <TaskSettings KindOfTask="Cyclic" Interval="6" IntervalUnit="ms" WithinSPSTimeSlicing="true">
+                  <Watchdog Enabled="false" TimeUnit="ms" Sensitivity="1" />
+                </TaskSettings>
+              </data>
+              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                <ObjectId>b33e40e6-7c53-4c2f-a659-c4c38bf08b44</ObjectId>
               </data>
             </addData>
           </task>
@@ -2949,8 +2961,7 @@ RESERVED: INT:=47;</xhtml>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">
-{region "utility"}
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">{region "utility"}
 	GVL.ResetRtrig(CLK:=GVL.Reset);
 	IF GVL.ResetRtrig.Q THEN
 		GVL.Reset := FALSE;
@@ -4077,8 +4088,7 @@ MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[30]),
 				dwSize:=2);
 
 // read and write to i2c bus
-IF TransferTrigger THEN
-	
+//IF TransferTrigger THEN
 	
 	I2C_master_Bus1.write(usiAddress:=i2caddress,
 					pbyBuffer:=ADR(pabyTxBuffer),
@@ -4096,7 +4106,7 @@ IF TransferTrigger THEN
 		END_IF
 	END_IF*)
 	
-END_IF
+//END_IF
 
 (*ReadTimeoutTimer(IN:=Com1Seq=3, PT:=ReadTimeout);
 CASE Com1Seq OF
@@ -7053,37 +7063,6 @@ END_CASE</xhtml>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="Execute_Servo1">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="Speed_Servo1">
-                      <type>
-                        <LREAL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="360" />
-                      </initialValue>
-                    </variable>
-                    <variable name="Position_Servo1">
-                      <type>
-                        <LREAL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="0" />
-                      </initialValue>
-                    </variable>
-                    <variable name="MC_Power_Servo1">
-                      <type>
-                        <derived name="MC_Power" />
-                      </type>
-                    </variable>
-                    <variable name="MC_MoveAbsolute_Servo1">
-                      <type>
-                        <derived name="MC_MoveAbsolute" />
-                      </type>
-                    </variable>
                   </localVars>
                 </interface>
                 <body>
@@ -7093,38 +7072,7 @@ PowerOn := GVL.PowerOn;
 
 //
 _M_HandleRemoteIO();
-_M_CmdIoMapping();
-
-// servo 1
-MC_Power_Servo1(
-	Axis:= AdafruitPwm01, 
-	Enable:= PowerOn, 
-	bRegulatorOn:= PowerOn, 
-	bDriveStart:= PowerOn, 
-	Status=&gt; , 
-	bRegulatorRealState=&gt; , 
-	bDriveStartRealState=&gt; , 
-	Busy=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-	
-MC_MoveAbsolute_Servo1(
-	Axis:= AdafruitPwm01, 
-	Execute:= Execute_Servo1, 
-	Position:= Position_Servo1, 
-	Velocity:= Speed_Servo1, 
-	Acceleration:= 1000, 
-	Deceleration:= 1000, 
-	Jerk:= 1000, 
-	Direction:= , 
-	BufferMode:= , 
-	Done=&gt; , 
-	Busy=&gt; , 
-	Active=&gt; , 
-	CommandAborted=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-Execute_Servo1 := FALSE;</xhtml>
+_M_CmdIoMapping();</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -7211,14 +7159,14 @@ MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[30]),
 				dwSize:=2);
 
 // read and write to i2c bus
-IF TransferTrigger THEN
+//IF TransferTrigger THEN
 	I2C_master_Bus2.write(usiAddress:=i2caddress,
 					pbyBuffer:=ADR(pabyTxBuffer),
 					nBufferLen:=transferlentx);
 	I2C_master_Bus2.read(usiAddress:=i2caddress,
 					pbyBuffer:=ADR(pabyRxBuffer),
 					nBufferLen:=transferlenrx);
-END_IF
+//END_IF
 
 // copy crc from rx buffer
 MEMUtils.MemCpy(pbyDest:=ADR(RxCrc), 
@@ -21631,7 +21579,6 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                 <Library Name="#VisuUtils" Namespace="VU" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="Visu Utils, * (System)" />
                 <Library Name="#OMAC_PackML_State_Machine" Namespace="PACK_ML" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="OMAC PackML State Machine, * (3S - Smart Software Solutions GmbH)" />
                 <Library Name="IoDrvGPIO, 4.11.0.0 (CODESYS)" Namespace="IoDrvGPIO" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" />
-                <Library Name="Serial Communication, 3.5.17.0 (3S - Smart Software Solutions GmbH)" Namespace="Serial_Communication" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
                 <Library Name="#SysCom" Namespace="SysCom" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="SysCom, * (System)" />
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
@@ -24198,6 +24145,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
             <Object Name="SoftMotion_PlanningTask" ObjectId="5a42e1b4-5f13-4f3e-9a38-abed03da7807" />
             <Object Name="VISU_TASK" ObjectId="7d686a67-c501-4ade-ac77-336899e42115" />
             <Object Name="VisionTask" ObjectId="38fa2b4a-d999-444c-83ca-1f85ed269224" />
+            <Object Name="ComsTask" ObjectId="b33e40e6-7c53-4c2f-a659-c4c38bf08b44" />
             <Folder Name="FUN">
               <Folder Name="move">
                 <Object Name="ParseMoveCmd" ObjectId="35e49e9e-292d-48d5-910d-e69db317cc55" />
