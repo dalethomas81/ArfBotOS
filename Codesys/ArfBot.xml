@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 4" creationDateTime="2024-05-13T23:44:04.6828591" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-13T22:36:29.4155818">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 7" creationDateTime="2024-05-17T23:06:16.228207" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-17T22:49:39.248467">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -493,6 +493,18 @@ RESERVED: INT:=VIS_ARR_END; // RESERVED
  flags</xhtml>
               </documentation>
             </variable>
+            <variable name="INIT_DRV_IDX">
+              <type>
+                <INT />
+              </type>
+              <initialValue>
+                <simpleValue value="47" />
+              </initialValue>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml">RESERVED: INT:=45;
+RESERVED: INT:=46;</xhtml>
+              </documentation>
+            </variable>
             <variable name="HOME_COMPLETE">
               <type>
                 <INT />
@@ -500,11 +512,6 @@ RESERVED: INT:=VIS_ARR_END; // RESERVED
               <initialValue>
                 <simpleValue value="48" />
               </initialValue>
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml">RESERVED: INT:=45;
-RESERVED: INT:=46;
-RESERVED: INT:=47;</xhtml>
-              </documentation>
             </variable>
             <variable name="INIT_POS_IDX">
               <type>
@@ -979,6 +986,18 @@ RESERVED: INT:=VIS_ARR_END; // RESERVED
  flags</xhtml>
                       </documentation>
                     </variable>
+                    <variable name="INIT_DRV_IDX">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="47" />
+                      </initialValue>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml">RESERVED: INT:=45;
+RESERVED: INT:=46;</xhtml>
+                      </documentation>
+                    </variable>
                     <variable name="HOME_COMPLETE">
                       <type>
                         <INT />
@@ -986,11 +1005,6 @@ RESERVED: INT:=VIS_ARR_END; // RESERVED
                       <initialValue>
                         <simpleValue value="48" />
                       </initialValue>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml">RESERVED: INT:=45;
-RESERVED: INT:=46;
-RESERVED: INT:=47;</xhtml>
-                      </documentation>
                     </variable>
                     <variable name="INIT_POS_IDX">
                       <type>
@@ -3046,9 +3060,6 @@ IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
 	
 	//
 	M_BuildTests();
-	
-	//
-	_10_Drives.M_InitDrives(DefaultParameters:=TRUE);
 		 
 	// indicate initialized
 	PersistentVars.Flags[GVL.INIT_POS_IDX].Value := TRUE;
@@ -3166,10 +3177,6 @@ ProcessPrograms(
 	AxisGroup:= ArfBotAxisGroup,
 	GroupHandler:= GroupHandler,
 	CmdIO:=GVL.CmdIO,
-	Servo1:= AdafruitPwm01,
-	Servo2:= AdafruitPwm02,
-	Servo3:= AdafruitPwm03,
-	Servo4:= AdafruitPwm04,
 	Enable:= GVL.PowerOn AND PersistentVars.Flags[GVL.HOME_COMPLETE].Value,
 	Error=&gt; ,
 	StatusText=&gt;);
@@ -3688,7 +3695,7 @@ END_IF</xhtml>
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">
 // initial values
-IF _SetValues AND_THEN _10_Drives.P_DrivesInitialized THEN
+IF _SetValues AND_THEN PersistentVars.Flags[GVL.INIT_DRV_IDX].Value THEN
 	_SetValues := FALSE;
 	
 	MoveRelative[0].Velocity := SM_Drive_PosControl_J1.fSWMaxVelocity;
@@ -3895,24 +3902,6 @@ GroupHandler(
               <pou name="_10_Drives" pouType="program">
                 <interface>
                   <localVars>
-                    <variable name="CalcStatistics">
-                      <type>
-                        <BOOL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="FALSE" />
-                      </initialValue>
-                    </variable>
-                    <variable name="PositionLag">
-                      <type>
-                        <array>
-                          <dimension lower="0" upper="5" />
-                          <baseType>
-                            <LREAL />
-                          </baseType>
-                        </array>
-                      </type>
-                    </variable>
                     <variable name="rx_heartbeat">
                       <type>
                         <BOOL />
@@ -3968,23 +3957,10 @@ GroupHandler(
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="DefaultDriveParameters">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
                     <variable name="InitializeDrives">
                       <type>
                         <BOOL />
                       </type>
-                    </variable>
-                    <variable name="DrivesInitialized">
-                      <type>
-                        <BOOL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="FALSE" />
-                      </initialValue>
                     </variable>
                     <variable name="FirstScan">
                       <type>
@@ -4000,21 +3976,11 @@ GroupHandler(
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">//
 IF FirstScan THEN
-	M_InitDrives(DefaultParameters:=FALSE);
+	M_Init(FALSE);
 END_IF
 
-_M_InitDrives();
+_M_Init();
 _M_HandleDriveIO();
-
-//
-IF CalcStatistics THEN
-	PositionLag[0] := ABS(SM_Drive_PosControl_J1.fActPosition - SM_Drive_PosControl_J1.fSetPosition);
-	PositionLag[1] := ABS(SM_Drive_PosControl_J2.fActPosition - SM_Drive_PosControl_J2.fSetPosition);
-	PositionLag[2] := ABS(SM_Drive_PosControl_J3.fActPosition - SM_Drive_PosControl_J3.fSetPosition);
-	PositionLag[3] := ABS(SM_Drive_PosControl_J4.fActPosition - SM_Drive_PosControl_J4.fSetPosition);
-	PositionLag[4] := ABS(SM_Drive_PosControl_J5.fActPosition - SM_Drive_PosControl_J5.fSetPosition);
-	PositionLag[5] := ABS(SM_Drive_PosControl_J6.fActPosition - SM_Drive_PosControl_J6.fSetPosition);
-END_IF
 
 // do not put anything below this
 FirstScan := FALSE;</xhtml>
@@ -4284,7 +4250,7 @@ FirstScan := FALSE;</xhtml>
                     </Method>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_InitDrives" ObjectId="aea6e4c3-5f5a-4eff-ae8a-2de4fd010b88">
+                    <Method name="M_Init" ObjectId="aea6e4c3-5f5a-4eff-ae8a-2de4fd010b88">
                       <interface>
                         <returnType>
                           <BOOL />
@@ -4299,7 +4265,9 @@ FirstScan := FALSE;</xhtml>
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">DefaultDriveParameters := DefaultParameters;
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF DefaultParameters THEN
+	PersistentVars.Flags[GVL.INIT_DRV_IDX].Value := FALSE;
+END_IF
 InitializeDrives := TRUE;</xhtml>
                         </ST>
                       </body>
@@ -4307,7 +4275,7 @@ InitializeDrives := TRUE;</xhtml>
                     </Method>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="_M_InitDrives" ObjectId="9031c730-57b8-48ca-b284-2770517ca6ee">
+                    <Method name="_M_Init" ObjectId="9031c730-57b8-48ca-b284-2770517ca6ee">
                       <interface>
                         <globalVars>
                           <variable name="_Step">
@@ -4316,6 +4284,11 @@ InitializeDrives := TRUE;</xhtml>
                             </type>
                           </variable>
                           <variable name="_Done">
+                            <type>
+                              <BOOL />
+                            </type>
+                          </variable>
+                          <variable name="_Success">
                             <type>
                               <BOOL />
                             </type>
@@ -4364,8 +4337,7 @@ CASE _Step OF
 				_SMC_SetPosControlParams[_i].bExecute := FALSE;
 			END_FOR
 			//
-			IF DefaultDriveParameters THEN
-				DefaultDriveParameters := FALSE;
+			IF NOT PersistentVars.Flags[GVL.INIT_DRV_IDX].Value THEN
 				FOR _i:=GVL.POSCONT_ARR_BEG TO GVL.POSCONT_ARR_END BY 1 DO
 					PersistentVars.PositionControllers[_i].fKp := 0.03;
 					PersistentVars.PositionControllers[_i].fPartVelPilotControl := 1.0; // 0-1
@@ -4392,23 +4364,35 @@ CASE _Step OF
 	2:
 		//
 		_Done := TRUE;
+		_Success := TRUE;
 		FOR _i:=GVL.POSCONT_ARR_BEG TO GVL.POSCONT_ARR_END BY 1 DO
-			IF NOT _SMC_SetPosControlParams[_i].bDone THEN
-				_Done := FALSE;
+			IF _SMC_SetPosControlParams[_i].bError THEN
+				_Success := FALSE;
 				EXIT;
 			END_IF
-			IF _SMC_SetPosControlParams[_i].bError THEN
-				_Done := TRUE;
+			IF NOT _SMC_SetPosControlParams[_i].bDone THEN
+				_Success := FALSE;
+				_Done := FALSE;
 				EXIT;
 			END_IF
 		END_FOR
 		IF _Done THEN
-			DrivesInitialized := TRUE;
 			// next, please
-			_Step := 0;
+			_Step := _Step + 1;
 		END_IF
 		
-	
+	3:
+		//
+		FOR _i:=GVL.POSCONT_ARR_BEG TO GVL.POSCONT_ARR_END BY 1 DO
+			_SMC_SetPosControlParams[_i].bExecute := FALSE;
+		END_FOR
+		//
+		IF _Success THEN
+			PersistentVars.Flags[GVL.INIT_DRV_IDX].Value := TRUE;
+		END_IF
+		// next, please
+		_Step := 0;
+		
 END_CASE
 
 //
@@ -4422,7 +4406,7 @@ _SMC_SetPosControlParams[0](
 	bDone=&gt; , 
 	bError=&gt; , 
 	ErrorID=&gt; );
-IF _SMC_SetPosControlParams[0].bExecute THEN
+IF _SMC_SetPosControlParams[0].bDone AND NOT _SMC_SetPosControlParams[0].bError THEN
 	SM_Drive_PosControl_J1.fSWMaxVelocity 			:= PersistentVars.PositionControllers[0].fSWMaxVelocity; // 30
 	SM_Drive_PosControl_J1.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[0].fSWMaxAcceleration; // 1000
 	SM_Drive_PosControl_J1.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[0].fSWMaxDeceleration; // 1000
@@ -4440,7 +4424,7 @@ _SMC_SetPosControlParams[1](
 	bDone=&gt; , 
 	bError=&gt; , 
 	ErrorID=&gt; );
-IF _SMC_SetPosControlParams[1].bExecute THEN
+IF _SMC_SetPosControlParams[1].bDone AND NOT _SMC_SetPosControlParams[1].bError THEN
 	SM_Drive_PosControl_J2.fSWMaxVelocity 			:= PersistentVars.PositionControllers[1].fSWMaxVelocity;
 	SM_Drive_PosControl_J2.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[1].fSWMaxAcceleration;
 	SM_Drive_PosControl_J2.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[1].fSWMaxDeceleration;
@@ -4458,7 +4442,7 @@ _SMC_SetPosControlParams[2](
 	bDone=&gt; , 
 	bError=&gt; , 
 	ErrorID=&gt; );
-IF _SMC_SetPosControlParams[2].bExecute THEN
+IF _SMC_SetPosControlParams[2].bDone AND NOT _SMC_SetPosControlParams[2].bError THEN
 	SM_Drive_PosControl_J3.fSWMaxVelocity 			:= PersistentVars.PositionControllers[2].fSWMaxVelocity;
 	SM_Drive_PosControl_J3.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[2].fSWMaxAcceleration;
 	SM_Drive_PosControl_J3.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[2].fSWMaxDeceleration;
@@ -4476,7 +4460,7 @@ _SMC_SetPosControlParams[3](
 	bDone=&gt; , 
 	bError=&gt; , 
 	ErrorID=&gt; );
-IF _SMC_SetPosControlParams[3].bExecute THEN
+IF _SMC_SetPosControlParams[3].bDone AND NOT _SMC_SetPosControlParams[3].bError THEN
 	SM_Drive_PosControl_J4.fSWMaxVelocity 			:= PersistentVars.PositionControllers[3].fSWMaxVelocity;
 	SM_Drive_PosControl_J4.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[3].fSWMaxAcceleration;
 	SM_Drive_PosControl_J4.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[3].fSWMaxDeceleration;
@@ -4494,7 +4478,7 @@ _SMC_SetPosControlParams[4](
 	bDone=&gt; , 
 	bError=&gt; , 
 	ErrorID=&gt; );
-IF _SMC_SetPosControlParams[4].bExecute THEN
+IF _SMC_SetPosControlParams[4].bDone AND NOT _SMC_SetPosControlParams[4].bError THEN
 	SM_Drive_PosControl_J5.fSWMaxVelocity 			:= PersistentVars.PositionControllers[4].fSWMaxVelocity;
 	SM_Drive_PosControl_J5.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[4].fSWMaxAcceleration;
 	SM_Drive_PosControl_J5.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[4].fSWMaxDeceleration;
@@ -4512,7 +4496,7 @@ _SMC_SetPosControlParams[5](
 	bDone=&gt; , 
 	bError=&gt; , 
 	ErrorID=&gt; );
-IF _SMC_SetPosControlParams[5].bExecute THEN
+IF _SMC_SetPosControlParams[5].bDone AND NOT _SMC_SetPosControlParams[5].bError THEN
 	SM_Drive_PosControl_J6.fSWMaxVelocity 			:= PersistentVars.PositionControllers[5].fSWMaxVelocity;
 	SM_Drive_PosControl_J6.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[5].fSWMaxAcceleration;
 	SM_Drive_PosControl_J6.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[5].fSWMaxDeceleration;
@@ -4522,36 +4506,6 @@ END_IF</xhtml>
                       </body>
                       <addData />
                     </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/property" handleUnknown="implementation">
-                    <Property name="P_DrivesInitialized" ObjectId="94a33523-40bb-4d4e-8658-682c6e0ba226">
-                      <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
-                        <Attributes>
-                          <Attribute Name="monitoring" Value="variable" />
-                        </Attributes>
-                      </interface>
-                      <GetAccessor>
-                        <interface>
-                          <addData>
-                            <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                              <Attributes>
-                                <Attribute Name="monitoring" Value="variable" />
-                              </Attributes>
-                            </data>
-                          </addData>
-                        </interface>
-                        <body>
-                          <ST>
-                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_DrivesInitialized := DrivesInitialized;</xhtml>
-                          </ST>
-                        </body>
-                        <addData />
-                      </GetAccessor>
-                      <addData />
-                    </Property>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>3256c2f0-e8a8-4738-aa1a-395ceff25c60</ObjectId>
@@ -5498,26 +5452,6 @@ END_IF</xhtml>
                         <derived name="ST_LogicCmdIO" />
                       </type>
                     </variable>
-                    <variable name="Servo1">
-                      <type>
-                        <derived name="AXIS_REF_SM3" />
-                      </type>
-                    </variable>
-                    <variable name="Servo2">
-                      <type>
-                        <derived name="AXIS_REF_SM3" />
-                      </type>
-                    </variable>
-                    <variable name="Servo3">
-                      <type>
-                        <derived name="AXIS_REF_SM3" />
-                      </type>
-                    </variable>
-                    <variable name="Servo4">
-                      <type>
-                        <derived name="AXIS_REF_SM3" />
-                      </type>
-                    </variable>
                     <variable name="PrgProcessor">
                       <type>
                         <derived name="FB_ProgramProcessor" />
@@ -5795,10 +5729,6 @@ _ProcessOutputCommand(
 	VisionRegisters:= SUPER^.VisionRegisters,
 	Flags:= SUPER^.Flags,
 	Outputs:= CmdIO.Output,
-	Servo1:= Servo1, 
-	Servo2:= Servo2, 
-	Servo3:= Servo3, 
-	Servo4:= Servo4, 
 	Enable:= Enable,
 	ItfUnitMode=&gt;, 
 	Error=&gt; );
@@ -12715,26 +12645,6 @@ SUPER^.M_StateComplete();</xhtml>
                     </variable>
                   </inputVars>
                   <inOutVars>
-                    <variable name="Servo1">
-                      <type>
-                        <derived name="AXIS_REF_SM3" />
-                      </type>
-                    </variable>
-                    <variable name="Servo2">
-                      <type>
-                        <derived name="AXIS_REF_SM3" />
-                      </type>
-                    </variable>
-                    <variable name="Servo3">
-                      <type>
-                        <derived name="AXIS_REF_SM3" />
-                      </type>
-                    </variable>
-                    <variable name="Servo4">
-                      <type>
-                        <derived name="AXIS_REF_SM3" />
-                      </type>
-                    </variable>
                     <variable name="Outputs">
                       <type>
                         <array>
@@ -12747,162 +12657,6 @@ SUPER^.M_StateComplete();</xhtml>
                     </variable>
                   </inOutVars>
                   <localVars>
-                    <variable name="_Servo1_Execute">
-                      <type>
-                        <BOOL />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> servo 1</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="_Servo1_Speed">
-                      <type>
-                        <LREAL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="360" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_Servo1_Position">
-                      <type>
-                        <LREAL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="0" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_Servo1_MC_Power">
-                      <type>
-                        <derived name="MC_Power" />
-                      </type>
-                    </variable>
-                    <variable name="_Servo1_MC_Halt">
-                      <type>
-                        <derived name="MC_Halt" />
-                      </type>
-                    </variable>
-                    <variable name="_Servo1_MC_MoveAbsolute">
-                      <type>
-                        <derived name="MC_MoveAbsolute" />
-                      </type>
-                    </variable>
-                    <variable name="_Servo2_Execute">
-                      <type>
-                        <BOOL />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> servo 2</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="_Servo2_Speed">
-                      <type>
-                        <LREAL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="360" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_Servo2_Position">
-                      <type>
-                        <LREAL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="0" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_Servo2_MC_Power">
-                      <type>
-                        <derived name="MC_Power" />
-                      </type>
-                    </variable>
-                    <variable name="_Servo2_MC_Halt">
-                      <type>
-                        <derived name="MC_Halt" />
-                      </type>
-                    </variable>
-                    <variable name="_Servo2_MC_MoveAbsolute">
-                      <type>
-                        <derived name="MC_MoveAbsolute" />
-                      </type>
-                    </variable>
-                    <variable name="_Servo3_Execute">
-                      <type>
-                        <BOOL />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> servo 3</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="_Servo3_Speed">
-                      <type>
-                        <LREAL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="360" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_Servo3_Position">
-                      <type>
-                        <LREAL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="0" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_Servo3_MC_Power">
-                      <type>
-                        <derived name="MC_Power" />
-                      </type>
-                    </variable>
-                    <variable name="_Servo3_MC_Halt">
-                      <type>
-                        <derived name="MC_Halt" />
-                      </type>
-                    </variable>
-                    <variable name="_Servo3_MC_MoveAbsolute">
-                      <type>
-                        <derived name="MC_MoveAbsolute" />
-                      </type>
-                    </variable>
-                    <variable name="_Servo4_Execute">
-                      <type>
-                        <BOOL />
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> servo 4</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="_Servo4_Speed">
-                      <type>
-                        <LREAL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="360" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_Servo4_Position">
-                      <type>
-                        <LREAL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="0" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_Servo4_MC_Power">
-                      <type>
-                        <derived name="MC_Power" />
-                      </type>
-                    </variable>
-                    <variable name="_Servo4_MC_Halt">
-                      <type>
-                        <derived name="MC_Halt" />
-                      </type>
-                    </variable>
-                    <variable name="_Servo4_MC_MoveAbsolute">
-                      <type>
-                        <derived name="MC_MoveAbsolute" />
-                      </type>
-                    </variable>
                     <variable name="_RunRtrig">
                       <type>
                         <derived name="R_TRIG" />
@@ -13074,252 +12828,23 @@ CASE _SequenceAnalog OF
 				_SequenceAnalog := 0;
 		END_CASE
 	2: //
+		_SequenceAnalog := 0;
+	
 END_CASE
 
 CASE _SequenceServo OF
 	0: //
 	1: //
 		CASE _OutputTarget OF
-			0: //
+			0: // 
+				// set servo value here
 				_SequenceServo := 0;
-			1: //
-				_Servo1_Execute := TRUE;
-				_Servo1_Position := _OutputValue1;
-				_Servo1_Speed := _OutputValue2;
-				_SequenceServo := 2;
-			2: //
-				_Servo2_Execute := TRUE;
-				_Servo2_Position := _OutputValue1;
-				_Servo2_Speed := _OutputValue2;
-				_SequenceServo := 2;
-			3: //
-				_Servo3_Execute := TRUE;
-				_Servo3_Position := _OutputValue1;
-				_Servo3_Speed := _OutputValue2;
-				_SequenceServo := 2;
-			4: //
-				_Servo4_Execute := TRUE;
-				_Servo4_Position := _OutputValue1;
-				_Servo4_Speed := _OutputValue2;
-				_SequenceServo := 2;
-		ELSE
-			_SequenceServo := 0;
 			
 		END_CASE
 	2: //
-		IF (_Servo1_Execute AND _Servo1_MC_MoveAbsolute.Done)
-			OR (_Servo2_Execute AND _Servo2_MC_MoveAbsolute.Done)
-			OR (_Servo3_Execute AND _Servo3_MC_MoveAbsolute.Done)
-			OR (_Servo4_Execute AND _Servo4_MC_MoveAbsolute.Done) THEN
-			_SequenceServo := 0;
+		_SequenceServo := 0;
 			
-		ELSIF _Servo1_MC_Power.Error THEN
-			SUPER^.M_Error(Description:=CONCAT('Output Servo Command Error: ',
-											CONCAT(TO_STRING(_Servo1_MC_Power.ErrorID),
-											CONCAT(' ', SMC_ErrorString(_Servo1_MC_Power.ErrorID,
-														SMC_Language_Type.english)))));
-			_SequenceServo := 3;
-														
-		ELSIF _Servo1_MC_MoveAbsolute.Error THEN
-			SUPER^.M_Error(Description:=CONCAT('Output Servo Command Error: ',
-											CONCAT(TO_STRING(_Servo1_MC_MoveAbsolute.ErrorID),
-											CONCAT(' ', SMC_ErrorString(_Servo1_MC_MoveAbsolute.ErrorID,
-														SMC_Language_Type.english)))));
-			_SequenceServo := 3;
-														
-		ELSIF _Servo2_MC_Power.Error THEN
-			SUPER^.M_Error(Description:=CONCAT('Output Servo Command Error: ',
-											CONCAT(TO_STRING(_Servo2_MC_Power.ErrorID),
-											CONCAT(' ', SMC_ErrorString(_Servo2_MC_Power.ErrorID,
-														SMC_Language_Type.english)))));
-			_SequenceServo := 3;
-														
-		ELSIF _Servo2_MC_MoveAbsolute.Error THEN
-			SUPER^.M_Error(Description:=CONCAT('Output Servo Command Error: ',
-											CONCAT(TO_STRING(_Servo2_MC_MoveAbsolute.ErrorID),
-											CONCAT(' ', SMC_ErrorString(_Servo2_MC_MoveAbsolute.ErrorID,
-														SMC_Language_Type.english)))));
-			_SequenceServo := 3;
-														
-		ELSIF _Servo3_MC_MoveAbsolute.Error THEN
-			SUPER^.M_Error(Description:=CONCAT('Output Servo Command Error: ',
-											CONCAT(TO_STRING(_Servo3_MC_MoveAbsolute.ErrorID),
-											CONCAT(' ', SMC_ErrorString(_Servo3_MC_MoveAbsolute.ErrorID,
-														SMC_Language_Type.english)))));
-			_SequenceServo := 3;
-														
-		ELSIF _Servo4_MC_MoveAbsolute.Error THEN
-			SUPER^.M_Error(Description:=CONCAT('Output Servo Command Error: ',
-											CONCAT(TO_STRING(_Servo4_MC_MoveAbsolute.ErrorID),
-											CONCAT(' ', SMC_ErrorString(_Servo4_MC_MoveAbsolute.ErrorID,
-														SMC_Language_Type.english)))));
-			_SequenceServo := 3;
-		END_IF
-END_CASE
-
-// servo 1
-_Servo1_MC_Power(
-	Axis:= Servo1, 
-	Enable:= Enable, 
-	bRegulatorOn:= Enable, 
-	bDriveStart:= Enable, 
-	Status=&gt; , 
-	bRegulatorRealState=&gt; , 
-	bDriveStartRealState=&gt; , 
-	Busy=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-	
-_Servo1_MC_MoveAbsolute(
-	Axis:= Servo1, 
-	Execute:= _Servo1_Execute, 
-	Position:= _Servo1_Position, 
-	Velocity:= _Servo1_Speed, 
-	Acceleration:= 100000, 
-	Deceleration:= 100000, 
-	Jerk:= 100000, 
-	Direction:= , 
-	BufferMode:= , 
-	Done=&gt; , 
-	Busy=&gt; , 
-	Active=&gt; , 
-	CommandAborted=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-	
-_Servo1_MC_Halt(
-	Axis:= Servo1, 
-	Execute:= , 
-	Deceleration:= 1000, 
-	Jerk:= 1000, 
-	Done=&gt; , 
-	Busy=&gt; , 
-	CommandAborted=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-
-// servo 2
-_Servo2_MC_Power(
-	Axis:= Servo2, 
-	Enable:= Enable, 
-	bRegulatorOn:= Enable, 
-	bDriveStart:= Enable, 
-	Status=&gt; , 
-	bRegulatorRealState=&gt; , 
-	bDriveStartRealState=&gt; , 
-	Busy=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-	
-_Servo2_MC_MoveAbsolute(
-	Axis:= Servo2, 
-	Execute:= _Servo2_Execute, 
-	Position:= _Servo2_Position, 
-	Velocity:= _Servo2_Speed, 
-	Acceleration:= 100000, 
-	Deceleration:= 100000, 
-	Jerk:= 1000, 
-	Direction:= , 
-	BufferMode:= , 
-	Done=&gt; , 
-	Busy=&gt; , 
-	Active=&gt; , 
-	CommandAborted=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-	
-_Servo2_MC_Halt(
-	Axis:= Servo2, 
-	Execute:= , 
-	Deceleration:= 1000, 
-	Jerk:= 1000, 
-	Done=&gt; , 
-	Busy=&gt; , 
-	CommandAborted=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-
-// servo 3
-_Servo3_MC_Power(
-	Axis:= Servo3, 
-	Enable:= Enable, 
-	bRegulatorOn:= Enable, 
-	bDriveStart:= Enable, 
-	Status=&gt; , 
-	bRegulatorRealState=&gt; , 
-	bDriveStartRealState=&gt; , 
-	Busy=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-	
-_Servo3_MC_MoveAbsolute(
-	Axis:= Servo3, 
-	Execute:= _Servo3_Execute, 
-	Position:= _Servo3_Position, 
-	Velocity:= _Servo3_Speed, 
-	Acceleration:= 100000, 
-	Deceleration:= 100000, 
-	Jerk:= 1000, 
-	Direction:= , 
-	BufferMode:= , 
-	Done=&gt; , 
-	Busy=&gt; , 
-	Active=&gt; , 
-	CommandAborted=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-	
-_Servo3_MC_Halt(
-	Axis:= Servo3, 
-	Execute:= , 
-	Deceleration:= 1000, 
-	Jerk:= 1000, 
-	Done=&gt; , 
-	Busy=&gt; , 
-	CommandAborted=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-
-// servo 4
-_Servo4_MC_Power(
-	Axis:= Servo4, 
-	Enable:= Enable, 
-	bRegulatorOn:= Enable, 
-	bDriveStart:= Enable, 
-	Status=&gt; , 
-	bRegulatorRealState=&gt; , 
-	bDriveStartRealState=&gt; , 
-	Busy=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-	
-_Servo4_MC_MoveAbsolute(
-	Axis:= Servo4, 
-	Execute:= _Servo4_Execute, 
-	Position:= _Servo4_Position, 
-	Velocity:= _Servo4_Speed, 
-	Acceleration:= 100000, 
-	Deceleration:= 100000, 
-	Jerk:= 1000, 
-	Direction:= , 
-	BufferMode:= , 
-	Done=&gt; , 
-	Busy=&gt; , 
-	Active=&gt; , 
-	CommandAborted=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );
-	
-_Servo4_MC_Halt(
-	Axis:= Servo4, 
-	Execute:= , 
-	Deceleration:= 1000, 
-	Jerk:= 1000, 
-	Done=&gt; , 
-	Busy=&gt; , 
-	CommandAborted=&gt; , 
-	Error=&gt; , 
-	ErrorID=&gt; );</xhtml>
+END_CASE</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -13361,19 +12886,10 @@ _Servo4_MC_Halt(
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">CASE SUPER^._SeqResetting OF
 	0:
-		_Servo1_Execute := FALSE;
-		_Servo2_Execute := FALSE;
-		_Servo3_Execute := FALSE;
-		_Servo4_Execute := FALSE;
 		_SeqResetting := _SeqResetting + 1;
 	1:
-		IF NOT _Servo1_MC_MoveAbsolute.Busy 
-			AND NOT _Servo2_MC_MoveAbsolute.Busy
-			AND NOT _Servo3_MC_MoveAbsolute.Busy
-			AND NOT _Servo4_MC_MoveAbsolute.Busy  THEN
-				SUPER^.M_StateComplete();
-				_SeqResetting := 0;
-		END_IF
+		SUPER^.M_StateComplete();
+		_SeqResetting := 0;
 END_CASE</xhtml>
                         </ST>
                       </body>
@@ -13442,27 +12958,10 @@ SUPER^.M_StateComplete();</xhtml>
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">CASE SUPER^._SeqHolding OF
 	0:
-		_Servo1_Execute := FALSE;
-		_Servo2_Execute := FALSE;
-		_Servo3_Execute := FALSE;
-		_Servo4_Execute := FALSE;
-		_Servo1_MC_Halt.Execute := TRUE;
-		_Servo2_MC_Halt.Execute := TRUE;
-		_Servo3_MC_Halt.Execute := TRUE;
-		_Servo4_MC_Halt.Execute := TRUE;
 		SUPER^._SeqHolding := SUPER^._SeqHolding + 1;
 	1:
-		IF _Servo1_MC_Halt.Done 
-			AND _Servo2_MC_Halt.Done
-			AND _Servo3_MC_Halt.Done
-			AND _Servo4_MC_Halt.Done THEN
-				_Servo1_MC_Halt.Execute := FALSE;
-				_Servo2_MC_Halt.Execute := FALSE;
-				_Servo3_MC_Halt.Execute := FALSE;
-				_Servo4_MC_Halt.Execute := FALSE;
-				SUPER^.M_StateComplete();
-				SUPER^._SeqHolding := 0;
-		END_IF
+		SUPER^.M_StateComplete();
+		SUPER^._SeqHolding := 0;
 		
 END_CASE</xhtml>
                         </ST>
@@ -13484,15 +12983,7 @@ END_CASE</xhtml>
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">_Servo1_Execute := FALSE;
-_Servo2_Execute := FALSE;
-_Servo3_Execute := FALSE;
-_Servo4_Execute := FALSE;
-_Servo1_MC_Halt.Execute := FALSE;
-_Servo2_MC_Halt.Execute := FALSE;
-_Servo3_MC_Halt.Execute := FALSE;
-_Servo4_MC_Halt.Execute := FALSE;
-_SequenceDigital := 0;
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">_SequenceDigital := 0;
 _SequenceAnalog := 0;
 _SequenceServo := 0;
 SUPER^._SeqMain := 0;</xhtml>
@@ -13515,12 +13006,7 @@ SUPER^._SeqMain := 0;</xhtml>
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">//
-_Servo1_MC_Halt.Execute := FALSE;
-_Servo2_MC_Halt.Execute := FALSE;
-_Servo3_MC_Halt.Execute := FALSE;
-_Servo4_MC_Halt.Execute := FALSE;
-
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
 //
 SUPER^._SeqMain := _STEP_COMMAND;
 
@@ -13547,19 +13033,10 @@ SUPER^.M_StateComplete();</xhtml>
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">CASE SUPER^._SeqAborting OF
 	0:
-		_Servo1_Execute := FALSE;
-		_Servo2_Execute := FALSE;
-		_Servo3_Execute := FALSE;
-		_Servo4_Execute := FALSE;
 		SUPER^._SeqAborting := SUPER^._SeqAborting + 1;
 	1:
-		IF NOT _Servo1_MC_MoveAbsolute.Busy 
-			AND NOT _Servo2_MC_MoveAbsolute.Busy
-			AND NOT _Servo3_MC_MoveAbsolute.Busy
-			AND NOT _Servo4_MC_MoveAbsolute.Busy  THEN
-				SUPER^.M_StateComplete();
-				SUPER^._SeqAborting := 0;
-		END_IF
+		SUPER^.M_StateComplete();
+		SUPER^._SeqAborting := 0;
 		
 END_CASE
 </xhtml>
@@ -13582,15 +13059,7 @@ END_CASE
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">_Servo1_Execute := FALSE;
-_Servo2_Execute := FALSE;
-_Servo3_Execute := FALSE;
-_Servo4_Execute := FALSE;
-_Servo1_MC_Halt.Execute := FALSE;
-_Servo2_MC_Halt.Execute := FALSE;
-_Servo3_MC_Halt.Execute := FALSE;
-_Servo4_MC_Halt.Execute := FALSE;
-_SequenceDigital := 0;
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">_SequenceDigital := 0;
 _SequenceAnalog := 0;
 _SequenceServo := 0;
 
@@ -16836,26 +16305,6 @@ END_IF</xhtml>
                         <derived name="ST_LogicCmdIO" />
                       </type>
                     </variable>
-                    <variable name="Servo1">
-                      <type>
-                        <derived name="AXIS_REF_SM3" />
-                      </type>
-                    </variable>
-                    <variable name="Servo2">
-                      <type>
-                        <derived name="AXIS_REF_SM3" />
-                      </type>
-                    </variable>
-                    <variable name="Servo3">
-                      <type>
-                        <derived name="AXIS_REF_SM3" />
-                      </type>
-                    </variable>
-                    <variable name="Servo4">
-                      <type>
-                        <derived name="AXIS_REF_SM3" />
-                      </type>
-                    </variable>
                   </inOutVars>
                   <inputVars>
                     <variable name="Enable">
@@ -17083,10 +16532,6 @@ _ProcessCommands(
 	AxisGroup:= AxisGroup,
 	GroupHandler:= GroupHandler,
 	CmdIO:=CmdIO,
-	Servo1:= Servo1,
-	Servo2:= Servo2,
-	Servo3:= Servo3,
-	Servo4:= Servo4,
 	PrgProcessor:= THIS^,
 	Enable:= Enable,
 	Error=&gt; ,
@@ -21559,9 +21004,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                 <Library Name="#3SLicense" Namespace="_3S_LICENSE" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="3SLicense, 0.0.0.0 (3S - Smart Software Solutions GmbH)" ResolverGuid="97c3b452-d9fa-4ac2-9d0c-3d420aa6d95b" />
                 <Library Name="#SM3_Drive_PosControl" Namespace="SM3_Drive_PosControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Drive_PosControl, 4.13.0.0 (3S - Smart Software Solutions GmbH)" />
                 <Library Name="#Raspberry Pi Peripherals" Namespace="RasPi" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Raspberry Pi Peripherals, 4.10.0.0 (CODESYS)" />
-                <Library Name="Raspberry I2C AdafruitPWM, 4.10.0.0 (CODESYS)" Namespace="AdafruitPWM" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" />
                 <Library Name="#SM3_Basic" Namespace="SM3_Basic" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Basic, 4.13.0.0 (3S - Smart Software Solutions GmbH)" />
-                <Library Name="SM3_Drive_Servo, 4.10.0.0 (CODESYS)" Namespace="SM3_Drive_Servo" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" />
                 <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.19.10 (CAA Technical Workgroup)" />
                 <Library Name="#System_VisuElems" Namespace="VisuElems" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElems, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
                 <Library Name="#System_VisuElemMeter" Namespace="VisuElemMeter" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemMeter, 4.3.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
@@ -23346,716 +22789,6 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                               </DeviceType>
                             </Device>
                           </data>
-                          <data name="configurations" handleUnknown="discard">
-                            <configurations>
-                              <configuration name="Adafruit_PWM">
-                                <addData>
-                                  <data name="Device" handleUnknown="discard">
-                                    <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
-                                      <DeviceType>
-                                        <DeviceIdentification>
-                                          <Type>500</Type>
-                                          <Id>0000 0004</Id>
-                                          <Version>4.10.0.0</Version>
-                                        </DeviceIdentification>
-                                        <Connector moduleType="500" role="child" interface="Raspberry.I2C" connectorId="1">
-                                          <HostParameterSet>
-                                            <Parameter ParameterId="1" type="std:USINT" IndexInDevDesc="0">
-                                              <Attributes onlineaccess="read" />
-                                              <Value name="_x0031_" visiblename="I²C address" onlineaccess="read" desc="Address of the device">64</Value>
-                                              <Name>I²C address</Name>
-                                              <Description>Address of the device</Description>
-                                            </Parameter>
-                                            <Parameter ParameterId="2" type="std:UINT" IndexInDevDesc="1">
-                                              <Attributes onlineaccess="read" />
-                                              <Value name="_x0032_" visiblename="Frequency [Hz]" onlineaccess="read" desc="Number of periods (HIGH-LOW-cycles) per second">50</Value>
-                                              <Name>Frequency [Hz]</Name>
-                                              <Description>Number of periods (HIGH-LOW-cycles) per second</Description>
-                                            </Parameter>
-                                          </HostParameterSet>
-                                        </Connector>
-                                        <Connector moduleType="1024" interface="Common.SoftMotion.Servo" connectorId="1000" hostpath="1">
-                                          <HostParameterSet />
-                                        </Connector>
-                                        <DeviceParameterSet />
-                                      </DeviceType>
-                                    </Device>
-                                  </data>
-                                  <data name="configurations" handleUnknown="discard">
-                                    <configurations>
-                                      <configuration name="AdafruitPwm01">
-                                        <addData>
-                                          <data name="Device" handleUnknown="discard">
-                                            <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
-                                              <DeviceType>
-                                                <DeviceIdentification>
-                                                  <Type>1024</Type>
-                                                  <Id>0000 F010</Id>
-                                                  <Version>4.10.0.0</Version>
-                                                </DeviceIdentification>
-                                                <Connector moduleType="1024" role="child" interface="Common.SoftMotion.Servo" connectorId="0">
-                                                  <HostParameterSet>
-                                                    <ParameterSection>
-                                                      <Name>AXIS_REF: Standard</Name>
-                                                      <Description />
-                                                      <Parameter ParameterId="1021" type="std:WORD" IndexInDevDesc="0">
-                                                        <Attributes />
-                                                        <Value name="_x0031_021" visiblename="wDriveID" desc="Unique ID of the drive">7</Value>
-                                                        <Name>wDriveID</Name>
-                                                        <Description>Unique ID of the drive</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1040" type="std:BOOL" IndexInDevDesc="1">
-                                                        <Attributes />
-                                                        <Value name="_x0031_040" visiblename="bVirtual" desc="Whether the drive is simulated">FALSE</Value>
-                                                        <Name>bVirtual</Name>
-                                                        <Description>Whether the drive is simulated</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1060" type="std:INT" IndexInDevDesc="2">
-                                                        <Attributes />
-                                                        <Value name="_x0031_060" visiblename="iMovementType" desc="Movement type: 0: modulo, 1: finite">1</Value>
-                                                        <Name>iMovementType</Name>
-                                                        <Description>Movement type: 0: modulo, 1: finite</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1061" type="std:LREAL" IndexInDevDesc="3">
-                                                        <Attributes />
-                                                        <Value name="_x0031_061" visiblename="fPositionPeriod" desc="Modulo period value for modulo drives [u]">360.0</Value>
-                                                        <Name>fPositionPeriod</Name>
-                                                        <Description>Modulo period value for modulo drives [u]</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1062" type="std:INT" IndexInDevDesc="7">
-                                                        <Attributes />
-                                                        <Value name="_x0031_062" visiblename="eRampType" desc="The velocity ramp used for trajectories.">0</Value>
-                                                        <Name>eRampType</Name>
-                                                        <Description>The velocity ramp used for trajectories.</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1113" type="std:LREAL" IndexInDevDesc="9">
-                                                        <Attributes />
-                                                        <Value name="_x0031_113" visiblename="fSWMaxVelocity" desc="Maximum velocity magnitude (software limit)">1e3</Value>
-                                                        <Name>fSWMaxVelocity</Name>
-                                                        <Description>Maximum velocity magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1123" type="std:LREAL" IndexInDevDesc="10">
-                                                        <Attributes />
-                                                        <Value name="_x0031_123" visiblename="fSWMaxAcceleration" desc="Maximum acceleration magnitude (software limit)">1e5</Value>
-                                                        <Name>fSWMaxAcceleration</Name>
-                                                        <Description>Maximum acceleration magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1133" type="std:LREAL" IndexInDevDesc="11">
-                                                        <Attributes />
-                                                        <Value name="_x0031_133" visiblename="fSWMaxDeceleration" desc="Maximum deceleration magnitude (software limit)">1e5</Value>
-                                                        <Name>fSWMaxDeceleration</Name>
-                                                        <Description>Maximum deceleration magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1143" type="std:LREAL" IndexInDevDesc="12">
-                                                        <Attributes />
-                                                        <Value name="_x0031_143" visiblename="fSWMaxJerk" desc="Maximum jerk magnitude (software limit)">10000</Value>
-                                                        <Name>fSWMaxJerk</Name>
-                                                        <Description>Maximum jerk magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1144" type="std:LREAL" IndexInDevDesc="8">
-                                                        <Attributes />
-                                                        <Value name="_x0031_144" visiblename="fRampJerk" desc="Jerk used for bringing acceleration to 0 when sin² ramp is interrupted.">0</Value>
-                                                        <Name>fRampJerk</Name>
-                                                        <Description>Jerk used for bringing acceleration to 0 when sin² ramp is interrupted.</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1200" type="std:LREAL" IndexInDevDesc="6">
-                                                        <Attributes />
-                                                        <Value name="_x0031_200" visiblename="fSWLimitPositive" desc="Software limit in positive direction">1000.0</Value>
-                                                        <Name>fSWLimitPositive</Name>
-                                                        <Description>Software limit in positive direction</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1201" type="std:LREAL" IndexInDevDesc="5">
-                                                        <Attributes />
-                                                        <Value name="_x0031_201" visiblename="fSWLimitNegative" desc="Software limit in negative direction">0.0</Value>
-                                                        <Name>fSWLimitNegative</Name>
-                                                        <Description>Software limit in negative direction</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1203" type="std:LREAL" IndexInDevDesc="15">
-                                                        <Attributes />
-                                                        <Value name="_x0031_203" visiblename="fSWLimitDeceleration" desc="Deceleration for  stop on software error [u/s²]">0</Value>
-                                                        <Name>fSWLimitDeceleration</Name>
-                                                        <Description>Deceleration for  stop on software error [u/s²]</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1205" type="std:BOOL" IndexInDevDesc="4">
-                                                        <Attributes />
-                                                        <Value name="_x0031_205" visiblename="bSWLimitEnable" desc="Activate/deactivate software limits">FALSE</Value>
-                                                        <Name>bSWLimitEnable</Name>
-                                                        <Description>Activate/deactivate software limits</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1207" type="std:INT" IndexInDevDesc="13">
-                                                        <Attributes />
-                                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">0</Value>
-                                                        <Name>eCheckPositionLag</Name>
-                                                        <Description>Position lag mode</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
-                                                        <Attributes />
-                                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">1.0</Value>
-                                                        <Name>fMaxPositionLag</Name>
-                                                        <Description>Maximum position lag (magnitude) [u]</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1250" type="std:LREAL" IndexInDevDesc="16">
-                                                        <Attributes />
-                                                        <Value name="_x0031_250" visiblename="fSWErrorMaxDistance" desc="Maximum distance that may be travelled for ramping down after a software error has been detected [u]">0</Value>
-                                                        <Name>fSWErrorMaxDistance</Name>
-                                                        <Description>Maximum distance that may be travelled for ramping down after a software error has been detected [u]</Description>
-                                                      </Parameter>
-                                                    </ParameterSection>
-                                                    <ParameterSection>
-                                                      <Name>Servo: Configuration</Name>
-                                                      <Description />
-                                                      <Parameter ParameterId="65536" type="std:LREAL" IndexInDevDesc="17">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5536" visiblename="negative position [units]" desc="minimum position of the servo">-60.0</Value>
-                                                        <Name>negative position [units]</Name>
-                                                        <Description>minimum position of the servo</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65537" type="std:LREAL" IndexInDevDesc="18">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5537" visiblename="positive position [units]" desc="maximum position of the servo">60.0</Value>
-                                                        <Name>positive position [units]</Name>
-                                                        <Description>maximum position of the servo</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65538" type="std:LREAL" IndexInDevDesc="19">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5538" visiblename="startup position [units]" desc="position that is issued at startup">0.0</Value>
-                                                        <Name>startup position [units]</Name>
-                                                        <Description>position that is issued at startup</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65539" type="std:LREAL" IndexInDevDesc="20">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5539" visiblename="minimum signal length [ms]" desc="minimum time that the signal is ON; makes the servo move to the negative position">1.0</Value>
-                                                        <Name>minimum signal length [ms]</Name>
-                                                        <Description>minimum time that the signal is ON; makes the servo move to the negative position</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65540" type="std:LREAL" IndexInDevDesc="21">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5540" visiblename="maximum signal length [ms] representing the positive position" desc="maximum time that the signal is ON; makes the servo move to the positive position">2.0</Value>
-                                                        <Name>maximum signal length [ms] representing the positive position</Name>
-                                                        <Description>maximum time that the signal is ON; makes the servo move to the positive position</Description>
-                                                      </Parameter>
-                                                    </ParameterSection>
-                                                  </HostParameterSet>
-                                                </Connector>
-                                                <Connector moduleType="1248" interface="Common.SoftMotion.Logical" connectorId="1" hostpath="0">
-                                                  <HostParameterSet />
-                                                </Connector>
-                                                <DeviceParameterSet />
-                                              </DeviceType>
-                                            </Device>
-                                          </data>
-                                          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                                            <ObjectId>2182a2d1-7df5-495b-8c4b-608638e832d5</ObjectId>
-                                          </data>
-                                        </addData>
-                                      </configuration>
-                                      <configuration name="AdafruitPwm02">
-                                        <addData>
-                                          <data name="Device" handleUnknown="discard">
-                                            <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
-                                              <DeviceType>
-                                                <DeviceIdentification>
-                                                  <Type>1024</Type>
-                                                  <Id>0000 F010</Id>
-                                                  <Version>4.10.0.0</Version>
-                                                </DeviceIdentification>
-                                                <Connector moduleType="1024" role="child" interface="Common.SoftMotion.Servo" connectorId="0">
-                                                  <HostParameterSet>
-                                                    <ParameterSection>
-                                                      <Name>AXIS_REF: Standard</Name>
-                                                      <Description />
-                                                      <Parameter ParameterId="1021" type="std:WORD" IndexInDevDesc="0">
-                                                        <Attributes />
-                                                        <Value name="_x0031_021" visiblename="wDriveID" desc="Unique ID of the drive">8</Value>
-                                                        <Name>wDriveID</Name>
-                                                        <Description>Unique ID of the drive</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1040" type="std:BOOL" IndexInDevDesc="1">
-                                                        <Attributes />
-                                                        <Value name="_x0031_040" visiblename="bVirtual" desc="Whether the drive is simulated">FALSE</Value>
-                                                        <Name>bVirtual</Name>
-                                                        <Description>Whether the drive is simulated</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1060" type="std:INT" IndexInDevDesc="2">
-                                                        <Attributes />
-                                                        <Value name="_x0031_060" visiblename="iMovementType" desc="Movement type: 0: modulo, 1: finite">1</Value>
-                                                        <Name>iMovementType</Name>
-                                                        <Description>Movement type: 0: modulo, 1: finite</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1061" type="std:LREAL" IndexInDevDesc="3">
-                                                        <Attributes />
-                                                        <Value name="_x0031_061" visiblename="fPositionPeriod" desc="Modulo period value for modulo drives [u]">360.0</Value>
-                                                        <Name>fPositionPeriod</Name>
-                                                        <Description>Modulo period value for modulo drives [u]</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1062" type="std:INT" IndexInDevDesc="7">
-                                                        <Attributes />
-                                                        <Value name="_x0031_062" visiblename="eRampType" desc="The velocity ramp used for trajectories.">0</Value>
-                                                        <Name>eRampType</Name>
-                                                        <Description>The velocity ramp used for trajectories.</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1113" type="std:LREAL" IndexInDevDesc="9">
-                                                        <Attributes />
-                                                        <Value name="_x0031_113" visiblename="fSWMaxVelocity" desc="Maximum velocity magnitude (software limit)">1e3</Value>
-                                                        <Name>fSWMaxVelocity</Name>
-                                                        <Description>Maximum velocity magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1123" type="std:LREAL" IndexInDevDesc="10">
-                                                        <Attributes />
-                                                        <Value name="_x0031_123" visiblename="fSWMaxAcceleration" desc="Maximum acceleration magnitude (software limit)">1e5</Value>
-                                                        <Name>fSWMaxAcceleration</Name>
-                                                        <Description>Maximum acceleration magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1133" type="std:LREAL" IndexInDevDesc="11">
-                                                        <Attributes />
-                                                        <Value name="_x0031_133" visiblename="fSWMaxDeceleration" desc="Maximum deceleration magnitude (software limit)">1e5</Value>
-                                                        <Name>fSWMaxDeceleration</Name>
-                                                        <Description>Maximum deceleration magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1143" type="std:LREAL" IndexInDevDesc="12">
-                                                        <Attributes />
-                                                        <Value name="_x0031_143" visiblename="fSWMaxJerk" desc="Maximum jerk magnitude (software limit)">10000</Value>
-                                                        <Name>fSWMaxJerk</Name>
-                                                        <Description>Maximum jerk magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1144" type="std:LREAL" IndexInDevDesc="8">
-                                                        <Attributes />
-                                                        <Value name="_x0031_144" visiblename="fRampJerk" desc="Jerk used for bringing acceleration to 0 when sin² ramp is interrupted.">0</Value>
-                                                        <Name>fRampJerk</Name>
-                                                        <Description>Jerk used for bringing acceleration to 0 when sin² ramp is interrupted.</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1200" type="std:LREAL" IndexInDevDesc="6">
-                                                        <Attributes />
-                                                        <Value name="_x0031_200" visiblename="fSWLimitPositive" desc="Software limit in positive direction">1000.0</Value>
-                                                        <Name>fSWLimitPositive</Name>
-                                                        <Description>Software limit in positive direction</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1201" type="std:LREAL" IndexInDevDesc="5">
-                                                        <Attributes />
-                                                        <Value name="_x0031_201" visiblename="fSWLimitNegative" desc="Software limit in negative direction">0.0</Value>
-                                                        <Name>fSWLimitNegative</Name>
-                                                        <Description>Software limit in negative direction</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1203" type="std:LREAL" IndexInDevDesc="15">
-                                                        <Attributes />
-                                                        <Value name="_x0031_203" visiblename="fSWLimitDeceleration" desc="Deceleration for  stop on software error [u/s²]">0</Value>
-                                                        <Name>fSWLimitDeceleration</Name>
-                                                        <Description>Deceleration for  stop on software error [u/s²]</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1205" type="std:BOOL" IndexInDevDesc="4">
-                                                        <Attributes />
-                                                        <Value name="_x0031_205" visiblename="bSWLimitEnable" desc="Activate/deactivate software limits">FALSE</Value>
-                                                        <Name>bSWLimitEnable</Name>
-                                                        <Description>Activate/deactivate software limits</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1207" type="std:INT" IndexInDevDesc="13">
-                                                        <Attributes />
-                                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">0</Value>
-                                                        <Name>eCheckPositionLag</Name>
-                                                        <Description>Position lag mode</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
-                                                        <Attributes />
-                                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">1.0</Value>
-                                                        <Name>fMaxPositionLag</Name>
-                                                        <Description>Maximum position lag (magnitude) [u]</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1250" type="std:LREAL" IndexInDevDesc="16">
-                                                        <Attributes />
-                                                        <Value name="_x0031_250" visiblename="fSWErrorMaxDistance" desc="Maximum distance that may be travelled for ramping down after a software error has been detected [u]">0</Value>
-                                                        <Name>fSWErrorMaxDistance</Name>
-                                                        <Description>Maximum distance that may be travelled for ramping down after a software error has been detected [u]</Description>
-                                                      </Parameter>
-                                                    </ParameterSection>
-                                                    <ParameterSection>
-                                                      <Name>Servo: Configuration</Name>
-                                                      <Description />
-                                                      <Parameter ParameterId="65536" type="std:LREAL" IndexInDevDesc="17">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5536" visiblename="negative position [units]" desc="minimum position of the servo">-60.0</Value>
-                                                        <Name>negative position [units]</Name>
-                                                        <Description>minimum position of the servo</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65537" type="std:LREAL" IndexInDevDesc="18">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5537" visiblename="positive position [units]" desc="maximum position of the servo">60.0</Value>
-                                                        <Name>positive position [units]</Name>
-                                                        <Description>maximum position of the servo</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65538" type="std:LREAL" IndexInDevDesc="19">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5538" visiblename="startup position [units]" desc="position that is issued at startup">0.0</Value>
-                                                        <Name>startup position [units]</Name>
-                                                        <Description>position that is issued at startup</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65539" type="std:LREAL" IndexInDevDesc="20">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5539" visiblename="minimum signal length [ms]" desc="minimum time that the signal is ON; makes the servo move to the negative position">1.0</Value>
-                                                        <Name>minimum signal length [ms]</Name>
-                                                        <Description>minimum time that the signal is ON; makes the servo move to the negative position</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65540" type="std:LREAL" IndexInDevDesc="21">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5540" visiblename="maximum signal length [ms] representing the positive position" desc="maximum time that the signal is ON; makes the servo move to the positive position">2.0</Value>
-                                                        <Name>maximum signal length [ms] representing the positive position</Name>
-                                                        <Description>maximum time that the signal is ON; makes the servo move to the positive position</Description>
-                                                      </Parameter>
-                                                    </ParameterSection>
-                                                  </HostParameterSet>
-                                                </Connector>
-                                                <Connector moduleType="1248" interface="Common.SoftMotion.Logical" connectorId="1" hostpath="0">
-                                                  <HostParameterSet />
-                                                </Connector>
-                                                <DeviceParameterSet />
-                                              </DeviceType>
-                                            </Device>
-                                          </data>
-                                          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                                            <ObjectId>e805981a-0706-4f9f-a4b4-7a048e65c79f</ObjectId>
-                                          </data>
-                                        </addData>
-                                      </configuration>
-                                      <configuration name="AdafruitPwm03">
-                                        <addData>
-                                          <data name="Device" handleUnknown="discard">
-                                            <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
-                                              <DeviceType>
-                                                <DeviceIdentification>
-                                                  <Type>1024</Type>
-                                                  <Id>0000 F010</Id>
-                                                  <Version>4.10.0.0</Version>
-                                                </DeviceIdentification>
-                                                <Connector moduleType="1024" role="child" interface="Common.SoftMotion.Servo" connectorId="0">
-                                                  <HostParameterSet>
-                                                    <ParameterSection>
-                                                      <Name>AXIS_REF: Standard</Name>
-                                                      <Description />
-                                                      <Parameter ParameterId="1021" type="std:WORD" IndexInDevDesc="0">
-                                                        <Attributes />
-                                                        <Value name="_x0031_021" visiblename="wDriveID" desc="Unique ID of the drive">9</Value>
-                                                        <Name>wDriveID</Name>
-                                                        <Description>Unique ID of the drive</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1040" type="std:BOOL" IndexInDevDesc="1">
-                                                        <Attributes />
-                                                        <Value name="_x0031_040" visiblename="bVirtual" desc="Whether the drive is simulated">FALSE</Value>
-                                                        <Name>bVirtual</Name>
-                                                        <Description>Whether the drive is simulated</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1060" type="std:INT" IndexInDevDesc="2">
-                                                        <Attributes />
-                                                        <Value name="_x0031_060" visiblename="iMovementType" desc="Movement type: 0: modulo, 1: finite">1</Value>
-                                                        <Name>iMovementType</Name>
-                                                        <Description>Movement type: 0: modulo, 1: finite</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1061" type="std:LREAL" IndexInDevDesc="3">
-                                                        <Attributes />
-                                                        <Value name="_x0031_061" visiblename="fPositionPeriod" desc="Modulo period value for modulo drives [u]">360.0</Value>
-                                                        <Name>fPositionPeriod</Name>
-                                                        <Description>Modulo period value for modulo drives [u]</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1062" type="std:INT" IndexInDevDesc="7">
-                                                        <Attributes />
-                                                        <Value name="_x0031_062" visiblename="eRampType" desc="The velocity ramp used for trajectories.">0</Value>
-                                                        <Name>eRampType</Name>
-                                                        <Description>The velocity ramp used for trajectories.</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1113" type="std:LREAL" IndexInDevDesc="9">
-                                                        <Attributes />
-                                                        <Value name="_x0031_113" visiblename="fSWMaxVelocity" desc="Maximum velocity magnitude (software limit)">1e3</Value>
-                                                        <Name>fSWMaxVelocity</Name>
-                                                        <Description>Maximum velocity magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1123" type="std:LREAL" IndexInDevDesc="10">
-                                                        <Attributes />
-                                                        <Value name="_x0031_123" visiblename="fSWMaxAcceleration" desc="Maximum acceleration magnitude (software limit)">1e5</Value>
-                                                        <Name>fSWMaxAcceleration</Name>
-                                                        <Description>Maximum acceleration magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1133" type="std:LREAL" IndexInDevDesc="11">
-                                                        <Attributes />
-                                                        <Value name="_x0031_133" visiblename="fSWMaxDeceleration" desc="Maximum deceleration magnitude (software limit)">1e5</Value>
-                                                        <Name>fSWMaxDeceleration</Name>
-                                                        <Description>Maximum deceleration magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1143" type="std:LREAL" IndexInDevDesc="12">
-                                                        <Attributes />
-                                                        <Value name="_x0031_143" visiblename="fSWMaxJerk" desc="Maximum jerk magnitude (software limit)">10000</Value>
-                                                        <Name>fSWMaxJerk</Name>
-                                                        <Description>Maximum jerk magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1144" type="std:LREAL" IndexInDevDesc="8">
-                                                        <Attributes />
-                                                        <Value name="_x0031_144" visiblename="fRampJerk" desc="Jerk used for bringing acceleration to 0 when sin² ramp is interrupted.">0</Value>
-                                                        <Name>fRampJerk</Name>
-                                                        <Description>Jerk used for bringing acceleration to 0 when sin² ramp is interrupted.</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1200" type="std:LREAL" IndexInDevDesc="6">
-                                                        <Attributes />
-                                                        <Value name="_x0031_200" visiblename="fSWLimitPositive" desc="Software limit in positive direction">1000.0</Value>
-                                                        <Name>fSWLimitPositive</Name>
-                                                        <Description>Software limit in positive direction</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1201" type="std:LREAL" IndexInDevDesc="5">
-                                                        <Attributes />
-                                                        <Value name="_x0031_201" visiblename="fSWLimitNegative" desc="Software limit in negative direction">0.0</Value>
-                                                        <Name>fSWLimitNegative</Name>
-                                                        <Description>Software limit in negative direction</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1203" type="std:LREAL" IndexInDevDesc="15">
-                                                        <Attributes />
-                                                        <Value name="_x0031_203" visiblename="fSWLimitDeceleration" desc="Deceleration for  stop on software error [u/s²]">0</Value>
-                                                        <Name>fSWLimitDeceleration</Name>
-                                                        <Description>Deceleration for  stop on software error [u/s²]</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1205" type="std:BOOL" IndexInDevDesc="4">
-                                                        <Attributes />
-                                                        <Value name="_x0031_205" visiblename="bSWLimitEnable" desc="Activate/deactivate software limits">FALSE</Value>
-                                                        <Name>bSWLimitEnable</Name>
-                                                        <Description>Activate/deactivate software limits</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1207" type="std:INT" IndexInDevDesc="13">
-                                                        <Attributes />
-                                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">0</Value>
-                                                        <Name>eCheckPositionLag</Name>
-                                                        <Description>Position lag mode</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
-                                                        <Attributes />
-                                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">1.0</Value>
-                                                        <Name>fMaxPositionLag</Name>
-                                                        <Description>Maximum position lag (magnitude) [u]</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1250" type="std:LREAL" IndexInDevDesc="16">
-                                                        <Attributes />
-                                                        <Value name="_x0031_250" visiblename="fSWErrorMaxDistance" desc="Maximum distance that may be travelled for ramping down after a software error has been detected [u]">0</Value>
-                                                        <Name>fSWErrorMaxDistance</Name>
-                                                        <Description>Maximum distance that may be travelled for ramping down after a software error has been detected [u]</Description>
-                                                      </Parameter>
-                                                    </ParameterSection>
-                                                    <ParameterSection>
-                                                      <Name>Servo: Configuration</Name>
-                                                      <Description />
-                                                      <Parameter ParameterId="65536" type="std:LREAL" IndexInDevDesc="17">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5536" visiblename="negative position [units]" desc="minimum position of the servo">-60.0</Value>
-                                                        <Name>negative position [units]</Name>
-                                                        <Description>minimum position of the servo</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65537" type="std:LREAL" IndexInDevDesc="18">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5537" visiblename="positive position [units]" desc="maximum position of the servo">60.0</Value>
-                                                        <Name>positive position [units]</Name>
-                                                        <Description>maximum position of the servo</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65538" type="std:LREAL" IndexInDevDesc="19">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5538" visiblename="startup position [units]" desc="position that is issued at startup">0.0</Value>
-                                                        <Name>startup position [units]</Name>
-                                                        <Description>position that is issued at startup</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65539" type="std:LREAL" IndexInDevDesc="20">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5539" visiblename="minimum signal length [ms]" desc="minimum time that the signal is ON; makes the servo move to the negative position">1.0</Value>
-                                                        <Name>minimum signal length [ms]</Name>
-                                                        <Description>minimum time that the signal is ON; makes the servo move to the negative position</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65540" type="std:LREAL" IndexInDevDesc="21">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5540" visiblename="maximum signal length [ms] representing the positive position" desc="maximum time that the signal is ON; makes the servo move to the positive position">2.0</Value>
-                                                        <Name>maximum signal length [ms] representing the positive position</Name>
-                                                        <Description>maximum time that the signal is ON; makes the servo move to the positive position</Description>
-                                                      </Parameter>
-                                                    </ParameterSection>
-                                                  </HostParameterSet>
-                                                </Connector>
-                                                <Connector moduleType="1248" interface="Common.SoftMotion.Logical" connectorId="1" hostpath="0">
-                                                  <HostParameterSet />
-                                                </Connector>
-                                                <DeviceParameterSet />
-                                              </DeviceType>
-                                            </Device>
-                                          </data>
-                                          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                                            <ObjectId>2bdf841b-44db-494e-b1b7-fd50483df76e</ObjectId>
-                                          </data>
-                                        </addData>
-                                      </configuration>
-                                      <configuration name="AdafruitPwm04">
-                                        <addData>
-                                          <data name="Device" handleUnknown="discard">
-                                            <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
-                                              <DeviceType>
-                                                <DeviceIdentification>
-                                                  <Type>1024</Type>
-                                                  <Id>0000 F010</Id>
-                                                  <Version>4.10.0.0</Version>
-                                                </DeviceIdentification>
-                                                <Connector moduleType="1024" role="child" interface="Common.SoftMotion.Servo" connectorId="0">
-                                                  <HostParameterSet>
-                                                    <ParameterSection>
-                                                      <Name>AXIS_REF: Standard</Name>
-                                                      <Description />
-                                                      <Parameter ParameterId="1021" type="std:WORD" IndexInDevDesc="0">
-                                                        <Attributes />
-                                                        <Value name="_x0031_021" visiblename="wDriveID" desc="Unique ID of the drive">10</Value>
-                                                        <Name>wDriveID</Name>
-                                                        <Description>Unique ID of the drive</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1040" type="std:BOOL" IndexInDevDesc="1">
-                                                        <Attributes />
-                                                        <Value name="_x0031_040" visiblename="bVirtual" desc="Whether the drive is simulated">FALSE</Value>
-                                                        <Name>bVirtual</Name>
-                                                        <Description>Whether the drive is simulated</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1060" type="std:INT" IndexInDevDesc="2">
-                                                        <Attributes />
-                                                        <Value name="_x0031_060" visiblename="iMovementType" desc="Movement type: 0: modulo, 1: finite">1</Value>
-                                                        <Name>iMovementType</Name>
-                                                        <Description>Movement type: 0: modulo, 1: finite</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1061" type="std:LREAL" IndexInDevDesc="3">
-                                                        <Attributes />
-                                                        <Value name="_x0031_061" visiblename="fPositionPeriod" desc="Modulo period value for modulo drives [u]">360.0</Value>
-                                                        <Name>fPositionPeriod</Name>
-                                                        <Description>Modulo period value for modulo drives [u]</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1062" type="std:INT" IndexInDevDesc="7">
-                                                        <Attributes />
-                                                        <Value name="_x0031_062" visiblename="eRampType" desc="The velocity ramp used for trajectories.">0</Value>
-                                                        <Name>eRampType</Name>
-                                                        <Description>The velocity ramp used for trajectories.</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1113" type="std:LREAL" IndexInDevDesc="9">
-                                                        <Attributes />
-                                                        <Value name="_x0031_113" visiblename="fSWMaxVelocity" desc="Maximum velocity magnitude (software limit)">1e3</Value>
-                                                        <Name>fSWMaxVelocity</Name>
-                                                        <Description>Maximum velocity magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1123" type="std:LREAL" IndexInDevDesc="10">
-                                                        <Attributes />
-                                                        <Value name="_x0031_123" visiblename="fSWMaxAcceleration" desc="Maximum acceleration magnitude (software limit)">1e5</Value>
-                                                        <Name>fSWMaxAcceleration</Name>
-                                                        <Description>Maximum acceleration magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1133" type="std:LREAL" IndexInDevDesc="11">
-                                                        <Attributes />
-                                                        <Value name="_x0031_133" visiblename="fSWMaxDeceleration" desc="Maximum deceleration magnitude (software limit)">1e5</Value>
-                                                        <Name>fSWMaxDeceleration</Name>
-                                                        <Description>Maximum deceleration magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1143" type="std:LREAL" IndexInDevDesc="12">
-                                                        <Attributes />
-                                                        <Value name="_x0031_143" visiblename="fSWMaxJerk" desc="Maximum jerk magnitude (software limit)">10000</Value>
-                                                        <Name>fSWMaxJerk</Name>
-                                                        <Description>Maximum jerk magnitude (software limit)</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1144" type="std:LREAL" IndexInDevDesc="8">
-                                                        <Attributes />
-                                                        <Value name="_x0031_144" visiblename="fRampJerk" desc="Jerk used for bringing acceleration to 0 when sin² ramp is interrupted.">0</Value>
-                                                        <Name>fRampJerk</Name>
-                                                        <Description>Jerk used for bringing acceleration to 0 when sin² ramp is interrupted.</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1200" type="std:LREAL" IndexInDevDesc="6">
-                                                        <Attributes />
-                                                        <Value name="_x0031_200" visiblename="fSWLimitPositive" desc="Software limit in positive direction">1000.0</Value>
-                                                        <Name>fSWLimitPositive</Name>
-                                                        <Description>Software limit in positive direction</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1201" type="std:LREAL" IndexInDevDesc="5">
-                                                        <Attributes />
-                                                        <Value name="_x0031_201" visiblename="fSWLimitNegative" desc="Software limit in negative direction">0.0</Value>
-                                                        <Name>fSWLimitNegative</Name>
-                                                        <Description>Software limit in negative direction</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1203" type="std:LREAL" IndexInDevDesc="15">
-                                                        <Attributes />
-                                                        <Value name="_x0031_203" visiblename="fSWLimitDeceleration" desc="Deceleration for  stop on software error [u/s²]">0</Value>
-                                                        <Name>fSWLimitDeceleration</Name>
-                                                        <Description>Deceleration for  stop on software error [u/s²]</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1205" type="std:BOOL" IndexInDevDesc="4">
-                                                        <Attributes />
-                                                        <Value name="_x0031_205" visiblename="bSWLimitEnable" desc="Activate/deactivate software limits">FALSE</Value>
-                                                        <Name>bSWLimitEnable</Name>
-                                                        <Description>Activate/deactivate software limits</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1207" type="std:INT" IndexInDevDesc="13">
-                                                        <Attributes />
-                                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">0</Value>
-                                                        <Name>eCheckPositionLag</Name>
-                                                        <Description>Position lag mode</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
-                                                        <Attributes />
-                                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">1.0</Value>
-                                                        <Name>fMaxPositionLag</Name>
-                                                        <Description>Maximum position lag (magnitude) [u]</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="1250" type="std:LREAL" IndexInDevDesc="16">
-                                                        <Attributes />
-                                                        <Value name="_x0031_250" visiblename="fSWErrorMaxDistance" desc="Maximum distance that may be travelled for ramping down after a software error has been detected [u]">0</Value>
-                                                        <Name>fSWErrorMaxDistance</Name>
-                                                        <Description>Maximum distance that may be travelled for ramping down after a software error has been detected [u]</Description>
-                                                      </Parameter>
-                                                    </ParameterSection>
-                                                    <ParameterSection>
-                                                      <Name>Servo: Configuration</Name>
-                                                      <Description />
-                                                      <Parameter ParameterId="65536" type="std:LREAL" IndexInDevDesc="17">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5536" visiblename="negative position [units]" desc="minimum position of the servo">-60.0</Value>
-                                                        <Name>negative position [units]</Name>
-                                                        <Description>minimum position of the servo</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65537" type="std:LREAL" IndexInDevDesc="18">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5537" visiblename="positive position [units]" desc="maximum position of the servo">60.0</Value>
-                                                        <Name>positive position [units]</Name>
-                                                        <Description>maximum position of the servo</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65538" type="std:LREAL" IndexInDevDesc="19">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5538" visiblename="startup position [units]" desc="position that is issued at startup">0.0</Value>
-                                                        <Name>startup position [units]</Name>
-                                                        <Description>position that is issued at startup</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65539" type="std:LREAL" IndexInDevDesc="20">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5539" visiblename="minimum signal length [ms]" desc="minimum time that the signal is ON; makes the servo move to the negative position">1.0</Value>
-                                                        <Name>minimum signal length [ms]</Name>
-                                                        <Description>minimum time that the signal is ON; makes the servo move to the negative position</Description>
-                                                      </Parameter>
-                                                      <Parameter ParameterId="65540" type="std:LREAL" IndexInDevDesc="21">
-                                                        <Attributes />
-                                                        <Value name="_x0036_5540" visiblename="maximum signal length [ms] representing the positive position" desc="maximum time that the signal is ON; makes the servo move to the positive position">2.0</Value>
-                                                        <Name>maximum signal length [ms] representing the positive position</Name>
-                                                        <Description>maximum time that the signal is ON; makes the servo move to the positive position</Description>
-                                                      </Parameter>
-                                                    </ParameterSection>
-                                                  </HostParameterSet>
-                                                </Connector>
-                                                <Connector moduleType="1248" interface="Common.SoftMotion.Logical" connectorId="1" hostpath="0">
-                                                  <HostParameterSet />
-                                                </Connector>
-                                                <DeviceParameterSet />
-                                              </DeviceType>
-                                            </Device>
-                                          </data>
-                                          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                                            <ObjectId>1d0650f3-1d70-4d52-81ee-364018978773</ObjectId>
-                                          </data>
-                                        </addData>
-                                      </configuration>
-                                    </configurations>
-                                  </data>
-                                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                                    <ObjectId>99583010-7870-4ffd-80d0-4fcc781d22de</ObjectId>
-                                  </data>
-                                </addData>
-                              </configuration>
-                            </configurations>
-                          </data>
                           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                             <ObjectId>106bf2de-1790-4fa9-beb8-3ed0788c8a1e</ObjectId>
                           </data>
@@ -24125,12 +22858,11 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
               <Object Name="_10_Drives" ObjectId="3256c2f0-e8a8-4738-aa1a-395ceff25c60">
                 <Folder Name="private">
                   <Object Name="_M_HandleDriveIO" ObjectId="1f105a3e-ae48-4de4-9cd3-fada08b1a872" />
-                  <Object Name="_M_InitDrives" ObjectId="9031c730-57b8-48ca-b284-2770517ca6ee" />
+                  <Object Name="_M_Init" ObjectId="9031c730-57b8-48ca-b284-2770517ca6ee" />
                 </Folder>
                 <Folder Name="public">
-                  <Object Name="M_InitDrives" ObjectId="aea6e4c3-5f5a-4eff-ae8a-2de4fd010b88" />
+                  <Object Name="M_Init" ObjectId="aea6e4c3-5f5a-4eff-ae8a-2de4fd010b88" />
                 </Folder>
-                <Object Name="P_DrivesInitialized" ObjectId="94a33523-40bb-4d4e-8658-682c6e0ba226" />
               </Object>
               <Object Name="_20_Io" ObjectId="c3b19a06-6020-44bc-8c83-cb31670bfa1a">
                 <Folder Name="private">
@@ -24539,14 +23271,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
           <Object Name="SPI" ObjectId="ab0b7e43-88f3-412a-8ad5-c024c7dfcf48" />
           <Object Name="I²C" ObjectId="c2edcee5-4e0d-445e-b13d-3228dc92e777">
             <Object Name="I2C_master_Bus1" ObjectId="0d68f8a7-0c8b-4cf2-b293-138cca1d9584" />
-            <Object Name="I2C_master_Bus2" ObjectId="106bf2de-1790-4fa9-beb8-3ed0788c8a1e">
-              <Object Name="Adafruit_PWM" ObjectId="99583010-7870-4ffd-80d0-4fcc781d22de">
-                <Object Name="AdafruitPwm01" ObjectId="2182a2d1-7df5-495b-8c4b-608638e832d5" />
-                <Object Name="AdafruitPwm02" ObjectId="e805981a-0706-4f9f-a4b4-7a048e65c79f" />
-                <Object Name="AdafruitPwm03" ObjectId="2bdf841b-44db-494e-b1b7-fd50483df76e" />
-                <Object Name="AdafruitPwm04" ObjectId="1d0650f3-1d70-4d52-81ee-364018978773" />
-              </Object>
-            </Object>
+            <Object Name="I2C_master_Bus2" ObjectId="106bf2de-1790-4fa9-beb8-3ed0788c8a1e" />
           </Object>
         </Object>
         <Object Name="Library Manager" ObjectId="7947b9f0-2ec0-46cb-a7e5-f8f763be16e6" />
