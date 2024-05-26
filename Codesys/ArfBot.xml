@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP19 Patch 7" creationDateTime="2024-05-17T23:06:16.228207" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-17T22:49:39.248467">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-05-25T22:44:09.2999772" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-25T22:31:42.0659321">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -1102,6 +1102,23 @@ RESERVED: INT:=46;</xhtml>
             </addData>
           </globalVars>
           <globalVars name="PersistentVars" retain="true" persistent="true">
+            <variable name="Programs">
+              <type>
+                <array>
+                  <dimension lower="GVL.PROG_ARR_BEG" upper="GVL.PROG_ARR_END" />
+                  <baseType>
+                    <derived name="DUT_Program" />
+                  </baseType>
+                </array>
+              </type>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="order_in_persistent_editor" Value="0" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
             <variable name="StoredPositions">
               <type>
                 <array>
@@ -1149,23 +1166,6 @@ RESERVED: INT:=46;</xhtml>
                 <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                   <Attributes>
                     <Attribute Name="order_in_persistent_editor" Value="3" />
-                  </Attributes>
-                </data>
-              </addData>
-            </variable>
-            <variable name="Programs">
-              <type>
-                <array>
-                  <dimension lower="GVL.PROG_ARR_BEG" upper="GVL.PROG_ARR_END" />
-                  <baseType>
-                    <derived name="DUT_Program" />
-                  </baseType>
-                </array>
-              </type>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="0" />
                   </Attributes>
                 </data>
               </addData>
@@ -20980,7 +20980,6 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                 <Library Name="#SM3_Robotics_Visu" Namespace="SM3_Robotics_Visu" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Robotics_Visu, 4.13.0.0 (3S - Smart Software Solutions GmbH)" />
                 <Library Name="#SM3_Transformation" Namespace="TRAFO" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Transformation, 4.13.0.0 (3S - Smart Software Solutions GmbH)" />
                 <Library Name="#Standard" Namespace="Standard" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="Standard, * (System)" />
-                <Library Name="#BreakpointLogging" Namespace="BPLog" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Breakpoint Logging Functions, * (3S - Smart Software Solutions GmbH)" />
                 <Library Name="#SysTimeCore" Namespace="SysTimeCore" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="SysTimeCore, * (System)" />
                 <Library Name="#CmpTraceMgr" Namespace="CmpTraceMgr" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CmpTraceMgr, 3.5.0.0 (System)" />
                 <Library Name="#MemoryUtils" Namespace="MEMUtils" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="MemoryUtils, * (3S - Smart Software Solutions GmbH)" />
@@ -20999,30 +20998,62 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                 <Library Name="#NetBaseSrv" Namespace="NBS" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="Net Base Services, * (3S - Smart Software Solutions GmbH)" />
                 <Library Name="SysTypes2 Interfaces, * (System)" Namespace="SysTypes2" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
                 <Library Name="#SysTimeRtc" Namespace="SysTimeRtc" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="SysTimeRtc, * (System)" />
-                <Library Name="#IoStandard" Namespace="IoStandard" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="true" DefaultResolution="IoStandard, 3.5.17.0 (System)" />
-                <Library Name="#SM3_CNC" Namespace="SM3_CNC" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_CNC, 4.13.0.0 (3S - Smart Software Solutions GmbH)" />
-                <Library Name="#3SLicense" Namespace="_3S_LICENSE" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="3SLicense, 0.0.0.0 (3S - Smart Software Solutions GmbH)" ResolverGuid="97c3b452-d9fa-4ac2-9d0c-3d420aa6d95b" />
-                <Library Name="#SM3_Drive_PosControl" Namespace="SM3_Drive_PosControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Drive_PosControl, 4.13.0.0 (3S - Smart Software Solutions GmbH)" />
-                <Library Name="#Raspberry Pi Peripherals" Namespace="RasPi" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Raspberry Pi Peripherals, 4.10.0.0 (CODESYS)" />
-                <Library Name="#SM3_Basic" Namespace="SM3_Basic" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Basic, 4.13.0.0 (3S - Smart Software Solutions GmbH)" />
-                <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.19.10 (CAA Technical Workgroup)" />
-                <Library Name="#System_VisuElems" Namespace="VisuElems" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElems, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-                <Library Name="#System_VisuElemMeter" Namespace="VisuElemMeter" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemMeter, 4.3.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-                <Library Name="#System_VisuElemsSpecialControls" Namespace="VisuElemsSpecialControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsSpecialControls, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-                <Library Name="#System_VisuElemsWinControls" Namespace="VisuElemsWinControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsWinControls, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-                <Library Name="#System_VisuElemTextEditor" Namespace="VisuElemTextEditor" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTextEditor, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-                <Library Name="#System_VisuElemTrace" Namespace="VisuElemTrace" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTrace, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-                <Library Name="#System_VisuNativeControl" Namespace="VisuNativeControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuNativeControl, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-                <Library Name="#System_VisuElemsAlarm" Namespace="VisuElemsAlarm" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsAlarm, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-                <Library Name="#System_VisuElemCamDisplayer" Namespace="VisuElemCamDisplayer" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemCamDisplayer, 4.2.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-                <Library Name="#System_VisuElem3DPath" Namespace="VisuElem3DPath" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElem3DPath, 4.1.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-                <Library Name="#System_VisuElemsDateTime" Namespace="VisuElemsDateTime" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsDateTime, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-                <Library Name="#System_VisuElemXYChart" Namespace="VisuElemXYChart" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemXYChart, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-                <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.2.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
                 <Library Name="#VisuUtils" Namespace="VU" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="Visu Utils, * (System)" />
                 <Library Name="#OMAC_PackML_State_Machine" Namespace="PACK_ML" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="OMAC PackML State Machine, * (3S - Smart Software Solutions GmbH)" />
                 <Library Name="IoDrvGPIO, 4.11.0.0 (CODESYS)" Namespace="IoDrvGPIO" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" />
                 <Library Name="#SysCom" Namespace="SysCom" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="SysCom, * (System)" />
+                <Library Name="#System_VisuElems" Namespace="VisuElems" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElems, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+                <Library Name="#System_VisuElemMeter" Namespace="VisuElemMeter" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemMeter, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+                <Library Name="#System_VisuElemsSpecialControls" Namespace="VisuElemsSpecialControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsSpecialControls, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+                <Library Name="#System_VisuElemsWinControls" Namespace="VisuElemsWinControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsWinControls, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+                <Library Name="#System_VisuElemTextEditor" Namespace="VisuElemTextEditor" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTextEditor, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+                <Library Name="#System_VisuElemTrace" Namespace="VisuElemTrace" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTrace, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+                <Library Name="#System_VisuNativeControl" Namespace="VisuNativeControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuNativeControl, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+                <Library Name="#System_VisuElemsAlarm" Namespace="VisuElemsAlarm" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsAlarm, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+                <Library Name="#System_VisuElemCamDisplayer" Namespace="VisuElemCamDisplayer" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemCamDisplayer, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+                <Library Name="#System_VisuElem3DPath" Namespace="VisuElem3DPath" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElem3DPath, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+                <Library Name="#System_VisuElemsDateTime" Namespace="VisuElemsDateTime" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsDateTime, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+                <Library Name="#System_VisuElemXYChart" Namespace="VisuElemXYChart" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemXYChart, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+                <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+                <Library Name="#IoStandard" Namespace="IoStandard" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="true" DefaultResolution="IoStandard, 3.5.17.0 (System)" />
+                <Library Name="#SM3_Basic" Namespace="SM3_Basic" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Basic, 4.16.0.0 (CODESYS)" />
+                <Library Name="#SM3_CNC" Namespace="SM3_CNC" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_CNC, 4.16.0.0 (CODESYS)" />
+                <Library Name="#3SLicense" Namespace="_3S_LICENSE" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="3SLicense, 0.0.0.0 (3S - Smart Software Solutions GmbH)" ResolverGuid="97c3b452-d9fa-4ac2-9d0c-3d420aa6d95b" />
+                <Library Name="#BreakpointLogging" Namespace="BPLog" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Breakpoint Logging Functions, * (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#SM3_Drive_PosControl" Namespace="SM3_Drive_PosControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Drive_PosControl, 4.16.0.0 (CODESYS)" />
+                <Library Name="#Raspberry Pi Peripherals" Namespace="RasPi" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Raspberry Pi Peripherals, 4.10.0.0 (CODESYS)" />
+                <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.19.10 (CAA Technical Workgroup)" />
+                <PlaceholderRedirections>
+                  <PlaceholderRedirection Placeholder="System_VisuElemsAlarm" Redirection="VisuElemsAlarm, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="NetBaseSrv" Redirection="Net Base Services, 3.5.20.0 (CODESYS)" />
+                  <PlaceholderRedirection Placeholder="Standard" Redirection="Standard, 3.5.18.0 (System)" />
+                  <PlaceholderRedirection Placeholder="Standard64" Redirection="Standard64, 3.5.20.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="UTF8" Redirection="UTF-8 Encoding Support, 4.0.0.0 (CODESYS)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElem3DPath" Redirection="VisuElem3DPath, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemTextEditor" Redirection="VisuElemTextEditor, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemCamDisplayer" Redirection="VisuElemCamDisplayer, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemBase" Redirection="VisuElemBase, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="MemoryBlockManager" Redirection="Memory Block Manager, 3.5.20.0 (CODESYS)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemMeter" Redirection="VisuElemMeter, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemsSpecialControls" Redirection="VisuElemsSpecialControls, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemTrace" Redirection="VisuElemTrace, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="ElementCollections" Redirection="Element Collections, 3.5.17.0 (3S - Smart Software Solutions GmbH)" />
+                  <PlaceholderRedirection Placeholder="System_VisuNativeControl" Redirection="VisuNativeControl, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="StringUtils" Redirection="StringUtils, 3.5.20.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuInputs" Redirection="VisuInputs, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="Util" Redirection="Util, 3.5.19.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemsDateTime" Redirection="VisuElemsDateTime, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="VisuUtils" Redirection="Visu Utils, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemsWinControls" Redirection="VisuElemsWinControls, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemXYChart" Redirection="VisuElemXYChart, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="OMAC_PackML_State_Machine" Redirection="OMAC PackML State Machine, 1.0.0.4 (3S - Smart Software Solutions GmbH)" />
+                  <PlaceholderRedirection Placeholder="FloatingPointUtils" Redirection="FloatingPointUtils, 3.5.17.0 (System)" />
+                  <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="Collections" Redirection="Collections, 3.5.17.0 (System)" />
+                  <PlaceholderRedirection Placeholder="StringSegs" Redirection="Immutable String Segments, 3.5.18.0 (3S - Smart Software Solutions GmbH)" />
+                  <PlaceholderRedirection Placeholder="CBML" Redirection="Common Behaviour Model, 3.5.17.0 (3S - Smart Software Solutions GmbH)" />
+                </PlaceholderRedirections>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>80af59fb-8d62-4f6c-95b0-580a98d81b1e</ObjectId>
@@ -21042,12 +21073,12 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
         </resource>
         <addData>
           <data name="Device" handleUnknown="discard">
-            <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
+            <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
               <DeviceType>
                 <DeviceIdentification>
                   <Type>4102</Type>
                   <Id>0000 0011</Id>
-                  <Version>4.10.0.0</Version>
+                  <Version>4.11.0.0</Version>
                 </DeviceIdentification>
                 <Connector moduleType="256" interface="Common.PCI" connectorId="0">
                   <HostParameterSet />
@@ -21092,12 +21123,12 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                       <configuration name="SM_Drive_PosControl_J1">
                         <addData>
                           <data name="Device" handleUnknown="discard">
-                            <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
+                            <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
                               <DeviceType>
                                 <DeviceIdentification>
                                   <Type>1025</Type>
                                   <Id>0000 0001</Id>
-                                  <Version>4.12.0.0</Version>
+                                  <Version>4.16.0.0</Version>
                                 </DeviceIdentification>
                                 <Connector moduleType="1025" role="child" interface="Common.SoftMotion.General" connectorId="0">
                                   <HostParameterSet>
@@ -21357,12 +21388,12 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                       <configuration name="SM_Drive_PosControl_J2">
                         <addData>
                           <data name="Device" handleUnknown="discard">
-                            <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
+                            <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
                               <DeviceType>
                                 <DeviceIdentification>
                                   <Type>1025</Type>
                                   <Id>0000 0001</Id>
-                                  <Version>4.12.0.0</Version>
+                                  <Version>4.16.0.0</Version>
                                 </DeviceIdentification>
                                 <Connector moduleType="1025" role="child" interface="Common.SoftMotion.General" connectorId="0">
                                   <HostParameterSet>
@@ -21617,12 +21648,12 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                       <configuration name="SM_Drive_PosControl_J3">
                         <addData>
                           <data name="Device" handleUnknown="discard">
-                            <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
+                            <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
                               <DeviceType>
                                 <DeviceIdentification>
                                   <Type>1025</Type>
                                   <Id>0000 0001</Id>
-                                  <Version>4.12.0.0</Version>
+                                  <Version>4.16.0.0</Version>
                                 </DeviceIdentification>
                                 <Connector moduleType="1025" role="child" interface="Common.SoftMotion.General" connectorId="0">
                                   <HostParameterSet>
@@ -21877,12 +21908,12 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                       <configuration name="SM_Drive_PosControl_J4">
                         <addData>
                           <data name="Device" handleUnknown="discard">
-                            <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
+                            <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
                               <DeviceType>
                                 <DeviceIdentification>
                                   <Type>1025</Type>
                                   <Id>0000 0001</Id>
-                                  <Version>4.12.0.0</Version>
+                                  <Version>4.16.0.0</Version>
                                 </DeviceIdentification>
                                 <Connector moduleType="1025" role="child" interface="Common.SoftMotion.General" connectorId="0">
                                   <HostParameterSet>
@@ -22137,12 +22168,12 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                       <configuration name="SM_Drive_PosControl_J5">
                         <addData>
                           <data name="Device" handleUnknown="discard">
-                            <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
+                            <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
                               <DeviceType>
                                 <DeviceIdentification>
                                   <Type>1025</Type>
                                   <Id>0000 0001</Id>
-                                  <Version>4.12.0.0</Version>
+                                  <Version>4.16.0.0</Version>
                                 </DeviceIdentification>
                                 <Connector moduleType="1025" role="child" interface="Common.SoftMotion.General" connectorId="0">
                                   <HostParameterSet>
@@ -22397,12 +22428,12 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                       <configuration name="SM_Drive_PosControl_J6">
                         <addData>
                           <data name="Device" handleUnknown="discard">
-                            <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
+                            <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
                               <DeviceType>
                                 <DeviceIdentification>
                                   <Type>1025</Type>
                                   <Id>0000 0001</Id>
-                                  <Version>4.12.0.0</Version>
+                                  <Version>4.16.0.0</Version>
                                 </DeviceIdentification>
                                 <Connector moduleType="1025" role="child" interface="Common.SoftMotion.General" connectorId="0">
                                   <HostParameterSet>
@@ -22721,12 +22752,12 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                       <configuration name="I2C_master_Bus1">
                         <addData>
                           <data name="Device" handleUnknown="discard">
-                            <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
+                            <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
                               <DeviceType>
                                 <DeviceIdentification>
                                   <Type>496</Type>
                                   <Id>0000 0000</Id>
-                                  <Version>4.10.0.0</Version>
+                                  <Version>4.11.0.0</Version>
                                 </DeviceIdentification>
                                 <Connector moduleType="496" role="child" interface="Raspberry.I2CMaster" connectorId="1">
                                   <HostParameterSet>
@@ -22759,12 +22790,12 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                       <configuration name="I2C_master_Bus2">
                         <addData>
                           <data name="Device" handleUnknown="discard">
-                            <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="">
+                            <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
                               <DeviceType>
                                 <DeviceIdentification>
                                   <Type>496</Type>
                                   <Id>0000 0000</Id>
-                                  <Version>4.10.0.0</Version>
+                                  <Version>4.11.0.0</Version>
                                 </DeviceIdentification>
                                 <Connector moduleType="496" role="child" interface="Raspberry.I2CMaster" connectorId="1">
                                   <HostParameterSet>
@@ -22814,19 +22845,80 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
     <data name="http://www.3s-software.com/plcopenxml/libraries" handleUnknown="implementation">
       <Libraries>
         <Library Name="#VisuSymbols" Namespace="VisuSymbols" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="VisuSymbols, 4.1.0.0 (System)" />
-        <Library Name="#System_VisuElems" Namespace="VisuElems" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElems, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemMeter" Namespace="VisuElemMeter" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemMeter, 4.3.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsSpecialControls" Namespace="VisuElemsSpecialControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsSpecialControls, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsWinControls" Namespace="VisuElemsWinControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsWinControls, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemTextEditor" Namespace="VisuElemTextEditor" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTextEditor, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemTrace" Namespace="VisuElemTrace" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTrace, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuNativeControl" Namespace="VisuNativeControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuNativeControl, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsAlarm" Namespace="VisuElemsAlarm" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsAlarm, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemCamDisplayer" Namespace="VisuElemCamDisplayer" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemCamDisplayer, 4.2.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElem3DPath" Namespace="VisuElem3DPath" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElem3DPath, 4.1.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemsDateTime" Namespace="VisuElemsDateTime" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsDateTime, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuElemXYChart" Namespace="VisuElemXYChart" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemXYChart, 4.4.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.2.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElems" Namespace="VisuElems" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElems, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemMeter" Namespace="VisuElemMeter" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemMeter, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsSpecialControls" Namespace="VisuElemsSpecialControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsSpecialControls, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsWinControls" Namespace="VisuElemsWinControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsWinControls, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemTextEditor" Namespace="VisuElemTextEditor" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTextEditor, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemTrace" Namespace="VisuElemTrace" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemTrace, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuNativeControl" Namespace="VisuNativeControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuNativeControl, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsAlarm" Namespace="VisuElemsAlarm" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsAlarm, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemCamDisplayer" Namespace="VisuElemCamDisplayer" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemCamDisplayer, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElem3DPath" Namespace="VisuElem3DPath" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElem3DPath, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemsDateTime" Namespace="VisuElemsDateTime" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsDateTime, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuElemXYChart" Namespace="VisuElemXYChart" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemXYChart, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.5.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <PlaceholderRedirections>
+          <PlaceholderRedirection Placeholder="CmpTraceMgr" Redirection="CmpTraceMgr, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="FloatingPointUtils" Redirection="FloatingPointUtils, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="Standard" Redirection="Standard, 3.5.18.0 (System)" />
+          <PlaceholderRedirection Placeholder="CmpDynamicText" Redirection="CmpDynamicText, 3.5.20.0 (System)" />
+          <PlaceholderRedirection Placeholder="Standard64" Redirection="Standard64, 3.5.20.0 (System)" />
+          <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.5.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="CmpVisuHandler" Redirection="CmpVisuHandler, 3.5.19.0 (System)" />
+          <PlaceholderRedirection Placeholder="System_VisuElem3DPath" Redirection="VisuElem3DPath, 4.5.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="SysTimeCore" Redirection="SysTimeCore, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="System_VisuElemTextEditor" Redirection="VisuElemTextEditor, 4.5.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="System_VisuElemCamDisplayer" Redirection="VisuElemCamDisplayer, 4.5.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="SysTarget" Redirection="SysTarget, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="CAA ResMan" Redirection="CAA Ressource Manager Extern, 3.5.17.0 (CAA Technical Workgroup)" />
+          <PlaceholderRedirection Placeholder="CmpSchedule" Redirection="CmpSchedule, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="CmpBinTagUtilIec" Redirection="CmpBinTagUtilIec, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="CmpIecTask" Redirection="CmpIecTask, 3.5.20.0 (System)" />
+          <PlaceholderRedirection Placeholder="CmpApp" Redirection="CmpApp, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="SysSem" Redirection="SysSem, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="CAA Behaviour Model" Redirection="CAA Behaviour Model, 3.5.19.0 (CAA Technical Workgroup)" />
+          <PlaceholderRedirection Placeholder="SysProcess" Redirection="SysProcess, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="CmpUserMgr Implementation" Redirection="CmpUserMgr Implementation, 3.5.19.0 (System)" />
+          <PlaceholderRedirection Placeholder="SysTask" Redirection="SysTask, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="System_VisuElemsSpecialControls" Redirection="VisuElemsSpecialControls, 4.5.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="SysShm Implementation" Redirection="SysShm Implementation, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="ElementCollections" Redirection="Element Collections, 3.5.17.0 (3S - Smart Software Solutions GmbH)" />
+          <PlaceholderRedirection Placeholder="SysSem Implementation" Redirection="SysSem Implementation, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="CAA Tick" Redirection="CAA Tick Extern, 3.5.17.0 (CAA Technical Workgroup)" />
+          <PlaceholderRedirection Placeholder="CAA TickUtil" Redirection="CAA TickUtil Extern, 3.5.17.0 (CAA Technical Workgroup)" />
+          <PlaceholderRedirection Placeholder="System_VisuNativeControl" Redirection="VisuNativeControl, 4.5.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="SysFile" Redirection="SysFile, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="SysTime" Redirection="SysTime, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="SysProcess Implementation" Redirection="SysProcess Implementation, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="CAA Storage Imp" Redirection="3S Storage, 3.5.17.0 (3S - Smart Software Solutions GmbH)" />
+          <PlaceholderRedirection Placeholder="CAA Storage" Redirection="CAA Storage, 3.5.17.0 (CAA Technical Workgroup)" />
+          <PlaceholderRedirection Placeholder="StringUtils" Redirection="StringUtils, 3.5.20.0 (System)" />
+          <PlaceholderRedirection Placeholder="CmpSrv" Redirection="CmpSrv, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="SysShm" Redirection="SysShm, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="System_VisuElemsWinControls" Redirection="VisuElemsWinControls, 4.5.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="CAA Types" Redirection="CAA Types Extern, 3.5.17.0 (CAA Technical Workgroup)" />
+          <PlaceholderRedirection Placeholder="CmpLog" Redirection="CmpLog, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="System_VisuInputs" Redirection="VisuInputs, 4.5.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="Util" Redirection="Util, 3.5.19.0 (System)" />
+          <PlaceholderRedirection Placeholder="CmpBitmapPool" Redirection="CmpBitmapPool, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="CmpEventMgr" Redirection="CmpEventMgr, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="System_VisuElemsDateTime" Redirection="VisuElemsDateTime, 4.5.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="SysTimeRtc" Redirection="SysTimeRtc, 3.5.20.0 (System)" />
+          <PlaceholderRedirection Placeholder="System_VisuElemMeter" Redirection="VisuElemMeter, 4.5.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="CAA FB Factory" Redirection="CAA FB Factory, 3.5.19.0 (CAA Technical Workgroup)" />
+          <PlaceholderRedirection Placeholder="System_VisuElemsAlarm" Redirection="VisuElemsAlarm, 4.5.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="Rts Service Handler" Redirection="Rts Service Handler, 3.5.17.0 (3S - Smart Software Solutions GmbH)" />
+          <PlaceholderRedirection Placeholder="System_VisuElemXYChart" Redirection="VisuElemXYChart, 4.5.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="CAA Callback" Redirection="CAA Callback Extern, 3.5.17.0 (CAA Technical Workgroup)" />
+          <PlaceholderRedirection Placeholder="System_VisuElemTrace" Redirection="VisuElemTrace, 4.5.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="Component Manager" Redirection="Component Manager, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="Collections" Redirection="Collections, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="CBML" Redirection="Common Behaviour Model, 3.5.17.0 (3S - Smart Software Solutions GmbH)" />
+          <PlaceholderRedirection Placeholder="SysCpuHandling" Redirection="SysCpuHandling, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="SysMem" Redirection="SysMem, 3.5.17.0 (System)" />
+        </PlaceholderRedirections>
         <addData>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
             <ObjectId>7947b9f0-2ec0-46cb-a7e5-f8f763be16e6</ObjectId>
