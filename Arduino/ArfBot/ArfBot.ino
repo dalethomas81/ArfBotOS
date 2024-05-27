@@ -109,6 +109,7 @@ bool rx_output0, rx_output1, rx_output2, rx_output3;
 
 void setup() {
 
+  Wire.setClock(400000);
   Wire.begin(8); // join i2c bus with address 8
   Wire.onReceive(receiveEvent); // register event
   Wire.onRequest(requestEvent);
@@ -306,13 +307,30 @@ void handleTx(){
 
   // tx buffer index 30 and 31 will be for crc
 
+  // calculate checksum and append to tx buffer
+  TxCrc.u = calculateChecksum(I2C_TxBuffer,30);
+  I2C_TxBuffer[30] = TxCrc.b[0];
+  I2C_TxBuffer[31] = TxCrc.b[1];
+
+  //Serial.write(I2C_TxBuffer,32);
+
 }
 
-void handleRx(){
+void handleRx(){  // check if buffer is already being read
   // check if buffer is already being read
-  if (!rxMutex){
+  //if (!rxMutex){
     // lock the rx buffer
     //rxMutex = true;
+    
+    // parse the rx buffer
+    /*int i = 0;
+    while(Serial.available())
+    {
+      I2C_RxBuffer[i++] = Serial.read();
+    }*/
+    // calculate crc of rx buffer
+    RxCrc.u = calculateChecksum(I2C_RxBuffer, 30);
+
     // compare calc crc with rx crc
     if (RxCrc.b[0] == I2C_RxBuffer[30] && RxCrc.b[1] == I2C_RxBuffer[31]) {
       
@@ -334,14 +352,18 @@ void handleRx(){
         }
       }
 
-      // all drive are 200 pulses per revolution but we microstep so these are higher
-      // need to multiply the gear ration by ppr to get the desired output translation
+      // https://docs.google.com/spreadsheets/d/1S5TOxwbAx8pTMUdoWMnyC9WPfphhtUME/edit#gid=595805457
+      // all drives are 200 pulses per revolution but we microstep so these are higher
+      // need to multiply the gear ratio by ppr to get the desired output translation
       J1.run(SetVelocity[0].fval, 10 * (60/15) * 400); // gear * pulley * ppr
       J2.run(SetVelocity[1].fval, 50 * 400);
       J3.run(SetVelocity[2].fval, 50 * 400);
-      J4.run(SetVelocity[3].fval, (3969/289) * (28/10) * 600); // gear * pulley * ppr (note manual shows 400 but its actually 600 ppr)
+      // spec sheet for ratio is wrong its not 13+212/289 it is 16
+      // manual shows 400 but its actually 600 ppr
+      J4.run(SetVelocity[3].fval, 16 * (28/10) * 600); // gear * pulley * ppr
       J5.run(SetVelocity[4].fval, 9.81748 * 800); // 25*pi/8
-      J6.run(SetVelocity[5].fval, (3591/187) * 400); // gear ratio * ppr
+      // spec sheet for ratio is wrong its not 19+38/187 it is 20+38/187
+      J6.run(SetVelocity[5].fval, (1293/64) * 400); // gear ratio * ppr
 
       //I2C_RxBuffer[25]
       
@@ -363,8 +385,7 @@ void handleRx(){
     
     // unlock the rx buffer
     //rxMutex = false;
-  }
-
+  //}
 }
 
 void handleInputs(){
