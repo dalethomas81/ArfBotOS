@@ -198,20 +198,16 @@ void handleTx(){
   //I2C_TxBuffer[0] = I2C_TxBuffer[0] | (tx_ ? B01000000 : B00000000);
   //I2C_TxBuffer[0] = I2C_TxBuffer[0] | (rx_ ? B10000000 : B00000000);
 
-  // byte 26 is used for gpio 0 through 3
-  I2C_TxBuffer[26] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
-  I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_input0 ? B00000001 : B00000000);
-  I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_input1 ? B00000010 : B00000000);
-  I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_input2 ? B00000100 : B00000000);
-  I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_input3 ? B00001000 : B00000000);
-  //I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_ ? B00010000 : B00000000);
-  //I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_ ? B00100000 : B00000000);
-  //I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_ ? B01000000 : B00000000);
-  //I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_ ? B10000000 : B00000000);
-
-  //I2C_TxBuffer[27]
-  //I2C_TxBuffer[28]
-  //I2C_TxBuffer[29]
+  // byte 1 is used for gpio 0 through 3
+  I2C_TxBuffer[1] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
+  I2C_TxBuffer[1] = I2C_TxBuffer[1] | (tx_input0 ? B00000001 : B00000000);
+  I2C_TxBuffer[1] = I2C_TxBuffer[1] | (tx_input1 ? B00000010 : B00000000);
+  I2C_TxBuffer[1] = I2C_TxBuffer[1] | (tx_input2 ? B00000100 : B00000000);
+  I2C_TxBuffer[1] = I2C_TxBuffer[1] | (tx_input3 ? B00001000 : B00000000);
+  //I2C_TxBuffer[1] = I2C_TxBuffer[1] | (tx_ ? B00010000 : B00000000);
+  //I2C_TxBuffer[1] = I2C_TxBuffer[1] | (tx_ ? B00100000 : B00000000);
+  //I2C_TxBuffer[1] = I2C_TxBuffer[1] | (tx_ ? B01000000 : B00000000);
+  //I2C_TxBuffer[1] = I2C_TxBuffer[1] | (tx_ ? B10000000 : B00000000);
 
   // tx buffer index 30 and 31 will be for crc
 
