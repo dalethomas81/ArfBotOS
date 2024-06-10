@@ -54,7 +54,9 @@ camera
 - `sudo kill -9 <pid>` SIGINT request to stop gracefully
 - `sudo kill -15 <pid>` force kill
 - `df -Bm` Get size of disk
+- `sudo mkdir -p /var/opt/codesys` make directory and all parents
 - `sudo chown -R <user> /var/opt/codesys` ownership permissions of directory/file
+- `sudo rm -rf /var/opt/codesys` remove directory and all files
 - `sudo netstat -nlp | grep <port number>` see which app is using a specific port
 - `sudo reboot now` restart
 - `journalctl -u <service name>` see logs written by system services
