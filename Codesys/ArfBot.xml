@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-05-28T11:26:20.3558561" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-28T11:25:58.4434033">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-06-25T22:56:30.9369366" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-06-25T22:49:40.1931484">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -97,7 +97,7 @@
               </data>
             </addData>
           </task>
-          <task name="ComsTask" interval="PT0.006S" priority="1">
+          <task name="ComsTask" interval="PT0.006S" priority="3">
             <pouInstance name="_10_Drives" typeName="">
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml" />
@@ -2819,6 +2819,17 @@ DigitalOutput: ARRAY [DIG_OUT_ARR_BEG..DIG_OUT_ARR_END] OF BOOL;</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> group handler for all motion fbs</xhtml>
                       </documentation>
                     </variable>
+                    <variable name="MoveDistance">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="5.0" />
+                      </initialValue>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> tuning</xhtml>
+                      </documentation>
+                    </variable>
                     <variable name="MoveRelative">
                       <type>
                         <array>
@@ -2828,9 +2839,6 @@ DigitalOutput: ARRAY [DIG_OUT_ARR_BEG..DIG_OUT_ARR_END] OF BOOL;</xhtml>
                           </baseType>
                         </array>
                       </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> tuning</xhtml>
-                      </documentation>
                     </variable>
                     <variable name="TuneStart">
                       <type>
@@ -2861,6 +2869,14 @@ DigitalOutput: ARRAY [DIG_OUT_ARR_BEG..DIG_OUT_ARR_END] OF BOOL;</xhtml>
                           </baseType>
                         </array>
                       </type>
+                    </variable>
+                    <variable name="SetTuningMoveValues">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="TRUE" />
+                      </initialValue>
                     </variable>
                     <variable name="ProcessHome">
                       <type>
@@ -3677,14 +3693,6 @@ END_IF</xhtml>
                               <INT />
                             </type>
                           </variable>
-                          <variable name="_SetValues">
-                            <type>
-                              <BOOL />
-                            </type>
-                            <initialValue>
-                              <simpleValue value="TRUE" />
-                            </initialValue>
-                          </variable>
                         </globalVars>
                         <addData>
                           <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
@@ -3696,44 +3704,44 @@ END_IF</xhtml>
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">
 // initial values
-IF _SetValues AND_THEN PersistentVars.Flags[GVL.INIT_DRV_IDX].Value THEN
-	_SetValues := FALSE;
+IF SetTuningMoveValues AND_THEN PersistentVars.Flags[GVL.INIT_DRV_IDX].Value THEN
+	SetTuningMoveValues := FALSE;
 	
 	MoveRelative[0].Velocity := SM_Drive_PosControl_J1.fSWMaxVelocity;
 	MoveRelative[0].Acceleration := SM_Drive_PosControl_J1.fSWMaxAcceleration;
 	MoveRelative[0].Deceleration := SM_Drive_PosControl_J1.fSWMaxDeceleration;
 	MoveRelative[0].Jerk := SM_Drive_PosControl_J1.fSWMaxJerk;
-	MoveRelative[0].Distance := 5.0;
+	MoveRelative[0].Distance := MoveDistance;
 	
 	MoveRelative[1].Velocity := SM_Drive_PosControl_J2.fSWMaxVelocity;
 	MoveRelative[1].Acceleration := SM_Drive_PosControl_J2.fSWMaxAcceleration;
 	MoveRelative[1].Deceleration := SM_Drive_PosControl_J2.fSWMaxDeceleration;
 	MoveRelative[1].Jerk := SM_Drive_PosControl_J2.fSWMaxJerk;
-	MoveRelative[1].Distance := 5.0;
+	MoveRelative[1].Distance := MoveDistance;
 	
 	MoveRelative[2].Velocity := SM_Drive_PosControl_J3.fSWMaxVelocity;
 	MoveRelative[2].Acceleration := SM_Drive_PosControl_J3.fSWMaxAcceleration;
 	MoveRelative[2].Deceleration := SM_Drive_PosControl_J3.fSWMaxDeceleration;
 	MoveRelative[2].Jerk := SM_Drive_PosControl_J3.fSWMaxJerk;
-	MoveRelative[2].Distance := 5.0;
+	MoveRelative[2].Distance := MoveDistance;
 	
 	MoveRelative[3].Velocity := SM_Drive_PosControl_J4.fSWMaxVelocity;
 	MoveRelative[3].Acceleration := SM_Drive_PosControl_J4.fSWMaxAcceleration;
 	MoveRelative[3].Deceleration := SM_Drive_PosControl_J4.fSWMaxDeceleration;
 	MoveRelative[3].Jerk := SM_Drive_PosControl_J4.fSWMaxJerk;
-	MoveRelative[3].Distance := 5.0;
+	MoveRelative[3].Distance := MoveDistance;
 	
 	MoveRelative[4].Velocity := SM_Drive_PosControl_J5.fSWMaxVelocity;
 	MoveRelative[4].Acceleration := SM_Drive_PosControl_J5.fSWMaxAcceleration;
 	MoveRelative[4].Deceleration := SM_Drive_PosControl_J5.fSWMaxDeceleration;
 	MoveRelative[4].Jerk := SM_Drive_PosControl_J5.fSWMaxJerk;
-	MoveRelative[4].Distance := 5.0;
+	MoveRelative[4].Distance := MoveDistance;
 	
 	MoveRelative[5].Velocity := SM_Drive_PosControl_J6.fSWMaxVelocity;
 	MoveRelative[5].Acceleration := SM_Drive_PosControl_J6.fSWMaxAcceleration;
 	MoveRelative[5].Deceleration := SM_Drive_PosControl_J6.fSWMaxDeceleration;
 	MoveRelative[5].Jerk := SM_Drive_PosControl_J6.fSWMaxJerk;
-	MoveRelative[5].Distance := 5.0;
+	MoveRelative[5].Distance := MoveDistance;
 END_IF
 
 // trace activation
@@ -20952,19 +20960,19 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                 <Library Name="#BreakpointLogging" Namespace="BPLog" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Breakpoint Logging Functions, * (3S - Smart Software Solutions GmbH)" />
                 <Library Name="#SM3_Drive_PosControl" Namespace="SM3_Drive_PosControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Drive_PosControl, 4.16.0.0 (CODESYS)" />
                 <Library Name="#CmpDynamicText" Namespace="CmpDynamicText" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CmpDynamicText" />
-                <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.19.10 (CAA Technical Workgroup)" />
                 <Library Name="#Raspberry Pi Peripherals" Namespace="RasPi" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Raspberry Pi Peripherals, 4.10.0.0 (CODESYS)" />
+                <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.19.10 (CAA Technical Workgroup)" />
                 <PlaceholderRedirections>
                   <PlaceholderRedirection Placeholder="System_VisuElemsAlarm" Redirection="VisuElemsAlarm, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="NetBaseSrv" Redirection="Net Base Services, 3.5.20.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="Standard" Redirection="Standard, 3.5.18.0 (System)" />
                   <PlaceholderRedirection Placeholder="Standard64" Redirection="Standard64, 3.5.20.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="UTF8" Redirection="UTF-8 Encoding Support, 4.0.0.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElem3DPath" Redirection="VisuElem3DPath, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemTextEditor" Redirection="VisuElemTextEditor, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemCamDisplayer" Redirection="VisuElemCamDisplayer, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemBase" Redirection="VisuElemBase, 4.5.0.0 (System)" />
-                  <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="MemoryBlockManager" Redirection="Memory Block Manager, 3.5.20.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemMeter" Redirection="VisuElemMeter, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemsSpecialControls" Redirection="VisuElemsSpecialControls, 4.5.0.0 (System)" />
@@ -20980,7 +20988,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                   <PlaceholderRedirection Placeholder="System_VisuElemXYChart" Redirection="VisuElemXYChart, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="OMAC_PackML_State_Machine" Redirection="OMAC PackML State Machine, 1.0.0.4 (3S - Smart Software Solutions GmbH)" />
                   <PlaceholderRedirection Placeholder="FloatingPointUtils" Redirection="FloatingPointUtils, 3.5.17.0 (System)" />
-                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="Collections" Redirection="Collections, 3.5.17.0 (System)" />
                   <PlaceholderRedirection Placeholder="StringSegs" Redirection="Immutable String Segments, 3.5.18.0 (3S - Smart Software Solutions GmbH)" />
                   <PlaceholderRedirection Placeholder="CBML" Redirection="Common Behaviour Model, 3.5.17.0 (3S - Smart Software Solutions GmbH)" />

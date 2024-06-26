@@ -49,6 +49,10 @@ camera
 
 -backup sd card (after all issues are resolved with installation
 
+-need to write values to movevelocity parameters when clicking on wrtie parameters button on tunning HMI
+
+-address failure mode when electrical power is removed but robot stays enabled the set vs actual is off (because robot is loose and collapses). this leads to issues when restoring power. Servos try to move too fast to new position.
+
 ## Handy commands
 - `pidof <process>` find the pid of a process so you can kill it
 - `sudo kill -9 <pid>` SIGINT request to stop gracefully
