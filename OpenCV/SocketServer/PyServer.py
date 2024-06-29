@@ -21,7 +21,7 @@ import json
 import struct
 import multiprocessing
 
-HOST = 'localhost'
+HOST = '' # leave this blank so that we listen on all interfaces. this is needed if you are hosting on a separate machine.
 PORT = 50011
 
 print_lock = threading.Lock()

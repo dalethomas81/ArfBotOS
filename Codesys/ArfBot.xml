@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-05-25T22:44:09.2999772" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-05-25T22:31:42.0659321">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-06-25T22:56:30.9369366" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-06-25T22:49:40.1931484">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -97,7 +97,7 @@
               </data>
             </addData>
           </task>
-          <task name="ComsTask" interval="PT0.006S" priority="1">
+          <task name="ComsTask" interval="PT0.006S" priority="3">
             <pouInstance name="_10_Drives" typeName="">
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml" />
@@ -164,7 +164,7 @@
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> us TODO reference this in task settings</xhtml>
               </documentation>
             </variable>
-            <variable name="DIG_OUT_ARR_BEG">
+            <variable name="DIG_IN_ARR_BEG">
               <type>
                 <INT />
               </type>
@@ -175,6 +175,22 @@
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> array sizes</xhtml>
               </documentation>
             </variable>
+            <variable name="DIG_IN_ARR_END">
+              <type>
+                <INT />
+              </type>
+              <initialValue>
+                <simpleValue value="11" />
+              </initialValue>
+            </variable>
+            <variable name="DIG_OUT_ARR_BEG">
+              <type>
+                <INT />
+              </type>
+              <initialValue>
+                <simpleValue value="0" />
+              </initialValue>
+            </variable>
             <variable name="DIG_OUT_ARR_END">
               <type>
                 <INT />
@@ -183,7 +199,7 @@
                 <simpleValue value="11" />
               </initialValue>
             </variable>
-            <variable name="DIG_IN_ARR_BEG">
+            <variable name="PWM_OUT_ARR_BEG">
               <type>
                 <INT />
               </type>
@@ -191,7 +207,7 @@
                 <simpleValue value="0" />
               </initialValue>
             </variable>
-            <variable name="DIG_IN_ARR_END">
+            <variable name="PWM_OUT_ARR_END">
               <type>
                 <INT />
               </type>
@@ -541,33 +557,15 @@ RESERVED: INT:=46;</xhtml>
                 <BOOL />
               </type>
             </variable>
-            <variable name="DigitalInput">
-              <type>
-                <array>
-                  <dimension lower="DIG_IN_ARR_BEG" upper="DIG_IN_ARR_END" />
-                  <baseType>
-                    <BOOL />
-                  </baseType>
-                </array>
-              </type>
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> command IO</xhtml>
-              </documentation>
-            </variable>
-            <variable name="DigitalOutput">
-              <type>
-                <array>
-                  <dimension lower="DIG_OUT_ARR_BEG" upper="DIG_OUT_ARR_END" />
-                  <baseType>
-                    <BOOL />
-                  </baseType>
-                </array>
-              </type>
-            </variable>
             <variable name="CmdIO">
               <type>
                 <derived name="ST_LogicCmdIO" />
               </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> command IO
+DigitalInput: ARRAY [DIG_IN_ARR_BEG..DIG_IN_ARR_END] OF BOOL;
+DigitalOutput: ARRAY [DIG_OUT_ARR_BEG..DIG_OUT_ARR_END] OF BOOL;</xhtml>
+              </documentation>
             </variable>
             <variable name="g_x">
               <type>
@@ -657,7 +655,7 @@ RESERVED: INT:=46;</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> us TODO reference this in task settings</xhtml>
                       </documentation>
                     </variable>
-                    <variable name="DIG_OUT_ARR_BEG">
+                    <variable name="DIG_IN_ARR_BEG">
                       <type>
                         <INT />
                       </type>
@@ -668,6 +666,22 @@ RESERVED: INT:=46;</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> array sizes</xhtml>
                       </documentation>
                     </variable>
+                    <variable name="DIG_IN_ARR_END">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="11" />
+                      </initialValue>
+                    </variable>
+                    <variable name="DIG_OUT_ARR_BEG">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="0" />
+                      </initialValue>
+                    </variable>
                     <variable name="DIG_OUT_ARR_END">
                       <type>
                         <INT />
@@ -676,7 +690,7 @@ RESERVED: INT:=46;</xhtml>
                         <simpleValue value="11" />
                       </initialValue>
                     </variable>
-                    <variable name="DIG_IN_ARR_BEG">
+                    <variable name="PWM_OUT_ARR_BEG">
                       <type>
                         <INT />
                       </type>
@@ -684,7 +698,7 @@ RESERVED: INT:=46;</xhtml>
                         <simpleValue value="0" />
                       </initialValue>
                     </variable>
-                    <variable name="DIG_IN_ARR_END">
+                    <variable name="PWM_OUT_ARR_END">
                       <type>
                         <INT />
                       </type>
@@ -1036,33 +1050,15 @@ RESERVED: INT:=46;</xhtml>
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="DigitalInput">
-                      <type>
-                        <array>
-                          <dimension lower="DIG_IN_ARR_BEG" upper="DIG_IN_ARR_END" />
-                          <baseType>
-                            <BOOL />
-                          </baseType>
-                        </array>
-                      </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> command IO</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="DigitalOutput">
-                      <type>
-                        <array>
-                          <dimension lower="DIG_OUT_ARR_BEG" upper="DIG_OUT_ARR_END" />
-                          <baseType>
-                            <BOOL />
-                          </baseType>
-                        </array>
-                      </type>
-                    </variable>
                     <variable name="CmdIO">
                       <type>
                         <derived name="ST_LogicCmdIO" />
                       </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> command IO
+DigitalInput: ARRAY [DIG_IN_ARR_BEG..DIG_IN_ARR_END] OF BOOL;
+DigitalOutput: ARRAY [DIG_OUT_ARR_BEG..DIG_OUT_ARR_END] OF BOOL;</xhtml>
+                      </documentation>
                     </variable>
                     <variable name="g_x">
                       <type>
@@ -1224,7 +1220,7 @@ RESERVED: INT:=46;</xhtml>
               <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                 <Attributes>
                   <Attribute Name="qualified_only" Value="" />
-                  <Attribute Name="checksumnoinit_override" Value="3166393274" />
+                  <Attribute Name="checksumnoinit_override" Value="4109224359" />
                   <Attribute Name="init_related_code" Value="bac351e4-1440-4031-887f-c3d65d99e6dc" />
                 </Attributes>
               </data>
@@ -1811,11 +1807,6 @@ RESERVED: INT:=46;</xhtml>
                         <LREAL />
                       </type>
                     </variable>
-                    <variable name="OutputValue2">
-                      <type>
-                        <LREAL />
-                      </type>
-                    </variable>
                   </struct>
                 </baseType>
                 <addData>
@@ -1894,6 +1885,16 @@ RESERVED: INT:=46;</xhtml>
                           <dimension lower="GVL.DIG_OUT_ARR_BEG" upper="GVL.DIG_OUT_ARR_END" />
                           <baseType>
                             <BOOL />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="Pwm">
+                      <type>
+                        <array>
+                          <dimension lower="GVL.PWM_OUT_ARR_BEG" upper="GVL.PWM_OUT_ARR_END" />
+                          <baseType>
+                            <BYTE />
                           </baseType>
                         </array>
                       </type>
@@ -2818,6 +2819,17 @@ RESERVED: INT:=46;</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> group handler for all motion fbs</xhtml>
                       </documentation>
                     </variable>
+                    <variable name="MoveDistance">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="5.0" />
+                      </initialValue>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> tuning</xhtml>
+                      </documentation>
+                    </variable>
                     <variable name="MoveRelative">
                       <type>
                         <array>
@@ -2827,9 +2839,6 @@ RESERVED: INT:=46;</xhtml>
                           </baseType>
                         </array>
                       </type>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> tuning</xhtml>
-                      </documentation>
                     </variable>
                     <variable name="TuneStart">
                       <type>
@@ -2860,6 +2869,14 @@ RESERVED: INT:=46;</xhtml>
                           </baseType>
                         </array>
                       </type>
+                    </variable>
+                    <variable name="SetTuningMoveValues">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="TRUE" />
+                      </initialValue>
                     </variable>
                     <variable name="ProcessHome">
                       <type>
@@ -3676,14 +3693,6 @@ END_IF</xhtml>
                               <INT />
                             </type>
                           </variable>
-                          <variable name="_SetValues">
-                            <type>
-                              <BOOL />
-                            </type>
-                            <initialValue>
-                              <simpleValue value="TRUE" />
-                            </initialValue>
-                          </variable>
                         </globalVars>
                         <addData>
                           <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
@@ -3695,44 +3704,44 @@ END_IF</xhtml>
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">
 // initial values
-IF _SetValues AND_THEN PersistentVars.Flags[GVL.INIT_DRV_IDX].Value THEN
-	_SetValues := FALSE;
+IF SetTuningMoveValues AND_THEN PersistentVars.Flags[GVL.INIT_DRV_IDX].Value THEN
+	SetTuningMoveValues := FALSE;
 	
 	MoveRelative[0].Velocity := SM_Drive_PosControl_J1.fSWMaxVelocity;
 	MoveRelative[0].Acceleration := SM_Drive_PosControl_J1.fSWMaxAcceleration;
 	MoveRelative[0].Deceleration := SM_Drive_PosControl_J1.fSWMaxDeceleration;
 	MoveRelative[0].Jerk := SM_Drive_PosControl_J1.fSWMaxJerk;
-	MoveRelative[0].Distance := 5.0;
+	MoveRelative[0].Distance := MoveDistance;
 	
 	MoveRelative[1].Velocity := SM_Drive_PosControl_J2.fSWMaxVelocity;
 	MoveRelative[1].Acceleration := SM_Drive_PosControl_J2.fSWMaxAcceleration;
 	MoveRelative[1].Deceleration := SM_Drive_PosControl_J2.fSWMaxDeceleration;
 	MoveRelative[1].Jerk := SM_Drive_PosControl_J2.fSWMaxJerk;
-	MoveRelative[1].Distance := 5.0;
+	MoveRelative[1].Distance := MoveDistance;
 	
 	MoveRelative[2].Velocity := SM_Drive_PosControl_J3.fSWMaxVelocity;
 	MoveRelative[2].Acceleration := SM_Drive_PosControl_J3.fSWMaxAcceleration;
 	MoveRelative[2].Deceleration := SM_Drive_PosControl_J3.fSWMaxDeceleration;
 	MoveRelative[2].Jerk := SM_Drive_PosControl_J3.fSWMaxJerk;
-	MoveRelative[2].Distance := 5.0;
+	MoveRelative[2].Distance := MoveDistance;
 	
 	MoveRelative[3].Velocity := SM_Drive_PosControl_J4.fSWMaxVelocity;
 	MoveRelative[3].Acceleration := SM_Drive_PosControl_J4.fSWMaxAcceleration;
 	MoveRelative[3].Deceleration := SM_Drive_PosControl_J4.fSWMaxDeceleration;
 	MoveRelative[3].Jerk := SM_Drive_PosControl_J4.fSWMaxJerk;
-	MoveRelative[3].Distance := 5.0;
+	MoveRelative[3].Distance := MoveDistance;
 	
 	MoveRelative[4].Velocity := SM_Drive_PosControl_J5.fSWMaxVelocity;
 	MoveRelative[4].Acceleration := SM_Drive_PosControl_J5.fSWMaxAcceleration;
 	MoveRelative[4].Deceleration := SM_Drive_PosControl_J5.fSWMaxDeceleration;
 	MoveRelative[4].Jerk := SM_Drive_PosControl_J5.fSWMaxJerk;
-	MoveRelative[4].Distance := 5.0;
+	MoveRelative[4].Distance := MoveDistance;
 	
 	MoveRelative[5].Velocity := SM_Drive_PosControl_J6.fSWMaxVelocity;
 	MoveRelative[5].Acceleration := SM_Drive_PosControl_J6.fSWMaxAcceleration;
 	MoveRelative[5].Deceleration := SM_Drive_PosControl_J6.fSWMaxDeceleration;
 	MoveRelative[5].Jerk := SM_Drive_PosControl_J6.fSWMaxJerk;
-	MoveRelative[5].Distance := 5.0;
+	MoveRelative[5].Distance := MoveDistance;
 END_IF
 
 // trace activation
@@ -3912,11 +3921,6 @@ GroupHandler(
                         <BOOL />
                       </type>
                     </variable>
-                    <variable name="tx_en">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
                     <variable name="rx_alarm">
                       <type>
                         <BOOL />
@@ -4012,7 +4016,7 @@ END_IF
 // handle outputs
 // index 0 is for system outputs
 pabyTxBuffer[0].0:=HeartbeatOn.Q; 	// heartbeat
-pabyTxBuffer[0].1:=tx_en; 			// enable drives
+pabyTxBuffer[0].1:=GVL.PowerOn; 			// enable drives
 //pabyTxBuffer[0].2:=GVL.Homing;		// homing sts
 // pabyTxBuffer[0].3:=; //
 // pabyTxBuffer[0].4:=; //
@@ -4032,10 +4036,10 @@ END_FOR
 //pabyTxBuffer[25]:=;
 
 // index 26 will be for gpio byte (bits 0 through 7)
-pabyTxBuffer[26].0 := GVL.DigitalOutput[8];
-pabyTxBuffer[26].1 := GVL.DigitalOutput[9];
-pabyTxBuffer[26].2 := GVL.DigitalOutput[10];
-pabyTxBuffer[26].3 := GVL.DigitalOutput[11];
+pabyTxBuffer[26].0 := GVL.CmdIO.Output[0];
+pabyTxBuffer[26].1 := GVL.CmdIO.Output[1];
+pabyTxBuffer[26].2 := GVL.CmdIO.Output[2];
+pabyTxBuffer[26].3 := GVL.CmdIO.Output[3];
 //pabyTxBuffer[26].4 := ;
 //pabyTxBuffer[26].5 := ;
 //pabyTxBuffer[26].6 := ;
@@ -4167,11 +4171,11 @@ IF RxCrc = F_Checksum(ADR(pabyRxBuffer), 30) THEN
 	//rx_ := pabyRxBuffer[25].6;
 	//rx_ := pabyRxBuffer[25].7;
 	
-	// index 36 will be for gpio byte (bits 0 through 7)
-	GVL.DigitalInput[8] := pabyRxBuffer[26].0;
-	GVL.DigitalInput[9] := pabyRxBuffer[26].1;
-	GVL.DigitalInput[10] := pabyRxBuffer[26].2;
-	GVL.DigitalInput[11] := pabyRxBuffer[26].3;
+	// index 26 will be for gpio byte (bits 0 through 7)
+	GVL.CmdIO.Input[0] := pabyRxBuffer[26].0;
+	GVL.CmdIO.Input[1] := pabyRxBuffer[26].1;
+	GVL.CmdIO.Input[2] := pabyRxBuffer[26].2;
+	GVL.CmdIO.Input[3] := pabyRxBuffer[26].3;
 	// := pabyRxBuffer[26].4;
 	// := pabyRxBuffer[26].5;
 	// := pabyRxBuffer[26].6;
@@ -4240,8 +4244,6 @@ SetVelocity[2] := LREAL_TO_REAL(SM_Drive_PosControl_J3.out.fSetVelocity / 360.0)
 SetVelocity[3] := LREAL_TO_REAL(SM_Drive_PosControl_J4.out.fSetVelocity / 360.0);
 SetVelocity[4] := LREAL_TO_REAL(SM_Drive_PosControl_J5.out.fSetVelocity / 360.0);
 SetVelocity[5] := LREAL_TO_REAL(SM_Drive_PosControl_J6.out.fSetVelocity / 360.0);
-
-tx_en := GVL.PowerOn;
 
 FirstScan := FALSE;</xhtml>
                         </ST>
@@ -5728,7 +5730,8 @@ _ProcessOutputCommand(
 	StoredPositions:= SUPER^.StoredPositions,
 	VisionRegisters:= SUPER^.VisionRegisters,
 	Flags:= SUPER^.Flags,
-	Outputs:= CmdIO.Output,
+	Digital:= CmdIO.Output,
+	Pwm:= CmdIO.Pwm,
 	Enable:= Enable,
 	ItfUnitMode=&gt;, 
 	Error=&gt; );
@@ -7001,31 +7004,10 @@ END_CASE</xhtml>
 PowerOn := GVL.PowerOn;
 
 //
-_M_HandleRemoteIO();
-_M_CmdIoMapping();</xhtml>
+_M_HandleRemoteIO();</xhtml>
                   </ST>
                 </body>
                 <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="_M_CmdIoMapping" ObjectId="7a603d5b-d7a4-48fb-b4a0-b8a532438cd0">
-                      <interface>
-                        <addData>
-                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
-                            <AccessModifiers Private="true" />
-                          </data>
-                        </addData>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
-//
-GVL.CmdIO.Input := GVL.DigitalInput;
-GVL.DigitalOutput := GVL.CmdIO.Output;</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
                   <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
                     <Method name="_M_HandleRemoteIO" ObjectId="95e27eb3-1cc7-4783-8f9f-46fca05a221d">
                       <interface>
@@ -7051,7 +7033,7 @@ END_IF
 // handle outputs
 // index 0 is for system outputs
 pabyTxBuffer[0].0:=HeartbeatOn.Q; 	// heartbeat
-pabyTxBuffer[0].1:=tx_en; 			// enable
+pabyTxBuffer[0].1:=GVL.PowerOn; 			// enable
 // pabyTxBuffer[0].2:=;
 // pabyTxBuffer[0].3:=;
 // pabyTxBuffer[0].4:=;
@@ -7060,25 +7042,20 @@ pabyTxBuffer[0].1:=tx_en; 			// enable
 // pabyTxBuffer[0].7:=;
 
 //
-(*bufferIdx := 1;
-FOR jointIdx := 0 TO 5 BY 1 DO
-	MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[bufferIdx]), 
-					pbySrc:=ADR(SetVelocity[jointIdx]), 
-					dwSize:=SIZEOF(SetVelocity[jointIdx]));
-	bufferIdx := bufferIdx + 4;
-END_FOR*)
-
-//pabyTxBuffer[25]:=;
+pabyTxBuffer[1].0 := GVL.CmdIO.Output[4];
+pabyTxBuffer[1].1 := GVL.CmdIO.Output[5];
+pabyTxBuffer[1].2 := GVL.CmdIO.Output[6];
+pabyTxBuffer[1].3 := GVL.CmdIO.Output[7];
+//pabyTxBuffer[1].4 := ;
+//pabyTxBuffer[1].5 := ;
+//pabyTxBuffer[1].6 := ;
+//pabyTxBuffer[1].7 := ;
 
 //
-pabyTxBuffer[1].0 := GVL.DigitalOutput[0];
-pabyTxBuffer[1].1 := GVL.DigitalOutput[1];
-pabyTxBuffer[1].2 := GVL.DigitalOutput[2];
-pabyTxBuffer[1].3 := GVL.DigitalOutput[3];
-pabyTxBuffer[1].4 := GVL.DigitalOutput[4];
-pabyTxBuffer[1].5 := GVL.DigitalOutput[5];
-pabyTxBuffer[1].6 := GVL.DigitalOutput[6];
-pabyTxBuffer[1].7 := GVL.DigitalOutput[7];
+pabyTxBuffer[2] := GVL.CmdIO.Pwm[0];
+pabyTxBuffer[3] := GVL.CmdIO.Pwm[1];
+pabyTxBuffer[4] := GVL.CmdIO.Pwm[2];
+pabyTxBuffer[5] := GVL.CmdIO.Pwm[3];
 
 // Tx buffer index 30 and 31 will be for crc
 // calc crc here
@@ -7115,6 +7092,16 @@ IF RxCrc = F_Checksum(ADR(pabyRxBuffer), 30) THEN
 	//rx_ 				:= pabyRxBuffer[0].5;
 	//rx_ 				:= pabyRxBuffer[0].6;
 	//rx_ 				:= pabyRxBuffer[0].7;
+	
+	// index 1 will be for gpio byte (bits 0 through 7)
+	GVL.CmdIO.Input[4] := pabyRxBuffer[1].0;
+	GVL.CmdIO.Input[5] := pabyRxBuffer[1].1;
+	GVL.CmdIO.Input[6] := pabyRxBuffer[1].2;
+	GVL.CmdIO.Input[7] := pabyRxBuffer[1].3;
+	// := pabyRxBuffer[1].4;
+	// := pabyRxBuffer[1].5;
+	// := pabyRxBuffer[1].6;
+	// := pabyRxBuffer[1].7;
 	
 ELSE
 	// increment crc mismatch counter
@@ -7558,20 +7545,12 @@ END_IF</xhtml>
                         <simpleValue value="'DIG'" />
                       </initialValue>
                     </variable>
-                    <variable name="_OutTypeAna">
+                    <variable name="_OutTypePwm">
                       <type>
                         <string length="3" />
                       </type>
                       <initialValue>
-                        <simpleValue value="'ANA'" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_OutTypeSrv">
-                      <type>
-                        <string length="3" />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="'SRV'" />
+                        <simpleValue value="'PWM'" />
                       </initialValue>
                     </variable>
                   </localVars>
@@ -7580,7 +7559,7 @@ END_IF</xhtml>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">// DIG +0001.00 +0001.00 (turn digital input 1 on)
 // DIG +0001.00 +0000.00 (turn digital input 1 off)
-// SRV +0001.00 +0030.00 +0360.00(set servo 1 to position 30 at speed 360)
+// PWM +0001.00 +0030.00(set PWM 1 to position 30)
 
 // clear the command
 _Command:='';
@@ -7589,10 +7568,8 @@ _Command:='';
 CASE stCommand.OutputType OF
 	DUT_OutputType.Digital:
 		F_AddElement(_Command, _Delimiter, _OutTypeDig);
-	DUT_OutputType.Analog:
-		F_AddElement(_Command, _Delimiter, _OutTypeAna);
-	Dut_OutputType.Servo:
-		F_AddElement(_Command, _Delimiter, _OutTypeSrv);
+	DUT_OutputType.Pwm:
+		F_AddElement(_Command, _Delimiter, _OutTypePwm);
 END_CASE
 
 //
@@ -7600,11 +7577,6 @@ F_AddElement(_Command, _Delimiter, INT_TO_STRING(stCommand.OutputTarget));
 
 //
 F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.OutputValue1));
-
-// only need if servo
-IF stCommand.OutputType = DUT_OutputType.Servo THEN
-	F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.OutputValue2));
-END_IF
 
 // set function equal to command
 BuildOutputCmd := _Command;</xhtml>
@@ -7664,9 +7636,9 @@ BuildOutputCmd := _Command;</xhtml>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// DIG 1 1 (turn digital input 1 on)
-// DIG 1 0 (turn digital input 1 off)
-// SRV 1 30.0 360.0(set servo 1 to position 30 at speed 360)
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// DIG +0001.00 +0001.00 (turn digital input 1 on)
+// DIG +0001.00 +0000.00 (turn digital input 1 off)
+// PWM +0001.00 +0030.00(set PWM 1 to position 30)
 
 Error:=FALSE;
 ErrorDescription:='';
@@ -7677,18 +7649,11 @@ _CmdParams:=F_SplitCmd(Command:=Command);
 _OutputType := _CmdParams[0];
 IF _OutputType = 'DIG' THEN
 	stCommand.OutputType := DUT_OutputType.Digital;
-ELSIF _OutputType = 'ANA' THEN
-	stCommand.OutputType := DUT_OutputType.Analog;
-ELSIF _OutputType = 'SRV' THEN
-	stCommand.OutputType := DUT_OutputType.Servo;
+ELSIF _OutputType = 'PWM' THEN
+	stCommand.OutputType := DUT_OutputType.Pwm;
 END_IF
 stCommand.OutputTarget := STRING_TO_INT(_CmdParams[1]);
-stCommand.OutputValue1 := STRING_TO_LREAL(_CmdParams[2]);
-
-// only need to parse the second parameter if not digital
-IF NOT (stCommand.OutputType = DUT_OutputType.Digital) THEN
-	stCommand.OutputValue2 := STRING_TO_LREAL(_CmdParams[3]);
-END_IF</xhtml>
+stCommand.OutputValue1 := STRING_TO_LREAL(_CmdParams[2]);</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -12645,12 +12610,22 @@ SUPER^.M_StateComplete();</xhtml>
                     </variable>
                   </inputVars>
                   <inOutVars>
-                    <variable name="Outputs">
+                    <variable name="Digital">
                       <type>
                         <array>
                           <dimension lower="GVL.DIG_OUT_ARR_BEG" upper="GVL.DIG_OUT_ARR_END" />
                           <baseType>
                             <BOOL />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="Pwm">
+                      <type>
+                        <array>
+                          <dimension lower="GVL.PWM_OUT_ARR_BEG" upper="GVL.PWM_OUT_ARR_END" />
+                          <baseType>
+                            <BYTE />
                           </baseType>
                         </array>
                       </type>
@@ -12667,12 +12642,7 @@ SUPER^.M_StateComplete();</xhtml>
                         <INT />
                       </type>
                     </variable>
-                    <variable name="_SequenceAnalog">
-                      <type>
-                        <INT />
-                      </type>
-                    </variable>
-                    <variable name="_SequenceServo">
+                    <variable name="_SequencePwm">
                       <type>
                         <INT />
                       </type>
@@ -12698,11 +12668,6 @@ SUPER^.M_StateComplete();</xhtml>
                       </type>
                     </variable>
                     <variable name="_OutputValue1">
-                      <type>
-                        <LREAL />
-                      </type>
-                    </variable>
-                    <variable name="_OutputValue2">
                       <type>
                         <LREAL />
                       </type>
@@ -12783,17 +12748,13 @@ CASE SUPER^._SeqMain OF
 			_OutputType := _OutputCommandParser.stCommand.OutputType;
 			_OutputTarget := _OutputCommandParser.stCommand.OutputTarget;
 			_OutputValue1 := _OutputCommandParser.stCommand.OutputValue1;
-			_OutputValue2 := _OutputCommandParser.stCommand.OutputValue2;
 			
 			CASE _OutputType OF
 				DUT_OutputType.Digital: //
 					_SequenceDigital := 1;
 					SUPER^._SeqMain := _STEP_TWO;
-				DUT_OutputType.Analog: //
-					_SequenceAnalog := 1;
-					SUPER^._SeqMain := _STEP_TWO;
-				DUT_OutputType.Servo: //
-					_SequenceServo := 1;
+				DUT_OutputType.Pwm: //
+					_SequencePwm := 1;
 					SUPER^._SeqMain := _STEP_TWO;
 			ELSE
 				SUPER^._SeqMain := _STEP_DONE;
@@ -12803,8 +12764,7 @@ CASE SUPER^._SeqMain OF
 		
 	_STEP_TWO:
 		IF _SequenceDigital = 0 
-			AND _SequenceAnalog = 0
-			AND _SequenceServo = 0 THEN
+			AND _SequencePwm = 0 THEN
 				// next, please
 				SUPER^._SeqMain := _STEP_DONE;
 		END_IF;
@@ -12814,36 +12774,16 @@ END_CASE
 CASE _SequenceDigital OF
 	0: //
 	1: //
-		THIS^.Outputs[_OutputTarget] := _OutputValue1 &gt; 0;
+		THIS^.Digital[_OutputTarget] := _OutputValue1 &gt; 0;
 		_SequenceDigital := 0;
 END_CASE
 
-CASE _SequenceAnalog OF
+CASE _SequencePwm OF
 	0: //
 	1: //
-		CASE _OutputTarget OF
-			0: //
-				// set analog value here
-				// i got nothing right now
-				_SequenceAnalog := 0;
-		END_CASE
-	2: //
-		_SequenceAnalog := 0;
+		THIS^.Pwm[_OutputTarget] := LREAL_TO_BYTE(_OutputValue1);
+		_SequencePwm := 0;
 	
-END_CASE
-
-CASE _SequenceServo OF
-	0: //
-	1: //
-		CASE _OutputTarget OF
-			0: // 
-				// set servo value here
-				_SequenceServo := 0;
-			
-		END_CASE
-	2: //
-		_SequenceServo := 0;
-			
 END_CASE</xhtml>
                   </ST>
                 </body>
@@ -12984,8 +12924,7 @@ END_CASE</xhtml>
                       <body>
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">_SequenceDigital := 0;
-_SequenceAnalog := 0;
-_SequenceServo := 0;
+_SequencePwm := 0;
 SUPER^._SeqMain := 0;</xhtml>
                         </ST>
                       </body>
@@ -13060,8 +12999,7 @@ END_CASE
                       <body>
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">_SequenceDigital := 0;
-_SequenceAnalog := 0;
-_SequenceServo := 0;
+_SequencePwm := 0;
 
 SUPER^.M_StateComplete();</xhtml>
                         </ST>
@@ -21021,6 +20959,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                 <Library Name="#3SLicense" Namespace="_3S_LICENSE" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="3SLicense, 0.0.0.0 (3S - Smart Software Solutions GmbH)" ResolverGuid="97c3b452-d9fa-4ac2-9d0c-3d420aa6d95b" />
                 <Library Name="#BreakpointLogging" Namespace="BPLog" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Breakpoint Logging Functions, * (3S - Smart Software Solutions GmbH)" />
                 <Library Name="#SM3_Drive_PosControl" Namespace="SM3_Drive_PosControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Drive_PosControl, 4.16.0.0 (CODESYS)" />
+                <Library Name="#CmpDynamicText" Namespace="CmpDynamicText" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CmpDynamicText" />
                 <Library Name="#Raspberry Pi Peripherals" Namespace="RasPi" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Raspberry Pi Peripherals, 4.10.0.0 (CODESYS)" />
                 <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.19.10 (CAA Technical Workgroup)" />
                 <PlaceholderRedirections>
@@ -22783,7 +22722,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                             </Device>
                           </data>
                           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                            <ObjectId>0d68f8a7-0c8b-4cf2-b293-138cca1d9584</ObjectId>
+                            <ObjectId>2f7094b9-7865-4f98-a9e2-a6d1ff9d1660</ObjectId>
                           </data>
                         </addData>
                       </configuration>
@@ -22821,7 +22760,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                             </Device>
                           </data>
                           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                            <ObjectId>106bf2de-1790-4fa9-beb8-3ed0788c8a1e</ObjectId>
+                            <ObjectId>6e09b7f1-4bf2-4519-b661-20c2fd8e38e7</ObjectId>
                           </data>
                         </addData>
                       </configuration>
@@ -22958,7 +22897,6 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
               </Object>
               <Object Name="_20_Io" ObjectId="c3b19a06-6020-44bc-8c83-cb31670bfa1a">
                 <Folder Name="private">
-                  <Object Name="_M_CmdIoMapping" ObjectId="7a603d5b-d7a4-48fb-b4a0-b8a532438cd0" />
                   <Object Name="_M_HandleRemoteIO" ObjectId="95e27eb3-1cc7-4783-8f9f-46fca05a221d" />
                 </Folder>
               </Object>
@@ -23362,8 +23300,8 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
           </Object>
           <Object Name="SPI" ObjectId="ab0b7e43-88f3-412a-8ad5-c024c7dfcf48" />
           <Object Name="I²C" ObjectId="c2edcee5-4e0d-445e-b13d-3228dc92e777">
-            <Object Name="I2C_master_Bus1" ObjectId="0d68f8a7-0c8b-4cf2-b293-138cca1d9584" />
-            <Object Name="I2C_master_Bus2" ObjectId="106bf2de-1790-4fa9-beb8-3ed0788c8a1e" />
+            <Object Name="I2C_master_Bus2" ObjectId="6e09b7f1-4bf2-4519-b661-20c2fd8e38e7" />
+            <Object Name="I2C_master_Bus1" ObjectId="2f7094b9-7865-4f98-a9e2-a6d1ff9d1660" />
           </Object>
         </Object>
         <Object Name="Library Manager" ObjectId="7947b9f0-2ec0-46cb-a7e5-f8f763be16e6" />

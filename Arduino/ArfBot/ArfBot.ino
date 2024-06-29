@@ -316,18 +316,7 @@ void handleTx(){
 
 }
 
-void handleRx(){  // check if buffer is already being read
-  // check if buffer is already being read
-  //if (!rxMutex){
-    // lock the rx buffer
-    //rxMutex = true;
-    
-    // parse the rx buffer
-    /*int i = 0;
-    while(Serial.available())
-    {
-      I2C_RxBuffer[i++] = Serial.read();
-    }*/
+void handleRx(){ 
     // calculate crc of rx buffer
     RxCrc.u = calculateChecksum(I2C_RxBuffer, 30);
 
@@ -382,10 +371,6 @@ void handleRx(){  // check if buffer is already being read
 
       // 30 and 31 are reserved for crc
     }
-    
-    // unlock the rx buffer
-    //rxMutex = false;
-  //}
 }
 
 void handleInputs(){

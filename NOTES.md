@@ -49,12 +49,24 @@ camera
 
 -backup sd card (after all issues are resolved with installation
 
+-need to write values to movevelocity parameters when clicking on wrtie parameters button on tunning HMI
+
+-address failure mode when electrical power is removed but robot stays enabled the set vs actual is off (because robot is loose and collapses). this leads to issues when restoring power. Servos try to move too fast to new position.
+
+-add ability to copy current position in the set variable builder menu
+
+-add enable parameter to max position difference on tuning page
+
+-add failure bit for vision (perhaps add found number of parts to vision register?)
+
 ## Handy commands
 - `pidof <process>` find the pid of a process so you can kill it
 - `sudo kill -9 <pid>` SIGINT request to stop gracefully
 - `sudo kill -15 <pid>` force kill
 - `df -Bm` Get size of disk
+- `sudo mkdir -p /var/opt/codesys` make directory and all parents
 - `sudo chown -R <user> /var/opt/codesys` ownership permissions of directory/file
+- `sudo rm -rf /var/opt/codesys` remove directory and all files
 - `sudo netstat -nlp | grep <port number>` see which app is using a specific port
 - `sudo reboot now` restart
 - `journalctl -u <service name>` see logs written by system services
