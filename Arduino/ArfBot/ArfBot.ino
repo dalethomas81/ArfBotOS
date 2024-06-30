@@ -1,13 +1,17 @@
-#include <Wire.h>
+//#include <Wire.h>
 #include "PTO.h"
 #include "InputDebounced.h"
 #include "R_TRIG.h"
 #include <Encoder.h>
 #include <Servo.h>
 
+#include "EasyCAT.h"
+#include <SPI.h>
+EasyCAT EASYCAT(10);
+
 unsigned long timer1, timer1_last;
-uint8_t I2C_TxBuffer[32]; // i2c has max 32 byte
-uint8_t I2C_RxBuffer[32]; // i2c has max 32 byte
+uint8_t TxBuffer[32];
+uint8_t RxBuffer[32];
 
 const int J1_PulsePin = 0;
 const int J1_DirPin   = 1;
@@ -19,8 +23,8 @@ const int J4_PulsePin = 6;
 const int J4_DirPin   = 7;
 const int J5_PulsePin = 8;
 const int J5_DirPin   = 9;
-const int J6_PulsePin = 10;
-const int J6_DirPin   = 11;
+const int J6_PulsePin = 33;
+const int J6_DirPin   = 34;
 
 const int J1_CalPin = 26;
 const int J2_CalPin = 27;
@@ -29,15 +33,15 @@ const int J4_CalPin = 29;
 const int J5_CalPin = 30;
 const int J6_CalPin = 31;
 
-const int input0Pin = 34;
+//const int input0Pin = 34;
 const int input1Pin = 35;
 const int input2Pin = 40;
 const int input3Pin = 41;
 
-const int output0Pin = 12;
-const int output1Pin = 17;
+//const int output0Pin = 12;
+//const int output1Pin = 17;
 const int output2Pin = 32;
-const int output3Pin = 33;
+//const int output3Pin = 33;
 
 const int J1_EncPinA = 14;
 const int J1_EncPinB = 15;
@@ -55,12 +59,10 @@ const int J6_EncPinB = 25;
 const int DriveEnablePin = 16;
 //const int DriveAlarmPin = 17;
 
-const int HeartbeatLed = 13;
+const int HeartbeatLed = 17;
 
-// NOTE: make sure to use external pullup resistors for i2c pins
-// 4.7k or 10k will work
-// pin 18 reserved for i2c
-// pin 19 reserved for i2c
+// NOTE:
+// pins 10, 11, 12, and 13 are reserved for SPI
 
 union u_pto {
   uint8_t b[4];
@@ -99,7 +101,7 @@ InputDebounced j4_limit(J4_CalPin, INPUT_PULLUP, 1);
 InputDebounced j5_limit(J5_CalPin, INPUT_PULLUP, 1);
 InputDebounced j6_limit(J6_CalPin, INPUT_PULLUP, 1);
 
-InputDebounced input0(input0Pin, INPUT_PULLUP, 1);
+//InputDebounced input0(input0Pin, INPUT_PULLUP, 1);
 InputDebounced input1(input1Pin, INPUT_PULLUP, 1);
 InputDebounced input2(input2Pin, INPUT_PULLUP, 1);
 InputDebounced input3(input3Pin, INPUT_PULLUP, 1);
@@ -109,12 +111,37 @@ bool rx_output0, rx_output1, rx_output2, rx_output3;
 
 void setup() {
 
-  Wire.setClock(400000);
-  Wire.begin(8); // join i2c bus with address 8
-  Wire.onReceive(receiveEvent); // register event
-  Wire.onRequest(requestEvent);
+  Serial.begin(115200);                                           // start serial for output
+
+                                                                  //---- initialize the EasyCAT board -----
+                                                                  
+  if (EASYCAT.Init() == true)                                     // initialization
+  {                                                               // succesfully completed
+    Serial.print ("initialized");                                 //
+  }                                                               //
   
-  Serial.begin(115200);           // start serial for output
+  else                                                            // initialization failed   
+  {                                                               // the EasyCAT board was not recognized
+    Serial.print ("initialization failed");                       //     
+                                                                  // The most common reason is that the SPI 
+                                                                  // chip select choosen on the board doesn't 
+                                                                  // match the one choosen by the firmware
+                                                                  
+    pinMode(13, OUTPUT);                                          // stay in loop for ever
+                                                                  // with the Arduino led blinking
+    while(1)                                                      //
+    {                                                             //   
+      digitalWrite (13, LOW);                                     // 
+      delay(500);                                                 //   
+      digitalWrite (13, HIGH);                                    //  
+      delay(500);                                                 // 
+    }                                                             // 
+  } 
+
+  //Wire.setClock(400000);
+  //Wire.begin(8); // join i2c bus with address 8
+  //Wire.onReceive(receiveEvent); // register event
+  //Wire.onRequest(requestEvent);
 
   timer1 = millis();
   timer1_last = timer1;
@@ -133,15 +160,15 @@ void setup() {
   j5_limit.init();
   j6_limit.init();
   
-  input0.init();
+  //input0.init();
   input1.init();
   input2.init();
   input3.init();
 
-  pinMode(output0Pin, OUTPUT); digitalWriteFast(output0Pin, HIGH);
-  pinMode(output1Pin, OUTPUT); digitalWriteFast(output1Pin, HIGH);
+ //pinMode(output0Pin, OUTPUT); digitalWriteFast(output0Pin, HIGH);
+  //pinMode(output1Pin, OUTPUT); digitalWriteFast(output1Pin, HIGH);
   pinMode(output2Pin, OUTPUT); digitalWriteFast(output2Pin, HIGH);
-  pinMode(output3Pin, OUTPUT); digitalWriteFast(output3Pin, HIGH);
+  //pinMode(output3Pin, OUTPUT); digitalWriteFast(output3Pin, HIGH);
 
   pinMode(DriveEnablePin, OUTPUT); digitalWriteFast(DriveEnablePin, LOW);
   //pinMode(DriveAlarmPin, INPUT_PULLUP);
@@ -161,6 +188,8 @@ bool rx_homing, rx_homing_last;
 unsigned long rx_heartb_wdog, rx_heartb_wdog_last;
 unsigned long j_lim_rd_tm[6], j_lim_rd_tm_last[6];
 void loop() {
+
+  EASYCAT.MainTask();
 
   handleTx();
   handleRx();
@@ -223,6 +252,7 @@ void loop() {
   }
 }
 
+/*
 bool rxMutex;
 void receiveEvent(int length){
   // check if buffer is already being read
@@ -233,10 +263,10 @@ void receiveEvent(int length){
     int i = 0;
     while(Wire.available()) // loop through all but the last
     {
-      I2C_RxBuffer[i++] = Wire.read();
+      RxBuffer[i++] = Wire.read();
     }
     // calculate crc of rx buffer
-    RxCrc.u = calculateChecksum(I2C_RxBuffer, 30);
+    RxCrc.u = calculateChecksum(RxBuffer, 30);
     // unlock the rx buffer
     rxMutex = false;
   }
@@ -245,25 +275,26 @@ void receiveEvent(int length){
 void requestEvent() {
 
   // calculate checksum and append to tx buffer
-  TxCrc.u = calculateChecksum(I2C_TxBuffer,30);
-  I2C_TxBuffer[30] = TxCrc.b[0];
-  I2C_TxBuffer[31] = TxCrc.b[1];
+  TxCrc.u = calculateChecksum(TxBuffer,30);
+  TxBuffer[30] = TxCrc.b[0];
+  TxBuffer[31] = TxCrc.b[1];
 
-  Wire.write(I2C_TxBuffer,32);
+  Wire.write(TxBuffer,32);
 }
+*/
 
 void handleTx(){
 
   // byte 0 is used for misc status bits
-  I2C_TxBuffer[0] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
-  I2C_TxBuffer[0] = I2C_TxBuffer[0] | (tx_heartbeat ? B00000001 : B00000000);
-  I2C_TxBuffer[0] = I2C_TxBuffer[0] | (tx_en ? B00000010 : B00000000);
-  I2C_TxBuffer[0] = I2C_TxBuffer[0] | (tx_alarm ? B00000100 : B00000000);
-  //I2C_TxBuffer[0] = I2C_TxBuffer[0] | (tx_ ? B00001000 : B00000000);
-  //I2C_TxBuffer[0] = I2C_TxBuffer[0] | (tx_ ? B00010000 : B00000000);
-  //I2C_TxBuffer[0] = I2C_TxBuffer[0] | (tx_ ? B00100000 : B00000000);
-  //I2C_TxBuffer[0] = I2C_TxBuffer[0] | (tx_ ? B01000000 : B00000000);
-  I2C_TxBuffer[0] = I2C_TxBuffer[0] | (rx_heartbeat_lost ? B10000000 : B00000000);
+  TxBuffer[0] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
+  TxBuffer[0] = TxBuffer[0] | (tx_heartbeat ? B00000001 : B00000000);
+  TxBuffer[0] = TxBuffer[0] | (tx_en ? B00000010 : B00000000);
+  TxBuffer[0] = TxBuffer[0] | (tx_alarm ? B00000100 : B00000000);
+  //TxBuffer[0] = TxBuffer[0] | (tx_ ? B00001000 : B00000000);
+  //TxBuffer[0] = TxBuffer[0] | (tx_ ? B00010000 : B00000000);
+  //TxBuffer[0] = TxBuffer[0] | (tx_ ? B00100000 : B00000000);
+  //TxBuffer[0] = TxBuffer[0] | (tx_ ? B01000000 : B00000000);
+  TxBuffer[0] = TxBuffer[0] | (rx_heartbeat_lost ? B10000000 : B00000000);
 
   // bytes 1 through 24 are used for the encoders
   EncPosition[0].lval = J1encPos.read();
@@ -275,69 +306,80 @@ void handleTx(){
   int k=1;
   for (int i=0;i<=5;i++){
     for (int j=0;j<=3;j++){
-      I2C_TxBuffer[k++] = EncPosition[i].b[j];
+      TxBuffer[k++] = EncPosition[i].b[j];
     }
   }
   
   // byte 25 is used mostly for the limit switched
-  I2C_TxBuffer[25] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
-  I2C_TxBuffer[25] = I2C_TxBuffer[25] | (tx_j1_limit ? B00000001 : B00000000);
-  I2C_TxBuffer[25] = I2C_TxBuffer[25] | (tx_j2_limit ? B00000010 : B00000000);
-  I2C_TxBuffer[25] = I2C_TxBuffer[25] | (tx_j3_limit ? B00000100 : B00000000);
-  I2C_TxBuffer[25] = I2C_TxBuffer[25] | (tx_j4_limit ? B00001000 : B00000000);
-  I2C_TxBuffer[25] = I2C_TxBuffer[25] | (tx_j5_limit ? B00010000 : B00000000);
-  I2C_TxBuffer[25] = I2C_TxBuffer[25] | (tx_j6_limit ? B00100000 : B00000000);
-  //I2C_TxBuffer[25] = I2C_TxBuffer[25] | (tx_ ? B01000000 : B00000000);
-  //I2C_TxBuffer[25] = I2C_TxBuffer[25] | (tx_ ? B10000000 : B00000000);
+  TxBuffer[25] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
+  TxBuffer[25] = TxBuffer[25] | (tx_j1_limit ? B00000001 : B00000000);
+  TxBuffer[25] = TxBuffer[25] | (tx_j2_limit ? B00000010 : B00000000);
+  TxBuffer[25] = TxBuffer[25] | (tx_j3_limit ? B00000100 : B00000000);
+  TxBuffer[25] = TxBuffer[25] | (tx_j4_limit ? B00001000 : B00000000);
+  TxBuffer[25] = TxBuffer[25] | (tx_j5_limit ? B00010000 : B00000000);
+  TxBuffer[25] = TxBuffer[25] | (tx_j6_limit ? B00100000 : B00000000);
+  //TxBuffer[25] = TxBuffer[25] | (tx_ ? B01000000 : B00000000);
+  //TxBuffer[25] = TxBuffer[25] | (tx_ ? B10000000 : B00000000);
 
   // byte 26 is used for gpio 0 through 7
-  I2C_TxBuffer[26] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
-  I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_input0 ? B00000001 : B00000000);
-  I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_input1 ? B00000010 : B00000000);
-  I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_input2 ? B00000100 : B00000000);
-  I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_input3 ? B00001000 : B00000000);
-  //I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_ ? B00010000 : B00000000);
-  //I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_ ? B00100000 : B00000000);
-  //I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_ ? B01000000 : B00000000);
-  //I2C_TxBuffer[26] = I2C_TxBuffer[26] | (tx_ ? B10000000 : B00000000);
+  TxBuffer[26] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
+  TxBuffer[26] = TxBuffer[26] | (tx_input0 ? B00000001 : B00000000);
+  TxBuffer[26] = TxBuffer[26] | (tx_input1 ? B00000010 : B00000000);
+  TxBuffer[26] = TxBuffer[26] | (tx_input2 ? B00000100 : B00000000);
+  TxBuffer[26] = TxBuffer[26] | (tx_input3 ? B00001000 : B00000000);
+  //TxBuffer[26] = TxBuffer[26] | (tx_ ? B00010000 : B00000000);
+  //TxBuffer[26] = TxBuffer[26] | (tx_ ? B00100000 : B00000000);
+  //TxBuffer[26] = TxBuffer[26] | (tx_ ? B01000000 : B00000000);
+  //TxBuffer[26] = TxBuffer[26] | (tx_ ? B10000000 : B00000000);
 
-  //I2C_TxBuffer[27]
-  //I2C_TxBuffer[28]
-  //I2C_TxBuffer[29]
+  //TxBuffer[27]
+  //TxBuffer[28]
+  //TxBuffer[29]
 
   // tx buffer index 30 and 31 will be for crc
 
   // calculate checksum and append to tx buffer
-  TxCrc.u = calculateChecksum(I2C_TxBuffer,30);
-  I2C_TxBuffer[30] = TxCrc.b[0];
-  I2C_TxBuffer[31] = TxCrc.b[1];
+  TxCrc.u = calculateChecksum(TxBuffer,30);
+  TxBuffer[30] = TxCrc.b[0];
+  TxBuffer[31] = TxCrc.b[1];
 
-  //Serial.write(I2C_TxBuffer,32);
+  //Serial.write(TxBuffer,32);
+
+  // copy bytes to ethercat
+  for (uint i = 0; i < sizeof(EASYCAT.BufferIn.Byte); i++){
+    EASYCAT.BufferIn.Byte[i] = TxBuffer[i];
+  }
 
 }
 
-void handleRx(){ 
+void handleRx(){
+
+    // copy bytes from ethercat
+    for (uint i = 0; i < sizeof(RxBuffer); i++){
+      RxBuffer[i] = EASYCAT.BufferOut.Byte[i];
+    }
+
     // calculate crc of rx buffer
-    RxCrc.u = calculateChecksum(I2C_RxBuffer, 30);
+    RxCrc.u = calculateChecksum(RxBuffer, 30);
 
     // compare calc crc with rx crc
-    if (RxCrc.b[0] == I2C_RxBuffer[30] && RxCrc.b[1] == I2C_RxBuffer[31]) {
+    if (RxCrc.b[0] == RxBuffer[30] && RxCrc.b[1] == RxBuffer[31]) {
       
       // byte 0 is used for misc command bits
-      rx_heartbeat  = I2C_RxBuffer[0] & B00000001;
-      rx_en         = I2C_RxBuffer[0] & B00000010;
-      rx_homing     = I2C_RxBuffer[0] & B00000100;
-      //rx_ = I2C_RxBuffer[0] & B00001000;
-      //rx_ = I2C_RxBuffer[0] & B00010000;
-      //rx_ = I2C_RxBuffer[0] & B00100000;
-      //rx_ = I2C_RxBuffer[0] & B01000000;
-      //rx_ = I2C_RxBuffer[0] & B10000000;
+      rx_heartbeat  = RxBuffer[0] & B00000001;
+      rx_en         = RxBuffer[0] & B00000010;
+      rx_homing     = RxBuffer[0] & B00000100;
+      //rx_ = RxBuffer[0] & B00001000;
+      //rx_ = RxBuffer[0] & B00010000;
+      //rx_ = RxBuffer[0] & B00100000;
+      //rx_ = RxBuffer[0] & B01000000;
+      //rx_ = RxBuffer[0] & B10000000;
 
       // bytes 1 through 24 are used for velocity
       int k=1;
       for (int i=0;i<=5;i++){
         for (int j=0;j<=3;j++){
-          SetVelocity[i].b[j]=I2C_RxBuffer[k++];
+          SetVelocity[i].b[j]=RxBuffer[k++];
         }
       }
 
@@ -354,20 +396,20 @@ void handleRx(){
       // spec sheet for ratio is wrong its not 19+38/187 it is 20+38/187
       J6.run(SetVelocity[5].fval, (1293/64) * 400); // gear ratio * ppr
 
-      //I2C_RxBuffer[25]
+      //RxBuffer[25]
       
-      rx_output0 = I2C_RxBuffer[26] & B00000001;
-      rx_output1 = I2C_RxBuffer[26] & B00000010;
-      rx_output2 = I2C_RxBuffer[26] & B00000100;
-      rx_output3 = I2C_RxBuffer[26] & B00001000;
-      //rx_ = I2C_RxBuffer[26] & B00010000;
-      //rx_ = I2C_RxBuffer[26] & B00100000;
-      //rx_ = I2C_RxBuffer[26] & B01000000;
-      //rx_ = I2C_RxBuffer[26] & B10000000;
+      rx_output0 = RxBuffer[26] & B00000001;
+      rx_output1 = RxBuffer[26] & B00000010;
+      rx_output2 = RxBuffer[26] & B00000100;
+      rx_output3 = RxBuffer[26] & B00001000;
+      //rx_ = RxBuffer[26] & B00010000;
+      //rx_ = RxBuffer[26] & B00100000;
+      //rx_ = RxBuffer[26] & B01000000;
+      //rx_ = RxBuffer[26] & B10000000;
       
-      //I2C_RxBuffer[27]
-      //I2C_RxBuffer[28]
-      //I2C_RxBuffer[29]
+      //RxBuffer[27]
+      //RxBuffer[28]
+      //RxBuffer[29]
 
       // 30 and 31 are reserved for crc
     }
@@ -382,7 +424,7 @@ void handleInputs(){
   tx_j5_limit = !j5_limit.read();
   tx_j6_limit = !j6_limit.read();
 
-  tx_input0 = !input0.read();
+  //tx_input0 = !input0.read();
   tx_input1 = !input1.read();
   tx_input2 = !input2.read();
   tx_input3 = !input3.read();
@@ -393,10 +435,10 @@ void handleInputs(){
 
 void handleOutputs(){
 
-  digitalWriteFast(output0Pin, !rx_output0);
-  digitalWriteFast(output1Pin, !rx_output1);
+  //digitalWriteFast(output0Pin, !rx_output0);
+  //digitalWriteFast(output1Pin, !rx_output1);
   digitalWriteFast(output2Pin, !rx_output2);
-  digitalWriteFast(output3Pin, !rx_output3);
+  //digitalWriteFast(output3Pin, !rx_output3);
 
 }
 
@@ -427,7 +469,7 @@ void handleSerial(){
   Serial.print(" ");
   Serial.print(SetVelocity[5].fval);
   Serial.print(" ");
-  Serial.println(I2C_RxBuffer[25]);*/
+  Serial.println(RxBuffer[25]);*/
 }
 
 // https://www.tutorialspoint.com/cyclic-redundancy-check-crc-in-arduino
