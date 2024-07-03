@@ -7,6 +7,7 @@
 
 #include "EasyCAT.h"
 #include <SPI.h>
+
 EasyCAT EASYCAT(10);
 
 unsigned long timer1, timer1_last;
@@ -186,10 +187,21 @@ bool tx_j1_limit_last, tx_j2_limit_last, tx_j3_limit_last;
 bool tx_j4_limit_last, tx_j5_limit_last, tx_j6_limit_last;
 bool rx_homing, rx_homing_last;
 unsigned long rx_heartb_wdog, rx_heartb_wdog_last;
+unsigned long error_timer, error_flash_time_last;
+#define ERROR_FLASH_TIME  200;
+bool ErrorLedStatus;
 unsigned long j_lim_rd_tm[6], j_lim_rd_tm_last[6];
 void loop() {
 
-  EASYCAT.MainTask();
+  // WATCHDOG                   0x80
+  // ESM_INIT                   0x01          // state machine control
+  // ESM_PREOP                  0x02          // (state request)
+  // ESM_BOOT                   0x03          // 
+  // ESM_SAFEOP                 0x04          // safe-operational
+  // ESM_OP                     0x08          // operational
+  //unsigned char Status = EASYCAT.MainTask(); 
+
+  EASYCAT.MainTask(); 
 
   handleTx();
   handleRx();
@@ -219,6 +231,14 @@ void loop() {
   if (rx_heartb_wdog - rx_heartb_wdog_last > 2000){
     // heartbeat from master controller was lost
     rx_heartbeat_lost = true;
+  }
+  if (rx_heartbeat_lost){
+    error_timer = millis();
+    if (error_timer - error_flash_time_last > 200) {
+      error_flash_time_last = millis();
+      ErrorLedStatus = !ErrorLedStatus;
+    }
+    digitalWriteFast(HeartbeatLed, ErrorLedStatus);
   }
 
   if (rx_en != rx_en_last || rx_heartbeat_lost){
@@ -310,7 +330,7 @@ void handleTx(){
     }
   }
   
-  // byte 25 is used mostly for the limit switched
+  // byte 25 is used mostly for the limit switches
   TxBuffer[25] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
   TxBuffer[25] = TxBuffer[25] | (tx_j1_limit ? B00000001 : B00000000);
   TxBuffer[25] = TxBuffer[25] | (tx_j2_limit ? B00000010 : B00000000);

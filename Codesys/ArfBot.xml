@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-06-30T00:16:29.9694555" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-06-30T00:11:20.0420145">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-07-02T19:12:21.7334717" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-07-01T18:09:08.036925">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -20976,12 +20976,12 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                   <PlaceholderRedirection Placeholder="NetBaseSrv" Redirection="Net Base Services, 3.5.20.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="Standard" Redirection="Standard, 3.5.18.0 (System)" />
                   <PlaceholderRedirection Placeholder="Standard64" Redirection="Standard64, 3.5.20.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="UTF8" Redirection="UTF-8 Encoding Support, 4.0.0.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElem3DPath" Redirection="VisuElem3DPath, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemTextEditor" Redirection="VisuElemTextEditor, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemCamDisplayer" Redirection="VisuElemCamDisplayer, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemBase" Redirection="VisuElemBase, 4.5.0.0 (System)" />
-                  <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="MemoryBlockManager" Redirection="Memory Block Manager, 3.5.20.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemMeter" Redirection="VisuElemMeter, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemsSpecialControls" Redirection="VisuElemsSpecialControls, 4.5.0.0 (System)" />
@@ -20997,7 +20997,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                   <PlaceholderRedirection Placeholder="System_VisuElemXYChart" Redirection="VisuElemXYChart, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="OMAC_PackML_State_Machine" Redirection="OMAC PackML State Machine, 1.0.0.4 (3S - Smart Software Solutions GmbH)" />
                   <PlaceholderRedirection Placeholder="FloatingPointUtils" Redirection="FloatingPointUtils, 3.5.17.0 (System)" />
-                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="Collections" Redirection="Collections, 3.5.17.0 (System)" />
                   <PlaceholderRedirection Placeholder="StringSegs" Redirection="Immutable String Segments, 3.5.18.0 (3S - Smart Software Solutions GmbH)" />
                   <PlaceholderRedirection Placeholder="CBML" Redirection="Common Behaviour Model, 3.5.17.0 (3S - Smart Software Solutions GmbH)" />
@@ -21396,7 +21396,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                   </data>
                   <data name="configurations" handleUnknown="discard">
                     <configurations>
-                      <configuration name="EasyCAT_32_32_rev_1">
+                      <configuration name="DriveController">
                         <addData>
                           <data name="Device" handleUnknown="discard">
                             <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
@@ -21543,6 +21543,21 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                         </Value>
                                         <Name>Mailbox capabilities</Name>
                                       </Parameter>
+                                      <Parameter ParameterId="805438464" type="std:WORD">
+                                        <Attributes />
+                                        <Value name="_x0038_05438464" visiblename="Watchdog_Reg_0400">2498</Value>
+                                        <Name>Watchdog_Reg_0400</Name>
+                                      </Parameter>
+                                      <Parameter ParameterId="805438480" type="std:WORD">
+                                        <Attributes />
+                                        <Value name="_x0038_05438480" visiblename="Watchdog_Reg_0410">10000</Value>
+                                        <Name>Watchdog_Reg_0410</Name>
+                                      </Parameter>
+                                      <Parameter ParameterId="805438496" type="std:WORD">
+                                        <Attributes />
+                                        <Value name="_x0038_05438496" visiblename="Watchdog_Reg_0420">10000</Value>
+                                        <Name>Watchdog_Reg_0420</Name>
+                                      </Parameter>
                                       <Parameter ParameterId="1074796544" type="std:DWORD" IndexInDevDesc="0">
                                         <Attributes />
                                         <Value name="_x0031_074796544" visiblename="Number of Identity Parameters" desc="Number of Identity Parameters">4</Value>
@@ -21592,9 +21607,24 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                         <Description>AutoIncr Address of the Slave</Description>
                                       </Parameter>
                                       <Parameter ParameterId="1074855938" type="std:WORD">
-                                        <Attributes />
-                                        <Value name="_x0031_074855938" visiblename="StationAlias">0</Value>
+                                        <Attributes download="false" />
+                                        <Value name="_x0031_074855938" visiblename="StationAlias">1001</Value>
                                         <Name>StationAlias</Name>
+                                      </Parameter>
+                                      <Parameter ParameterId="1074855939" type="std:BOOL">
+                                        <Attributes download="false" />
+                                        <Value name="_x0031_074855939" visiblename="Optional">False</Value>
+                                        <Name>Optional</Name>
+                                      </Parameter>
+                                      <Parameter ParameterId="1074855941" type="std:UINT">
+                                        <Attributes download="false" />
+                                        <Value name="_x0031_074855941" visiblename="DeviceIdenticationADO">0</Value>
+                                        <Name>DeviceIdenticationADO</Name>
+                                      </Parameter>
+                                      <Parameter ParameterId="1074855942" type="std:USINT">
+                                        <Attributes download="false" />
+                                        <Value name="_x0031_074855942" visiblename="DeviceIdenticationMode">0</Value>
+                                        <Name>DeviceIdenticationMode</Name>
                                       </Parameter>
                                       <Parameter ParameterId="1074855984" type="std:STRING(255)" IndexInDevDesc="13">
                                         <Attributes channel="diag" offlineaccess="none" />
@@ -21624,15 +21654,25 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1610678272" type="std:BOOL" IndexInDevDesc="34">
                                         <Attributes />
-                                        <Value name="_x0031_610678272" visiblename="DC enable" desc="DC enable">FALSE</Value>
+                                        <Value name="_x0031_610678272" visiblename="DC enable" desc="DC enable">0</Value>
                                         <Name>DC enable</Name>
                                         <Description>DC enable</Description>
                                       </Parameter>
                                       <Parameter ParameterId="1610698752" type="std:BOOL" IndexInDevDesc="35">
                                         <Attributes />
-                                        <Value name="_x0031_610698752" visiblename="DC sync0 enable" desc="DC sync0 enable">FALSE</Value>
+                                        <Value name="_x0031_610698752" visiblename="DC sync0 enable" desc="DC sync0 enable">0</Value>
                                         <Name>DC sync0 enable</Name>
                                         <Description>DC sync0 enable</Description>
+                                      </Parameter>
+                                      <Parameter ParameterId="1610743808" type="std:STRING">
+                                        <Attributes />
+                                        <Value name="_x0031_610743808" visiblename="DC sync0 factor">'x 1'</Value>
+                                        <Name>DC sync0 factor</Name>
+                                      </Parameter>
+                                      <Parameter ParameterId="1610745088" type="std:DWORD">
+                                        <Attributes />
+                                        <Value name="_x0031_610745088" visiblename="DC sync0 shift time">0</Value>
+                                        <Name>DC sync0 shift time</Name>
                                       </Parameter>
                                       <Parameter ParameterId="1610764288" type="std:DWORD" IndexInDevDesc="37">
                                         <Attributes />
@@ -21642,14 +21682,34 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1610809344" type="std:BOOL" IndexInDevDesc="36">
                                         <Attributes />
-                                        <Value name="_x0031_610809344" visiblename="DC sync1 enable" desc="DC sync1 enable">FALSE</Value>
+                                        <Value name="_x0031_610809344" visiblename="DC sync1 enable" desc="DC sync1 enable">0</Value>
                                         <Name>DC sync1 enable</Name>
                                         <Description>DC sync1 enable</Description>
+                                      </Parameter>
+                                      <Parameter ParameterId="1610829824" type="std:STRING">
+                                        <Attributes />
+                                        <Value name="_x0031_610829824" visiblename="DC sync1 factor">'x 1'</Value>
+                                        <Name>DC sync1 factor</Name>
+                                      </Parameter>
+                                      <Parameter ParameterId="1610831104" type="std:DWORD">
+                                        <Attributes />
+                                        <Value name="_x0031_610831104" visiblename="DC sync1 shift time">0</Value>
+                                        <Name>DC sync1 shift time</Name>
                                       </Parameter>
                                       <Parameter ParameterId="1610833920" type="std:WORD" IndexInDevDesc="32">
                                         <Attributes download="false" offlineaccess="none" onlineaccess="none" />
                                         <Value name="_x0031_610833920" visiblename="DCSetting" offlineaccess="none" onlineaccess="none">0</Value>
                                         <Name>DCSetting</Name>
+                                      </Parameter>
+                                      <Parameter ParameterId="1610835201" type="std:BYTE">
+                                        <Attributes />
+                                        <Value name="_x0031_610835201" visiblename="Latch 0 control">0</Value>
+                                        <Name>Latch 0 control</Name>
+                                      </Parameter>
+                                      <Parameter ParameterId="1610835202" type="std:BYTE">
+                                        <Attributes />
+                                        <Value name="_x0031_610835202" visiblename="Latch 1 control">0</Value>
+                                        <Name>Latch 1 control</Name>
                                       </Parameter>
                                     </ParameterSection>
                                     <ParameterSection>
@@ -26698,7 +26758,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
             <Object Name="I2C_master_Bus1" ObjectId="2f7094b9-7865-4f98-a9e2-a6d1ff9d1660" />
           </Object>
           <Object Name="EtherCAT_Master_SoftMotion" ObjectId="09718da8-6762-4b3c-a790-897818c154e9">
-            <Object Name="EasyCAT_32_32_rev_1" ObjectId="005b56d9-737f-4834-ad56-d9e484e05e19" />
+            <Object Name="DriveController" ObjectId="005b56d9-737f-4834-ad56-d9e484e05e19" />
           </Object>
         </Object>
         <Object Name="Library Manager" ObjectId="7947b9f0-2ec0-46cb-a7e5-f8f763be16e6" />
