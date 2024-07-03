@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_KinAxes" Id="{87be04da-f7da-4ee1-a6f2-b1aa5ee2fea2}">
+    <Declaration><![CDATA[TYPE ST_KinAxes :
+STRUCT
+    nAxisIdsMcs: ARRAY[1..8] OF DWORD;
+    nAxisIdsAcs: ARRAY[1..8] OF DWORD;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -3,7 +3,7 @@
   <POU Name="FB_HomingProcessor" Id="{6c30ff35-bc31-4ed8-ab4a-320ad080dc49}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_HomingProcessor
 VAR_IN_OUT
-	J1, J2, J3, J4, J5, J6: AXIS_REF_SM3;
+	J1, J2, J3, J4, J5, J6: AXIS_REF;
 	AxisGroup: AXIS_GROUP_REF_SM3;
 	GroupHandler: FB_GroupHandler;
 	Controller: FB_Controller;
@@ -21,7 +21,7 @@ VAR_OUTPUT
 	Done: BOOL;
 	Busy: BOOL;
 	Error: BOOL;
-	ErrorID: SMC_ERROR;
+	ErrorID: UDINT;
 END_VAR
 VAR
 	_ExecuteRtrig: R_TRIG;
@@ -32,11 +32,15 @@ VAR
 	_SequenceMain: INT;
 	_StartHoming: BOOL;
 	
-	_SMC_Homing_J1, _SMC_Homing_J2, _SMC_Homing_J3: SMC_Homing;
-	_SMC_Homing_J4, _SMC_Homing_J5, _SMC_Homing_J6: SMC_Homing;
+	_SMC_Homing_J1, _SMC_Homing_J2, _SMC_Homing_J3: MC_Home;
+	_SMC_Homing_J4, _SMC_Homing_J5, _SMC_Homing_J6: MC_Home;
+    _ST_HomingOptions_J1,_ST_HomingOptions_J2,_ST_HomingOptions_J3: ST_HomingOptions;
+    _ST_HomingOptions_J4,_ST_HomingOptions_J5,_ST_HomingOptions_J6: ST_HomingOptions;
 	
 	_MC_SetPosition_J1, _MC_SetPosition_J2, _MC_SetPosition_J3: MC_SetPosition;
 	_MC_SetPosition_J4, _MC_SetPosition_J5, _MC_SetPosition_J6: MC_SetPosition;
+    _ST_SetPositionsOptions_J1,_ST_SetPositionsOptions_J2,_ST_SetPositionsOptions_J3: ST_SetPositionOptions;
+    _ST_SetPositionsOptions_J4,_ST_SetPositionsOptions_J5,_ST_SetPositionsOptions_J6: ST_SetPositionOptions;
 	
 	_HomingVelocityFast: LREAL:= 10.0;
 	_HomingVelocitySlow: LREAL:= 5.0;
@@ -92,18 +96,18 @@ CASE _SequenceMain OF
 		_MoveCommandProcessor.M_Home();
 		_SequenceMain := STEP_IDLE;
 		
-		_SMC_Homing_J1.bExecute := FALSE;
-		_SMC_Homing_J2.bExecute := FALSE;
-		_SMC_Homing_J3.bExecute := FALSE;
-		_SMC_Homing_J4.bExecute := FALSE;
-		_SMC_Homing_J5.bExecute := FALSE;
-		_SMC_Homing_J6.bExecute := FALSE;
-		J1.bSWLimitEnable := TRUE;
+		_SMC_Homing_J1.Execute := FALSE;
+		_SMC_Homing_J2.Execute := FALSE;
+		_SMC_Homing_J3.Execute := FALSE;
+		_SMC_Homing_J4.Execute := FALSE;
+		_SMC_Homing_J5.Execute := FALSE;
+		_SMC_Homing_J6.Execute := FALSE;
+		(*J1.bSWLimitEnable := TRUE;
 		J2.bSWLimitEnable := TRUE;
 		J3.bSWLimitEnable := TRUE;
 		J4.bSWLimitEnable := TRUE;
 		J5.bSWLimitEnable := TRUE;
-		J6.bSWLimitEnable := TRUE;
+		J6.bSWLimitEnable := TRUE;*)
 		
 	STEP_IDLE: // IDLE
 		IF _StartHoming AND Enable THEN
@@ -130,110 +134,110 @@ CASE _SequenceMain OF
 		END_IF;
 		
 	STEP_FAST_HOME_G1:	
-		_SMC_Homing_J1.bExecute := TRUE;
-		_SMC_Homing_J2.bExecute := TRUE;
-		_SMC_Homing_J3.bExecute := TRUE;
-		_SMC_Homing_J1.bReturnToZero := FALSE;
-		_SMC_Homing_J2.bReturnToZero := FALSE;
-		_SMC_Homing_J3.bReturnToZero := FALSE;
-		_SMC_Homing_J1.fVelocitySlow := _HomingVelocitySlow;
-		_SMC_Homing_J2.fVelocitySlow := _HomingVelocitySlow;
-		_SMC_Homing_J3.fVelocitySlow := _HomingVelocitySlow;
-		J1.bSWLimitEnable := FALSE;
-		J2.bSWLimitEnable := FALSE;
-		J3.bSWLimitEnable := FALSE;
+		_SMC_Homing_J1.Execute := TRUE;
+		_SMC_Homing_J2.Execute := TRUE;
+		_SMC_Homing_J3.Execute := TRUE;
+		//_SMC_Homing_J1.bReturnToZero := FALSE;
+		//_SMC_Homing_J2.bReturnToZero := FALSE;
+		//_SMC_Homing_J3.bReturnToZero := FALSE;
+		_SMC_Homing_J1.Options.SearchVelocity := _HomingVelocitySlow;
+		_SMC_Homing_J2.Options.SearchVelocity := _HomingVelocitySlow;
+		_SMC_Homing_J3.Options.SearchVelocity := _HomingVelocitySlow;
+		//J1.bSWLimitEnable := FALSE;
+		//J2.bSWLimitEnable := FALSE;
+		//J3.bSWLimitEnable := FALSE;
 		_SequenceMain := STEP_WAIT_FAST_HOME_G1;
 		
 	STEP_WAIT_FAST_HOME_G1: // wait fast home group 1
-		IF _SMC_Homing_J1.bDone
-			AND _SMC_Homing_J2.bDone
-			AND _SMC_Homing_J3.bDone THEN
-				_SMC_Homing_J1.bExecute := FALSE;
-				_SMC_Homing_J2.bExecute := FALSE;
-				_SMC_Homing_J3.bExecute := FALSE;
+		IF _SMC_Homing_J1.Done
+			AND _SMC_Homing_J2.Done
+			AND _SMC_Homing_J3.Done THEN
+				_SMC_Homing_J1.Execute := FALSE;
+				_SMC_Homing_J2.Execute := FALSE;
+				_SMC_Homing_J3.Execute := FALSE;
 				_SequenceMain := STEP_SLOW_HOME_G1;
 		END_IF
 		
 	STEP_SLOW_HOME_G1: // slow home group 1
-		_SMC_Homing_J1.bExecute := TRUE;
-		_SMC_Homing_J2.bExecute := TRUE;
-		_SMC_Homing_J3.bExecute := TRUE;
-		_SMC_Homing_J1.bReturnToZero := TRUE;
-		_SMC_Homing_J2.bReturnToZero := TRUE;
-		_SMC_Homing_J3.bReturnToZero := TRUE;
-		_SMC_Homing_J1.fVelocitySlow := _HomingVelocitySlowSlow;
-		_SMC_Homing_J2.fVelocitySlow := _HomingVelocitySlowSlow;
-		_SMC_Homing_J3.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J1.Execute := TRUE;
+		_SMC_Homing_J2.Execute := TRUE;
+		_SMC_Homing_J3.Execute := TRUE;
+		//_SMC_Homing_J1.bReturnToZero := TRUE;
+		//_SMC_Homing_J2.bReturnToZero := TRUE;
+		//_SMC_Homing_J3.bReturnToZero := TRUE;
+		_SMC_Homing_J1.Options.SearchVelocity := _HomingVelocitySlowSlow;
+		_SMC_Homing_J2.Options.SearchVelocity := _HomingVelocitySlowSlow;
+		_SMC_Homing_J3.Options.SearchVelocity := _HomingVelocitySlowSlow;
 		_SequenceMain := STEP_WAIT_SLOW_HOME_G1;
 		
 	STEP_WAIT_SLOW_HOME_G1:
-		IF _SMC_Homing_J1.bDone
-			AND _SMC_Homing_J2.bDone
-			AND _SMC_Homing_J3.bDone THEN
-				_SMC_Homing_J1.bExecute := FALSE;
-				_SMC_Homing_J2.bExecute := FALSE;
-				_SMC_Homing_J3.bExecute := FALSE;
+		IF _SMC_Homing_J1.Done
+			AND _SMC_Homing_J2.Done
+			AND _SMC_Homing_J3.Done THEN
+				_SMC_Homing_J1.Execute := FALSE;
+				_SMC_Homing_J2.Execute := FALSE;
+				_SMC_Homing_J3.Execute := FALSE;
 				_SequenceMain := STEP_FAST_HOME_G2;
 		END_IF
 		
 	STEP_FAST_HOME_G2:		
-		_SMC_Homing_J4.bExecute := TRUE;
-		_SMC_Homing_J5.bExecute := TRUE;
-		_SMC_Homing_J4.bReturnToZero := FALSE;
-		_SMC_Homing_J5.bReturnToZero := FALSE;
-		_SMC_Homing_J4.fVelocitySlow := _HomingVelocitySlow;
-		_SMC_Homing_J5.fVelocitySlow := _HomingVelocitySlow;
-		J4.bSWLimitEnable := FALSE;
-		J5.bSWLimitEnable := FALSE;
+		_SMC_Homing_J4.Execute := TRUE;
+		_SMC_Homing_J5.Execute := TRUE;
+		//_SMC_Homing_J4.bReturnToZero := FALSE;
+		//_SMC_Homing_J5.bReturnToZero := FALSE;
+		_SMC_Homing_J4.Options.SearchVelocity := _HomingVelocitySlow;
+		_SMC_Homing_J5.Options.SearchVelocity := _HomingVelocitySlow;
+		//J4.bSWLimitEnable := FALSE;
+		//J5.bSWLimitEnable := FALSE;
 		_SequenceMain := STEP_WAIT_FAST_HOME_G2;
 		
 	STEP_WAIT_FAST_HOME_G2:
-		IF _SMC_Homing_J4.bDone
-			AND _SMC_Homing_J5.bDone THEN
-				_SMC_Homing_J4.bExecute := FALSE;
-				_SMC_Homing_J5.bExecute := FALSE;
+		IF _SMC_Homing_J4.Done
+			AND _SMC_Homing_J5.Done THEN
+				_SMC_Homing_J4.Execute := FALSE;
+				_SMC_Homing_J5.Execute := FALSE;
 				_SequenceMain := STEP_SLOW_HOME_G2;
 		END_IF
 		
 	STEP_SLOW_HOME_G2:
-		_SMC_Homing_J4.bExecute := TRUE;
-		_SMC_Homing_J5.bExecute := TRUE;
-		_SMC_Homing_J4.bReturnToZero := TRUE;
-		_SMC_Homing_J5.bReturnToZero := TRUE;
-		_SMC_Homing_J4.fVelocitySlow := _HomingVelocitySlowSlow;
-		_SMC_Homing_J5.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J4.Execute := TRUE;
+		_SMC_Homing_J5.Execute := TRUE;
+		//_SMC_Homing_J4.bReturnToZero := TRUE;
+		//_SMC_Homing_J5.bReturnToZero := TRUE;
+		_SMC_Homing_J4.Options.SearchVelocity := _HomingVelocitySlowSlow;
+		_SMC_Homing_J5.Options.SearchVelocity := _HomingVelocitySlowSlow;
 		_SequenceMain := STEP_WAIT_SLOW_HOME_G2;
 		
 	STEP_WAIT_SLOW_HOME_G2:
-		IF _SMC_Homing_J4.bDone
-			AND _SMC_Homing_J5.bDone THEN
-				_SMC_Homing_J4.bExecute := FALSE;
-				_SMC_Homing_J5.bExecute := FALSE;
+		IF _SMC_Homing_J4.Done
+			AND _SMC_Homing_J5.Done THEN
+				_SMC_Homing_J4.Execute := FALSE;
+				_SMC_Homing_J5.Execute := FALSE;
 				_SequenceMain := STEP_FAST_HOME_G3;
 		END_IF
 		
 	STEP_FAST_HOME_G3:
-		_SMC_Homing_J6.bExecute := TRUE;
-		_SMC_Homing_J6.bReturnToZero := FALSE;
-		_SMC_Homing_J6.fVelocitySlow := _HomingVelocitySlow;
-		J6.bSWLimitEnable := FALSE;
+		_SMC_Homing_J6.Execute := TRUE;
+		//_SMC_Homing_J6.bReturnToZero := FALSE;
+		_SMC_Homing_J6.Options.SearchVelocity := _HomingVelocitySlow;
+		//J6.bSWLimitEnable := FALSE;
 		_SequenceMain := STEP_WAIT_FAST_HOME_G3;
 		
 	STEP_WAIT_FAST_HOME_G3:
-		IF _SMC_Homing_J6.bDone THEN
-			_SMC_Homing_J6.bExecute := FALSE;
+		IF _SMC_Homing_J6.Done THEN
+			_SMC_Homing_J6.Execute := FALSE;
 			_SequenceMain := STEP_SLOW_HOME_G3;
 		END_IF
 		
 	STEP_SLOW_HOME_G3:
-		_SMC_Homing_J6.bExecute := TRUE;
-		_SMC_Homing_J6.bReturnToZero := TRUE;
-		_SMC_Homing_J6.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J6.Execute := TRUE;
+		//_SMC_Homing_J6.bReturnToZero := TRUE;
+		_SMC_Homing_J6.Options.SearchVelocity := _HomingVelocitySlowSlow;
 		_SequenceMain := STEP_WAIT_SLOW_HOME_G3;
 		
 	STEP_WAIT_SLOW_HOME_G3:
-		IF _SMC_Homing_J6.bDone THEN
-			_SMC_Homing_J6.bExecute := FALSE;
+		IF _SMC_Homing_J6.Done THEN
+			_SMC_Homing_J6.Execute := FALSE;
 			Flags[GVL.HOME_COMPLETE].Value := TRUE;
 			IF NOT Flags[GVL.HOM_TO_POSE_IDX].Value THEN
 				_SequenceMain := STEP_DONE;
@@ -263,7 +267,7 @@ _M_HandlePose();
 //
 IF _ResetRtrig.Q AND Error THEN
 	Error := FALSE;
-	ErrorID := SMC_NO_ERROR;
+	ErrorID := 0;
 	_SequenceMain := STEP_DONE;
 	GroupHandler.M_ResetGroup();
 	_MoveCommandProcessor.M_Home();
@@ -271,29 +275,29 @@ END_IF
 
 //
 _ErrorRtrig(CLK:=GroupHandler.Error
-				OR _SMC_Homing_J1.bError
-				OR _SMC_Homing_J2.bError
-				OR _SMC_Homing_J3.bError
-				OR _SMC_Homing_J4.bError
-				OR _SMC_Homing_J5.bError
-				OR _SMC_Homing_J6.bError
+				OR _SMC_Homing_J1.Error
+				OR _SMC_Homing_J2.Error
+				OR _SMC_Homing_J3.Error
+				OR _SMC_Homing_J4.Error
+				OR _SMC_Homing_J5.Error
+				OR _SMC_Homing_J6.Error
 				OR _MoveCommandProcessor.Error);			
 IF _ErrorRtrig.Q THEN
 	Error := TRUE;
 	IF GroupHandler.Error THEN
 		ErrorID := GroupHandler.ErrorID;
-	ELSIF _SMC_Homing_J1.bError THEN
-		ErrorID := _SMC_Homing_J1.nErrorID;
-	ELSIF _SMC_Homing_J2.bError THEN
-		ErrorID := _SMC_Homing_J2.nErrorID;
-	ELSIF _SMC_Homing_J3.bError THEN
-		ErrorID := _SMC_Homing_J3.nErrorID;
-	ELSIF _SMC_Homing_J4.bError THEN
-		ErrorID := _SMC_Homing_J4.nErrorID;
-	ELSIF _SMC_Homing_J5.bError THEN
-		ErrorID := _SMC_Homing_J5.nErrorID;
-	ELSIF _SMC_Homing_J6.bError THEN
-		ErrorID := _SMC_Homing_J6.nErrorID;
+	ELSIF _SMC_Homing_J1.Error THEN
+		ErrorID := _SMC_Homing_J1.ErrorID;
+	ELSIF _SMC_Homing_J2.Error THEN
+		ErrorID := _SMC_Homing_J2.ErrorID;
+	ELSIF _SMC_Homing_J3.Error THEN
+		ErrorID := _SMC_Homing_J3.ErrorID;
+	ELSIF _SMC_Homing_J4.Error THEN
+		ErrorID := _SMC_Homing_J4.ErrorID;
+	ELSIF _SMC_Homing_J5.Error THEN
+		ErrorID := _SMC_Homing_J5.ErrorID;
+	ELSIF _SMC_Homing_J6.Error THEN
+		ErrorID := _SMC_Homing_J6.ErrorID;
 	ELSIF _MoveCommandProcessor.Error THEN
 		// TODO need to rework how error messages are handled (globally)
 		// if the move command processor has an error, we dont know what it is.
@@ -302,10 +306,25 @@ END_IF
 
 // TODO make search direction configurable for any robot
 //
+_ST_HomingOptions_J1.SearchDirection := MC_Negative_Direction;
 _SMC_Homing_J1(
+	Axis:= J1, 
+	Execute:= , 
+	Position:= StoredPositions[GVL.HOM_POS_IDX].Position.X, 
+	HomingMode:= MC_HomingMode.MC_DefaultHoming, 
+	BufferMode:= , 
+	Options:= _ST_HomingOptions_J1, 
+	bCalibrationCam:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+(*_SMC_Homing_J1(
 	Axis:=J1 , 
-	bExecute:= ,
-	fHomePosition:= StoredPositions[GVL.HOM_POS_IDX].Position.X, 
+	Execute:= ,
+	Position:= StoredPositions[GVL.HOM_POS_IDX].Position.X, 
 	fVelocitySlow:= , 
 	fVelocityFast:= _HomingVelocityFast, 
 	fAcceleration:= _HomingAcceleration, 
@@ -445,58 +464,71 @@ _SMC_Homing_J6(
 	bError=> , 
 	nErrorID=> , 
 	bStartLatchingIndex=> );
+    *)
 	
 //
+_ST_SetPositionsOptions_J1.ClearPositionLag := TRUE;
 _MC_SetPosition_J1(
 	Axis:= J1, 
 	Execute:= _MC_SetPosition_J1.Execute AND NOT _MC_SetPosition_J1.Done AND NOT _MC_SetPosition_J1.Error, 
 	Position:= 0.0, 
 	Mode:= FALSE, // true=relative false=absolute
+    Options:= _ST_SetPositionsOptions_J1,
 	Done=> , 
 	Busy=> , 
 	Error=> , 
 	ErrorID=> );
+_ST_SetPositionsOptions_J2.ClearPositionLag := TRUE;
 _MC_SetPosition_J2(
 	Axis:= J2, 
 	Execute:= _MC_SetPosition_J2.Execute AND NOT _MC_SetPosition_J2.Done AND NOT _MC_SetPosition_J2.Error, 
 	Position:= 0.0, 
 	Mode:= FALSE, // true=relative false=absolute
+    Options:= _ST_SetPositionsOptions_J2,
 	Done=> , 
 	Busy=> , 
 	Error=> , 
 	ErrorID=> );
+_ST_SetPositionsOptions_J3.ClearPositionLag := TRUE;
 _MC_SetPosition_J3(
 	Axis:= J3, 
 	Execute:= _MC_SetPosition_J3.Execute AND NOT _MC_SetPosition_J3.Done AND NOT _MC_SetPosition_J3.Error, 
 	Position:= 0.0, 
 	Mode:= FALSE, // true=relative false=absolute
+    Options:= _ST_SetPositionsOptions_J3,
 	Done=> , 
 	Busy=> , 
 	Error=> , 
 	ErrorID=> );
+_ST_SetPositionsOptions_J4.ClearPositionLag := TRUE;
 _MC_SetPosition_J4(
 	Axis:= J4, 
 	Execute:= _MC_SetPosition_J4.Execute AND NOT _MC_SetPosition_J4.Done AND NOT _MC_SetPosition_J4.Error, 
 	Position:= 0.0, 
 	Mode:= FALSE, // true=relative false=absolute
+    Options:= _ST_SetPositionsOptions_J4,
 	Done=> , 
 	Busy=> , 
 	Error=> , 
 	ErrorID=> );
+_ST_SetPositionsOptions_J5.ClearPositionLag := TRUE;
 _MC_SetPosition_J5(
 	Axis:= J5, 
 	Execute:= _MC_SetPosition_J5.Execute AND NOT _MC_SetPosition_J5.Done AND NOT _MC_SetPosition_J5.Error, 
 	Position:= 0.0, 
 	Mode:= FALSE, // true=relative false=absolute
+    Options:= _ST_SetPositionsOptions_J5,
 	Done=> , 
 	Busy=> , 
 	Error=> , 
 	ErrorID=> );
+_ST_SetPositionsOptions_J6.ClearPositionLag := TRUE;
 _MC_SetPosition_J6(
 	Axis:= J6, 
 	Execute:= _MC_SetPosition_J6.Execute AND NOT _MC_SetPosition_J6.Done AND NOT _MC_SetPosition_J6.Error, 
 	Position:= 0.0, 
 	Mode:= FALSE, // true=relative false=absolute
+    Options:= _ST_SetPositionsOptions_J6,
 	Done=> , 
 	Busy=> , 
 	Error=> , 

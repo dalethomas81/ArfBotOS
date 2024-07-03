@@ -12,7 +12,7 @@ END_VAR
 VAR_OUTPUT
 	Busy: BOOL;
 	Error: BOOL;
-	ErrorID: SMC_ERROR;
+	ErrorID: UDINT;
 END_VAR
 VAR
 	//

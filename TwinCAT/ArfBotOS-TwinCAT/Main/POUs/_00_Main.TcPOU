@@ -35,6 +35,21 @@ VAR
 	//
 	in_stKinToPlc      AT %I*     : NCTOPLC_NCICHANNEL_REF;
 	out_stPlcToKin     AT %Q*     : PLCTONC_NCICHANNEL_REF;
+
+    stAxesConfig          : ST_KinAxes;
+    io_X                  : AXIS_REF; 
+    io_Y                  : AXIS_REF;
+    io_Z                  : AXIS_REF;
+    io_A                  : AXIS_REF; 
+    io_B                  : AXIS_REF;
+    io_C                  : AXIS_REF;
+    io_M1                 : AXIS_REF;
+    io_M2                 : AXIS_REF;
+    io_M3                 : AXIS_REF;
+    io_M4                 : AXIS_REF;
+    io_M5                 : AXIS_REF;
+    io_M6                 : AXIS_REF;
+
 	
 	//
 	_i, _j, _k: INT;
@@ -43,7 +58,25 @@ VAR
 
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[{region "utility"}
+      <ST><![CDATA[
+// twincat hello world
+(* read the IDs from the cyclic axis interface so the axes can mapped later to the kinematic group *)
+stAxesConfig.nAxisIdsAcs[1] := io_M1.NcToPlc.AxisId;
+stAxesConfig.nAxisIdsAcs[2] := io_M2.NcToPlc.AxisId;
+stAxesConfig.nAxisIdsAcs[3] := io_M3.NcToPlc.AxisId;
+stAxesConfig.nAxisIdsAcs[4] := io_M4.NcToPlc.AxisId;
+stAxesConfig.nAxisIdsAcs[5] := io_M5.NcToPlc.AxisId;
+stAxesConfig.nAxisIdsAcs[6] := io_M6.NcToPlc.AxisId;
+stAxesConfig.nAxisIdsMcs[1] := io_X.NcToPlc.AxisId;
+stAxesConfig.nAxisIdsMcs[2] := io_Y.NcToPlc.AxisId;
+stAxesConfig.nAxisIdsMcs[3] := io_Z.NcToPlc.AxisId;
+stAxesConfig.nAxisIdsMcs[4] := io_A.NcToPlc.AxisId;
+stAxesConfig.nAxisIdsMcs[5] := io_B.NcToPlc.AxisId;
+stAxesConfig.nAxisIdsMcs[6] := io_C.NcToPlc.AxisId;
+
+
+
+{region "utility"}
 	GVL.ResetRtrig(CLK:=GVL.Reset);
 	IF GVL.ResetRtrig.Q THEN
 		GVL.Reset := FALSE;
@@ -156,7 +189,7 @@ GroupHandler(
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
-ProcessHome(
+(*ProcessHome(
 	J1:= SM_Drive_PosControl_J1, 
 	J2:= SM_Drive_PosControl_J2, 
 	J3:= SM_Drive_PosControl_J3, 
@@ -180,7 +213,7 @@ ProcessHome(
 	Done=> , 
 	Busy=> , 
 	Error=> , 
-	ErrorID=> );
+	ErrorID=> );*)
 
 IF ProcessHome.Reset THEN
 	HomingStatusText := '';
