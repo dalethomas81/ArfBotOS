@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_Triggers" Id="{23fe38f5-1749-4c16-9421-9a5256c84443}">
+    <Declaration><![CDATA[TYPE ST_Triggers :
+STRUCT
+	Left: ST_Trigger;
+	Right: ST_Trigger;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

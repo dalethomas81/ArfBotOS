@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ParseVarSetCmd" Id="{21a45979-23a6-4d05-8c5e-026456e22047}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ParseVarSetCmd
+VAR_INPUT
+	Command: STRING(GVL.COMMAND_LEN);
+END_VAR
+VAR_OUTPUT
+	stCommand: ST_VarSetCmd;
+	Error: BOOL;
+	ErrorDescription: STRING;
+END_VAR
+VAR
+	_CmdParams: ARRAY[0..GVL.COMMAND_LEN] OF STRING;
+END_VAR
+VAR CONSTANT
+	_ArrayTypeS: STRING(3) := 'STO';
+	_ArrayTypeV: STRING(3) := 'VIS';
+	_ArrayTypeF: STRING(3) := 'FLG';
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// S|V|F index x y z a b c
+// S 0000 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 
+// V 0000 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 
+// F 0000 1
+
+Error:=FALSE;
+ErrorDescription:='';
+
+// split command string into commands
+_CmdParams:=F_SplitCmd(Command:=Command);
+
+//
+IF _CmdParams[0] = _ArrayTypeS  THEN
+	stCommand.ArrayType := DUT_Command_ArrayType.StoredPosition;
+ELSIF _CmdParams[0] = _ArrayTypeV THEN
+	stCommand.ArrayType := DUT_Command_ArrayType.VisionRegister;
+ELSIF _CmdParams[0] = _ArrayTypeF THEN
+	stCommand.ArrayType := DUT_Command_ArrayType.Flag;
+ELSE
+	Error:=TRUE;
+	ErrorDescription:='Incorrect array type';
+END_IF
+
+//
+stCommand.ArrayIndex := STRING_TO_INT(_CmdParams[1]);
+IF ((stCommand.ArrayIndex < GVL.POS_ARR_BEG OR stCommand.ArrayIndex > GVL.POS_ARR_END) AND stCommand.ArrayType = DUT_Command_ArrayType.StoredPosition)
+	OR ((stCommand.ArrayIndex < GVL.VIS_ARR_BEG OR stCommand.ArrayIndex > GVL.VIS_ARR_END) AND stCommand.ArrayType = DUT_Command_ArrayType.VisionRegister)
+	OR ((stCommand.ArrayIndex < GVL.FLG_ARR_BEG OR stCommand.ArrayIndex > GVL.FLG_ARR_END) AND stCommand.ArrayType = DUT_Command_ArrayType.Flag) THEN
+		Error:=TRUE;
+		ErrorDescription:='Incorrect array type';
+END_IF
+
+//
+stCommand.Coordinates.X := STRING_TO_LREAL(_CmdParams[2]);
+stCommand.Coordinates.Y := STRING_TO_LREAL(_CmdParams[3]);
+stCommand.Coordinates.Z := STRING_TO_LREAL(_CmdParams[4]);
+stCommand.Coordinates.A := STRING_TO_LREAL(_CmdParams[5]);
+stCommand.Coordinates.B := STRING_TO_LREAL(_CmdParams[6]);
+stCommand.Coordinates.C := STRING_TO_LREAL(_CmdParams[7]);]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

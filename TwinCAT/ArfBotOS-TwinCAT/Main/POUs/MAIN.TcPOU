@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="MAIN" Id="{be33d20d-73e2-4297-83c2-6bc673437805}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	Count: UINT;
+	
+	// https://infosys.beckhoff.com/content/1033/tc3_plc_intro/11948825611.html?id=1756449079294237528
+	Output1 AT %Q* : BOOL;
+	Input0 AT %I* : BOOL;
+	
+	Bit16_RisingTestRamp AT %I* :  UINT;
+	
+	BufferIn AT %I* : ARRAY[0..31] OF BYTE;
+	BufferOut AT %Q* : ARRAY[0..31] OF BYTE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Count := Count + 1;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

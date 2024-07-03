@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="BuildVarSetCmd" Id="{464f3abe-fbad-44ed-ab93-0358a4edadad}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION BuildVarSetCmd : STRING(GVL.COMMAND_LEN)
+VAR_INPUT
+	stCommand: ST_VarSetCmd;
+END_VAR
+VAR
+	_Command: STRING(GVL.COMMAND_LEN);
+END_VAR
+VAR CONSTANT
+	_Delimiter: STRING := ' ';
+	_ArrayTypeS: STRING(3) := 'STO';
+	_ArrayTypeV: STRING(3) := 'VIS';
+	_ArrayTypeF: STRING(3) := 'FLG';
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// S|V|F index x y z a b c
+// S 0000 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 
+// V 0000 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 
+// F 0000 1
+
+// clear the command
+_Command:='';
+
+// build the command
+CASE stCommand.ArrayType OF
+	DUT_Command_ArrayType.StoredPosition:
+		F_AddElement(_Command, _Delimiter, _ArrayTypeS);
+	DUT_Command_ArrayType.VisionRegister:
+		F_AddElement(_Command, _Delimiter, _ArrayTypeV);
+	DUT_Command_ArrayType.Flag:
+		F_AddElement(_Command, _Delimiter, _ArrayTypeF);
+END_CASE
+
+// add the array index
+F_AddElement(_Command, _Delimiter, INT_TO_STRING(stCommand.ArrayIndex));
+
+// add the coordinates
+IF stCommand.ArrayType = DUT_Command_ArrayType.StoredPosition 
+	OR stCommand.ArrayType = DUT_Command_ArrayType.VisionRegister THEN
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.X));
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.Y));
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.Z));
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.A));
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.B));
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.C));
+		
+ELSIF stCommand.ArrayType = DUT_Command_ArrayType.Flag THEN
+		// we only send the x for readability. it will work if we send them all.
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.X));
+		
+END_IF
+
+// set function equal to command
+BuildVarSetCmd := _Command;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

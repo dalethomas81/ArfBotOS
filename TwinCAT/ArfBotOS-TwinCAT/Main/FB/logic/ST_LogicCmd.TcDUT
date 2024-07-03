@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_LogicCmd" Id="{c4e12c65-0b92-43d3-a6f5-ab4569642ec6}">
+    <Declaration><![CDATA[TYPE ST_LogicCmd :
+STRUCT
+	IF_Condition: E_LogicIfCondition;
+	IF_Condition_Idx: INT;
+	IF_Condition_Operator: E_LogicIfConditionOperator;
+	IF_Condition_Operator_Value: UDINT;
+	THEN_Function: E_LogicFunction;
+	THEN_Function_Value: UDINT;
+	THEN_Function_Idx: INT;
+	ELSE_Function: E_LogicFunction;
+	ELSE_Function_Idx: INT;
+	ELSE_Function_Value: UDINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

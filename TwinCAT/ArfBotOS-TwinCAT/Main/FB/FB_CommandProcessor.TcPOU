@@ -1,0 +1,681 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_CommandProcessor" Id="{97872514-f094-4f4a-8630-59a989ffd663}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_CommandProcessor EXTENDS Module
+VAR_IN_OUT
+	AxisGroup: AXIS_GROUP_REF_SM3;
+	GroupHandler: FB_GroupHandler;
+	CmdIO: ST_LogicCmdIO;
+	PrgProcessor: FB_ProgramProcessor;
+END_VAR
+VAR_INPUT
+	Enable: BOOL;
+END_VAR
+VAR_OUTPUT
+	ItfActiveProcessorUnitMode: PACK_ML.IUnitMode;
+	ItfActiveModule: ItfModule;
+	StatusText: STRING(255);
+END_VAR
+VAR
+	_Commands: ARRAY[GVL.PROG_CMDS_ARR_BEG..GVL.PROG_CMDS_ARR_END] OF DUT_Command;
+	_DummyUnitMode: PACK_ML.UnitMode;
+	_UnitModeCurrentState: PACK_ML.State;
+	_ActiveCommand: DUT_Command;
+	_CurrentCmdIdx: UINT;
+	_ProcessMoveCommand: MoveCmdProcessor;
+	_ProcessPauseCommand: PauseCmdProcessor;
+	///_ProcessInputCommand: InputCommandProcessor;
+	_ProcessOutputCommand: OutputCmdProcessor;
+	_ProcessorDoneRtrig: R_TRIG;
+	/// keep vision in separate task
+	_ProcessVisionCommand: REFERENCE TO VisionCmdProcessor;
+	_ProcessVarSetCommand: VarSetCmdProcessor;
+	_ProcessCncCommand: CncCmdProcessor;
+	_ProcessLogicCommand: LogicCmdProcessor;
+	_FirstScan: BOOL := TRUE;
+END_VAR
+VAR CONSTANT
+	_STEP_DONE: INT := 1000;
+	_STEP_IDLE: INT := 0;
+	_STEP_CMD: INT := 10;
+	_STEP_WAIT: INT := 20;
+	_STEP_ERR: INT := 30;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// keep this reference at the top in case we reference this somewhere else first
+// hint: originally this was an issue because of the done and reset bits being referenced first
+_ProcessVisionCommand REF= _40_Vision.ProcessVisionCommand;
+
+//
+SUPER^();
+
+//
+IF _FirstScan THEN
+	// will exception if we don't set this on first scan
+	_DummyUnitMode(sName := 'Active Processor', 
+					eInitialState := PACK_ML.State.Idle,
+					xActive := TRUE);
+	ItfActiveProcessorUnitMode := _DummyUnitMode;
+END_IF
+
+// this is at best a hack and needs to be rethought out.
+// we logically cant assign a process as the active unit mode 
+// at start up so we use this dummy one
+CASE _DummyUnitMode.CurrentState OF
+	PACK_ML.State.Stopped,
+	PACK_ML.State.Aborted,
+	PACK_ML.State.Held,
+	PACK_ML.State.Suspended,
+	PACK_ML.State.Complete,
+	PACK_ML.State.Idle:
+		//
+	PACK_ML.State.Resetting,
+	PACK_ML.State.Starting,
+	PACK_ML.State.Execute,
+	PACK_ML.State.Suspending,
+	PACK_ML.State.UnSuspending,
+	PACK_ML.State.Holding,
+	PACK_ML.State.UnHolding,
+	PACK_ML.State.Completing,
+	PACK_ML.State.Aborting,
+	PACK_ML.State.Stopping,
+	PACK_ML.State.Clearing:
+		_DummyUnitMode.ActingStateCompleted();
+END_CASE
+
+// PackML state machine implementation
+_UnitModeCurrentState := SUPER^._UnitMode.CurrentState;
+
+//
+IF _ProcessMoveCommand.Error THEN
+	SUPER^.M_Error(Description:=CONCAT('Move Error: ', _ProcessMoveCommand.ErrorDescription));
+	StatusText:=SUPER^.ErrorDescription;
+END_IF
+IF _ProcessPauseCommand.Error THEN
+	SUPER^.M_Error(Description:=CONCAT('Pause Error: ', _ProcessPauseCommand.ErrorDescription));
+	StatusText:=SUPER^.ErrorDescription;
+END_IF
+(*IF _ProcessInputCommand.Error THEN
+	SUPER^._M_Error(Description:=CONCAT('Input Error: ', _ProcessInputCommand.ErrorDescription));
+	StatusText:=SUPER^.ErrorDescription;
+END_IF*)
+IF _ProcessOutputCommand.Error THEN
+	SUPER^.M_Error(Description:=CONCAT('Output Error: ', _ProcessOutputCommand.ErrorDescription));
+	StatusText:=SUPER^.ErrorDescription;
+END_IF       
+IF _ProcessVisionCommand.Error THEN
+	SUPER^.M_Error(Description:=CONCAT('Vision Error: ', _ProcessVisionCommand.ErrorDescription));
+	StatusText:=SUPER^.ErrorDescription;
+END_IF
+IF _ProcessVarSetCommand.Error THEN
+	SUPER^.M_Error(Description:=CONCAT('Variable Error: ', _ProcessVarSetCommand.ErrorDescription));
+	StatusText:=SUPER^.ErrorDescription;
+END_IF
+IF _ProcessCncCommand.Error THEN
+	SUPER^.M_Error(Description:=CONCAT('CNC Error: ', _ProcessCncCommand.ErrorDescription));
+	StatusText:=SUPER^.ErrorDescription;
+END_IF
+IF _ProcessLogicCommand.Error THEN
+	SUPER^.M_Error(Description:=CONCAT('Logic Error: ', _ProcessLogicCommand.ErrorDescription));
+	StatusText:=SUPER^.ErrorDescription;
+END_IF
+
+_ProcessMoveCommand(
+	StoredPositions:= SUPER^.StoredPositions,
+	VisionRegisters:= SUPER^.VisionRegisters,
+	Flags:= SUPER^.Flags,
+	AxisGroup:= AxisGroup,
+	GroupHandler:= GroupHandler,
+	Velocity:= PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X, 
+	VelFactor:= PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.A,
+	Acceleration:= PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.Y, 
+	AccFactor:= PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.B,
+	Jerk:= PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.Z,
+	JerkFactor:= PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.C, 
+	Position=> ,
+	ItfUnitMode=>, 
+	Error=> );
+
+_ProcessPauseCommand(
+	StoredPositions:= SUPER^.StoredPositions,
+	VisionRegisters:= SUPER^.VisionRegisters,
+	Flags:= SUPER^.Flags, 
+	ElapsedTime=> , 
+	RemainingTime=> , 
+	ItfUnitMode=>, 
+	Error=> );
+
+//_ProcessInputCommand();
+_ProcessOutputCommand(
+	StoredPositions:= SUPER^.StoredPositions,
+	VisionRegisters:= SUPER^.VisionRegisters,
+	Flags:= SUPER^.Flags,
+	Digital:= CmdIO.Output,
+	Pwm:= CmdIO.Pwm,
+	Enable:= Enable,
+	ItfUnitMode=>, 
+	Error=> );
+	
+_ProcessVarSetCommand( 
+	StoredPositions:= SUPER^.StoredPositions,
+	VisionRegisters:= SUPER^.VisionRegisters,
+	Flags:= SUPER^.Flags,
+	ItfUnitMode=>, 
+	Error=> , 
+	ErrorDescription=> );
+
+_ProcessCncCommand(
+	StoredPositions:= SUPER^.StoredPositions,
+	VisionRegisters:= SUPER^.VisionRegisters,
+	Flags:= SUPER^.Flags,
+	AxisGroup:= AxisGroup, 
+	SM3_Drive_PosControl_J1:=SM_Drive_PosControl_J1,
+	SM3_Drive_PosControl_J2:=SM_Drive_PosControl_J2,
+	SM3_Drive_PosControl_J3:=SM_Drive_PosControl_J3,
+	SM3_Drive_PosControl_J4:=SM_Drive_PosControl_J4,
+	SM3_Drive_PosControl_J5:=SM_Drive_PosControl_J5,
+	SM3_Drive_PosControl_J6:=SM_Drive_PosControl_J6,
+	GapVelocity:= , 
+	AvoidGaps:= , 
+	GapAccel:= , 
+	ItfUnitMode=>, 
+	Error=> , 
+	ErrorDescription=> );
+	
+_ProcessLogicCommand(
+	StoredPositions:= SUPER^.StoredPositions,
+	VisionRegisters:= SUPER^.VisionRegisters,
+	Flags:= SUPER^.Flags,
+	CmdProcessor:= THIS^,
+	PrgProcessor:= PrgProcessor,
+	ItfUnitMode=>, 
+	Error=> , 
+	ErrorDescription=> , 
+	CmdIO:= CmdIO);
+	
+_FirstScan := FALSE;]]></ST>
+    </Implementation>
+    <Method Name="M_Aborting" Id="{f73e1a47-970e-47c3-b986-e1fe2eaafd0c}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Aborting : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _SeqAborting OF
+	0:
+		_ProcessMoveCommand.M_Abort();
+		_ProcessPauseCommand.M_Abort();
+		//_ProcessInputCommand.M_Abort();
+		_ProcessOutputCommand.M_Abort();
+		_ProcessVisionCommand.M_Abort();
+		_ProcessVarSetCommand.M_Abort();
+		_ProcessCncCommand.M_Abort();
+		_ProcessLogicCommand.M_Abort();
+		_SeqAborting := _SeqAborting + 1;
+	1:
+		IF _ProcessMoveCommand.PropCurrentState = PACK_ML.State.Aborted
+			AND _ProcessPauseCommand.PropCurrentState = PACK_ML.State.Aborted 
+			//AND _ProcessInputCommand.PropCurrentState = PACK_ML.State.Aborted
+			AND _ProcessOutputCommand.PropCurrentState = PACK_ML.State.Aborted
+			AND _ProcessVisionCommand.PropCurrentState = PACK_ML.State.Aborted
+			AND _ProcessVarSetCommand.PropCurrentState = PACK_ML.State.Aborted
+			AND _ProcessCncCommand.PropCurrentState = PACK_ML.State.Aborted
+			AND _ProcessLogicCommand.PropCurrentState = PACK_ML.State.Aborted THEN
+				_SeqAborting := 0;
+				SUPER^.M_StateComplete();
+		END_IF
+		
+END_CASE
+
+(*IF ItfActiveModule <> 0 THEN
+	ItfActiveModule.M_Abort();
+	IF ItfActiveModule.PropCurrentState = PACK_ML.State.Aborted THEN
+		SUPER^.M_StateComplete();
+	END_IF
+ELSE
+	SUPER^.M_StateComplete();
+END_IF*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Clearing" Id="{766fbc5b-b0ec-40a6-bc48-5f02adefd0a5}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Clearing : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[SUPER^.M_StateComplete();
+
+(*IF SUPER^.Flags[GVL.HOME_COMPLETE].Value THEN
+	CASE _SeqClearing OF
+		0:
+			_ProcessMoveCommand.M_Home();
+			_SeqClearing := _SeqClearing + 1;
+		1:
+			IF _ProcessMoveCommand.PropCurrentState = PACK_ML.State.Idle THEN
+				_SeqClearing := _SeqClearing + 1;
+			END_IF
+		2:
+			IF NOT _ProcessMoveCommand.Error THEN
+				_ProcessMoveCommand.Command := GVL.Pose2;
+				_ProcessMoveCommand.M_Start();
+				_SeqClearing := _SeqClearing + 1;
+			ELSE
+				SUPER^._M_Error(Description:='Move processor errored. Please reset and try again');
+				_SeqClearing := -1;
+			END_IF
+		3:
+			IF _ProcessMoveCommand.PropCurrentState = PACK_ML.State.Execute THEN
+				_SeqClearing := _SeqClearing + 1;
+			END_IF
+		4:
+			IF _ProcessMoveCommand.PropCurrentState = PACK_ML.State.Complete 
+				OR _ProcessMoveCommand.PropCurrentState = PACK_ML.State.Stopped 
+				OR _ProcessMoveCommand.PropCurrentState = PACK_ML.State.Aborted
+				OR _ProcessMoveCommand.PropCurrentState = PACK_ML.State.Idle  THEN
+					SUPER^.M_StateComplete();
+					_SeqClearing := 0;
+			END_IF
+	END_CASE
+ELSE
+	SUPER^._M_Error(Description:='Drives are not homed. Please home and try again');
+	_SeqClearing := -1;
+END_IF
+
+IF _ProcessMoveCommand.Error THEN
+	SUPER^._M_Error(Description:='Move processor in error state. Please reset and try again');
+	_SeqClearing := -1;
+END_IF
+*)
+
+(*
+IF ItfActiveModule <> 0 THEN
+	//
+	CASE _Seq OF
+		0:
+			IF NOT ItfActiveModule.PropCurrentState = PACK_ML.State.Stopped THEN
+				ItfActiveModule.M_Abort();
+				_Seq := 1;
+			ELSE
+				SUPER^.M_StateComplete();
+			END_IF
+		1:
+			CASE ItfActiveModule.PropCurrentState OF
+				PACK_ML.State.Aborted:
+					ItfActiveModule.Clear();
+				PACK_ML.State.Stopped:
+					_Seq := 0;
+			END_CASE
+			
+	END_CASE
+ELSE
+	_Seq := 0;
+	SUPER^.M_StateComplete();
+END_IF
+*)
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Complete" Id="{642c5013-51df-4c85-a867-73cd18842e60}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Complete : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// once complete, reset to get back to idle
+SUPER^._UnitMode.Reset();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Execute" Id="{9d44a219-dd62-4e0a-8b38-07968243ee03}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Execute : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// here we want to execute our commands/jobs/etc and set completed when done.
+//
+CASE _SeqMain OF
+  	_STEP_DONE:
+		_SeqMain := _STEP_IDLE;
+		
+	_STEP_IDLE:
+		// hang out here until called to run
+		_CurrentCmdIdx := 0;
+		SUPER^.M_StateComplete();
+		
+	_STEP_CMD: //
+		IF NOT Enable THEN
+			_SeqMain := _STEP_DONE;
+		ELSIF _CurrentCmdIdx <= GVL.PROG_CMDS_ARR_END AND _CurrentCmdIdx >= GVL.PROG_CMDS_ARR_BEG THEN
+			//
+			IF _Commands[_CurrentCmdIdx].CommandType = DUT_CommandType.Disabled THEN
+				// want to increment here so that we can disable some commands 
+				// in the program and it continue to execute
+				_CurrentCmdIdx := _CurrentCmdIdx + 1;
+				_SeqMain := _STEP_CMD;
+				
+			ELSE
+				CASE _Commands[_CurrentCmdIdx].CommandType OF
+					DUT_CommandType.MoveCommand: //
+						StatusText := 'Move Command in Progress.';
+						ItfActiveProcessorUnitMode := _ProcessMoveCommand.ItfUnitMode;
+						ItfActiveModule := _ProcessMoveCommand;
+						_ProcessMoveCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
+						ItfActiveModule.M_Start();
+					
+					DUT_CommandType.PauseCommand: //
+						StatusText := 'Pause Command in Progress.';
+						ItfActiveProcessorUnitMode := _ProcessPauseCommand.ItfUnitMode;
+						ItfActiveModule := _ProcessPauseCommand;
+						_ProcessPauseCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
+						ItfActiveModule.M_Start();
+					
+					DUT_CommandType.InputCommand: //
+						StatusText := 'Input Command in Progress.';
+						//ActiveUnitMode := _ProcessInputCommand.ItfUnitMode;
+						//ItfActiveModule := _ProcessInputCommand;
+						//_ProcessInputCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
+						//ItfActiveModule.M_Start();
+					
+					DUT_CommandType.OutputCommand: //
+						StatusText := 'Output Command in Progress.';
+						ItfActiveProcessorUnitMode := _ProcessOutputCommand.ItfUnitMode;
+						ItfActiveModule := _ProcessOutputCommand;
+						_ProcessOutputCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
+						ItfActiveModule.M_Start();
+					
+					DUT_CommandType.VisionCommand: //
+						StatusText := 'Vision Command in Progress.';
+						ItfActiveProcessorUnitMode := _ProcessVisionCommand.ItfUnitMode;
+						ItfActiveModule := _ProcessVisionCommand;
+						_ProcessVisionCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
+						ItfActiveModule.M_Start();
+					
+					DUT_CommandType.VarSetCommand: //
+						StatusText := 'VarSet Command in Progress.';
+						ItfActiveProcessorUnitMode := _ProcessVarsetCommand.ItfUnitMode;
+						ItfActiveModule := _ProcessVarsetCommand;
+						_ProcessVarsetCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
+						ItfActiveModule.M_Start();
+					
+					DUT_CommandType.CncCommand: //
+						StatusText := 'CNC Command in Progress.';
+						ItfActiveProcessorUnitMode := _ProcessCncCommand.ItfUnitMode;
+						ItfActiveModule := _ProcessCncCommand;
+						_ProcessCncCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
+						ItfActiveModule.M_Start();
+					
+					DUT_CommandType.LogicCommand: //
+						StatusText := 'Logic Command in Progress.';
+						ItfActiveProcessorUnitMode := _ProcessLogicCommand.ItfUnitMode;
+						ItfActiveModule := _ProcessLogicCommand;
+						_ProcessLogicCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
+						ItfActiveModule.M_Start();
+						
+				ELSE
+					_SeqMain := _STEP_CMD;
+					
+				END_CASE
+				
+				// wait for executing
+				IF ItfActiveModule.PropCurrentState = PACK_ML.State.Execute THEN
+					_ActiveCommand := _Commands[_CurrentCmdIdx];
+					_CurrentCmdIdx := _CurrentCmdIdx + 1;
+					_SeqMain := _STEP_WAIT;
+				END_IF
+			END_IF
+				
+		ELSE
+			_SeqMain := _STEP_DONE;
+		END_IF
+		
+	_STEP_WAIT: // wait for command to finish
+		//
+		IF _ProcessorDoneRtrig.Q THEN
+			_SeqMain := _STEP_CMD;
+		END_IF
+		//
+		IF ItfActiveModule.PropError THEN
+			SUPER^._UnitMode.Suspend();
+			_SeqMain := _STEP_ERR;
+		END_IF
+		
+	_STEP_ERR: //
+	
+END_CASE
+
+// watch for rising edge of idle state. this was done for all processors since 
+// the vision processor runs in a separate task and isnt guaranteed to start in the same 
+// PLC scan.
+_ProcessorDoneRtrig(clk:=ItfActiveProcessorUnitMode.CurrentState = PACK_ML.State.Idle);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Holding" Id="{e05e442b-e0e4-4e0a-9099-5c3c862a429f}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Holding : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF ItfActiveModule <> 0 THEN
+	ItfActiveModule.M_Hold();
+	IF ItfActiveModule.PropCurrentState = PACK_ML.State.Held THEN
+		SUPER^.M_StateComplete();
+	END_IF
+ELSE
+	SUPER^.M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Idle" Id="{a8790f5b-e067-4003-a446-4302e4343c80}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Idle : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// in this state, we want to reset all the function blocks and hang out
+_SeqMain := _STEP_IDLE;
+_SeqAborting := 0;
+_SeqClearing := 0;
+_SeqResetting := 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Resetting" Id="{b97773af-d3db-4ff8-bc09-d39e6c9c165a}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Resetting : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _SeqResetting OF
+	0:
+		_ProcessMoveCommand.M_Home();
+		_ProcessPauseCommand.M_Home();
+		//_ProcessInputCommand.M_Home();
+		_ProcessOutputCommand.M_Home();
+		_ProcessVisionCommand.M_Home();
+		_ProcessVarSetCommand.M_Home();
+		_ProcessCncCommand.M_Home();
+		_ProcessLogicCommand.M_Home();
+		_SeqResetting := _SeqResetting + 1;
+	1:
+		IF _ProcessMoveCommand.PropCurrentState = PACK_ML.State.Idle
+			AND _ProcessPauseCommand.PropCurrentState = PACK_ML.State.Idle 
+			//AND _ProcessInputCommand.PropCurrentState = PACK_ML.State.Idle
+			AND _ProcessOutputCommand.PropCurrentState = PACK_ML.State.Idle
+			AND _ProcessVisionCommand.PropCurrentState = PACK_ML.State.Idle
+			AND _ProcessVarSetCommand.PropCurrentState = PACK_ML.State.Idle
+			AND _ProcessCncCommand.PropCurrentState = PACK_ML.State.Idle
+			AND _ProcessLogicCommand.PropCurrentState = PACK_ML.State.Idle THEN
+				_SeqResetting := 0;
+				SUPER^.M_StateComplete();
+		END_IF
+		
+END_CASE
+
+SUPER^.M_Reset();
+
+(*IF ItfActiveModule <> 0 THEN
+	CASE _Seq OF
+		0:
+			IF NOT ItfActiveModule.PropCurrentState = PACK_ML.State.Idle THEN
+				ItfActiveModule.M_Home();
+				_Seq := 1;
+			ELSE
+				SUPER^.M_StateComplete();
+			END_IF
+		1:
+			IF ItfActiveModule.PropCurrentState = PACK_ML.State.Idle THEN
+				_Seq := 0;
+			END_IF
+			
+	END_CASE
+	
+ELSE
+	SUPER^.M_StateComplete();
+	_Seq := 0;
+	
+END_IF*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetCommands" Id="{b6f598fc-4eb1-4dc6-b9b6-f064109879cc}">
+      <Declaration><![CDATA[METHOD M_SetCommands : BOOL
+VAR_INPUT
+	StartingCommand: UINT;
+	Commands: ARRAY[GVL.PROG_CMDS_ARR_BEG..GVL.PROG_CMDS_ARR_END] OF DUT_Command;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF StartingCommand >= GVL.PROG_CMDS_ARR_BEG AND StartingCommand <= GVL.PROG_CMDS_ARR_END + 1 THEN // +1 because we want to be able to tell if calling program was on last command
+	_CurrentCmdIdx := StartingCommand;
+	_Commands := Commands;
+	M_SetCommands := TRUE;
+ELSE
+	M_SetCommands := FALSE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetNextCommand" Id="{7318a297-a063-4ac2-856c-165720d821a4}">
+      <Declaration><![CDATA[METHOD M_SetNextCommand : BOOL
+VAR_INPUT
+	CommandNumber: UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF CommandNumber <= GVL.PROG_CMDS_ARR_END AND CommandNumber >= GVL.PROG_CMDS_ARR_BEG THEN
+	_CurrentCmdIdx := CommandNumber;
+	M_SetNextCommand := TRUE;
+ELSE
+	M_SetNextCommand := FALSE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetPackML" Id="{95b94fb2-14e3-4b3b-8405-e444036b8980}">
+      <Declaration><![CDATA[METHOD PROTECTED M_SetPackML : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// SUPER already does this but the default is eInitialState:=PACK_ML.State.Idle 
+// and we want PACK_ML.State.Aborted for the Orchestrator
+SUPER^._UnitMode(sName := 'Command Processor',
+				eInitialState := PACK_ML.State.Aborted,
+				xActive := TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Starting" Id="{9c738675-c279-409c-92e2-b6bbcd05e321}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Starting : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// here we want to clear things and get ready for the execute state
+// we can consider this the "INIT" state
+_SeqMain := _STEP_CMD;
+SUPER^._TimeoutTimer.PT := T#0MS; // timeout is ignored if set to 0
+SUPER^.M_StateComplete();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Stopping" Id="{b76b8c76-e672-465e-b5bc-a2cc80d6ee6f}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Stopping : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF ItfActiveModule <> 0 THEN
+	ItfActiveModule.M_Stop();
+	IF ItfActiveModule.PropCurrentState = PACK_ML.State.Idle 
+		OR ItfActiveModule.PropCurrentState = PACK_ML.State.Stopped 
+		OR ItfActiveModule.PropCurrentState = PACK_ML.State.Aborted 
+		OR ItfActiveModule.PropCurrentState = PACK_ML.State.Complete THEN
+			SUPER^.M_StateComplete();
+	END_IF
+	
+ELSE
+	SUPER^.M_StateComplete();
+	
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Suspending" Id="{59fc01db-f06d-4b70-9e04-ba20bd9ce6b9}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Suspending : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF ItfActiveModule <> 0 THEN
+	IF ItfActiveModule.PropCurrentState = PACK_ML.State.Execute THEN
+		ItfActiveModule.M_Hold();
+		IF ItfActiveModule.PropCurrentState = PACK_ML.State.Held THEN
+			SUPER^.M_StateComplete();
+		END_IF
+	ELSE
+		SUPER^.M_StateComplete();
+	END_IF
+	
+ELSE
+	SUPER^.M_StateComplete();
+	
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_UnHolding" Id="{4a0b543c-927e-400a-b5da-ba002055cdd0}">
+      <Declaration><![CDATA[METHOD PROTECTED M_UnHolding : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//
+IF ItfActiveModule <> 0 THEN
+	ItfActiveModule.M_Start();
+	IF ItfActiveModule.PropCurrentState = PACK_ML.State.Execute THEN
+		SUPER^.M_StateComplete();
+	END_IF
+	
+ELSE
+	SUPER^.M_StateComplete();
+	
+END_IF
+
+//
+_SeqMain := _STEP_WAIT;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_UnSuspending" Id="{d8134748-b5a7-4257-9a4e-3b1612d98833}">
+      <Declaration><![CDATA[METHOD PROTECTED M_UnSuspending : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//
+IF ItfActiveModule <> 0 THEN
+	ItfActiveModule.M_Start();
+	IF ItfActiveModule.PropCurrentState = PACK_ML.State.Execute THEN
+		SUPER^.M_StateComplete();
+	END_IF
+	
+ELSE
+	SUPER^.M_StateComplete();
+	
+END_IF
+
+//
+_SeqMain := _STEP_WAIT;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="P_CurrentCommand" Id="{49585069-1976-4ffb-8b46-f97b3eeaff68}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY P_CurrentCommand : REFERENCE TO DUT_Command
+]]></Declaration>
+      <Get Name="Get" Id="{7d57c9fa-849c-4d07-97b2-6532cef36fbf}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_CurrentCommand REF= _ActiveCommand;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="P_CurrentCommandIndex" Id="{d4fb3147-2a09-4011-bb95-1eb5cd53c440}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY P_CurrentCommandIndex : REFERENCE TO UINT
+]]></Declaration>
+      <Get Name="Get" Id="{817a8a80-84a1-444d-b6eb-227545eb7aff}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_CurrentCommandIndex REF= _CurrentCmdIdx;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

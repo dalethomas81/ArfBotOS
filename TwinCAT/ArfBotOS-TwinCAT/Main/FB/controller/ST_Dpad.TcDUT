@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_Dpad" Id="{c497e547-1dfd-4da7-a86e-8ae4d44a7765}">
+    <Declaration><![CDATA[TYPE ST_Dpad :
+STRUCT
+	Up: BOOL;
+	Down: BOOL;
+	Left: BOOL;
+	Right: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

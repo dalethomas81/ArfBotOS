@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="F_AddElement" Id="{40f6ab40-9306-42a3-9cf6-d7249218b202}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION F_AddElement
+VAR_IN_OUT
+	Command: STRING(GVL.COMMAND_LEN);
+END_VAR
+VAR_INPUT
+	/// default to space
+	Delimiter: STRING(1) := ' ';
+	Element: STRING(GVL.COMMAND_LEN);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//
+// input
+// 	Element: 'bar'
+// 	Delimiter: ','
+// 	Command: 'foo'
+//
+// output
+// 	Command: 'foo,bar'
+//
+
+Command:=CONCAT(Command, Element);
+Command:=CONCAT(Command, Delimiter);]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

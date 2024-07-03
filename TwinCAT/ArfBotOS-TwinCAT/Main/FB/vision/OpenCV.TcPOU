@@ -1,0 +1,170 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="OpenCV" Id="{6d87a4c9-9357-4e03-b1a0-c731940d5946}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK OpenCV EXTENDS PythonServerHandler
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="M_CalibrateCamera" Id="{f8181cbb-d977-4dc5-9d9a-f6beb94ec24e}">
+      <Declaration><![CDATA[METHOD M_CalibrateCamera : BOOL
+VAR_INPUT
+	iImageWidth: UINT := 2016;
+	iImageHeight: UINT := 2000;
+	///sec
+	uTimeout: UDINT := 60;
+	///mm
+	fCalCheckerSize: REAL := 25.0;
+	iCalCheckerX: UINT := 6;
+	iCalCheckerY: UINT := 9;
+END_VAR
+VAR
+	_Command: STRING(255);
+	_CalScriptFileName: STRING := '/var/opt/codesys/PlcLogic/Application/Vision/CalibrateCamera.py';
+	_CalResultFile: STRING := '/var/opt/codesys/PlcLogic/visu/outputimage.jpg';
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// calibrate with a checkerboard
+// sudo python /var/opt/codesys/PlcLogic/Application/CalibrateCamera.py -s cal.yaml -l 24.5 -x 6 -y 9 -d false
+
+IF NOT _Busy THEN
+	M_CalibrateCamera := TRUE;
+	
+	_Command := CONCAT('sudo python ', _CalScriptFileName);
+	_Command := CONCAT(_Command, ' -l ');
+	_Command := CONCAT(_Command, REAL_TO_STRING(fCalCheckerSize));
+	_Command := CONCAT(_Command, ' -x ');
+	_Command := CONCAT(_Command, UINT_TO_STRING(iCalCheckerX));
+	_Command := CONCAT(_Command, ' -y ');
+	_Command := CONCAT(_Command, UINT_TO_STRING(iCalCheckerY));
+	_Command := CONCAT(_Command, ' -w ');
+	_Command := CONCAT(_Command, UINT_TO_STRING(iImageWidth));
+	_Command := CONCAT(_Command, ' -h ');
+	_Command := CONCAT(_Command, UINT_TO_STRING(iImageHeight));
+	_Command := CONCAT(_Command, ' -r ');
+	_Command := CONCAT(_Command, _CalResultFile);
+	_Command := CONCAT(_Command, ' 2> ./vision_log.txt ');
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=uTimeout);
+	
+ELSE
+	M_CalibrateCamera := FALSE;
+	//_Error := TRUE;
+	//_ErrorDescription := 'function busy.';
+	
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_CaptureImage" Id="{d38f4a97-5265-4a49-a236-4f8dbe120152}">
+      <Declaration><![CDATA[METHOD M_CaptureImage : BOOL
+VAR_INPUT
+	iImageWidth: UINT := 2016;
+	iImageHeight: UINT := 2000;
+	///sec
+	uTimeout: UDINT := 60;
+END_VAR
+VAR
+	_Command: STRING(255);
+	_ImageScriptFileName: STRING := '/var/opt/codesys/PlcLogic/Application/Vision/CaptureImage.py';
+	_CaptureImageName: STRING := '/var/opt/codesys/PlcLogic/visu/outputimage.jpg';
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// capture an image
+// sudo python /var/opt/codesys/PlcLogic/Application/CaptureImage.py -s /var/opt/codesys/PlcLogic/Application/input.jpg -w 2016 -h 2000
+
+IF NOT _Busy THEN
+	M_CaptureImage := TRUE;
+	
+	_Command := CONCAT('sudo python ', _ImageScriptFileName);
+	_Command := CONCAT(_Command, ' -s ');
+	_Command := CONCAT(_Command, _CaptureImageName);
+	_Command := CONCAT(_Command, ' -w ');
+	_Command := CONCAT(_Command, UINT_TO_STRING(iImageWidth));
+	_Command := CONCAT(_Command, ' -h ');
+	_Command := CONCAT(_Command, UINT_TO_STRING(iImageHeight));
+	_Command := CONCAT(_Command, ' 2> ./vision_log.txt ');
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=uTimeout);
+	
+ELSE
+	M_CaptureImage := FALSE;
+	//_Error := TRUE;
+	//_ErrorDescription := 'function busy.';
+	
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_LocatePart" Id="{6c14d589-4ff1-4332-97a1-15bfa9d317ed}">
+      <Declaration><![CDATA[METHOD M_LocatePart : BOOL
+VAR_INPUT
+	iImageWidth: UINT := 2016;
+	iImageHeight: UINT := 2000;
+	///sec
+	uTimeout: UDINT := 60;
+	/// i
+	iMaxPos: UINT := 10;
+	/// j
+	dMaxOverlap: REAL := 0.0;
+	/// k
+	dScore: REAL := 0.8;
+	/// l
+	dToleranceAngle: REAL := 90.0;
+	sTemplateName: STRING := 'template.jpg';
+	sScriptFilename: STRING := 'FastTemplateMatching.py';
+END_VAR
+VAR
+	_Command: STRING(255);
+END_VAR
+VAR CONSTANT
+	///_SCRIPT_FILE_NAME: STRING:='/var/opt/codesys/PlcLogic/Application/Vision/FastTemplateMatching.py';
+	_SCRIPT_DIR_PATH: STRING := '/var/opt/codesys/PlcLogic/Application/Vision/';
+	_RESULT_FILE_NAME: STRING := '/var/opt/codesys/PlcLogic/visu/outputimage.jpg';
+	_TEMPLATE_DIR_PATH: STRING := '/var/opt/codesys/PlcLogic/Application/Vision/Templates/';
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// run the designated vision program
+// sudo python /var/opt/codesys/PlcLogic/Application/Vision/TemplateMatch.py -s /var/opt/codesys/PlcLogic/visu/outputimage.jpg        -t /var/opt/codesys/PlcLogic/Application/Vision/Template3.JPG -i 0.9 -j 1.0 -d true -w 2016 -h 2000
+// sudo python /var/opt/codesys/PlcLogic/Application/Vision/FastTemplateMatching.py -s /var/opt/codesys/PlcLogic/visu/outputimage.jpg -t /var/opt/codesys/PlcLogic/Application/Vision/Template.jpg -w 2016 -h 2000 -d false
+IF NOT _Busy THEN
+	M_LocatePart := TRUE;
+	
+	_Command := CONCAT('sudo python ', _SCRIPT_DIR_PATH);
+	_Command := CONCAT(_Command, sScriptFilename);
+	//_Command := CONCAT(_Command, ' -s '); // need to trim down the string length
+	//_Command := CONCAT(_Command, _VisionImageName);
+	_Command := CONCAT(_Command, ' -t ');
+	_Command := CONCAT(_Command, _TEMPLATE_DIR_PATH);
+	_Command := CONCAT(_Command, sTemplateName);
+	_Command := CONCAT(_Command, ' -i ');
+	_Command := CONCAT(_Command, UINT_TO_STRING(iMaxPos));
+	_Command := CONCAT(_Command, ' -j ');
+	_Command := CONCAT(_Command, REAL_TO_STRING(dMaxOverlap));
+	_Command := CONCAT(_Command, ' -k ');
+	_Command := CONCAT(_Command, REAL_TO_STRING(dScore));
+	_Command := CONCAT(_Command, ' -l ');
+	_Command := CONCAT(_Command, REAL_TO_STRING(dToleranceAngle));
+	_Command := CONCAT(_Command, ' -w ');
+	_Command := CONCAT(_Command, UINT_TO_STRING(iImageWidth));
+	_Command := CONCAT(_Command, ' -h ');
+	_Command := CONCAT(_Command, UINT_TO_STRING(iImageHeight));
+	_Command := CONCAT(_Command, ' 2> ./vision_log.txt ');
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=uTimeout);
+	
+ELSE
+	M_LocatePart := FALSE;
+	//_Error := TRUE;
+	//_ErrorDescription := 'function busy.';
+	
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

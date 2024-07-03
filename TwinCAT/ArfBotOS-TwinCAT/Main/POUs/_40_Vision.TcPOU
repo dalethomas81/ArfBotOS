@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="_40_Vision" Id="{168c2bce-5a06-487a-a077-28448e10fa0d}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM _40_Vision
+VAR
+	ProcessVisionCommand: VisionCmdProcessor;
+	HostName: STRING;
+	VisionSystemUrl: STRING;
+	VisionOutputImageUrl: STRING;
+	VisionSystemIpAddress_Last: STRING(19);
+END_VAR
+VAR CONSTANT
+	LocalIpAddress: STRING(19) := '127.0.0.1';
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// used to show the output image on the HMI
+// 'http://ArfBot:5000/output'
+IF  PersistentVars.VisionSystemIpAddress <> VisionSystemIpAddress_Last THEN
+	 VisionSystemIpAddress_Last :=  PersistentVars.VisionSystemIpAddress;
+	//
+	IF PersistentVars.VisionSystemIpAddress = LocalIpAddress THEN
+		// https://forge.codesys.com/forge/talk/Runtime/thread/61d60a9fb7/
+		SysSockGetHostName(szHostName:=HostName, diNameLen:=SIZEOF(HostName));
+		VisionSystemUrl := CONCAT('http://', HostName);
+	ELSE
+		VisionSystemUrl := CONCAT('http://', PersistentVars.VisionSystemIpAddress);
+	END_IF
+	//
+	VisionSystemUrl := CONCAT(VisionSystemUrl, ':5000');
+	VisionOutputImageUrl := CONCAT(VisionSystemUrl,'/output');
+END_IF
+
+//
+ProcessVisionCommand(
+	VisionSystemIpAddress:= PersistentVars.VisionSystemIpAddress,
+	VisionSystemPort:= PersistentVars.VisionSystemPort,
+	StoredPositions:= PersistentVars.StoredPositions,
+	VisionRegisters:= PersistentVars.VisionRegisters,
+	Flags:= PersistentVars.Flags,
+	LogicCmdIO:= GVL.CmdIO,
+	ItfUnitMode=> ,
+	Error=> , 
+	ErrorDescription=> , 
+	VisionStateText=> );]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

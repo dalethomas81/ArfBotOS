@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="F_DpadState" Id="{c7c6193c-9fb2-4a99-8fe9-b8b80e6ab7d7}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION F_DpadState : ST_Dpad
+VAR_INPUT
+	State: USINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE State OF
+	0:
+		F_DpadState.Up := TRUE;
+		F_DpadState.Down := FALSE;
+		F_DpadState.Left := FALSE;
+		F_DpadState.Right := FALSE;
+	1:
+		F_DpadState.Up := TRUE;
+		F_DpadState.Down := FALSE;
+		F_DpadState.Left := FALSE;
+		F_DpadState.Right := TRUE;
+	2:
+		F_DpadState.Up := FALSE;
+		F_DpadState.Down := FALSE;
+		F_DpadState.Left := FALSE;
+		F_DpadState.Right := TRUE;
+	3:
+		F_DpadState.Up := FALSE;
+		F_DpadState.Down := TRUE;
+		F_DpadState.Left := FALSE;
+		F_DpadState.Right := TRUE;
+	4:
+		F_DpadState.Up := FALSE;
+		F_DpadState.Down := TRUE;
+		F_DpadState.Left := FALSE;
+		F_DpadState.Right := FALSE;
+	5:
+		F_DpadState.Up := FALSE;
+		F_DpadState.Down := TRUE;
+		F_DpadState.Left := TRUE;
+		F_DpadState.Right := FALSE;
+	6:
+		F_DpadState.Up := FALSE;
+		F_DpadState.Down := FALSE;
+		F_DpadState.Left := TRUE;
+		F_DpadState.Right := FALSE;
+	7:
+		F_DpadState.Up := TRUE;
+		F_DpadState.Down := FALSE;
+		F_DpadState.Left := TRUE;
+		F_DpadState.Right := FALSE;
+		
+ELSE
+	F_DpadState.Up := FALSE;
+	F_DpadState.Down := FALSE;
+	F_DpadState.Left := FALSE;
+	F_DpadState.Right := FALSE;
+		
+END_CASE]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

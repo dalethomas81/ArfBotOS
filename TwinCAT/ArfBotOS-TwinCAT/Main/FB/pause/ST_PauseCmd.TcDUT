@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_PauseCmd" Id="{be976acf-5a13-4a9d-8d9f-61e2df7de507}">
+    <Declaration><![CDATA[TYPE ST_PauseCmd :
+STRUCT
+	PauseTime: TIME := TIME#1s0ms;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,260 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Module" Id="{06152fa3-0ee8-42bb-9309-1b5f17657eed}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Module EXTENDS PackML IMPLEMENTS ItfModule
+VAR_INPUT
+	/// input vars
+	StoredPositions: REFERENCE TO ARRAY [GVL.POS_ARR_BEG..GVL.POS_ARR_END] OF DUT_StoredPosition;
+	VisionRegisters: REFERENCE TO ARRAY [GVL.VIS_ARR_BEG..GVL.VIS_ARR_END] OF DUT_VisionRegister;
+	Flags: REFERENCE TO ARRAY [GVL.FLG_ARR_BEG..GVL.FLG_ARR_END] OF DUT_Flags;
+END_VAR
+VAR_OUTPUT
+	/// output vars
+	ItfUnitMode: PACK_ML.IUnitMode;
+	Busy: BOOL;
+	Error: BOOL;
+	ErrorDescription: STRING;
+END_VAR
+VAR
+	/// standard local vars
+	_TimeoutTimer: TON := (PT := TIME#0ms);
+	_Home: BOOL;
+	_Start: BOOL;
+	_ModuleFirstScan: BOOL := TRUE;
+	_SeqStart: INT;
+	_SeqHome: INT;
+	_AbortedRtrig: R_Trig;
+END_VAR
+VAR CONSTANT
+	STEP_IDLE: INT := 0;
+	STEP_DONE: INT := 20;
+	STEP_RUN: INT := 30;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+
+//
+IF _ModuleFirstScan THEN
+	ItfUnitMode := SUPER^.IUnitMode;
+END_IF;
+
+//
+_M_Home();
+_M_Start();
+
+//
+Busy := _UnitMode.CurrentState <> PACK_ML.State.Idle
+		AND _UnitMode.CurrentState <> PACK_ML.State.Aborted
+		AND _UnitMode.CurrentState <> PACK_ML.State.Complete
+		AND _UnitMode.CurrentState <> PACK_ML.State.Held
+		AND _UnitMode.CurrentState <> PACK_ML.State.Stopped
+		AND _UnitMode.CurrentState <> PACK_ML.State.Suspended;
+		
+//
+_AbortedRtrig(CLK:=_UnitMode.CurrentState = PACK_ML.State.Aborted);
+IF _AbortedRtrig.Q THEN
+	//_SeqStart := 0;  _Start:=FALSE;
+	//_SeqHome := 0; _Home:=FALSE;
+END_IF
+
+//
+_TimeoutTimer(IN:= Busy AND _TimeoutTimer.PT > T#0MS); // ignore if timer set to 0
+IF _TimeoutTimer.Q THEN
+	M_Error(Description:= CONCAT('Task timed out after ', TIME_TO_STRING(_TimeoutTimer.ET)));
+END_IF
+
+// do not place anything below this
+_ModuleFirstScan:=FALSE;]]></ST>
+    </Implementation>
+    <Method Name="_M_Home" Id="{b6b75ed6-b5aa-4b31-9a1b-102168846c09}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_Home : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _SeqHome OF
+	0:
+		//
+		IF _Home THEN
+			_Home := FALSE;
+			M_Reset();
+			_SeqHome := _SeqHome + 1;
+		END_IF
+	1:
+		//
+		CASE _UnitMode.CurrentState OF
+			PACK_ML.State.Aborted:
+				_UnitMode.Clear();
+				
+			PACK_ML.State.Stopped,
+			PACK_ML.State.Complete:
+				_UnitMode.Reset();
+				_SeqHome := _SeqHome + 1;
+				
+			PACK_ML.State.Resetting,
+			PACK_ML.State.Clearing,
+			PACK_ML.State.Aborting:
+				// just wait
+		ELSE
+			_UnitMode.Abort();
+			
+		END_CASE
+		
+	2:
+		IF _UnitMode.CurrentState = PACK_ML.State.Idle THEN
+			_SeqHome := 0;
+		END_IF
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_Start" Id="{f110705f-80e9-4c18-9b3f-432547227ce9}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_Start : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _SeqStart OF
+	0:
+		IF _Start THEN
+			_Start := FALSE;
+			M_Reset();
+			_SeqStart := _SeqStart + 1;
+		END_IF
+	1:
+		CASE _UnitMode.CurrentState OF
+			PACK_ML.State.Clearing,
+			PACK_ML.State.Resetting,
+			PACK_ML.State.UnHolding,
+			PACK_ML.State.UnSuspending,
+			PACK_ML.State.Starting:
+				// be patient
+			PACK_ML.State.Aborted:
+				_UnitMode.Clear();
+			PACK_ML.State.Stopped:
+				_UnitMode.Reset();
+			PACK_ML.State.Held:
+				_UnitMode.UnHold();
+			PACK_ML.State.Suspended:
+				_UnitMode.UnSuspend();
+			PACK_ML.State.Idle:
+				_UnitMode.Start();
+			PACK_ML.State.Execute:
+				_SeqStart := 0;
+		ELSE
+			_SeqStart := 0;
+		END_CASE
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Abort" Id="{e5c2715c-41fc-45b3-ba5d-b082d35ede74}">
+      <Declaration><![CDATA[METHOD M_Abort
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_UnitMode.Abort();
+_SeqStart := 0;  _Start:=FALSE;
+_SeqHome := 0; _Home:=FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Error" Id="{dbcfca92-733c-4c2e-a049-52c206183687}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Error : BOOL
+VAR_INPUT
+	Description: STRING;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// suspend state machine
+_UnitMode.Suspend();
+
+//
+Error := TRUE;
+
+//
+IF ErrorDescription = '' THEN
+	ErrorDescription := Description;
+ELSE // add a space and tack on the additional error description
+	ErrorDescription := CONCAT(ErrorDescription, ' ');
+	ErrorDescription := CONCAT(ErrorDescription, Description);
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Hold" Id="{f895a567-6f19-4aaf-a19a-430ec9375429}">
+      <Declaration><![CDATA[METHOD M_Hold
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_UnitMode.Hold();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Home" Id="{80e95931-65c8-4c90-ad00-612ca250483e}">
+      <Declaration><![CDATA[METHOD M_Home
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Home:=TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Reset" Id="{9e2db144-5b4e-459a-90c5-117bc0e5923a}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Reset : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Error := FALSE;
+ErrorDescription := '';]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Start" Id="{4fffeb3f-a502-448a-801f-62a2012af7b1}">
+      <Declaration><![CDATA[METHOD M_Start
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Start := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Stop" Id="{10e51045-5ea3-431f-a77c-f14d9d4a03bb}">
+      <Declaration><![CDATA[METHOD M_Stop
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_UnitMode.Stop();]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="PropBusy" Id="{df90aa53-7938-4729-8aeb-e73fd9721d5b}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY PropBusy : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{2aa45eb1-140b-4a10-b020-3e57695fecfa}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PropBusy := Busy;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="PropCurrentState" Id="{27b1323a-18e8-4d9c-9aef-c0fccf1fee6f}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY PropCurrentState : PACK_ML.State
+]]></Declaration>
+      <Get Name="Get" Id="{fdd647c3-075a-4a3e-a113-b60225c7c18f}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PropCurrentState := ItfUnitMode.CurrentState;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="PropErrDescription" Id="{e9dc189d-3561-4f34-8238-07f940859ee8}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY PropErrDescription : STRING
+]]></Declaration>
+      <Get Name="Get" Id="{5096ba17-2a69-4a0e-b37f-1d84839a649a}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PropErrDescription := ErrorDescription;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="PropError" Id="{3b5ad92c-8b5a-464b-aed7-6f6699ae2429}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY PropError : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{9a94d435-29d7-46fb-9f67-e97888d62d99}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PropError := Error;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

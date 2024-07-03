@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_VarSetCmd" Id="{0b1a37a4-4123-4a33-84fb-db1ab5afd1a7}">
+    <Declaration><![CDATA[TYPE ST_VarSetCmd :
+STRUCT
+	ArrayType: DUT_Command_ArrayType;
+	ArrayIndex: INT;
+	Coordinates: MC_COORD_REF;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

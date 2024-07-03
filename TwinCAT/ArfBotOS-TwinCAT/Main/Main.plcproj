@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <FileVersion>1.0.0.0</FileVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9b493a07-0ab4-425e-b9ef-c63e4ab00eee}</ProjectGuid>
+    <SubObjectsSortedByName>true</SubObjectsSortedByName>
+    <DownloadApplicationInfo>true</DownloadApplicationInfo>
+    <WriteProductVersion>false</WriteProductVersion>
+    <GenerateTpy>false</GenerateTpy>
+    <Name>Main</Name>
+    <ProgramVersion>3.1.4026.1+972e9c44872ad038b353624a861fd7e3244e9f75</ProgramVersion>
+    <Application>{43552ec8-77a2-4493-a32b-00afd4bee663}</Application>
+    <TypeSystem>{fae187b3-2524-44e8-838c-e25bf9462346}</TypeSystem>
+    <Implicit_Task_Info>{61073f45-152b-46eb-9d9b-f1276c4ed354}</Implicit_Task_Info>
+    <Implicit_KindOfTask>{baff1b02-df6e-4a01-b187-2a5436e48031}</Implicit_KindOfTask>
+    <Implicit_Jitter_Distribution>{416e9682-28be-4be4-95f5-145faad3577b}</Implicit_Jitter_Distribution>
+    <LibraryReferences>{d122ea7c-4360-42c4-8d0c-6b78e76856fb}</LibraryReferences>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="DUTs\CommandType.TcTLO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\DUT_Command.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\DUT_CommandType.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\DUT_Command_ArrayType.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\DUT_Command_CoordinateType.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\DUT_Flags.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\DUT_PositionController.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\DUT_Program.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\DUT_StoredPosition.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DUTs\DUT_VisionRegister.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\cnc\BuildCncCmd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\cnc\CncCmdProcessor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\cnc\CncPathPlanner.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\cnc\OriConvention.TcTLO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\cnc\ParseCncCmd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\cnc\PositionTracker.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\cnc\ST_CncCmd.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\E_ControllerBrightness.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\E_ControllerMotor.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\E_ControllerPlayerID.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\E_ControllerTrigger.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\E_ControllerTriggerForceParameter.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\E_ControllerTriggerMode.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\FB_Controller.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\F_DpadState.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\ST_Accelerometer.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\ST_Battery.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\ST_Buttons.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\ST_Controller.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\ST_Dpad.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\ST_Gyroscope.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\ST_Joystick.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\ST_Joysticks.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\ST_Trackpad.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\ST_Trackpads.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\ST_Trigger.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\controller\ST_Triggers.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\FB_CommandProcessor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\FB_ProgramProcessor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\F_AddElement.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\F_Checksum.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\F_RoundLreal.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\F_SplitCmd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\group\DUT_GroupStatus.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\group\FB_GroupHandler.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\home\FB_HomingProcessor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\home\F_HomeOffsetCalc.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\jog\E_Pose.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\jog\FB_JogProcessor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\jog\F_SetJogButtons.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\logic\BuildLogicCmd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\logic\E_LogicFunction.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\logic\E_LogicIfCondition.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\logic\E_LogicIfConditionOperator.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\logic\LogicCmdProcessor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\logic\ParseLogicCmd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\logic\ST_LogicCmd.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\logic\ST_LogicCmdIO.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\move\BuildMoveCmd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\move\CircleMode.TcTLO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\move\CoordSystem.TcTLO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\move\DUT_CircleMode.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\move\DUT_Command_MoveType.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\move\DUT_Command_PositionType.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\move\DUT_PathChoice.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\move\MoveCmdProcessor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\move\MoveType.TcTLO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\move\ParseMoveCmd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\move\PathChoice.TcTLO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\move\PositionType.TcTLO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\move\ST_MoveCmd.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\output\BuildOutputCmd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\output\DUT_OutputType.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\output\OutputCmdProcessor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\output\OutputType.TcTLO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\output\ParseOutputCmd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\output\ST_OutputCmd.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\pause\BuildPauseCmd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\pause\ParsePauseCmd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\pause\PauseCmdProcessor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\pause\ST_PauseCmd.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\tcp\PythonServerHandler.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\tcp\TcpClient.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\template\ITFModule.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\template\Module.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\template\PackML.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\varset\BuildVarSetCmd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\varset\ParseVarSetCmd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\varset\ST_VarSetCmd.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\varset\VarSetCmdProcessor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\vision\BuildVisionCmd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\vision\DUT_Command_VisionType.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\vision\OpenCV.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\vision\ParseVisionCmd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\vision\StringByteArray.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\vision\ST_VisionCalibrate.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\vision\ST_VisionCmd.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\vision\ST_VisionLocate.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\vision\VisionCmdProcessor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PlcTask.TcTTO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\GVL.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\MAIN.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\PersistentVars.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\_00_Main.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\_10_Drives.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\_20_Io.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\_30_Visu.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\_40_Vision.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DUTs" />
+    <Folder Include="FB\cnc" />
+    <Folder Include="FB\controller" />
+    <Folder Include="FB\group" />
+    <Folder Include="FB\home" />
+    <Folder Include="FB\jog" />
+    <Folder Include="FB\logic" />
+    <Folder Include="FB\move" />
+    <Folder Include="FB\vision" />
+    <Folder Include="FB\varset" />
+    <Folder Include="FB\template" />
+    <Folder Include="FB\tcp" />
+    <Folder Include="FB\pause" />
+    <Folder Include="FB\output" />
+    <Folder Include="GVLs" />
+    <Folder Include="FB" />
+    <Folder Include="VISUs" />
+    <Folder Include="POUs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PlaceholderReference Include="CmpDynamicText">
+      <DefaultResolution>CmpDynamicText</DefaultResolution>
+      <Namespace>CmpDynamicText</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Standard">
+      <DefaultResolution>Standard</DefaultResolution>
+      <Namespace>Tc2_Standard</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_Standard">
+      <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Standard</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_System">
+      <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_System</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_Module">
+      <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_Module</Namespace>
+      <SystemLibrary>true</SystemLibrary>
+    </PlaceholderReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Main.tmc">
+      <SubType>Content</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <SubObject Include="_00_Main.M_BuildTests" />
+    <SubObject Include="_00_Main.M_Init" />
+    <SubObject Include="_00_Main._M_Cnc" />
+    <SubObject Include="_00_Main._M_Controller" />
+    <SubObject Include="_00_Main._M_GroupHandler" />
+    <SubObject Include="_00_Main._M_Homing" />
+    <SubObject Include="_00_Main._M_Jogging" />
+    <SubObject Include="_00_Main._M_Processor" />
+    <SubObject Include="_00_Main._M_Tuning" />
+    <SubObject Include="_10_Drives.M_Init" />
+    <SubObject Include="_10_Drives._M_HandleDriveIO" />
+    <SubObject Include="_10_Drives._M_Init" />
+    <SubObject Include="_20_Io._M_HandleRemoteIO" />
+  </ItemGroup>
+  <ItemGroup>
+    <PlaceholderResolution Include="CmpDynamicText">
+      <Resolution>CmpDynamicText, 3.5.17.0 (System)</Resolution>
+    </PlaceholderResolution>
+  </ItemGroup>
+  <ProjectExtensions>
+    <PlcProjectOptions>
+      <XmlArchive>
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
+      <v n="Name">"&lt;ProjectRoot&gt;"</v>
+      <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+        <v>{29BD8D0C-3586-4548-BB48-497B9A01693F}</v>
+        <o>
+          <v n="Name">"{29BD8D0C-3586-4548-BB48-497B9A01693F}"</v>
+          <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+            <v>Rules</v>
+            <o>
+              <v n="Name">"Rules"</v>
+              <d n="SubKeys" t="Hashtable" />
+              <d n="Values" t="Hashtable" />
+            </o>
+          </d>
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{8A0FB252-96EB-4DCC-A5B4-B4804D05E2D6}</v>
+        <o>
+          <v n="Name">"{8A0FB252-96EB-4DCC-A5B4-B4804D05E2D6}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+            <v>WriteLineIDs</v>
+            <v>False</v>
+          </d>
+        </o>
+        <v>{8F99A816-E488-41E4-9FA3-846536012284}</v>
+        <o>
+          <v n="Name">"{8F99A816-E488-41E4-9FA3-846536012284}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="String">
+            <v>DisabledWarningIds</v>
+            <v>410,5410</v>
+          </d>
+        </o>
+        <v>{F66C7017-BDD8-4114-926C-81D6D687E35F}</v>
+        <o>
+          <v n="Name">"{F66C7017-BDD8-4114-926C-81D6D687E35F}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+            <v>CalcActiveTransOnly</v>
+            <v>True</v>
+          </d>
+        </o>
+      </d>
+      <d n="Values" t="Hashtable" />
+    </o>
+        </Data>
+        <TypeList>
+          <Type n="Boolean">System.Boolean</Type>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
+    </PlcProjectOptions>
+  </ProjectExtensions>
+</Project>

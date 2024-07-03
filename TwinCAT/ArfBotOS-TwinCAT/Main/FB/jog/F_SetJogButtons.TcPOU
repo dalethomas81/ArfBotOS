@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="F_SetJogButtons" Id="{640ac73b-ff1c-4df1-a978-e5b05f9ea455}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION F_SetJogButtons : INT
+VAR_INPUT
+	CoordinateSystem: SMC_COORD_SYSTEM;
+	ABC_as_ACS: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE CoordinateSystem OF
+	SMC_COORD_SYSTEM.ACS:
+		F_SetJogButtons := 0;
+	SMC_COORD_SYSTEM.MCS:
+		IF ABC_as_ACS THEN
+			F_SetJogButtons := 2;
+		ELSE
+			F_SetJogButtons := 1;
+		END_IF
+	SMC_COORD_SYSTEM.PCS_1:
+		IF ABC_as_ACS THEN
+			F_SetJogButtons:= 2;
+		ELSE
+			F_SetJogButtons := 1;
+		END_IF
+	SMC_COORD_SYSTEM.PCS_2:
+		IF ABC_as_ACS THEN
+			F_SetJogButtons := 2;
+		ELSE
+			F_SetJogButtons := 1;
+		END_IF
+	SMC_COORD_SYSTEM.TCS:
+		IF ABC_as_ACS THEN
+			F_SetJogButtons := 2;
+		ELSE
+			F_SetJogButtons := 1;
+		END_IF
+	SMC_COORD_SYSTEM.WCS:
+		IF ABC_as_ACS THEN
+			F_SetJogButtons := 2;
+		ELSE
+			F_SetJogButtons := 1;
+		END_IF
+	ELSE
+		F_SetJogButtons := 0;
+		
+END_CASE]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

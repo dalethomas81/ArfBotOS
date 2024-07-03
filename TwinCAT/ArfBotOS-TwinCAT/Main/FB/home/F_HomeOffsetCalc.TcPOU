@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="F_HomeOffsetCalc" Id="{ad8953b8-d17f-41b2-83c9-9901a22a0b46}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION F_HomeOffsetCalc : LREAL
+VAR_INPUT
+	CurrentOffset: LREAL;
+	CurrentPosition: LREAL;
+	HomeSearchDirection: MC_Direction;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF HomeSearchDirection = MC_Direction.positive THEN
+	F_HomeOffsetCalc := -F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
+	
+ELSIF HomeSearchDirection = MC_Direction.negative THEN
+	F_HomeOffsetCalc := F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
+	
+ELSE
+	F_HomeOffsetCalc := CurrentOffset;
+	
+END_IF]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_Accelerometer" Id="{609788be-6cef-4bab-b82d-0de671123a2d}">
+    <Declaration><![CDATA[TYPE ST_Accelerometer :
+STRUCT
+	X: INT;
+	Y: INT;
+	Z: INT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

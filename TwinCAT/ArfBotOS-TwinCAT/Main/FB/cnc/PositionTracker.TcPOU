@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PositionTracker" Id="{7701f0fc-a0ed-4db5-acf4-25ec5ce43abb}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PositionTracker
+VAR_IN_OUT
+	AxisGroup: AXIS_GROUP_REF_SM3;
+	SM3_Drive_PosControl_J1: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+	SM3_Drive_PosControl_J2: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+	SM3_Drive_PosControl_J3: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+	SM3_Drive_PosControl_J4: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+	SM3_Drive_PosControl_J5: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+	SM3_Drive_PosControl_J6: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+END_VAR
+VAR_OUTPUT
+	VisuStruct3DTrack: VisuStruct3DTrack;
+	Arm: SMC_ArticulatedRobot_6DOF_J0_State;
+	Elbow: SMC_ArticulatedRobot_6DOF_J1_State;
+	Hand: SMC_ArticulatedRobot_6DOF_J4_State;
+END_VAR
+VAR
+	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
+	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
+	_VisuStruct3DPathPoint: ARRAY[0..10000] OF VisuStruct3DPathPoint;
+	_SMC_PositionTracker: SMC_PositionTracker;
+	_PositionTrackerClearR_Trig: R_Trig;
+	_Clear: BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+// NOTE currently the settings for J6 invert direction under scaling/mapping contradict using motion control 
+// libraries and CNC. For CNC to work properly, the setting is required to be enabled (inverted). Additionally
+// the homing direction and position will need to be negated. This all requires a full download. Will be leaving 
+// setting disabled for now so that we can continue to use motion control. 
+//
+// to recap, take these steps if you would like to try out CNC:
+// 1. open the axis pool settings and under the scaling/mapping section enable 'invert direction'
+// 2. in the A_Homing POU, change the homing direction to positive.
+// 3. in _00_MAIN POU, under FirstScan set the initial home offset to a positive value (keep the value and just change the sign).
+// 4. do a full download.
+// 5. go online and set the persistent value (if previously initialized in FirstScan) to a positive value.
+//
+// UPDATE: Figured out a work around for this issue. In the A_Interpolater POU, I negated the set position in the ControlAxisByPos
+// function block for J6 such that it drives the opposite way. This appears to have resolved the issue. Why this is needed, I do not
+// know. I am sure it is some minor overlooked detail somewhere in the code...
+
+
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.a1:=ArfBotAxisGroup.Trafo.a1;//AxisGroup.Trafo.a1;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.a2:=ArfBotAxisGroup.Trafo.a2;//AxisGroup.Trafo.a2;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.a3:=ArfBotAxisGroup.Trafo.a3;//AxisGroup.Trafo.a3;
+// conflicting documentation on if d1 needs to be pos or neg. only works as negative otherwise trafo reports invalid configuration
+// https://product-help.schneider-electric.com/Machine%20Expert/V2.0/zh/codesys_softmotion/codesys_softmotion/modules/_sm_trafo_pou_six_dof_robot.html
+// https://forge.codesys.com/forge/talk/Motion/thread/16e1f0327f/
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.d1:=-ArfBotAxisGroup.Trafo.d1;//-AxisGroup.Trafo.d1;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.d3:=ArfBotAxisGroup.Trafo.d3;//AxisGroup.Trafo.d3;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.d4:=ArfBotAxisGroup.Trafo.d4;//AxisGroup.Trafo.d4;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.d6:=ArfBotAxisGroup.Trafo.d6;//AxisGroup.Trafo.d6;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.q3_max_deg:=160; // TODO put magic numbers somewhere appropriate
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.q3_min_deg:=-160; // TODO put magic numbers somewhere appropriate
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_max_deg:=160; // TODO put magic numbers somewhere appropriate
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_min_deg:=-160; // TODO put magic numbers somewhere appropriate
+
+// track position
+_SMC_Trafof_ArticulatedRobot_6DOF(config:=_SMC_TrafoConfig_ArticulatedRobot_6DOF,
+							Drive0:=SM3_Drive_PosControl_J1,
+							Drive1:=SM3_Drive_PosControl_J2,
+							Drive2:=SM3_Drive_PosControl_J3,
+							Drive3:=SM3_Drive_PosControl_J4,
+							Drive4:=SM3_Drive_PosControl_J5,
+							Drive5:=SM3_Drive_PosControl_J6,
+							vToolPos=>,
+							mToolOrientation=>,
+							armState=>Arm,
+							elbowState=>Elbow,
+							handState=>Hand);
+
+_PositionTrackerClearR_Trig(Clk:=_Clear);
+_SMC_PositionTracker(
+	bEnable:= TRUE, 
+	bClear:= _PositionTrackerClearR_Trig.Q, 
+	dX:= _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dX, 
+	dY:= _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dY, 
+	dZ:= _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dZ, 
+	udiNumberOfPointsInArray:= 10001, //SIZEOF(_VisuStruct3DPathPoint), TODO make this dynamic. hint SIZEOF wont work
+	pBuffer:= ADR(_VisuStruct3DPathPoint), 
+	vs3dt=> VisuStruct3DTrack);
+_Clear := FALSE;]]></ST>
+    </Implementation>
+    <Method Name="M_Clear" Id="{dfb86b0d-b5f1-49bd-9916-9936d6497f13}">
+      <Declaration><![CDATA[METHOD M_Clear
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Clear := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

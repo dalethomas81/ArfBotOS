@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_VisionRegister" Id="{183abbbc-75ca-4f97-a156-9832c2bf8b79}">
+    <Declaration><![CDATA[TYPE DUT_VisionRegister EXTENDS DUT_StoredPosition :
+STRUCT
+	Scaling: REAL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

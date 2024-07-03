@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="OutputCmdProcessor" Id="{6372490f-9396-4f98-b458-51631931ad07}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK OutputCmdProcessor EXTENDS Module
+VAR_INPUT
+	Enable: BOOL;
+	Command: STRING(GVL.COMMAND_LEN) := '';
+END_VAR
+VAR_IN_OUT
+	Digital: ARRAY[GVL.DIG_OUT_ARR_BEG..GVL.DIG_OUT_ARR_END] OF BOOL;
+	Pwm: ARRAY[GVL.PWM_OUT_ARR_BEG..GVL.PWM_OUT_ARR_END] OF BYTE;
+END_VAR
+VAR
+	_RunRtrig: R_TRIG;
+	_SequenceDigital: INT;
+	_SequencePwm: INT;
+	_UnitModeCurrentState: PACK_ML.State;
+	_OutputCommandParser: ParseOutputCmd;
+	_OutputType: DUT_OutputType;
+	_OutputTarget: INT;
+	_OutputValue1: LREAL;
+END_VAR
+VAR CONSTANT
+	_STEP_DONE: INT := 1000;
+	_STEP_IDLE: INT := 0;
+	_STEP_COMMAND: INT := 10;
+	_STEP_TWO: INT := 20;
+	_STEP_ERR: INT := 30;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+
+// PackML state machine implementation
+_UnitModeCurrentState := SUPER^._UnitMode.CurrentState;
+
+//
+CASE SUPER^._SeqMain OF
+	
+    _STEP_DONE:
+		SUPER^._SeqMain := _STEP_IDLE;
+        
+    _STEP_IDLE:
+        // hang out here untill called to run
+		
+    _STEP_COMMAND:
+		_OutputCommandParser(Command:=Command);
+		IF _OutputCommandParser.Error THEN
+			SUPER^.M_Error(Description:=_OutputCommandParser.ErrorDescription);
+			SUPER^._SeqMain := _STEP_ERR;
+		ELSE
+			_OutputType := _OutputCommandParser.stCommand.OutputType;
+			_OutputTarget := _OutputCommandParser.stCommand.OutputTarget;
+			_OutputValue1 := _OutputCommandParser.stCommand.OutputValue1;
+			
+			CASE _OutputType OF
+				DUT_OutputType.Digital: //
+					_SequenceDigital := 1;
+					SUPER^._SeqMain := _STEP_TWO;
+				DUT_OutputType.Pwm: //
+					_SequencePwm := 1;
+					SUPER^._SeqMain := _STEP_TWO;
+			ELSE
+				SUPER^._SeqMain := _STEP_DONE;
+				
+			END_CASE
+		END_IF
+		
+	_STEP_TWO:
+		IF _SequenceDigital = 0 
+			AND _SequencePwm = 0 THEN
+				// next, please
+				SUPER^._SeqMain := _STEP_DONE;
+		END_IF;
+
+END_CASE
+
+CASE _SequenceDigital OF
+	0: //
+	1: //
+		THIS^.Digital[_OutputTarget] := _OutputValue1 > 0;
+		_SequenceDigital := 0;
+END_CASE
+
+CASE _SequencePwm OF
+	0: //
+	1: //
+		THIS^.Pwm[_OutputTarget] := LREAL_TO_BYTE(_OutputValue1);
+		_SequencePwm := 0;
+	
+END_CASE]]></ST>
+    </Implementation>
+    <Method Name="M_Aborting" Id="{fc1f966e-206a-402e-8b05-6358a2c60ff4}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Aborting : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SUPER^._SeqAborting OF
+	0:
+		SUPER^._SeqAborting := SUPER^._SeqAborting + 1;
+	1:
+		SUPER^.M_StateComplete();
+		SUPER^._SeqAborting := 0;
+		
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Clearing" Id="{368dc781-45d7-4e24-9a5e-8a9a04872ec6}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Clearing : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_SequenceDigital := 0;
+_SequencePwm := 0;
+
+SUPER^.M_StateComplete();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Complete" Id="{843305da-b984-4520-8555-133899b9f165}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Complete : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// once complete, reset to get back to idle
+SUPER^._UnitMode.Reset();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Execute" Id="{1d97f92f-5146-4d3a-b260-50bb7a3971f7}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Execute : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// here we want to execute our commands/jobs/etc and set completed when done.
+IF SUPER^._SeqMain =_STEP_IDLE THEN
+	SUPER^.M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Holding" Id="{6bd03b4f-d8eb-4211-abab-f0512818ab61}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Holding : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SUPER^._SeqHolding OF
+	0:
+		SUPER^._SeqHolding := SUPER^._SeqHolding + 1;
+	1:
+		SUPER^.M_StateComplete();
+		SUPER^._SeqHolding := 0;
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Idle" Id="{f42bff08-3d3c-4f17-bbd4-541074d9df17}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Idle : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_SequenceDigital := 0;
+_SequencePwm := 0;
+SUPER^._SeqMain := 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Resetting" Id="{83e31000-e404-406b-a9f0-af2b8e43e2b9}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Resetting : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SUPER^._SeqResetting OF
+	0:
+		_SeqResetting := _SeqResetting + 1;
+	1:
+		SUPER^.M_StateComplete();
+		_SeqResetting := 0;
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetPackML" Id="{fed562a2-eddf-4e93-afb0-ae3624ddf3de}">
+      <Declaration><![CDATA[METHOD PROTECTED M_SetPackML : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[SUPER^._UnitMode(	sName := 'Output Processor',
+				eInitialState := PACK_ML.State.Idle,
+				xActive := TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Starting" Id="{88023030-83e7-4c3a-848e-230ca2d5e812}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Starting : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// here we want to clear things and get ready for the execute state
+// I can consider this the "INIT" state
+SUPER^._SeqMain := _STEP_COMMAND;
+SUPER^.M_StateComplete();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_UnHolding" Id="{10531d76-a1e4-42ba-a26f-88c13c76bd1e}">
+      <Declaration><![CDATA[METHOD PROTECTED M_UnHolding : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+//
+SUPER^._SeqMain := _STEP_COMMAND;
+
+//
+SUPER^.M_StateComplete();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

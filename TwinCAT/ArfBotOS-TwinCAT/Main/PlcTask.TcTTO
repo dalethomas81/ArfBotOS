@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Task Name="PlcTask" Id="{ecb019b0-05e3-4d2f-adab-471290b40ef4}">
+    <!--CycleTime in micro seconds.-->
+    <CycleTime>10000</CycleTime>
+    <Priority>20</Priority>
+    <PouCall>
+      <Name>_00_Main</Name>
+    </PouCall>
+    <PouCall>
+      <Name>_10_Drives</Name>
+    </PouCall>
+    <PouCall>
+      <Name>_20_Io</Name>
+    </PouCall>
+    <PouCall>
+      <Name>_40_Vision</Name>
+    </PouCall>
+    <TaskFBGuid>{8f6828a7-316f-45c2-90b8-652f659862d2}</TaskFBGuid>
+    <Fb_init>{9fa2d6d3-78c4-4ced-92ba-a286530e7fcb}</Fb_init>
+    <Fb_exit>{5251552e-9105-4344-a42a-66bb90568d42}</Fb_exit>
+    <CycleUpdate>{325e322a-ae0c-489b-a56f-7e843e1ddfa9}</CycleUpdate>
+    <PostCycleUpdate>{89436fb9-8686-4670-91ef-3ad433f6df25}</PostCycleUpdate>
+  </Task>
+</TcPlcObject>

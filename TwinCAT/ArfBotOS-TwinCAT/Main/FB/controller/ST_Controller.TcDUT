@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_Controller" Id="{cae9356f-d6ac-4e7d-8011-d5a6d5d74766}">
+    <Declaration><![CDATA[TYPE ST_Controller :
+STRUCT
+	Connected: BOOL;
+	Joysticks: ST_Joysticks;
+	Buttons: ST_Buttons;
+	Dpad: ST_Dpad;
+	Triggers: ST_Triggers;
+	Trackpads: ST_Trackpads;
+	Gyroscope: ST_Gyroscope;
+	Accelerometer: ST_Accelerometer;
+	Battery: ST_Battery;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

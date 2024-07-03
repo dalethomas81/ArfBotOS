@@ -1,0 +1,292 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ParseMoveCmd" Id="{35e49e9e-292d-48d5-910d-e69db317cc55}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ParseMoveCmd
+VAR_INPUT
+	Command: STRING(GVL.COMMAND_LEN);
+END_VAR
+VAR_OUTPUT
+	stCommand: ST_MoveCmd;
+	Error: BOOL := FALSE;
+	ErrorDescription: STRING := '';
+END_VAR
+VAR
+	_CmdParams: ARRAY[0..GVL.COMMAND_LEN] OF STRING;
+END_VAR
+VAR CONSTANT
+	_MoveTypeD: STRING(3) := 'DIR';
+	_MoveTypeL: STRING(3) := 'LIN';
+	_MoveTypeC: STRING(3) := 'CIR';
+	_ChangeTypeA: STRING(3) := 'ABS';
+	_ChangeTypeR: STRING(3) := 'REL';
+	_CoordSystemAcs: STRING(3) := 'ACS';
+	_CoordSystemMcs: STRING(3) := 'MCS';
+	_CoordSystemPc1: STRING(3) := 'PC1';
+	_CoordSystemPc2: STRING(3) := 'PC2';
+	_CoordSystemTcs: STRING(3) := 'TCS';
+	_CoordSystemWcs: STRING(3) := 'WCS';
+	_CoordSystemIcs: STRING(3) := 'ICS';
+	_CoordTypeH: STRING(3) := 'LIT';
+	_CoordTypeV: STRING(3) := 'VAR';
+	_ArrayTypeS: STRING(3) := 'STO';
+	_ArrayTypeV: STRING(3) := 'VIS';
+	_ArrayTypeF: STRING(3) := 'FLG';
+	_CircleModeBor: STRING(3) := 'BOR';
+	_CircleModeCen: STRING(3) := 'CEN';
+	_CircleModeRad: STRING(3) := 'RAD';
+	_PathChoiceClw: STRING(3) := 'CLW';
+	_PathChoiceCcw: STRING(3) := 'CCW';
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// D is direct move. L is linear move. C is a circular move
+// R is relative position. A is absolute position
+// V is variable coordinated. H is a hardcoded coordinated
+// S is stored position array. V is vision register array.
+// D|L|C R|A Speed CoordSystem X0000.00 Y0000.00 Z0000.00 A0000.00 B0000.00 C0000.00 BOR|CEN|RAD CCW|CLW X0000.00 Y0000.00 Z0000.00 A0000.00 B0000.00 C0000.00
+// 'D A 10 MCS H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
+// 'C R 10 MCS H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00 BOR CLW H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
+// 'D A 10 MCS V S 25'
+// 'D A 10 MCS V V 33'
+// 'C R 10 MCS V S 2 BOR CLW V S 005'
+// 'C R 10 MCS V S 003 BOR CLW V V 006'
+// 'C R 10 MCS V S 015 BOR CLW H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
+// 'C R 10 MCS H 250.0 0.0 500.0 0.0 45.0 180.0 BOR CLW V V 22'
+
+Error := FALSE;
+ErrorDescription := '';
+
+// split command string into commands
+_CmdParams:=F_SplitCmd(Command:=Command);
+
+//
+IF _CmdParams[0] = _MoveTypeD THEN
+	stCommand.MoveType := DUT_Command_MoveType.DirectMove;
+ELSIF _CmdParams[0] = _MoveTypeL THEN
+	stCommand.MoveType := DUT_Command_MoveType.LinearMove;
+ELSIF _CmdParams[0] = _MoveTypeC THEN
+	stCommand.MoveType := DUT_Command_MoveType.CircularMove;
+ELSE
+	Error := TRUE;
+	ErrorDescription := 'Incorrect move type';
+END_IF
+
+//
+IF _CmdParams[1] = _ChangeTypeR THEN
+	stCommand.PositionType := DUT_Command_PositionType.RelativePosition;
+ELSIF _CmdParams[1] = _ChangeTypeA THEN
+	stCommand.PositionType := DUT_Command_PositionType.AbsolutePosition;
+ELSE
+	Error := TRUE;
+	ErrorDescription := 'Incorrect position type';
+END_IF
+
+//
+stCommand.Speed := STRING_TO_LREAL(_CmdParams[2]);
+
+//
+IF _CmdParams[3] = _CoordSystemAcs THEN
+	stCommand.CoordSystem := SMC_COORD_SYSTEM.ACS;
+ELSIF _CmdParams[3] = _CoordSystemMcs THEN
+	stCommand.CoordSystem := SMC_COORD_SYSTEM.MCS;
+ELSIF _CmdParams[3] = _CoordSystemPc1 THEN
+	stCommand.CoordSystem := SMC_COORD_SYSTEM.PCS_1;
+ELSIF _CmdParams[3] = _CoordSystemPc2 THEN
+	stCommand.CoordSystem := SMC_COORD_SYSTEM.PCS_2;
+ELSIF _CmdParams[3] = _CoordSystemTcs THEN
+	stCommand.CoordSystem := SMC_COORD_SYSTEM.TCS;
+ELSIF _CmdParams[3] = _CoordSystemWcs THEN
+	stCommand.CoordSystem := SMC_COORD_SYSTEM.WCS;
+ELSIF _CmdParams[3] = _CoordSystemIcs THEN
+	stCommand.CoordSystem := SMC_COORD_SYSTEM.ICS;
+ELSE
+	Error := TRUE;
+	ErrorDescription := 'Incorrect coordinate system type';
+END_IF
+
+//
+IF _CmdParams[4] = _CoordTypeH THEN
+	stCommand.CoordinateType := DUT_Command_CoordinateType.Literal;
+ELSIF _CmdParams[4] = _CoordTypeV THEN
+	stCommand.CoordinateType := DUT_Command_CoordinateType.Variable;
+ELSE
+	Error := TRUE;
+	ErrorDescription := 'Incorrect coordinate type'; // TODO wow i need a better name for this... wtf was i thinking?
+END_IF
+
+//
+CASE stCommand.CoordinateType OF 
+// 'D A 010 MCS H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
+	DUT_Command_CoordinateType.Literal:
+		stCommand.CoordRef.X := STRING_TO_LREAL(_CmdParams[5]);
+		stCommand.CoordRef.Y := STRING_TO_LREAL(_CmdParams[6]);
+		stCommand.CoordRef.Z := STRING_TO_LREAL(_CmdParams[7]);
+		stCommand.CoordRef.A := STRING_TO_LREAL(_CmdParams[8]);
+		stCommand.CoordRef.B := STRING_TO_LREAL(_CmdParams[9]);
+		stCommand.CoordRef.C := STRING_TO_LREAL(_CmdParams[10]);
+// 'D A 010 MCS V S 001'
+	DUT_Command_CoordinateType.Variable:
+		stCommand.ArrayIndex := STRING_TO_UINT(_CmdParams[6]);
+		IF stCommand.ArrayIndex <= GVL.POS_ARR_END 
+			AND stCommand.ArrayIndex >= GVL.POS_ARR_BEG THEN
+				IF _CmdParams[5] = _ArrayTypeS THEN
+					stCommand.ArrayType := DUT_Command_ArrayType.StoredPosition;
+					stCommand.CoordRef := PersistentVars.StoredPositions[stCommand.ArrayIndex].Position;
+				ELSIF _CmdParams[5] = _ArrayTypeV THEN
+					stCommand.ArrayType := DUT_Command_ArrayType.VisionRegister;
+					stCommand.CoordRef := PersistentVars.VisionRegisters[stCommand.ArrayIndex].Position;
+				ELSE
+					Error := TRUE;
+					ErrorDescription := 'Incorrect array type';
+				END_IF
+		ELSE
+			Error := TRUE;
+			ErrorDescription := 'Array index out of bounds';
+		END_IF
+	
+END_CASE
+
+//
+CASE stCommand.CoordinateType OF 
+// 'C R 010 MCS H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00 BOR CLW H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
+	DUT_Command_CoordinateType.Literal:
+		IF _CmdParams[11] = _CircleModeBor THEN
+			stCommand.CircleMode := SMC_CIRC_MODE.BORDER;
+		ELSIF _CmdParams[11] = _CircleModeCen THEN
+			stCommand.CircleMode := SMC_CIRC_MODE.CENTER;
+		ELSIF _CmdParams[11] = _CircleModeRad THEN
+			stCommand.CircleMode := SMC_CIRC_MODE.RADIUS;
+		ELSE
+			Error := TRUE;
+			ErrorDescription := 'Incorrect circle mode';
+		END_IF
+// 'C R 010 MCS V S 001 BOR CLW H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
+	DUT_Command_CoordinateType.Variable:
+		IF _CmdParams[7] = _CircleModeBor THEN
+			stCommand.CircleMode := SMC_CIRC_MODE.BORDER;
+		ELSIF _CmdParams[7] = _CircleModeCen THEN
+			stCommand.CircleMode := SMC_CIRC_MODE.CENTER;
+		ELSIF _CmdParams[7] = _CircleModeRad THEN
+			stCommand.CircleMode := SMC_CIRC_MODE.RADIUS;
+		ELSE
+			Error := TRUE;
+			ErrorDescription := 'Incorrect circle mode';
+		END_IF
+	
+END_CASE
+
+//
+CASE stCommand.CoordinateType OF 
+// 'C R 010 MCS H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00 BOR CLW H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
+	DUT_Command_CoordinateType.Literal:
+		IF _CmdParams[12] = _PathChoiceClw THEN
+			stCommand.PathChoice := MC_CIRC_PATHCHOICE.CLOCKWISE;
+		ELSIF _CmdParams[12] = _PathChoiceCcw THEN
+			stCommand.PathChoice := MC_CIRC_PATHCHOICE.COUNTER_CLOCKWISE;
+		ELSE
+			Error := TRUE;
+			ErrorDescription := 'Incorrect circle direction';
+		END_IF
+		IF _CmdParams[13] = _CoordTypeH THEN
+			stCommand.CircularCoordinateType := DUT_Command_CoordinateType.Literal;
+		ELSIF _CmdParams[13] = _CoordTypeV THEN
+			stCommand.CircularCoordinateType := DUT_Command_CoordinateType.Variable;
+		ELSE
+			Error := TRUE;
+			ErrorDescription := 'Incorrect coordinate type'; // TODO yeah, this needs better naming. "coordinate type" does not fit.
+		END_IF
+// 'C R 010 MCS V S 001 BOR CLW H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
+	DUT_Command_CoordinateType.Variable:
+		IF _CmdParams[8] = _PathChoiceClw THEN
+			stCommand.PathChoice := MC_CIRC_PATHCHOICE.CLOCKWISE;
+		ELSIF _CmdParams[8] = _PathChoiceCcw THEN
+			stCommand.PathChoice := MC_CIRC_PATHCHOICE.COUNTER_CLOCKWISE;
+		ELSE
+			Error := TRUE;
+			ErrorDescription := 'Incorrect circle direction';
+		END_IF
+		IF _CmdParams[9] = _CoordTypeH THEN
+			stCommand.CircularCoordinateType := DUT_Command_CoordinateType.Literal;
+		ELSIF _CmdParams[9] = _CoordTypeV THEN
+			stCommand.CircularCoordinateType := DUT_Command_CoordinateType.Variable;
+		ELSE
+			Error := TRUE;
+			ErrorDescription := 'Incorrect coordinate type'; // TODO this naming "coordinate type" needs to go.
+		END_IF
+	
+END_CASE
+
+//
+CASE stCommand.CircularCoordinateType OF 
+	DUT_Command_CoordinateType.Literal:
+		CASE stCommand.CoordinateType OF
+// 'C R 010 MCS H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00 BOR CLW H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
+			DUT_Command_CoordinateType.Literal:
+				stCommand.CoordRef2.X := STRING_TO_LREAL(_CmdParams[14]);
+				stCommand.CoordRef2.Y := STRING_TO_LREAL(_CmdParams[15]);
+				stCommand.CoordRef2.Z := STRING_TO_LREAL(_CmdParams[16]);
+				stCommand.CoordRef2.A := STRING_TO_LREAL(_CmdParams[17]);
+				stCommand.CoordRef2.B := STRING_TO_LREAL(_CmdParams[18]);
+				stCommand.CoordRef2.C := STRING_TO_LREAL(_CmdParams[19]);
+// 'C R 010 MCS V S 001 BOR CLW H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
+			DUT_Command_CoordinateType.Variable:
+				stCommand.CoordRef2.X := STRING_TO_LREAL(_CmdParams[10]);
+				stCommand.CoordRef2.Y := STRING_TO_LREAL(_CmdParams[11]);
+				stCommand.CoordRef2.Z := STRING_TO_LREAL(_CmdParams[12]);
+				stCommand.CoordRef2.A := STRING_TO_LREAL(_CmdParams[13]);
+				stCommand.CoordRef2.B := STRING_TO_LREAL(_CmdParams[14]);
+				stCommand.CoordRef2.C := STRING_TO_LREAL(_CmdParams[15]);
+				
+		END_CASE
+	
+	DUT_Command_CoordinateType.Variable:
+		CASE stCommand.CoordinateType OF
+// 'C R 010 MCS H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00 BOR CLW V V 001'
+			DUT_Command_CoordinateType.Literal:
+				stCommand.CircularArrayIndex := STRING_TO_UINT(_CmdParams[15]);
+				IF stCommand.CircularArrayIndex <= GVL.POS_ARR_END 
+					AND stCommand.CircularArrayIndex >= GVL.POS_ARR_BEG THEN
+						IF _CmdParams[14] = _ArrayTypeS THEN
+							stCommand.CircularArrayType := DUT_Command_ArrayType.StoredPosition;
+							stCommand.CoordRef2 := PersistentVars.StoredPositions[stCommand.CircularArrayIndex].Position;
+						ELSIF _CmdParams[14] = _ArrayTypeV THEN
+							stCommand.CircularArrayType := DUT_Command_ArrayType.VisionRegister;
+							stCommand.CoordRef2 := PersistentVars.VisionRegisters[stCommand.CircularArrayIndex].Position;
+						ELSE
+							Error := TRUE;
+							ErrorDescription := 'Incorrect array type';
+						END_IF
+					
+				ELSE
+					Error:=TRUE;
+					ErrorDescription := 'Array index out of bounds';
+					
+				END_IF
+				
+// 'C R 010 MCS V S 001 BOR CLW V V 001'
+			DUT_Command_CoordinateType.Variable:
+				stCommand.CircularArrayIndex := STRING_TO_UINT(_CmdParams[11]);
+				IF stCommand.CircularArrayIndex <= GVL.POS_ARR_END 
+					AND stCommand.CircularArrayIndex >= GVL.POS_ARR_BEG THEN
+						IF _CmdParams[10] = _ArrayTypeS THEN
+							stCommand.CircularArrayType := DUT_Command_ArrayType.StoredPosition;
+							stCommand.CoordRef2 := PersistentVars.StoredPositions[stCommand.CircularArrayIndex].Position;
+						ELSIF _CmdParams[10] = _ArrayTypeV THEN
+							stCommand.CircularArrayType := DUT_Command_ArrayType.VisionRegister;
+							stCommand.CoordRef2 := PersistentVars.VisionRegisters[stCommand.CircularArrayIndex].Position;
+						ELSE
+							Error:=TRUE;
+							ErrorDescription := 'Incorrect array type';
+						END_IF
+					
+				ELSE
+					Error:=TRUE;
+					ErrorDescription := 'Array index out of bounds';
+				END_IF
+				
+		END_CASE
+	
+END_CASE]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

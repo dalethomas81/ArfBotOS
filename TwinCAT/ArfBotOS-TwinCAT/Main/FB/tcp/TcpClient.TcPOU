@@ -1,0 +1,217 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="TcpClient" Id="{0c178c71-0d25-4361-b16e-e3833e33b5d0}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK TcpClient
+VAR_INPUT
+	bEnable: BOOL;
+	strIpAddress: STRING(19) := '127.0.0.1';
+	uPort: UINT := 50011;
+END_VAR
+VAR
+	_Write: BOOL := FALSE;
+	_DataToWrite: STRING(255) := '';
+END_VAR
+VAR_OUTPUT
+	bBusyWrite: BOOL;
+	bDoneWrite: BOOL;
+	bBusyRead: BOOL;
+	dRecordRead: DINT;
+	strRead: STRING(255);
+	byteArrayRead: ARRAY[0..254] OF BYTE;
+	bConnected: BOOL;
+END_VAR
+VAR
+	_ipAddress: NBS.IPv4Address;
+	_fbTcpClient: NBS.TCP_Client;
+	_fbTcpRead: NBS.TCP_Read;
+	_fbTcpWrite: NBS.TCP_Write;
+	_ConnectDelayTimer: TON;
+	_WriteData: StringByteArray;
+	_ReadData: StringByteArray;
+	_WriteRTRIG: R_TRIG;
+	_ConnectStep: INT;
+	_ReadStep: INT;
+	_Read: BOOL;
+END_VAR
+VAR CONSTANT
+	ConnectStep_IDLE: INT := 0;
+	ConnectStep_DELAY: INT := 10;
+	ConnectStep_SETUP: INT := 20;
+	ConnectStep_ENABLE: INT := 30;
+	ConnectStep_WAIT: INT := 40;
+	ConnectStep_CONN: INT := 50;
+	WriteStep_IDLE: INT := 0;
+	WriteStep_DATA: INT := 10;
+	WriteStep_WRITE: INT := 20;
+	WriteStep_WAIT: INT := 30;
+	ReadStep_RESET: INT := 0;
+	ReadStep_IDLE: INT := 10;
+	ReadStep_ENABLE: INT := 20;
+	ReadStep_MONITOR: INT := 30;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[{region "connect"}
+	
+	bConnected := (_ConnectStep = ConnectStep_CONN);
+	_ConnectDelayTimer(IN:=_ConnectStep = ConnectStep_DELAY, PT:=T#1S);
+	CASE _ConnectStep OF
+		
+		ConnectStep_IDLE: // IDLE
+			IF bEnable THEN
+				_fbTcpClient.xEnable := FALSE;
+				_ConnectStep := ConnectStep_DELAY;
+			END_IF
+			
+		ConnectStep_DELAY: // DELAY
+			IF _ConnectDelayTimer.Q THEN
+				_ConnectStep := ConnectStep_SETUP;
+			END_IF
+			
+		ConnectStep_SETUP: // SETUP
+			_ipAddress.SetInitialValue(ipAddress := strIpAddress);
+			_ConnectStep := ConnectStep_ENABLE;
+			
+		ConnectStep_ENABLE: // ENABLE
+			_fbTcpClient.xEnable := TRUE;
+			_ConnectStep := ConnectStep_WAIT;
+			
+		ConnectStep_WAIT: // WAIT
+			IF _fbTcpClient.xActive THEN
+				_ConnectStep := ConnectStep_CONN;
+			ELSIF _fbTcpClient.xError THEN
+				_ConnectStep := ConnectStep_IDLE;
+			END_IF
+		
+		ConnectStep_CONN: // CONNECTED
+			IF _fbTcpClient.xError OR NOT _fbTcpClient.xActive OR NOT bEnable THEN
+				_ConnectStep := ConnectStep_IDLE;
+			END_IF
+			
+	END_CASE
+	
+	_fbTcpClient(
+		xEnable := , 
+		itfIPAddress := _ipAddress, 
+		uiPort := uPort, 
+		udiTimeOut := 1000000); // us
+			 
+{endregion}
+
+
+{region "write"}
+	_WriteRTRIG(CLK:=_Write);
+	IF _WriteRTRIG.Q THEN
+		_Write := FALSE;
+		IF bConnected AND _DataToWrite <> '' THEN
+			MemUtils.MemSet(	pbyBuffer:=ADR(_WriteData.bArray),
+								byValue:=0,
+								dwSize:=SIZEOF(_WriteData.bArray));
+			MemUtils.MemCpy(	pbyDest:=ADR(_WriteData.sString),
+								pbySrc:=ADR(_DataToWrite),
+								dwSize:=INT_TO_DWORD(LEN(_DataToWrite)));
+			_fbTcpWrite.xExecute := TRUE;
+		END_IF
+	END_IF
+	
+	_fbTcpWrite(xExecute := _fbTcpWrite.xExecute AND NOT _fbTcpWrite.xDone AND NOT _fbTcpWrite.xError,
+				xBusy=>bBusyWrite,
+				xDone=>bDoneWrite,
+				itfConnection := _fbTcpClient.itfConnection, 
+				udiTimeOut := 1000000, // us 
+				udiSize := INT_TO_UDINT(LEN(_WriteData.sString)), 
+				pData := ADR(_WriteData.bArray));
+
+{endregion}
+
+
+{region "read"}
+
+	_Read := (_ConnectStep = ConnectStep_CONN);
+	CASE _ReadStep OF
+			 
+		ReadStep_RESET: // RESET
+			_fbTcpRead.xEnable := FALSE;
+			_ReadStep := ReadStep_IDLE;
+
+		ReadStep_IDLE: // IDLE
+			IF _Read THEN
+				_ReadStep := ReadStep_ENABLE;
+			END_IF
+
+		ReadStep_ENABLE: // ENABLE
+			_fbTcpRead.xEnable := TRUE;
+			_ReadStep := ReadStep_MONITOR;
+
+		ReadStep_MONITOR: // MONITOR
+			IF _fbTcpRead.xReady THEN
+				IF (_fbTcpRead.udiCount > 0) THEN
+					//
+					MemUtils.MemSet(
+						pbyBuffer:=ADR(strRead),
+						byValue:=0,
+						dwSize:=SIZEOF(strRead)); 
+					MemUtils.MemSet(
+						pbyBuffer:=ADR(byteArrayRead),
+						byValue:=0,
+						dwSize:=SIZEOF(byteArrayRead)); 
+					MemUtils.MemCpy(
+						pbyDest:=ADR(strRead),
+						pbySrc:=ADR(_ReadData.sString),
+						dwSize:=SEL(_fbTcpRead.udiCount > 255, _fbTcpRead.udiCount, 255));
+					MemUtils.MemCpy(
+						pbyDest:=ADR(byteArrayRead),
+						pbySrc:=ADR(_ReadData.bArray),
+						dwSize:=SEL(_fbTcpRead.udiCount > 255, _fbTcpRead.udiCount, 255));
+					MemUtils.MemSet(
+						pbyBuffer:=ADR(_ReadData.sString),
+						byValue:=0,
+						dwSize:=SIZEOF(_ReadData.sString)); 
+					//
+					dRecordRead := dRecordRead + 1;
+				END_IF
+				
+			ELSIF _fbTcpRead.xError OR NOT _Read THEN
+				_ReadStep := ReadStep_RESET;
+				
+			END_IF
+			 
+	END_CASE
+	
+	bBusyRead := (_ReadStep <> ReadStep_IDLE) AND _fbTcpRead.xBusy;
+	_fbTcpRead(xEnable := , 
+				itfConnection := _fbTcpClient.itfConnection, 
+				udiSize := SIZEOF(_ReadData.bArray), 
+				pData := ADR(_ReadData.bArray), 
+				udiCount => );
+
+{endregion}]]></ST>
+    </Implementation>
+    <Method Name="_M_Reconnect" Id="{97676848-0c7a-4e94-a0de-70ae837304a7}">
+      <Declaration><![CDATA[METHOD INTERNAL _M_Reconnect : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_ConnectStep := ConnectStep_IDLE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_Write" Id="{5821b17b-b657-4412-802a-8f52a5970847}">
+      <Declaration><![CDATA[METHOD INTERNAL _M_Write : BOOL
+VAR_INPUT
+	Data: STRING(255);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF bConnected AND NOT bBusyWrite THEN
+	bBusyWrite := TRUE; // do this as a workaround to show "busy" ASAP to let callers know to hold back
+	_Write:=TRUE;
+	_DataToWrite:=Data;
+	_M_Write := TRUE;
+	
+ELSE
+	_M_Write := FALSE;
+	
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

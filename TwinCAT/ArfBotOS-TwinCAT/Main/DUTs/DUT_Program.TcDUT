@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Program" Id="{6dbc7d5e-b88c-421e-a648-117a087040e6}">
+    <Declaration><![CDATA[TYPE DUT_Program :
+STRUCT
+	ProgramName: STRING;
+	Commands: ARRAY[GVL.PROG_CMDS_ARR_BEG..GVL.PROG_CMDS_ARR_END] OF DUT_Command;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

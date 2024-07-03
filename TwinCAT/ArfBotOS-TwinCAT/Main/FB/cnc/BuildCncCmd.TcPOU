@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="BuildCncCmd" Id="{e33aafb8-c7d1-4dab-86cc-41df906bbf07}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION BuildCncCmd : STRING(GVL.COMMAND_LEN)
+VAR_INPUT
+	stCommand: ST_CncCmd;
+END_VAR
+VAR
+	_Command: STRING(GVL.COMMAND_LEN);
+END_VAR
+VAR CONSTANT
+	_Delimiter: STRING := ' ';
+	_AddString: STRING(3) := 'ADD';
+	_XYZString: STRING(3) := 'XYZ';
+	_ZYXString: STRING(3) := 'ZYX';
+	_ZYZString: STRING(3) := 'ZYZ';
+	_LiteralString: STRING(3) := 'LIT';
+	_VariableString: STRING(3) := 'VAR';
+	_StoredPositionsString: STRING(3) := 'STO';
+	_VisionRegistersString: STRING(3) := 'VIS';
+	_FlagsString: STRING(3) := 'FLG';
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// /path/to/file/with/no/spaces/file.cnc ADD|XYX|ZYX|ZYZ startpos
+// file1.cnc XYZ H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00
+// file2.cnc ADD A S 025
+// file3.cnc ADD A V 015
+
+_Command:='';
+
+//
+F_AddElement(_Command, _Delimiter, stCommand.Filename);
+
+//
+CASE stCommand.OriConvention OF
+	SMC_ORI_CONVENTION.ADDAXES:
+		F_AddElement(_Command, _Delimiter, _AddString);
+	SMC_ORI_CONVENTION.XYZ:
+		F_AddElement(_Command, _Delimiter, _XYZString);
+	SMC_ORI_CONVENTION.ZYX:
+		F_AddElement(_Command, _Delimiter, _ZYXString);
+	SMC_ORI_CONVENTION.ZYZ:
+		F_AddElement(_Command, _Delimiter, _ZYZString);
+END_CASE
+
+//
+CASE stCommand.CoordinateType OF
+	DUT_Command_CoordinateType.Literal:
+		F_AddElement(_Command, _Delimiter, _LiteralString);
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.StartPos.dX));
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.StartPos.dY));
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.StartPos.dZ));
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.StartPos.dA));
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.StartPos.dB));
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.StartPos.dC));
+		
+	DUT_Command_CoordinateType.Variable:
+		F_AddElement(_Command, _Delimiter, _VariableString);
+		CASE stCommand.ArrayType OF
+			DUT_Command_ArrayType.StoredPosition:
+				F_AddElement(_Command, _Delimiter, _StoredPositionsString);
+			DUT_Command_ArrayType.VisionRegister:
+				F_AddElement(_Command, _Delimiter, _VisionRegistersString);
+			DUT_Command_ArrayType.Flag:
+				F_AddElement(_Command, _Delimiter, _FlagsString);
+		END_CASE
+		F_AddElement(_Command, _Delimiter, INT_TO_STRING(stCommand.ArrayIndex));
+		
+END_CASE
+
+BuildCncCmd := _Command;
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

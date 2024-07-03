@@ -1,0 +1,462 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="CncCmdProcessor" Id="{09e229dd-dea4-4418-8521-de497c93f5dc}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK CncCmdProcessor EXTENDS Module
+VAR_INPUT
+	GapVelocity: LREAL := 10;
+	AvoidGaps: BOOL := TRUE;
+	GapAccel: LREAL := 500.0;
+	Command: STRING(GVL.COMMAND_LEN) := '';
+END_VAR
+VAR_IN_OUT
+	AxisGroup: AXIS_GROUP_REF_SM3;
+	SM3_Drive_PosControl_J1: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+	SM3_Drive_PosControl_J2: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+	SM3_Drive_PosControl_J3: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+	SM3_Drive_PosControl_J4: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+	SM3_Drive_PosControl_J5: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+	SM3_Drive_PosControl_J6: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+END_VAR
+VAR
+	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
+	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
+	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
+	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
+	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
+	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
+	_SMC_ControlAxisByPos_J4: SMC_ControlAxisByPos;
+	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
+	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
+	_SMC_Interpolator: SMC_Interpolator;
+	_PlanPath: CncPathPlanner;
+	_ErrorRtrig: R_TRIG;
+END_VAR
+VAR CONSTANT
+	wVarCount: WORD := 1;
+END_VAR
+VAR
+	lrR1: LREAL := 30;
+	astVar: ARRAY[0..wVarCount] OF SMC_SingleVar := [(strVarName := 'R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
+	stVarList: SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
+END_VAR
+VAR CONSTANT
+	_STEP_DONE: INT := 1000;
+	_STEP_IDLE: INT := 0;
+	_STEP_COMMAND: INT := 10;
+	_STEP_ONE: INT := 20;
+END_VAR
+VAR
+	_UnitModeCurrentState: PACK_ML.State;
+	_CncCmdParser: ParseCncCmd;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// NOTE currently the settings for J6 invert direction under scaling/mapping contradict using motion control 
+// libraries and CNC. For CNC to work properly, the setting is required to be enabled (inverted). Additionally
+// the homing direction and position will need to be negated. This all requires a full download. Will be leaving 
+// setting disabled for now so that we can continue to use motion control. 
+//
+// to recap, take these steps if you would like to try out CNC:
+// 1. open the axis pool settings and under the scaling/mapping section enable 'invert direction'
+// 2. in the A_Homing POU, change the homing direction to positive.
+// 3. in _00_MAIN POU, under FirstScan set the initial home offset to a positive value (keep the value and just change the sign).
+// 4. do a full download.
+// 5. go online and set the persistent value (if previously initialized in FirstScan) to a positive value.
+//
+// UPDATE: Figured out a work around for this issue. In the A_Interpolater POU, I negated the set position in the ControlAxisByPos
+// function block for J6 such that it drives the opposite way. This appears to have resolved the issue. Why this is needed, I do not
+// know. I am sure it is some minor overlooked detail somewhere in the code...
+
+SUPER^();
+
+// PackML state machine implementation
+_UnitModeCurrentState := SUPER^._UnitMode.CurrentState;
+
+//
+CASE SUPER^._SeqMain OF
+    _STEP_DONE:
+		_SMC_Interpolator.bExecute := FALSE;
+		SUPER^._SeqMain := _STEP_IDLE;
+        
+    _STEP_IDLE:
+		// hang out here until called to start
+	
+	_STEP_COMMAND:
+		//
+		_CncCmdParser(Command:=Command);	
+		_PlanPath.M_SetOriConvention(OriConvention:=_CncCmdParser.stCommand.OriConvention);
+		_PlanPath.M_SetStartPosition(StartPos:=_CncCmdParser.stCommand.StartPos);
+		_PlanPath.M_Execute(Filename:=_CncCmdParser.stCommand.Filename); // TODO I think we should be careful here. May need to sync CheckVelocities with the Interpolator
+		
+		//
+		IF NOT _CncCmdParser.Error THEN
+			_SMC_Interpolator.bExecute := TRUE;
+			SUPER^._SeqMain := _STEP_ONE;
+		ELSE
+			SUPER^.M_Error(Description:=CONCAT('Command parsing error: ',_CncCmdParser.ErrorDescription));
+		END_IF
+        
+    _STEP_ONE:
+		IF NOT _SMC_Interpolator.bBusy AND NOT SUPER^.Error THEN
+			// next, please
+			SUPER^._SeqMain := _STEP_DONE;
+		END_IF
+
+END_CASE
+
+// TODO these should reference INOUT AxisGroup but somehow wont compile like that. 
+// using global scoped vars for now
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.a1:=ArfBotAxisGroup.Trafo.a1;//AxisGroup.Trafo.a1;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.a2:=ArfBotAxisGroup.Trafo.a2;//AxisGroup.Trafo.a2;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.a3:=ArfBotAxisGroup.Trafo.a3;//AxisGroup.Trafo.a3;
+// conflicting documentation on if d1 needs to be pos or neg. only works as negative otherwise trafo reports invalid configuration
+// https://product-help.schneider-electric.com/Machine%20Expert/V2.0/zh/codesys_softmotion/codesys_softmotion/modules/_sm_trafo_pou_six_dof_robot.html
+// https://forge.codesys.com/forge/talk/Motion/thread/16e1f0327f/
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.d1:=-ArfBotAxisGroup.Trafo.d1;//-AxisGroup.Trafo.d1;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.d3:=ArfBotAxisGroup.Trafo.d3;//AxisGroup.Trafo.d3;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.d4:=ArfBotAxisGroup.Trafo.d4;//AxisGroup.Trafo.d4;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.d6:=ArfBotAxisGroup.Trafo.d6;//AxisGroup.Trafo.d6;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.q3_max_deg:=160; // TODO put magic numbers somewhere appropriate
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.q3_min_deg:=-160; // TODO put magic numbers somewhere appropriate
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_max_deg:=160; // TODO put magic numbers somewhere appropriate
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_min_deg:=-160; // TODO put magic numbers somewhere appropriate
+
+
+// TODO figure out how this var list can be used. for now its just hello world
+_PlanPath(VarList:= stVarList, DataOut=> );
+
+_SMC_Interpolator.bEmergency_Stop := _SMC_ControlAxisByPos_J1.bError OR _SMC_ControlAxisByPos_J1.bStopIpo
+									OR _SMC_ControlAxisByPos_J2.bError OR _SMC_ControlAxisByPos_J2.bStopIpo
+									OR _SMC_ControlAxisByPos_J3.bError OR _SMC_ControlAxisByPos_J3.bStopIpo
+									OR _SMC_ControlAxisByPos_J4.bError OR _SMC_ControlAxisByPos_J4.bStopIpo
+									OR _SMC_ControlAxisByPos_J5.bError OR _SMC_ControlAxisByPos_J5.bStopIpo
+									OR _SMC_ControlAxisByPos_J6.bError OR _SMC_ControlAxisByPos_J6.bStopIpo;
+
+_SMC_Interpolator(
+	bExecute:= , 
+	poqDataIn:= _PlanPath.DataOut, 
+	bSlow_Stop:= , 
+	bEmergency_Stop:= , 
+	bWaitAtNextStop:= , 
+	dOverride:= , 
+	iVelMode:= , 
+	dwIpoTime:= GVL.dwMainInterval, // in microseconds and should match the task time
+	dLastWayPos:= , 
+	bAbort:= NOT _SMC_Interpolator.bExecute, 
+	bSingleStep:= , 
+	bAcknM:= , 
+	bQuick_Stop:= , 
+	dQuickDeceleration:= , 
+	dJerkMax:= , 
+	dQuickStopJerk:= , 
+	bSuppressSystemMFunctions:= , 
+	bDone=> , 
+	bBusy=> , 
+	bError=> , 
+	wErrorID=> , 
+	piSetPosition=> , 
+	iStatus=> , 
+	bWorking=> , 
+	iActObjectSourceNo=> , 
+	dActObjectLength=> , 
+	dActObjectLengthRemaining=> , 
+	dVel=> , 
+	vecActTangent=> , 
+	iLastSwitch=> , 
+	dwSwitches=> , 
+	dWayPos=> , 
+	wM=> , 
+	adToolLength=> , 
+	Act_Object=> );
+
+// handle m codes
+CASE _SMC_Interpolator.wM OF
+	0:	// rest acknowledgment
+		_SMC_Interpolator.bAcknM := FALSE;
+	200: // close gripper
+		_SMC_Interpolator.bAcknM := TRUE;
+		GVL.Servo0Position := 0; // TODO
+	201: // open gripper
+		_SMC_Interpolator.bAcknM := TRUE;
+		GVL.Servo0Position := 255; // TODO
+END_CASE
+
+_SMC_Trafo_ArticulatedRobot_6DOF(
+	config:= _SMC_TrafoConfig_ArticulatedRobot_6DOF, 
+	pi:= _SMC_Interpolator.piSetPosition, 
+	dQ0_old:= SM_Drive_PosControl_J1.fActPosition, 
+	dQ1_old:= SM_Drive_PosControl_J2.fActPosition, 
+	dQ2_old:= SM_Drive_PosControl_J3.fActPosition, 
+	dQ3_old:= SM_Drive_PosControl_J4.fActPosition, 
+	dQ4_old:= SM_Drive_PosControl_J5.fActPosition, 
+	dQ5_old:= SM_Drive_PosControl_J6.fActPosition, 
+	armState:= , 
+	elbowState:= , 
+	handState:= , 
+	dQ0=> , 
+	dQ1=> , 
+	dQ2=> , 
+	dQ3=> , 
+	dQ4=> , 
+	dQ5=> , 
+	bError=> , 
+	result=> );
+	
+_SMC_ControlAxisByPos_J1(
+	Axis:= SM3_Drive_PosControl_J1, 
+	iStatus:= _SMC_Interpolator.iStatus, 
+	bEnable:= _SMC_Interpolator.bWorking, 
+	bAvoidGaps:= AvoidGaps, 
+	fSetPosition:= _SMC_Trafo_ArticulatedRobot_6DOF.dQ0, 
+	fGapVelocity:= GapVelocity, 
+	fGapAcceleration:= GapAccel, 
+	fGapDeceleration:= GapAccel, 
+	fGapJerk:= , 
+	bBusy=> , 
+	bCommandAborted=> , 
+	bError=> , 
+	iErrorID=> , 
+	bStopIpo=> );
+	
+_SMC_ControlAxisByPos_J2(
+	Axis:= SM3_Drive_PosControl_J2, 
+	iStatus:= _SMC_Interpolator.iStatus, 
+	bEnable:= _SMC_Interpolator.bWorking, 
+	bAvoidGaps:= AvoidGaps, 
+	fSetPosition:= _SMC_Trafo_ArticulatedRobot_6DOF.dQ1, 
+	fGapVelocity:= GapVelocity, 
+	fGapAcceleration:= GapAccel, 
+	fGapDeceleration:= GapAccel, 
+	fGapJerk:= , 
+	bBusy=> , 
+	bCommandAborted=> , 
+	bError=> , 
+	iErrorID=> , 
+	bStopIpo=> );
+	
+_SMC_ControlAxisByPos_J3(
+	Axis:= SM3_Drive_PosControl_J3, 
+	iStatus:= _SMC_Interpolator.iStatus, 
+	bEnable:= _SMC_Interpolator.bWorking, 
+	bAvoidGaps:= AvoidGaps, 
+	fSetPosition:= _SMC_Trafo_ArticulatedRobot_6DOF.dQ2, 
+	fGapVelocity:= GapVelocity, 
+	fGapAcceleration:= GapAccel, 
+	fGapDeceleration:= GapAccel, 
+	fGapJerk:= , 
+	bBusy=> , 
+	bCommandAborted=> , 
+	bError=> , 
+	iErrorID=> , 
+	bStopIpo=> );
+	
+_SMC_ControlAxisByPos_J4(
+	Axis:= SM3_Drive_PosControl_J4, 
+	iStatus:= _SMC_Interpolator.iStatus, 
+	bEnable:= _SMC_Interpolator.bWorking, 
+	bAvoidGaps:= AvoidGaps, 
+	fSetPosition:= _SMC_Trafo_ArticulatedRobot_6DOF.dQ3, 
+	fGapVelocity:= GapVelocity, 
+	fGapAcceleration:= GapAccel, 
+	fGapDeceleration:= GapAccel, 
+	fGapJerk:= , 
+	bBusy=> , 
+	bCommandAborted=> , 
+	bError=> , 
+	iErrorID=> , 
+	bStopIpo=> );
+	
+_SMC_ControlAxisByPos_J5(
+	Axis:= SM3_Drive_PosControl_J5, 
+	iStatus:= _SMC_Interpolator.iStatus, 
+	bEnable:= _SMC_Interpolator.bWorking, 
+	bAvoidGaps:= AvoidGaps, 
+	fSetPosition:= _SMC_Trafo_ArticulatedRobot_6DOF.dQ4, 
+	fGapVelocity:= GapVelocity, 
+	fGapAcceleration:= GapAccel, 
+	fGapDeceleration:= GapAccel, 
+	fGapJerk:= , 
+	bBusy=> , 
+	bCommandAborted=> , 
+	bError=> , 
+	iErrorID=> , 
+	bStopIpo=> );
+	
+_SMC_ControlAxisByPos_J6(
+	Axis:= SM3_Drive_PosControl_J6, 
+	iStatus:= _SMC_Interpolator.iStatus, 
+	bEnable:= _SMC_Interpolator.bWorking, 
+	bAvoidGaps:= AvoidGaps, 
+	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ5, // please see note in A_CNC POU regarding why this was set to negative
+	fGapVelocity:= GapVelocity, 
+	fGapAcceleration:= GapAccel, 
+	fGapDeceleration:= GapAccel, 
+	fGapJerk:= , 
+	bBusy=> , 
+	bCommandAborted=> , 
+	bError=> , 
+	iErrorID=> , 
+	bStopIpo=> );
+	
+_ErrorRtrig();
+_ErrorRtrig.CLK := _PlanPath.Error
+					OR _SMC_Interpolator.bError
+					OR _SMC_Trafo_ArticulatedRobot_6DOF.bError
+					OR _SMC_ControlAxisByPos_J1.bError
+					OR _SMC_ControlAxisByPos_J2.bError
+					OR _SMC_ControlAxisByPos_J3.bError
+					OR _SMC_ControlAxisByPos_J4.bError
+					OR _SMC_ControlAxisByPos_J5.bError
+					OR _SMC_ControlAxisByPos_J6.bError;
+IF _ErrorRtrig.Q THEN
+	IF _PlanPath.Error THEN
+		SUPER^.M_Error(Description:=_PlanPath.ErrorDescription);
+	END_IF
+	IF _SMC_Interpolator.bError THEN
+		SUPER^.M_Error(Description := CONCAT(' Interpolator Error: ',
+                                CONCAT(TO_STRING(_SMC_Interpolator.wErrorID),
+                                CONCAT(' ', SMC_ErrorString(_SMC_Interpolator.wErrorID,
+                                            SMC_Language_Type.english)))));
+	END_IF
+	IF _SMC_Trafo_ArticulatedRobot_6DOF.bError THEN
+		SUPER^.M_Error(Description := CONCAT(' Trafo Error: ', 'unknown'));
+	END_IF
+	IF _SMC_ControlAxisByPos_J1.bError THEN
+		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J1 Error: ',
+                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J1.iErrorID),
+                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J1.iErrorID,
+                                            SMC_Language_Type.english)))));
+	END_IF
+	IF _SMC_ControlAxisByPos_J2.bError THEN
+		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J2 Error: ',
+                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J2.iErrorID),
+                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J2.iErrorID,
+                                            SMC_Language_Type.english)))));
+	END_IF
+	IF _SMC_ControlAxisByPos_J3.bError THEN
+		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J3 Error: ',
+                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J3.iErrorID),
+                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J3.iErrorID,
+                                            SMC_Language_Type.english)))));
+	END_IF
+	IF _SMC_ControlAxisByPos_J4.bError THEN
+		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J4 Error: ',
+                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J4.iErrorID),
+                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J4.iErrorID,
+                                            SMC_Language_Type.english)))));
+	END_IF
+	IF _SMC_ControlAxisByPos_J5.bError THEN
+		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J5 Error: ',
+                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J5.iErrorID),
+                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J5.iErrorID,
+                                            SMC_Language_Type.english)))));
+	END_IF
+	IF _SMC_ControlAxisByPos_J6.bError THEN
+		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J6 Error: ',
+                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J6.iErrorID),
+                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J6.iErrorID,
+                                            SMC_Language_Type.english)))));
+	END_IF
+END_IF]]></ST>
+    </Implementation>
+    <Method Name="M_Complete" Id="{0b336f4b-391c-459f-a28e-2f4ba2e8bba2}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Complete : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// once complete, reset to get back to idle
+SUPER^._UnitMode.Reset();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Execute" Id="{882518ea-bbf9-4ac5-86b5-eca49a6b2287}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Execute : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// here we want to execute our commands/jobs/etc and set completed when done.
+IF SUPER^._SeqMain =_STEP_IDLE THEN
+	SUPER^.M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Holding" Id="{1442df85-b316-4422-acf3-2f8fc74d80e1}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Holding : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _SeqHolding OF
+	0:
+		_SMC_Interpolator.bWaitAtNextStop := TRUE;
+		SUPER^._SeqHolding := SUPER^._SeqHolding + 1;
+	1:
+		// TODO dale thomas this is not tested
+		IF NOT _SMC_Interpolator.bWorking THEN
+			SUPER^._SeqHolding := 0;
+			SUPER^.M_StateComplete();
+		END_IF
+		
+END_CASE
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Idle" Id="{c93ab278-2b3f-4bc7-a2ff-fccaf401c8a8}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Idle : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_SMC_Interpolator.bWaitAtNextStop := FALSE;
+_SMC_Interpolator.bExecute := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Resetting" Id="{dd49c510-b353-40d1-99d1-226a7e98ba4c}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Resetting : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SUPER^._SeqResetting OF
+	0:
+		_PlanPath.M_Reset();
+		_SeqResetting := _SeqResetting + 1;
+	1:
+		IF NOT _PlanPath.Error THEN
+			SUPER^.M_StateComplete();
+			_SeqResetting := 0;
+		END_IF
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetPackML" Id="{7c793665-23c8-4063-a654-5011975c105b}">
+      <Declaration><![CDATA[METHOD PROTECTED M_SetPackML : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[SUPER^._UnitMode(	sName := 'CNC Processor',
+				eInitialState := PACK_ML.State.Idle,
+				xActive := TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Starting" Id="{3a2ecf7b-c9fd-4771-acb0-40bfe0e5c659}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Starting : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// here we want to clear things and get ready for the execute state
+// I can consider this the "INIT" state
+SUPER^._SeqMain := _STEP_COMMAND;
+SUPER^.M_StateComplete();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_UnHolding" Id="{1070643e-06f2-476a-8286-a7b05c60fa83}">
+      <Declaration><![CDATA[METHOD PROTECTED M_UnHolding : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE _SeqUnHolding OF
+	0:
+		_SMC_Interpolator.bWaitAtNextStop := FALSE;
+		SUPER^._SeqUnHolding := SUPER^._SeqUnHolding + 1;
+	1:
+		// TODO dale thomas this is not tested
+		IF _SMC_Interpolator.bWorking THEN
+			SUPER^._SeqUnHolding := 0;
+			SUPER^.M_StateComplete();
+		END_IF
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

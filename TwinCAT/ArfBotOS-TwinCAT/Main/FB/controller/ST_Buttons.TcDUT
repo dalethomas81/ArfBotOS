@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_Buttons" Id="{95f2037f-8fc8-4d22-85e5-1ff2dd41a9ab}">
+    <Declaration><![CDATA[TYPE ST_Buttons :
+STRUCT
+	Square: BOOL;
+	Triangle: BOOL;
+	Circle: BOOL;
+	Cross: BOOL;
+	Share: BOOL;
+	Options: BOOL;
+	PS: BOOL;
+	Touch: BOOL;
+	Mic: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

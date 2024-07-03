@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_VisionCalibrate" Id="{182d3d19-8ffc-4b3a-943b-f60486efdc5a}">
+    <Declaration><![CDATA[TYPE ST_VisionCalibrate :
+STRUCT
+	/// this value is in user units ex mm
+	CheckerSize: REAL := 25.0;
+	/// count of checker blocks in x coordinate
+	CheckerXCount: UINT := 6;
+	/// count of checker blocks in y coordinate
+	CheckerYCount: UINT := 9;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

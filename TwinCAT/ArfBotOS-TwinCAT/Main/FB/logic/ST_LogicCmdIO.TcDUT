@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_LogicCmdIO" Id="{d9e4da03-9627-4669-97eb-9d4d80e11f49}">
+    <Declaration><![CDATA[TYPE ST_LogicCmdIO :
+STRUCT
+	Input: ARRAY[GVL.DIG_IN_ARR_BEG..GVL.DIG_IN_ARR_END] OF BOOL;
+	Output: ARRAY[GVL.DIG_OUT_ARR_BEG..GVL.DIG_OUT_ARR_END] OF BOOL;
+	Pwm: ARRAY[GVL.PWM_OUT_ARR_BEG..GVL.PWM_OUT_ARR_END] OF BYTE;
+	Register: ARRAY[GVL.REG_ARR_BEG..GVL.REG_ARR_END] OF UDINT;
+	Counter: ARRAY[GVL.REG_ARR_BEG..GVL.REG_ARR_END] OF UDINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

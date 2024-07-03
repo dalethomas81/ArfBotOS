@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Flags" Id="{22f963af-e04a-45ab-913c-8ad1ec5e38d9}">
+    <Declaration><![CDATA[TYPE DUT_Flags :
+STRUCT
+	Comment: STRING := '';
+	Value: BOOL := FALSE;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

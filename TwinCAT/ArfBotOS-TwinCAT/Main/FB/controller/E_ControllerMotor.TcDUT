@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="E_ControllerMotor" Id="{a6c1ccec-7589-44ea-8664-b26e13e4589c}">
+    <Declaration><![CDATA[{attribute 'qualified_only' := ''}
+{attribute 'strict' := ''}
+TYPE E_ControllerMotor :
+(
+	Left := 0,
+	Right := 1
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

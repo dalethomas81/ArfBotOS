@@ -1,0 +1,350 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="LogicCmdProcessor" Id="{ef05d0a0-faef-4d26-ad80-b37bf095bfda}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LogicCmdProcessor EXTENDS Module
+VAR_IN_OUT
+	PrgProcessor: FB_ProgramProcessor;
+	CmdProcessor: FB_CommandProcessor;
+	CmdIO: ST_LogicCmdIO;
+END_VAR
+VAR_INPUT
+	Command: STRING(GVL.COMMAND_LEN) := '';
+END_VAR
+VAR
+	_UnitModeCurrentState: PACK_ML.State;
+	_ParseLogicCmd: ParseLogicCmd;
+	_ThenFunctionProcessed: BOOL;
+END_VAR
+VAR CONSTANT
+	_STEP_DONE: INT := 1000;
+	_STEP_IDLE: INT := 0;
+	_STEP_COMMAND: INT := 10;
+	_STEP_ERR: INT := 20;
+	_STEP_EVAL_IN: INT := 100;
+	_STEP_EVAL_REG: INT := 110;
+	_STEP_EVAL_CNT: INT := 120;
+	_STEP_PROC_THEN: INT := 200;
+	_STEP_PROC_ELSE: INT := 210;
+	_STEP_PROC_OUT: INT := 300;
+	_STEP_PROC_JMP: INT := 310;
+	_STEP_PROC_CNT: INT := 320;
+	_STEP_PROC_REG: INT := 330;
+	_STEP_PROC_NOP: INT := 340;
+	_STEP_PROC_CAL: INT := 350;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+
+// PackML state machine implementation
+_UnitModeCurrentState := SUPER^._UnitMode.CurrentState;
+
+//
+CASE SUPER^._SeqMain OF
+	
+    _STEP_DONE:
+		SUPER^._SeqMain := _STEP_IDLE;
+        
+    _STEP_IDLE:
+		// wait here until commanded to start
+        
+    _STEP_COMMAND:
+		_ParseLogicCmd(Command:=Command);
+		
+		CASE _ParseLogicCmd.stCommand.IF_Condition OF
+			E_LogicIfCondition.PASS:
+				SUPER^._SeqMain := _STEP_PROC_THEN;
+			E_LogicIfCondition.INPUT:
+				SUPER^._SeqMain := _STEP_EVAL_IN;
+			E_LogicIfCondition.REGISTER:
+				SUPER^._SeqMain := _STEP_EVAL_REG;
+			E_LogicIfCondition.COUNTER:
+				SUPER^._SeqMain := _STEP_EVAL_CNT;
+		END_CASE
+		
+		//
+		_ThenFunctionProcessed := FALSE;
+		
+	_STEP_EVAL_IN:
+		CASE _ParseLogicCmd.stCommand.IF_Condition_Operator OF
+			E_LogicIfConditionOperator.EQU:
+				IF CmdIO.Input[_ParseLogicCmd.stCommand.IF_Condition_Idx] 
+					= UDINT_TO_BOOL(_ParseLogicCmd.stCommand.IF_Condition_Operator_Value) THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.GRE:
+				IF CmdIO.Input[_ParseLogicCmd.stCommand.IF_Condition_Idx] 
+					>= UDINT_TO_BOOL(_ParseLogicCmd.stCommand.IF_Condition_Operator_Value) THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.GRT:
+				IF CmdIO.Input[_ParseLogicCmd.stCommand.IF_Condition_Idx] 
+					> UDINT_TO_BOOL(_ParseLogicCmd.stCommand.IF_Condition_Operator_Value) THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.LEQ:
+				IF CmdIO.Input[_ParseLogicCmd.stCommand.IF_Condition_Idx] 
+					<= UDINT_TO_BOOL(_ParseLogicCmd.stCommand.IF_Condition_Operator_Value) THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.LES:
+				IF CmdIO.Input[_ParseLogicCmd.stCommand.IF_Condition_Idx] 
+					< UDINT_TO_BOOL(_ParseLogicCmd.stCommand.IF_Condition_Operator_Value) THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+		END_CASE
+		
+	_STEP_EVAL_REG:
+		CASE _ParseLogicCmd.stCommand.IF_Condition_Operator OF
+			E_LogicIfConditionOperator.EQU:
+				IF CmdIO.Register[_ParseLogicCmd.stCommand.IF_Condition_Idx] 
+					= _ParseLogicCmd.stCommand.IF_Condition_Operator_Value THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.GRE:
+				IF CmdIO.Register[_ParseLogicCmd.stCommand.IF_Condition_Idx] 
+					>= _ParseLogicCmd.stCommand.IF_Condition_Operator_Value THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.GRT:
+				IF CmdIO.Register[_ParseLogicCmd.stCommand.IF_Condition_Idx] 
+					> _ParseLogicCmd.stCommand.IF_Condition_Operator_Value THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.LEQ:
+				IF CmdIO.Register[_ParseLogicCmd.stCommand.IF_Condition_Idx] 
+					<= _ParseLogicCmd.stCommand.IF_Condition_Operator_Value THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.LES:
+				IF CmdIO.Register[_ParseLogicCmd.stCommand.IF_Condition_Idx] 
+					< _ParseLogicCmd.stCommand.IF_Condition_Operator_Value THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+		END_CASE
+		
+	_STEP_EVAL_CNT:
+		CASE _ParseLogicCmd.stCommand.IF_Condition_Operator OF
+			E_LogicIfConditionOperator.EQU:
+				IF CmdIO.Counter[_ParseLogicCmd.stCommand.IF_Condition_Idx] 
+					= _ParseLogicCmd.stCommand.IF_Condition_Operator_Value THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.GRE:
+				IF CmdIO.Counter[_ParseLogicCmd.stCommand.IF_Condition_Idx] 
+					>= _ParseLogicCmd.stCommand.IF_Condition_Operator_Value THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.GRT:
+				IF CmdIO.Counter[_ParseLogicCmd.stCommand.IF_Condition_Idx] 
+					> _ParseLogicCmd.stCommand.IF_Condition_Operator_Value THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.LEQ:
+				IF CmdIO.Counter[_ParseLogicCmd.stCommand.IF_Condition_Idx] 
+					<= _ParseLogicCmd.stCommand.IF_Condition_Operator_Value THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.LES:
+				IF CmdIO.Counter[_ParseLogicCmd.stCommand.IF_Condition_Idx] 
+					< _ParseLogicCmd.stCommand.IF_Condition_Operator_Value THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+		END_CASE
+		
+	_STEP_PROC_THEN:
+		//
+		_ThenFunctionProcessed := TRUE;
+		//
+		CASE _ParseLogicCmd.stCommand.THEN_Function OF
+			E_LogicFunction.OUTPUT:
+				SUPER^._SeqMain := _STEP_PROC_OUT;
+			E_LogicFunction.REGISTER:
+				SUPER^._SeqMain := _STEP_PROC_REG;
+			E_LogicFunction.CNTUP:
+				SUPER^._SeqMain := _STEP_PROC_CNT;
+			E_LogicFunction.CNTDN:
+				SUPER^._SeqMain := _STEP_PROC_CNT;
+			E_LogicFunction.CNTRST:
+				SUPER^._SeqMain := _STEP_PROC_CNT;
+			E_LogicFunction.JUMP:
+				SUPER^._SeqMain := _STEP_PROC_JMP;
+			E_LogicFunction.CALL:
+				SUPER^._SeqMain := _STEP_PROC_CAL;
+			E_LogicFunction.NOP:
+				SUPER^._SeqMain := _STEP_PROC_NOP;
+		END_CASE;
+				
+	_STEP_PROC_ELSE:
+		CASE _ParseLogicCmd.stCommand.ELSE_Function OF
+			E_LogicFunction.OUTPUT:
+				SUPER^._SeqMain := _STEP_PROC_OUT;
+			E_LogicFunction.REGISTER:
+				SUPER^._SeqMain := _STEP_PROC_REG;
+			E_LogicFunction.CNTUP:
+				SUPER^._SeqMain := _STEP_PROC_CNT;
+			E_LogicFunction.CNTDN:
+				SUPER^._SeqMain := _STEP_PROC_CNT;
+			E_LogicFunction.CNTRST:
+				SUPER^._SeqMain := _STEP_PROC_CNT;
+			E_LogicFunction.JUMP:
+				SUPER^._SeqMain := _STEP_PROC_JMP;
+			E_LogicFunction.CALL:
+				SUPER^._SeqMain := _STEP_PROC_CAL;
+			E_LogicFunction.NOP:
+				SUPER^._SeqMain := _STEP_PROC_NOP;
+		END_CASE;
+		
+	_STEP_PROC_OUT:
+		IF _ThenFunctionProcessed THEN
+			CmdIO.Output[_ParseLogicCmd.stCommand.THEN_Function_Idx] 
+				:= UDINT_TO_BOOL(_ParseLogicCmd.stCommand.THEN_Function_Value);
+		ELSE
+			CmdIO.Output[_ParseLogicCmd.stCommand.ELSE_Function_Idx] 
+				:= UDINT_TO_BOOL(_ParseLogicCmd.stCommand.ELSE_Function_Value);
+		END_IF
+		// next, please
+		SUPER^._SeqMain := _STEP_DONE;
+		
+	_STEP_PROC_REG:
+		IF _ThenFunctionProcessed THEN
+			CmdIO.Register[_ParseLogicCmd.stCommand.THEN_Function_Idx] 
+				:= _ParseLogicCmd.stCommand.THEN_Function_Value;
+		ELSE
+			CmdIO.Register[_ParseLogicCmd.stCommand.ELSE_Function_Idx] 
+				:= _ParseLogicCmd.stCommand.ELSE_Function_Value;
+		END_IF
+		// next, please
+		SUPER^._SeqMain := _STEP_DONE;
+		
+	_STEP_PROC_CNT:	
+		IF _ThenFunctionProcessed THEN
+			CASE _ParseLogicCmd.stCommand.THEN_Function OF
+				E_LogicFunction.CNTUP:
+					CmdIO.Counter[_ParseLogicCmd.stCommand.THEN_Function_Idx] 
+						:= CmdIO.Counter[_ParseLogicCmd.stCommand.THEN_Function_Idx] + 1;
+				E_LogicFunction.CNTDN:
+					CmdIO.Counter[_ParseLogicCmd.stCommand.THEN_Function_Idx] 
+						:= CmdIO.Counter[_ParseLogicCmd.stCommand.THEN_Function_Idx] - 1;
+				E_LogicFunction.CNTRST:
+					CmdIO.Counter[_ParseLogicCmd.stCommand.THEN_Function_Idx] 
+						:= 0;
+			END_CASE
+		ELSE
+			CASE _ParseLogicCmd.stCommand.ELSE_Function OF
+				E_LogicFunction.CNTUP:
+					CmdIO.Counter[_ParseLogicCmd.stCommand.ELSE_Function_Idx] 
+						:= CmdIO.Counter[_ParseLogicCmd.stCommand.ELSE_Function_Idx] + 1;
+				E_LogicFunction.CNTDN:
+					CmdIO.Counter[_ParseLogicCmd.stCommand.ELSE_Function_Idx] 
+						:= CmdIO.Counter[_ParseLogicCmd.stCommand.ELSE_Function_Idx] - 1;
+				E_LogicFunction.CNTRST:
+					CmdIO.Counter[_ParseLogicCmd.stCommand.ELSE_Function_Idx] 
+						:= 0;
+			END_CASE
+		END_IF
+		// next, please
+		SUPER^._SeqMain := _STEP_DONE;
+		
+	_STEP_PROC_JMP:
+		IF _ThenFunctionProcessed THEN
+			CmdProcessor.M_SetNextCommand(CommandNumber:=INT_TO_UINT(_ParseLogicCmd.stCommand.THEN_Function_Idx));
+		ELSE
+			CmdProcessor.M_SetNextCommand(CommandNumber:=INT_TO_UINT(_ParseLogicCmd.stCommand.ELSE_Function_Idx));
+		END_IF
+		// next, please
+		SUPER^._SeqMain := _STEP_DONE;
+		
+	_STEP_PROC_CAL:
+		IF _ThenFunctionProcessed THEN
+			PrgProcessor.M_CallProgram(	ProgramNumber:= INT_TO_UINT(_ParseLogicCmd.stCommand.THEN_Function_Idx), 
+										ReturnProgram:= PrgProcessor.P_CurrentProgram, 
+										ReturnCommand:= CmdProcessor.P_CurrentCommandIndex);
+		ELSE
+			PrgProcessor.M_CallProgram(	ProgramNumber:= INT_TO_UINT(_ParseLogicCmd.stCommand.ELSE_Function_Idx), 
+										ReturnProgram:= PrgProcessor.P_CurrentProgram, 
+										ReturnCommand:= CmdProcessor.P_CurrentCommandIndex);
+		END_IF
+		// next, please
+		SUPER^._SeqMain := _STEP_DONE;
+		
+	_STEP_PROC_NOP:
+		IF _ThenFunctionProcessed THEN
+			//
+		ELSE
+			//
+		END_IF
+		// next, please
+		SUPER^._SeqMain := _STEP_DONE;
+
+END_CASE]]></ST>
+    </Implementation>
+    <Method Name="M_Complete" Id="{b9caab7f-1bc9-4e01-ad9e-5992be1f9d70}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Complete : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// once complete, reset to get back to idle
+SUPER^._UnitMode.Reset();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Execute" Id="{5c7eb861-0692-458a-9941-920dd2879e58}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Execute : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// here we want to execute our commands/jobs/etc and set completed when done.
+IF SUPER^._SeqMain =_STEP_IDLE THEN
+	SUPER^.M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetPackML" Id="{8ca4de4a-aa41-4055-81ee-9c69366d3914}">
+      <Declaration><![CDATA[METHOD PROTECTED M_SetPackML : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[SUPER^._UnitMode(	sName := 'Logic Processor',
+				eInitialState := PACK_ML.State.Idle,
+				xActive := TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Starting" Id="{aedebc1a-7039-4685-98ce-1d471deca595}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Starting : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// here we want to clear things and get ready for the execute state
+// I can consider this the "INIT" state
+SUPER^._SeqMain := _STEP_COMMAND;
+SUPER^.M_StateComplete();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="F_RoundLreal" Id="{6e4b5325-49a6-45c7-a436-b44a2066c3ea}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION F_RoundLreal : LREAL
+VAR_INPUT
+	rIn: LREAL;
+	Digit: INT;
+END_VAR
+VAR
+	d1: DINT;
+	r0: LREAL;
+	r1: LREAL;
+	r2: LREAL;
+	Rdigit: LREAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// https://forge.codesys.com/forge/talk/Engineering/thread/8d1ee86294/
+rdigit   :=INT_TO_LREAL(Digit);
+r0 := EXPT(10,rdigit); 
+r1 := rIn * r0;
+d1 := TRUNC(r1);
+r2 := DINT_TO_LREAL(d1);
+F_RoundLreal := r2 / r0;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_Battery" Id="{d7224d0e-a20c-4ec1-9d9d-a32f25c607e6}">
+    <Declaration><![CDATA[TYPE ST_Battery :
+STRUCT
+	State: USINT;
+	Level: USINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

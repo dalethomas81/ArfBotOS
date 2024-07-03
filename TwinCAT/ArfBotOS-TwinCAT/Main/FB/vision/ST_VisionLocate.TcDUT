@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_VisionLocate" Id="{979edabc-249c-4294-9a6b-583c609d1013}">
+    <Declaration><![CDATA[TYPE ST_VisionLocate :
+STRUCT
+	/// max number of parts to locate
+	MaxParts: UINT := 1;
+	/// max overlap of parts. only needed if MaxParts is greater than zero.
+	MaxOverlap: REAL := 0.0;
+	/// min score
+	Score: REAL := 0.6;
+	/// max angle +/- to search
+	ToleranceAngle: REAL := 90.0;
+	/// location to store the results in the vision register array
+	ResultPosition: UINT := 0;
+	/// name of the template to search
+	TemplateName: STRING := 'Template.jpg';
+	/// name of the script that runs the vision program
+	ScriptFilename: STRING := 'FastTemplateMatching.py';
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

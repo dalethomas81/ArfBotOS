@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="F_Checksum" Id="{9ab0f877-a05e-4c41-aa0b-1e9635fff6aa}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION F_Checksum : UINT
+VAR_INPUT
+	data: POINTER TO BYTE;
+	length: UINT;
+END_VAR
+VAR
+	curr_crc: UINT;
+	sum1, sum2: USINT;
+	_i, _j, _k: UINT;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// https://www.tutorialspoint.com/cyclic-redundancy-check-crc-in-arduino
+curr_crc := 16#0000;
+sum1 := UINT_TO_USINT(curr_crc);
+sum2 := UINT_TO_USINT(SHR(curr_crc, 8));
+FOR _i:=0 TO length - 1 BY 1 DO
+	sum1 := (sum1 + data[_i]) MOD 255;
+	sum2 := (sum2 + sum1) MOD 255;
+END_FOR
+F_Checksum := SHL(sum2, 8) OR sum1;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

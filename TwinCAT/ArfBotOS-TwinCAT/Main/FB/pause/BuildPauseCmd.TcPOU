@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="BuildPauseCmd" Id="{b7a08d1d-f5e6-4f3c-9f3f-733c40c45429}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION BuildPauseCmd : STRING(GVL.COMMAND_LEN)
+VAR_INPUT
+	stCommand: ST_PauseCmd;
+END_VAR
+VAR
+	_Command: STRING(GVL.COMMAND_LEN);
+END_VAR
+VAR CONSTANT
+	_Delimiter: STRING := ' ';
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// clear the command
+_Command:='';
+
+// build command
+F_AddElement(_Command, _Delimiter, TIME_TO_STRING(stCommand.PauseTime));
+
+// set function equal to command
+BuildPauseCmd := _Command;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

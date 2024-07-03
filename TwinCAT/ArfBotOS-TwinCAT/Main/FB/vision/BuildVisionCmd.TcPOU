@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="BuildVisionCmd" Id="{580bcf70-fae5-407f-8446-aaa0a1365ba4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION BuildVisionCmd : STRING(GVL.COMMAND_LEN)
+VAR_INPUT
+	stCommand: ST_VisionCmd;
+END_VAR
+VAR
+	_Command: STRING(GVL.COMMAND_LEN);
+END_VAR
+VAR CONSTANT
+	_Delimiter: STRING := ' ';
+	/// calibrate vision
+	_CommandTypeCal: STRING(3) := 'CAL';
+	/// acquire (capture) image
+	_CommandTypeAcq: STRING(3) := 'ACQ';
+	/// locate part
+	_CommandTypeLoc: STRING(3) := 'LOC';
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// C|A|L ImageWidth ImageHeight Timeout
+
+// C Calibrate vision system
+    // CheckerSize (user units) XCount YCount 
+    // C 2016 2000 60 25.0 6 9
+    
+// A Aquire image
+    // A 2016 2000 60
+    
+// L Locate part 
+    // MaxParts MaxOverlap Score ToleranceAngle ResultPostion TemplateName ScriptName
+    // L 2016 2000 60 10 0.0 0.8 90.0 1 template.jpg FastTemplateMatching.py
+	// MaxParts - max number of parts to find in image
+	// MaxOverlap - max overlap of parts in image
+	// Score - min required score for parts
+	// ToleranceAngle - +/- search angle (the larger the number, the longer the search)
+	// ResultPostion - index of vision register to store result
+	// TemplateName - name of the template to search for
+	// ScriptName - name of the template to search for
+
+// clear the command
+_Command:='';
+
+// build the command
+CASE stCommand.CommandType OF
+	DUT_Command_VisionType.Calibrate:
+		F_AddElement(_Command, _Delimiter, _CommandTypeCal);
+	DUT_Command_VisionType.Acquire:
+		F_AddElement(_Command, _Delimiter, _CommandTypeAcq);
+	DUT_Command_VisionType.LocatePart:
+		F_AddElement(_Command, _Delimiter, _CommandTypeLoc);
+END_CASE
+
+// add the common items width, height, timeout
+F_AddElement(_Command, _Delimiter, UINT_TO_STRING(stCommand.ImageWidth));
+F_AddElement(_Command, _Delimiter, UINT_TO_STRING(stCommand.ImageHeight));
+F_AddElement(_Command, _Delimiter, UDINT_TO_STRING(stCommand.Timeout));
+
+//
+CASE stCommand.CommandType OF
+	DUT_Command_VisionType.Calibrate:
+		// C 2016 2000 60 25.0 6 9
+		F_AddElement(_Command, _Delimiter, REAL_TO_STRING(stCommand.Calibrate.CheckerSize));
+		F_AddElement(_Command, _Delimiter, UINT_TO_STRING(stCommand.Calibrate.CheckerXCount));
+		F_AddElement(_Command, _Delimiter, UINT_TO_STRING(stCommand.Calibrate.CheckerYCount));
+		
+	DUT_Command_VisionType.Acquire:
+		// A 2016 2000 60
+		// we are done
+		
+	DUT_Command_VisionType.LocatePart:
+		// L 2016 2000 60 10 0.0 0.8 90.0 1 template.jpg FastTemplateMatching.py
+		F_AddElement(_Command, _Delimiter, UINT_TO_STRING(stCommand.Locate.MaxParts));
+		F_AddElement(_Command, _Delimiter, REAL_TO_STRING(stCommand.Locate.MaxOverlap));
+		F_AddElement(_Command, _Delimiter, REAL_TO_STRING(stCommand.Locate.Score));
+		F_AddElement(_Command, _Delimiter, REAL_TO_STRING(stCommand.Locate.ToleranceAngle));
+		F_AddElement(_Command, _Delimiter, UINT_TO_STRING(stCommand.Locate.ResultPosition));
+		F_AddElement(_Command, _Delimiter, stCommand.Locate.TemplateName);
+		F_AddElement(_Command, _Delimiter, stCommand.Locate.ScriptFilename);
+		
+END_CASE
+
+// set function equal to command
+BuildVisionCmd := _Command;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

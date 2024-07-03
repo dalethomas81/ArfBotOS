@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_Trigger" Id="{90a8586d-e3b4-42f9-8d1f-b5349239d03c}">
+    <Declaration><![CDATA[TYPE ST_Trigger :
+STRUCT
+	One: BOOL;
+	Two: USINT;
+	TwoButton: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

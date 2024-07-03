@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_GroupStatus" Id="{8da24330-28fc-457b-af4f-78411d1da7e7}">
+    <Declaration><![CDATA[TYPE DUT_GroupStatus :
+STRUCT
+	Valid: BOOL;
+	Busy: BOOL;
+	Error: BOOL;
+	ErrorID: SMC_ERROR;
+	GroupMoving: BOOL;
+	GroupHoming: BOOL;
+	GroupErrorStop: BOOL;
+	GroupStandby: BOOL;
+	GroupStopping: BOOL;
+	GroupDisabled: BOOL;
+	TrackingDynamicCS: BOOL;
+	InSync: BOOL;
+	ActiveMovementId: SMC_Movement_Id;
+	FirstReferencedMovementId: SMC_Movement_Id;
+	LastAcceptedMovementId: SMC_Movement_Id;
+	PositionLag: LREAL;
+	OrientationLag: LREAL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

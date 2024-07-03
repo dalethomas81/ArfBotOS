@@ -1,0 +1,721 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="_00_Main" Id="{f495872a-eb99-4e62-a111-ca71535b5152}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM _00_Main
+VAR
+	/// group handler for all motion fbs
+	GroupHandler: FB_GroupHandler;
+	/// tuning
+	MoveDistance: LREAL := 5.0;
+	MoveRelative: ARRAY[0..5] OF MC_MoveRelative;
+	TuneStart: ARRAY[0..5] OF BOOL;
+	TraceStart: ARRAY[0..5] OF BOOL;
+	TraceStop: ARRAY[0..5] OF BOOL;
+	SetTuningMoveValues: BOOL := TRUE;
+	/// homing
+	ProcessHome: FB_HomingProcessor;
+	HomingStatusText: STRING(255);
+	/// jogging
+	ProcessJog: FB_JogProcessor;
+	JogStatusText: STRING(255);
+	ButtonTextIndex: INT := 0;
+	/// cnc
+	VisuStruct3DControl_J: VisuStruct3DControl;
+	TrackPosition: PositionTracker;
+	/// program processor
+	ProcessPrograms: FB_ProgramProcessor;
+	ProcessCommand_ActiveProgram: UINT := 0;
+	ActiveCommandDetails: STRING(255) := '';
+	/// controller
+	Controller: FB_Controller;
+	_i: INT;
+	_j: INT;
+	_k: INT;
+	BuildTests: BOOL := FALSE;
+	FirstScan: BOOL := TRUE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[{region "utility"}
+	GVL.ResetRtrig(CLK:=GVL.Reset);
+	IF GVL.ResetRtrig.Q THEN
+		GVL.Reset := FALSE;
+	END_IF
+	
+	IF FirstScan THEN
+		M_Init();	
+	END_IF
+	
+	IF BuildTests THEN
+		BuildTests := FALSE;
+		M_BuildTests();
+	END_IF
+{endregion}
+     
+{region "methods"}
+	_M_GroupHandler();
+    _M_Jogging();
+    _M_Homing();
+    _M_Cnc();
+    _M_Processor();
+	_M_Controller();
+	_M_Tuning();
+{endregion}
+
+// do not put anything below this
+FirstScan:=FALSE;]]></ST>
+    </Implementation>
+    <Method Name="_M_Cnc" Id="{c97e4850-18dd-453d-978c-2cd37627fe3a}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_Cnc : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// track position of robot end effector to display on hmi
+TrackPosition(
+	AxisGroup:=ArfBotAxisGroup,
+	SM3_Drive_PosControl_J1:=SM_Drive_PosControl_J1,
+	SM3_Drive_PosControl_J2:=SM_Drive_PosControl_J2,
+	SM3_Drive_PosControl_J3:=SM_Drive_PosControl_J3,
+	SM3_Drive_PosControl_J4:=SM_Drive_PosControl_J4,
+	SM3_Drive_PosControl_J5:=SM_Drive_PosControl_J5,
+	SM3_Drive_PosControl_J6:=SM_Drive_PosControl_J6,
+	VisuStruct3DTrack=>,
+	Arm=>,
+	Elbow=>,
+	Hand=>);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_Controller" Id="{111d7557-61e1-48d4-ad0f-48b4ac517334}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_Controller : BOOL
+VAR_STAT
+	_PowerRtrig: R_TRIG;
+	_PowerFtrig: F_TRIG;
+	_PowerTimerRtrig: R_TRIG;
+	_PowerTimer: TON := (PT := TIME#1s0ms);
+	_PsButtonRtrig: R_TRIG;
+	_PsButtonFtrig: F_TRIG;
+	_PsButtonTimer: TON := (PT := TIME#2s0ms);
+	_PsButtonTimerRtrig: R_TRIG;
+	_Reseting: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// dont get sleepy
+Controller(sIpAddress:= '127.0.0.1', uPort:= 50013);
+
+// put two fingers on the trackpad for 3 seconds to toggle power
+_PowerTimer(IN:=Controller.P_State.Connected
+				AND Controller.P_State.Buttons.Touch
+				AND Controller.P_State.Trackpads.One.Active 
+				AND Controller.P_State.Trackpads.Two.Active);
+_PowerTimerRtrig(CLK:=_PowerTimer.Q);
+IF _PowerTimerRtrig.Q THEN
+	GVL.PowerOn := NOT GVL.PowerOn;
+END_IF
+_PowerRtrig(CLK:=GVL.PowerOn);
+_PowerFtrig(CLK:=GVL.PowerOn);
+IF _PowerRtrig.Q OR _PowerFtrig.Q THEN
+	IF GVL.PowerOn THEN
+		Controller.M_SetColor(255,0,0);
+		Controller.M_SetBrightness(E_ControllerBrightness.High);
+		Controller.M_SetMotorIntensity(E_ControllerMotor.Left, 100, 0.100);
+	ELSE
+		Controller.M_SetColor(0,255,0);
+		Controller.M_SetBrightness(E_ControllerBrightness.Low);
+		Controller.M_SetMotorIntensity(E_ControllerMotor.Right, 100, 0.100);
+	END_IF
+END_IF
+
+// press PS button once to reset
+_PsButtonRtrig(CLK:=Controller.P_State.Buttons.PS);
+_PsButtonFtrig(CLK:=Controller.P_State.Buttons.PS);
+IF _PsButtonRtrig.Q THEN
+	_Reseting := TRUE;
+END_IF
+IF _PsButtonFtrig.Q THEN
+	IF _Reseting THEN //  reset was not overridden by holding it down too long
+		_Reseting := FALSE;
+		GVL.Reset := TRUE;
+	END_IF
+END_IF
+
+// hold down the PS button to home
+_PsButtonTimer(IN:=Controller.P_State.Buttons.PS);
+_PsButtonTimerRtrig(CLK:=_PsButtonTimer.Q);
+IF _PsButtonTimerRtrig.Q THEN
+	_Reseting := FALSE; // ps button was held down too long so we dont reset
+	ProcessHome.M_StartHoming();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_GroupHandler" Id="{39e1494b-f21b-4425-b5e3-86e0f472492e}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_GroupHandler : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+GroupHandler(
+	AxisGroup:= ArfBotAxisGroup,
+	Enable:= GVL.PowerOn,
+	StoredPositions:= PersistentVars.StoredPositions,
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_Homing" Id="{bf4b7640-1df3-46ff-b6ca-dc416adad7e8}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_Homing : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+ProcessHome(
+	J1:= SM_Drive_PosControl_J1, 
+	J2:= SM_Drive_PosControl_J2, 
+	J3:= SM_Drive_PosControl_J3, 
+	J4:= SM_Drive_PosControl_J4, 
+	J5:= SM_Drive_PosControl_J5, 
+	J6:= SM_Drive_PosControl_J6, 
+	AxisGroup:= ArfBotAxisGroup,
+	GroupHandler:= GroupHandler, 
+	Controller:= Controller, 
+	J1_Limit:= _10_Drives.rx_j1_limit, 
+	J2_Limit:= _10_Drives.rx_j2_limit, 
+	J3_Limit:= _10_Drives.rx_j3_limit, 
+	J4_Limit:= _10_Drives.rx_j4_limit, 
+	J5_Limit:= _10_Drives.rx_j5_limit, 
+	J6_Limit:= _10_Drives.rx_j6_limit, 
+	Enable:= GVL.PowerOn, 
+	Reset:= GVL.ResetRtrig.Q, 
+	StoredPositions:= PersistentVars.StoredPositions,
+	VisionRegisters:= PersistentVars.VisionRegisters,
+	Flags:= PersistentVars.Flags,
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );
+
+IF ProcessHome.Reset THEN
+	HomingStatusText := '';
+END_IF
+IF ProcessHome.Error THEN
+	JogStatusText := CONCAT('Homing Processor Error: ',
+						CONCAT(TO_STRING(ProcessHome.ErrorID),
+						CONCAT(' ', SMC_ErrorString(ProcessHome.ErrorID,
+									SMC_Language_Type.english)))) ;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_Jogging" Id="{0244d8b9-9bfb-4b7e-b2e7-dffe5ddef546}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_Jogging : BOOL
+VAR_STAT
+	EnableRtrig: R_TRIG;
+	CoordSystemLast: SMC_COORD_SYSTEM;
+	ABC_AS_ACSLast: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// dont get sleepy
+ProcessJog(
+	AxisGroup:= ArfBotAxisGroup,
+	GroupHandler:= GroupHandler,
+	Controller:= Controller,
+	Enable:= GVL.PowerOn,
+	Reset:= GVL.ResetRtrig.Q,
+	StoredPositions:= PersistentVars.StoredPositions,
+	VisionRegisters:= PersistentVars.VisionRegisters,
+	Flags:= PersistentVars.Flags,
+	ABC_as_ACS=>,
+	CoordSystem=>, 
+	Enabled=>,
+	Position=>, 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );
+	
+// change the button texts on enable or a change of the coordinate system
+EnableRtrig(CLK:=ProcessJog.CoordSystem <> CoordSystemLast
+				OR ProcessJog.ABC_as_ACS <> ABC_AS_ACSLast);
+IF EnableRtrig.Q THEN
+	CoordSystemLast := ProcessJog.CoordSystem;
+	ABC_AS_ACSLast := ProcessJog.ABC_as_ACS;
+	ButtonTextIndex := F_SetJogButtons(ProcessJog.CoordSystem, ProcessJog.ABC_as_ACS);
+END_IF
+	
+//
+IF ProcessJog.Reset THEN
+	JogStatusText := '';
+END_IF
+IF ProcessJog.Error THEN
+	JogStatusText := CONCAT('Jog Processor Error: ',
+						CONCAT(TO_STRING(ProcessJog.ErrorID),
+						CONCAT(' ', SMC_ErrorString(ProcessJog.ErrorID,
+									SMC_Language_Type.english)))) ;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_Processor" Id="{d0cb92ac-a65b-4a94-99d2-d1aa2daea05c}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_Processor : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF GVL.ResetRtrig.Q THEN
+	ProcessPrograms.M_Home();
+END_IF
+
+ProcessPrograms(
+	Programs:=PersistentVars.Programs,
+	StoredPositions:=PersistentVars.StoredPositions,
+	VisionRegisters:=PersistentVars.VisionRegisters,
+	Flags:=PersistentVars.Flags,
+	AxisGroup:= ArfBotAxisGroup,
+	GroupHandler:= GroupHandler,
+	CmdIO:=GVL.CmdIO,
+	Enable:= GVL.PowerOn AND PersistentVars.Flags[GVL.HOME_COMPLETE].Value,
+	Error=> ,
+	StatusText=>);
+
+// for displaying on the HMI
+// PGM: <number> CMD: <number> Type: <type> Command: <command> Comment: <comment>
+ActiveCommandDetails := CONCAT('PGM: ', UINT_TO_STRING(ProcessPrograms.P_CurrentProgram));
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' CMD: ');
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, UINT_TO_STRING(ProcessPrograms.P_CurrentCommandIndex));
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' ');
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, TO_STRING(ProcessPrograms.P_CurrentCommand.CommandType));
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, ': ');
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandString);
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' Comment: ');
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandComment);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_Tuning" Id="{7bc5b496-9c33-4d9b-b0d8-4ee9652747d2}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_Tuning : BOOL
+VAR_STAT
+	_MoveDelayTimer: ARRAY[0..5] OF TON;
+	_TraceStartFtrig: ARRAY[0..5] OF F_TRIG;
+	_MoveBusyFtrig: ARRAY[0..5] OF F_TRIG;
+	/// ms
+	_MoveDelayTime: INT := 10;
+	_i: INT;
+	_j: INT;
+	_k: INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// initial values
+IF SetTuningMoveValues AND_THEN PersistentVars.Flags[GVL.INIT_DRV_IDX].Value THEN
+	SetTuningMoveValues := FALSE;
+	
+	MoveRelative[0].Velocity := SM_Drive_PosControl_J1.fSWMaxVelocity;
+	MoveRelative[0].Acceleration := SM_Drive_PosControl_J1.fSWMaxAcceleration;
+	MoveRelative[0].Deceleration := SM_Drive_PosControl_J1.fSWMaxDeceleration;
+	MoveRelative[0].Jerk := SM_Drive_PosControl_J1.fSWMaxJerk;
+	MoveRelative[0].Distance := MoveDistance;
+	
+	MoveRelative[1].Velocity := SM_Drive_PosControl_J2.fSWMaxVelocity;
+	MoveRelative[1].Acceleration := SM_Drive_PosControl_J2.fSWMaxAcceleration;
+	MoveRelative[1].Deceleration := SM_Drive_PosControl_J2.fSWMaxDeceleration;
+	MoveRelative[1].Jerk := SM_Drive_PosControl_J2.fSWMaxJerk;
+	MoveRelative[1].Distance := MoveDistance;
+	
+	MoveRelative[2].Velocity := SM_Drive_PosControl_J3.fSWMaxVelocity;
+	MoveRelative[2].Acceleration := SM_Drive_PosControl_J3.fSWMaxAcceleration;
+	MoveRelative[2].Deceleration := SM_Drive_PosControl_J3.fSWMaxDeceleration;
+	MoveRelative[2].Jerk := SM_Drive_PosControl_J3.fSWMaxJerk;
+	MoveRelative[2].Distance := MoveDistance;
+	
+	MoveRelative[3].Velocity := SM_Drive_PosControl_J4.fSWMaxVelocity;
+	MoveRelative[3].Acceleration := SM_Drive_PosControl_J4.fSWMaxAcceleration;
+	MoveRelative[3].Deceleration := SM_Drive_PosControl_J4.fSWMaxDeceleration;
+	MoveRelative[3].Jerk := SM_Drive_PosControl_J4.fSWMaxJerk;
+	MoveRelative[3].Distance := MoveDistance;
+	
+	MoveRelative[4].Velocity := SM_Drive_PosControl_J5.fSWMaxVelocity;
+	MoveRelative[4].Acceleration := SM_Drive_PosControl_J5.fSWMaxAcceleration;
+	MoveRelative[4].Deceleration := SM_Drive_PosControl_J5.fSWMaxDeceleration;
+	MoveRelative[4].Jerk := SM_Drive_PosControl_J5.fSWMaxJerk;
+	MoveRelative[4].Distance := MoveDistance;
+	
+	MoveRelative[5].Velocity := SM_Drive_PosControl_J6.fSWMaxVelocity;
+	MoveRelative[5].Acceleration := SM_Drive_PosControl_J6.fSWMaxAcceleration;
+	MoveRelative[5].Deceleration := SM_Drive_PosControl_J6.fSWMaxDeceleration;
+	MoveRelative[5].Jerk := SM_Drive_PosControl_J6.fSWMaxJerk;
+	MoveRelative[5].Distance := MoveDistance;
+END_IF
+
+// trace activation
+FOR _i:=0 TO 5 BY 1 DO
+	
+	//
+	IF TuneStart[_i] THEN
+		TuneStart[_i] := FALSE;
+		TraceStart[_i] := TRUE; // trace will handshake this bit low
+		GroupHandler.M_EnableGroup();
+	END_IF
+	
+	// TraceStart will clear after handshake. this means the trace has started collecting samples
+	// start the move delay timer to capture samples before the move
+	_TraceStartFtrig[_i](CLK:=TraceStart[_i]);
+	IF _TraceStartFtrig[_i].Q THEN
+		_MoveDelayTimer[_i].IN:=TRUE;
+	END_IF
+	
+	// once the move delay expires, start the move
+	_MoveDelayTimer[_i](PT:=INT_TO_TIME(_MoveDelayTime));
+	IF _MoveDelayTimer[_i].Q THEN
+		_MoveDelayTimer[_i].IN:=FALSE;
+		MoveRelative[_i].Execute := TRUE;
+	END_IF
+	
+	//
+	_MoveBusyFtrig[_i](CLK:=MoveRelative[_i].Busy);
+	IF _MoveBusyFtrig[_i].Q THEN
+		MoveRelative[_i].Execute := FALSE;
+		MoveRelative[_i].Distance := MoveRelative[_i].Distance * -1.0; // reverse direction
+	END_IF
+
+END_FOR
+
+
+// move relative
+MoveRelative[0](
+	Axis:= SM_Drive_PosControl_J1, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+MoveRelative[1](
+	Axis:= SM_Drive_PosControl_J2, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+MoveRelative[2](
+	Axis:= SM_Drive_PosControl_J3, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+MoveRelative[3](
+	Axis:= SM_Drive_PosControl_J4, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+MoveRelative[4](
+	Axis:= SM_Drive_PosControl_J5, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
+MoveRelative[5](
+	Axis:= SM_Drive_PosControl_J6, 
+	Execute:= , 
+	Distance:= , 
+	Velocity:= , 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_BuildTests" Id="{9a5607a2-ed23-4572-beb3-b80fd95846d5}">
+      <Declaration><![CDATA[METHOD M_BuildTests
+VAR
+	_i: INT;
+	_j: INT;
+	_k: INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[1].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[1].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[1].ProgramName := 'Vision Pick and Place';
+PersistentVars.Programs[1].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[1].Commands[0].CommandString := 'STO 0046 +0000.00 +0000.00 +0000.00 +0090.00 +0000.00 +0000.00';
+PersistentVars.Programs[1].Commands[1].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[1].CommandString := 'DIR ABS 020 ACS LIT 00000.00 00030.00 -0030.00 00000.00 00030.00 00000.00';
+PersistentVars.Programs[1].Commands[2].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[2].CommandString := 'DIG 1 1';
+PersistentVars.Programs[1].Commands[3].CommandType := DUT_CommandType.VisionCommand;
+PersistentVars.Programs[1].Commands[3].CommandString := 'LOC 640 400 0060 001 000.0 0.8 030.0 000 Template.jpg FastTemplateMatching.py';
+PersistentVars.Programs[1].Commands[4].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[4].CommandString := 'DIG 1 0';
+PersistentVars.Programs[1].Commands[5].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[5].CommandString := 'DIR ABS 050 PC1 LIT 00000.00 00000.00 -0010.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[1].Commands[6].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[6].CommandString := 'DIR ABS 050 PC1 VAR VIS 000';
+PersistentVars.Programs[1].Commands[7].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[7].CommandString := 'SRV 1 30.0 360.0';
+PersistentVars.Programs[1].Commands[8].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[8].CommandString := 'LIN REL 050 TCS LIT 00000.00 00000.00 00010.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[1].Commands[9].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[9].CommandString := 'SRV 1 0.0 360.0';
+PersistentVars.Programs[1].Commands[10].CommandType := DUT_CommandType.PauseCommand;
+PersistentVars.Programs[1].Commands[10].CommandString := 'T#1s';
+PersistentVars.Programs[1].Commands[11].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[11].CommandString := 'LIN REL 050 TCS LIT 00000.00 00000.00 -0010.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[1].Commands[12].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[12].CommandString := 'DIR ABS 050 PC1 LIT 00000.00 00000.00 -0050.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[1].Commands[13].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[13].CommandString := 'SRV 1 30.0 360.0';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[2].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[2].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[2].ProgramName := 'PCS1 Corners';
+PersistentVars.Programs[2].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[2].Commands[0].CommandString := 'STO 0046 +0000.00 +0000.00 +0000.00 +0090.00 +0000.00 +0000.00';
+PersistentVars.Programs[2].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[2].Commands[1].CommandString := 'STO 0048 +0283.23 -0066.77 +0195.00 -0127.52 +0179.00 +0102.00';
+PersistentVars.Programs[2].Commands[2].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[2].CommandString := 'DIR ABS 050 PC1 LIT 0 0 0 0 0 0';
+PersistentVars.Programs[2].Commands[3].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[3].CommandString := 'LIN REL 100 TCS LIT 0.0 200.0 0.0 0.0 0.0 0.0';
+PersistentVars.Programs[2].Commands[4].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[4].CommandString := 'LIN REL 100 TCS LIT 00125.00 00000.00 00000.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[2].Commands[5].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[5].CommandString := 'LIN REL 100 TCS LIT 00000.00 -0200.00 00000.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[2].Commands[6].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[6].CommandString := 'LIN REL 100 TCS LIT -0125.00 00000.00 00000.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[2].Commands[7].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[2].Commands[7].CommandString := 'DIR ABS 050 ACS LIT +00 +30 -30 +00 +30 +00';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[3].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[3].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[3].ProgramName := 'Cnc Validation';
+PersistentVars.Programs[3].Commands[0].CommandType := DUT_CommandType.CncCommand;
+PersistentVars.Programs[3].Commands[0].CommandString := 'CNC_FromFile.cnc XYZ VAR STO 45';
+PersistentVars.Programs[3].Commands[1].CommandType := DUT_CommandType.CncCommand;
+PersistentVars.Programs[3].Commands[1].CommandString := 'CNC_FromFile.cnc XYZ LIT +0300.00 +0000.00 -0300.00 +0000.00 +0000.00 +0000.00';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[4].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[4].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[4].ProgramName := 'Vision Validation';
+PersistentVars.Programs[4].Commands[0].CommandType := DUT_CommandType.VisionCommand;
+PersistentVars.Programs[4].Commands[0].CommandString := 'LOC 640 400 60 1 0.0 0.8 30.0 10 Template.jpg FastTemplateMatching.py';
+PersistentVars.Programs[4].Commands[1].CommandType := DUT_CommandType.VisionCommand;
+PersistentVars.Programs[4].Commands[1].CommandString := 'LOC 640 400 60 1 0.0 0.8 30.0 4 strippers2.jpg FastTemplateMatching.py';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[5].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[5].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[5].ProgramName := 'VarSet Validation';
+PersistentVars.Programs[5].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[5].Commands[0].CommandString := 'STO 1 6.0 5.0 4.0 3.0 2.0 1.0 ';
+PersistentVars.Programs[5].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[5].Commands[1].CommandString := 'VIS 2 1 2 3 4 5 6';
+PersistentVars.Programs[5].Commands[2].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[5].Commands[2].CommandString := 'FLG 3 1';
+
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[6].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[6].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[6].ProgramName := 'Logic Validation';
+PersistentVars.Programs[6].Commands[0].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[6].Commands[0].CommandString := 'IF INPUT 1 EQU 1 THEN OUTPUT 1 1 ELSE OUTPUT 1 0';
+PersistentVars.Programs[6].Commands[1].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[6].Commands[1].CommandString := 'IF INPUT 1 EQU 1 THEN CNTUP 1 ELSE CNTUP 2';
+PersistentVars.Programs[6].Commands[2].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[6].Commands[2].CommandString := 'IF COUNTER 2 GRE 10 THEN NOP ELSE JUMP 0';
+
+(*
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[11].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[11].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[11].ProgramName := 'Make Me an Egg, Please';
+PersistentVars.Programs[11].Commands[0].CommandType := DUT_CommandType.Disabled;
+PersistentVars.Programs[11].Commands[0].CommandString := '';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[12].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[12].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[12].ProgramName := 'Egg Pick Routine';
+PersistentVars.Programs[12].Commands[0].CommandType := DUT_CommandType.Disabled;
+PersistentVars.Programs[12].Commands[0].CommandString := '';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[13].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[13].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[13].ProgramName := 'Egg Crack Routine';
+PersistentVars.Programs[13].Commands[0].CommandType := DUT_CommandType.Disabled;
+PersistentVars.Programs[13].Commands[0].CommandString := '';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[14].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[14].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[14].ProgramName := 'Egg Flip Routine';
+PersistentVars.Programs[14].Commands[0].CommandType := DUT_CommandType.Disabled;
+PersistentVars.Programs[14].Commands[0].CommandString := '';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[15].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[15].Commands[_i].CommandString := '';
+END_FOR
+PersistentVars.Programs[15].ProgramName := 'Egg Place Routine';
+PersistentVars.Programs[15].Commands[0].CommandType := DUT_CommandType.Disabled;
+PersistentVars.Programs[15].Commands[0].CommandString := '';
+*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Init" Id="{229ed790-05b4-4c75-a8a2-65170cb5046e}">
+      <Declaration><![CDATA[METHOD M_Init : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+// check if arfbot has been initialized
+IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
+	// poses
+	PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Value := FALSE;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.X := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Y := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Z := -30.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.A := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.B := -30.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.C := 0.0;
+	
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.X := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Y := 30.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Z := -30.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.A := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.B := 30.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.C := 0.0;
+		 
+	// decoder
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.X := 300.0; // TODO need to verify all 6 of these
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.Y := 0.0;
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.Z := -400.0;
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.A := 0.0;
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.B := 0.0;
+	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.C := 0.0;
+	
+	// set homing offsets
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X := 179.29; // J1 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y := 36.74; // J2 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z := -59.25; // J3 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A := -194.38; // J4 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B := -102.41; // J5 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C := 166.611; // J6 initial home offset
+	
+	// set speeds
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X := 100.0; // max velocity
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.Y := 1000.0; // max accel/decel
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.Z := 1000.0; // max jerk
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.A := 1.0; // velocity factor
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.B := 0.05; // accel/decel factor
+	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.C := 1.0; // jerk factor
+	
+	//
+	M_BuildTests();
+		 
+	// indicate initialized
+	PersistentVars.Flags[GVL.INIT_POS_IDX].Value := TRUE;
+END_IF
+
+//
+PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Comment := 'vel, acc, jerk, vel fact, acc fact, jerk fact';
+PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Comment := 'Home Offsets J1, J2, J3, J4, J5, J6';
+PersistentVars.StoredPositions[GVL.DEC_START_POS].Comment := 'NC Decoder Start Position';
+PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Comment := 'TCP Offset';
+PersistentVars.StoredPositions[GVL.PC2_POS_IDX].Comment := 'PCS 2 Offset';
+PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Comment := 'PCS 1 Offset';
+PersistentVars.StoredPositions[GVL.MCS_POS_IDX].Comment := 'MCS Offset';
+
+//	 
+PersistentVars.StoredPositions[GVL.POSE_1_IDX].Comment := 'Pose 1 coordinates';
+PersistentVars.StoredPositions[GVL.POSE_2_IDX].Comment := 'Pose 2 coordinates';
+PersistentVars.StoredPositions[GVL.POSE_3_IDX].Comment := 'Pose 3 coordinates';
+PersistentVars.StoredPositions[GVL.POSE_4_IDX].Comment := 'Pose 4 coordinates';
+PersistentVars.StoredPositions[GVL.POSE_5_IDX].Comment := 'Pose 5 coordinates';
+
+//
+PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Comment := 'Finish home at Pose';
+
+//
+PersistentVars.Flags[GVL.HOME_COMPLETE].Comment := 'Axes are homed';
+PersistentVars.Flags[GVL.HOME_COMPLETE].Value := FALSE;
+
+//
+PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

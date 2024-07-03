@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="E_ControllerTrigger" Id="{cf02ac9e-9fa8-4292-8ddb-6ba2ae2076e9}">
+    <Declaration><![CDATA[{attribute 'qualified_only' := ''}
+{attribute 'strict' := ''}
+TYPE E_ControllerTrigger :
+(
+	Left := 0,
+	Right := 1
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

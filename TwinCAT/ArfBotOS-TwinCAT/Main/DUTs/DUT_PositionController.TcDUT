@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_PositionController" Id="{862da66f-a0ac-4f98-8a1c-2d6c546e43d9}">
+    <Declaration><![CDATA[TYPE DUT_PositionController :
+STRUCT
+	fKp: LREAL;
+	fPartVelPilotControl: LREAL;
+	fDeadTime: LREAL;
+	fMaxPositionDiff: LREAL;
+	fSWMaxVelocity: LREAL;
+	fSWMaxAcceleration: LREAL;
+	fSWMaxDeceleration: LREAL;
+	fSWMaxJerk: LREAL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,468 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_Controller" Id="{6c3bd905-e561-44be-a365-7f9abc521e72}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Controller EXTENDS PythonServerHandler
+VAR
+	Controller: ST_Controller;
+	ControllerStates: ARRAY[0..254] OF BYTE;
+	ControllerStatesTemp: ARRAY[0..254] OF BYTE;
+	ReadStringTemp: STRING(255);
+	RecordLast: DINT;
+	ReconnectTimer: TON := (PT := TIME#5s0ms);
+	_SetColor: BOOL;
+	_Red: INT := 0;
+	_Green: INT := 255;
+	_Blue: INT := 0;
+	_SetMicrophoneState: BOOL;
+	_MicrophoneState: BOOL;
+	_SetPlayerID: BOOL;
+	_PlayerID: E_ControllerPlayerID;
+	_SetBrightness: BOOL;
+	_Brightness: E_ControllerBrightness;
+	_SetMotorIntensity: BOOL;
+	_Motor: E_ControllerMotor;
+	/// 0-255
+	_MotorIntensity: USINT;
+	/// ms
+	_MotorIntensityDuration: REAL;
+	_SetTriggerMode: BOOL;
+	_TriggerModeTrigger: E_ControllerTrigger;
+	_TriggerModeMode: E_ControllerTriggerMode;
+	_SetTriggerForce: BOOL;
+	_TriggerForceTrigger: E_ControllerTrigger;
+	_TriggerForceParameter: E_ControllerTriggerForceParameter;
+	_TriggerForceIntensity: USINT;
+	_i: INT;
+	_j: INT;
+	_k: INT;
+	FirstScan: BOOL := TRUE;
+END_VAR
+VAR CONSTANT
+	States: STRING := 'states: ';
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+
+// copy over controller states when a new message is received
+IF SUPER^.P_RecordNumber <> RecordLast THEN
+	RecordLast := SUPER^.P_RecordNumber;
+	IF FIND(SUPER^.P_RawReadString, States) > 0 THEN // TODO this is getting messy. need to overhaul how this works
+		ControllerStatesTemp := SUPER^.P_RawReadByteArray;
+		FOR _i:=0 TO UINT_TO_INT(SIZEOF(ControllerStates)) - LEN(States) BY 1 DO
+			ControllerStates[_i] := ControllerStatesTemp[_i + LEN(States)];
+		END_FOR
+		
+	END_IF
+END_IF
+
+//
+_M_EvaluateControllerStates(States:=ControllerStates);
+_M_SetColor();
+_M_SetMicrophoneState();
+_M_SetPlayerID();
+_M_SetBrightness();
+_M_SetMotorIntensity();
+_M_SetTriggerMode();
+_M_SetTriggerForce();
+
+// try to reconnect to the server when data stops?
+// leave this commented out until we have a better condition
+// the edge case is when the controller is connected via bluetooth 
+// but for some reason the server is not connected to it.
+// maybe work this issue out on the server side.
+(*ReconnectTimer(IN:= RecordLast=SUPER^.P_RecordNumber);
+IF ReconnectTimer.Q THEN
+	ReconnectTimer(IN:=FALSE);
+	SUPER^.M_Reconnect();
+END_IF*)
+
+FirstScan:=FALSE;]]></ST>
+    </Implementation>
+    <Method Name="_M_EvaluateControllerStates" Id="{ec5a2389-0422-417f-bd11-588f38f08844}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_EvaluateControllerStates : BOOL
+VAR_INPUT
+	States: ARRAY[0..254] OF BYTE;
+END_VAR
+VAR_STAT
+	_i: UINT;
+	_j: UINT;
+	_k: UINT;
+	_FirstScan: BOOL := TRUE;
+	_HeartbeatTimer: TON := (PT := TIME#2s0ms);
+	_Heartbeat: USINT := 0;
+	_HeartbeatLast: USINT := 0;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _FirstScan THEN
+	//
+END_IF
+
+//
+_Heartbeat := States[0] OR States[7]; // States[0] appears to be bluetooth and States[7] appears to be wired
+IF _Heartbeat <> _HeartbeatLast THEN
+	_HeartbeatLast := _Heartbeat;
+	_HeartbeatTimer(IN:=FALSE);
+ELSE
+	_HeartbeatTimer(IN:=TRUE);
+END_IF
+Controller.Connected S= NOT _HeartbeatTimer.IN;
+Controller.Connected R= _HeartbeatTimer.Q;
+
+// clear all the data if the controller disconnects
+IF NOT Controller.Connected THEN
+	//MemUtils.MemSet(pbyBuffer:=ADR(States), byValue:=0, dwSize:=SIZEOF(States)); 
+	FOR _i:=1 TO 254 BY 1 DO // start at 1 so we dont overwrite the heartbeat
+		States[_i] := 0;
+	END_FOR
+END_IF
+
+Controller.Joysticks.Left.X					:= States[1];
+Controller.Joysticks.Left.Y					:= States[2];
+Controller.Joysticks.Right.X				:= States[3];
+Controller.Joysticks.Right.Y				:= States[4];
+Controller.Triggers.Left.Two				:= States[5];
+Controller.Triggers.Right.Two				:= States[6];
+
+//UNUSED									:= States[7];
+
+Controller.Buttons.Triangle 				:= States[8].7;
+Controller.Buttons.Circle 					:= States[8].6;
+Controller.Buttons.Cross 					:= States[8].5;
+Controller.Buttons.Square 					:= States[8].4;
+Controller.Dpad								:= F_DpadState(States[8] AND 16#0F);
+
+Controller.Joysticks.Right.ThreeButton 		:= States[9].7;
+Controller.Joysticks.Left.ThreeButton 		:= States[9].6;
+Controller.Buttons.Options 					:= States[9].5;
+Controller.Buttons.Share 					:= States[9].4;
+Controller.Triggers.Right.TwoButton 		:= States[9].3;
+Controller.Triggers.Left.TwoButton 			:= States[9].2;
+Controller.Triggers.Right.One 				:= States[9].1;
+Controller.Triggers.Left.One 				:= States[9].0;
+
+Controller.Buttons.PS						:= States[10].0;
+Controller.Buttons.Touch					:= States[10].1;
+Controller.Buttons.Mic						:= States[10].2;
+
+//UNUSED									:= States[11];
+//UNUSED									:= States[12];
+//UNUSED									:= States[13];
+//UNUSED									:= States[14];
+//UNUSED									:= States[15];
+
+Controller.Accelerometer.X					:= SHL(States[16], 8) OR States[17];
+Controller.Accelerometer.Y					:= SHL(States[18], 8) OR States[19];
+Controller.Accelerometer.Z					:= SHL(States[20], 8) OR States[21];
+
+Controller.Gyroscope.Pitch					:= SHL(States[22], 8) OR States[23];
+Controller.Gyroscope.Yaw					:= SHL(States[24], 8) OR States[25];
+Controller.Gyroscope.Roll					:= SHL(States[26], 8) OR States[27];
+
+//UNUSED									:= States[28];
+//UNUSED									:= States[29];
+//UNUSED									:= States[30];
+//UNUSED									:= States[31];
+//UNUSED									:= States[32];
+
+Controller.Trackpads.One.ID					:= States[33] AND 16#7F;
+Controller.Trackpads.One.Active				:= (States[33] AND 16#80) = 0;
+Controller.Trackpads.One.X					:= SHL((States[35] AND 16#0F), 8) OR States[34];
+Controller.Trackpads.One.Y					:= SHL(States[36], 4) OR SHR((States[35] AND 16#F0), 4);
+Controller.Trackpads.Two.ID					:= States[37] AND 16#7F;
+Controller.Trackpads.Two.Active				:= (States[37] AND 16#80) = 0;
+Controller.Trackpads.Two.X					:= SHL((States[39] AND 16#0F), 8) OR States[38];
+Controller.Trackpads.Two.Y					:= SHL(States[40], 4) OR SHR((States[39] AND 16#F0), 4);
+
+//UNUSED									:= States[41];
+//UNUSED									:= States[42];
+//UNUSED									:= States[43];
+//UNUSED									:= States[44];
+//UNUSED									:= States[45];
+//UNUSED									:= States[46];
+//UNUSED									:= States[47];
+//UNUSED									:= States[48];
+//UNUSED									:= States[49];
+//UNUSED									:= States[50];
+//UNUSED									:= States[51];
+//UNUSED									:= States[52];
+
+// from kit-nya
+Controller.Battery.State					:= SHR(States[53] AND 16#F0, 4);
+Controller.Battery.Level					:= MIN((States[53] AND 16#0F) * 10 + 5, 100); // TODO this will show a value of 5 when controller is disconnected.
+
+// dont put anything below this
+_FirstScan := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_SetBrightness" Id="{90b7f945-cd7e-41a6-be53-3bd7b43fad70}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_SetBrightness : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT SUPER^._Busy AND _SetBrightness THEN
+	_SetBrightness := FALSE;
+	
+	_Command := CONCAT('cmd: setBrightness:', INT_TO_STRING(_Brightness));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_SetColor" Id="{54de39e9-a68c-4cdd-9c6b-c369236e0e6b}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_SetColor : BOOL
+VAR
+	_Command: STRING(255);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT SUPER^._Busy AND_THEN _SetColor THEN
+	_SetColor := FALSE;
+	
+	_Command := CONCAT('cmd: setColorI:', INT_TO_STRING(_Red));
+	_Command := CONCAT(_Command, ',');
+	_Command := CONCAT(_Command, INT_TO_STRING(_Green));
+	_Command := CONCAT(_Command, ',');
+	_Command := CONCAT(_Command, INT_TO_STRING(_Blue));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_SetMicrophoneState" Id="{04008bef-1240-44b8-b1a0-4148da719966}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_SetMicrophoneState : BOOL
+VAR
+	_Command: STRING(255);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT SUPER^._Busy AND _SetMicrophoneState THEN
+	_SetMicrophoneState := FALSE;
+	
+	_Command := CONCAT('cmd: setMicrophoneState:', BOOL_TO_STRING(_MicrophoneState));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_SetMotorIntensity" Id="{572923e8-2cd9-45a4-9f71-7169965a5b39}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_SetMotorIntensity : BOOL
+VAR
+	_Command: STRING(255);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT SUPER^._Busy AND _SetMotorIntensity THEN
+	_SetMotorIntensity := FALSE;
+	
+	IF _Motor = E_ControllerMotor.Left THEN
+		_Command := 'cmd: setLeftMotor:';
+	ELSE
+		_Command := 'cmd: setRightMotor:';
+	END_IF
+	_Command := CONCAT(_Command, USINT_TO_STRING(_MotorIntensity));
+	_Command := CONCAT(_Command, ',');
+	_Command := CONCAT(_Command, REAL_TO_STRING(_MotorIntensityDuration));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_SetPlayerID" Id="{c145fd68-52c7-4142-a0ba-b1d06db0c33d}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_SetPlayerID : BOOL
+VAR
+	_Command: STRING(255);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF NOT SUPER^._Busy AND _SetPlayerID THEN
+	_SetPlayerID := FALSE;
+	
+	_Command := CONCAT('cmd: setPlayerID:', INT_TO_STRING(_PlayerID));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_SetTriggerForce" Id="{a4252e21-370c-45c8-a3d9-1c1fe732617d}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_SetTriggerForce : BOOL
+VAR
+	_Command: STRING(255);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF NOT SUPER^._Busy AND _SetTriggerForce THEN
+	_SetTriggerForce := FALSE;
+	
+	IF _TriggerForceTrigger = E_ControllerTrigger.Left THEN
+		_Command := 'cmd: setLeftTriggerForce:';
+	ELSE
+		_Command := 'cmd: setRightTriggerForce:';
+	END_IF
+	_Command := CONCAT(_Command, INT_TO_STRING(_TriggerForceParameter));
+	_Command := CONCAT(_Command, ',');
+	_Command := CONCAT(_Command, USINT_TO_STRING(_TriggerForceIntensity));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_SetTriggerMode" Id="{cc90c045-ff13-46bd-bee3-0677bb07476d}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_SetTriggerMode : BOOL
+VAR
+	_Command: STRING(255);
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF NOT SUPER^._Busy AND _SetTriggerMode THEN
+	_SetTriggerMode := FALSE;
+	
+	IF _TriggerModeTrigger = E_ControllerTrigger.Left THEN
+		_Command := 'cmd: setLeftTriggerMode:';
+	ELSE
+		_Command := 'cmd: setRightTriggerMode:';
+	END_IF
+	_Command := CONCAT(_Command, INT_TO_STRING(_TriggerModeMode));
+	
+	SUPER^._M_Execute(Command:=_Command, Timeout:=5);
+	SUPER^(); // call super here so other methods see it busy.
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetBrightness" Id="{ea400410-5d62-42d9-8299-464d48113d8b}">
+      <Declaration><![CDATA[METHOD M_SetBrightness : BOOL
+VAR_INPUT
+	Brightness: E_ControllerBrightness;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[M_SetBrightness := TRUE;
+_Brightness := Brightness;
+_SetBrightness := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetColor" Id="{eeb0100c-2915-48d1-9f36-b75c4e907a60}">
+      <Declaration><![CDATA[METHOD M_SetColor : BOOL
+VAR_INPUT
+	Red: INT := 0;
+	Green: INT := 255;
+	Blue: INT := 0;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF Red>=0 AND_THEN Red<=255
+	AND_THEN Green>=0 AND_THEN Green<=255
+	AND_THEN Blue>=0 AND_THEN Blue<=255THEN
+		M_SetColor := TRUE;
+		_SetColor:=TRUE;
+		_Red:=Red;
+		_Green:=Green;
+		_Blue:=Blue;
+ELSE
+	M_SetColor := FALSE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetMicrophoneState" Id="{59d971f4-160d-4206-8fd6-464272a65157}">
+      <Declaration><![CDATA[METHOD M_SetMicrophoneState : BOOL
+VAR_INPUT
+	State: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[M_SetMicrophoneState := TRUE;
+_MicrophoneState := State;
+_SetMicrophoneState := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetMotorIntensity" Id="{1764fe0e-660f-4c27-8d1f-29b1674c5009}">
+      <Declaration><![CDATA[METHOD M_SetMotorIntensity : BOOL
+VAR_INPUT
+	Motor: E_ControllerMotor;
+	/// 0-255
+	Intensity: USINT;
+	/// s
+	Duration: REAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF Intensity >=0 AND_THEN Intensity <= 255 AND_THEN Duration <= 5000 THEN
+	M_SetMotorIntensity := TRUE;
+	_SetMotorIntensity := TRUE;
+	_Motor := Motor;
+	_MotorIntensity := Intensity;
+	_MotorIntensityDuration := Duration;
+ELSE
+	M_SetMotorIntensity := FALSE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetPlayerID" Id="{fe5b8c1d-d289-45ab-8132-645bc019686a}">
+      <Declaration><![CDATA[METHOD M_SetPlayerID : BOOL
+VAR_INPUT
+	PlayerID: E_ControllerPlayerID;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[M_SetPlayerID := TRUE;
+_PlayerID := PlayerID;
+_SetPlayerID := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetTriggerForce" Id="{2469dbae-9da4-4cf0-aaf5-0b5c14fa7e2d}">
+      <Declaration><![CDATA[METHOD M_SetTriggerForce : BOOL
+VAR_INPUT
+	Trigger: E_ControllerTrigger;
+	Parameter: E_ControllerTriggerForceParameter;
+	/// 0-255
+	Intensity: USINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF Intensity >= 0 AND Intensity <= 255 THEN
+	M_SetTriggerForce := TRUE;
+	_SetTriggerForce:=TRUE;
+	_TriggerForceTrigger := Trigger;
+	_TriggerForceParameter := Parameter;
+	_TriggerForceIntensity := Intensity;
+ELSE
+	M_SetTriggerForce := FALSE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetTriggerMode" Id="{9cdabd76-e674-4c87-a86d-b3798e605bb0}">
+      <Declaration><![CDATA[METHOD M_SetTriggerMode : BOOL
+VAR_INPUT
+	Trigger: E_ControllerTrigger;
+	Mode: E_ControllerTriggerMode;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[M_SetTriggerMode := TRUE;
+_SetTriggerMode := TRUE;
+_TriggerModeTrigger := Trigger;
+_TriggerModeMode := Mode;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="P_State" Id="{8f9874b7-a4ba-4163-b1b5-6ca35856054f}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY P_State : REFERENCE TO ST_Controller
+]]></Declaration>
+      <Get Name="Get" Id="{777e1176-912b-4ffe-a437-ea3bb0244872}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_State REF= Controller;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

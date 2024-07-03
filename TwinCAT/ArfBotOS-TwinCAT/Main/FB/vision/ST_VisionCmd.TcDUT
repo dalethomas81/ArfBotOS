@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_VisionCmd" Id="{bbefe0b0-9a20-4826-9638-01ab457504e9}">
+    <Declaration><![CDATA[TYPE ST_VisionCmd :
+STRUCT
+	CommandType: DUT_Command_VisionType;
+	/// pixel count in x direction (must be supported by camera)
+	ImageWidth: UINT := 640;
+	/// pixel coutn in y direction (must be supported by camera)
+	ImageHeight: UINT := 400;
+	Calibrate: ST_VisionCalibrate;
+	Locate: ST_VisionLocate;
+	/// timeout in seconds
+	Timeout: UDINT := 60;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

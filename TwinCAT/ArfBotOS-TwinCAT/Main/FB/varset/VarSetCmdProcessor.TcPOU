@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="VarSetCmdProcessor" Id="{4e6d31f4-1f5e-495c-b2c6-1fabb531ce1d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK VarSetCmdProcessor EXTENDS Module
+VAR_INPUT
+	Command: STRING(GVL.COMMAND_LEN) := '';
+END_VAR
+VAR CONSTANT
+	_STEP_DONE: INT := 1000;
+	_STEP_IDLE: INT := 0;
+	_STEP_COMMAND: INT := 10;
+	_STEP_ERR: INT := 20;
+END_VAR
+VAR
+	_UnitModeCurrentState: PACK_ML.State;
+	_VarSetCmdParser: ParseVarSetCmd;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+
+// PackML state machine implementation
+_UnitModeCurrentState := SUPER^._UnitMode.CurrentState;
+
+//
+CASE SUPER^._SeqMain OF
+    _STEP_DONE:
+		SUPER^._SeqMain := _STEP_IDLE;
+        
+    _STEP_IDLE:
+		// hang out here until called to run
+		
+	_STEP_COMMAND:
+        _VarSetCmdParser(Command:=Command);
+		IF _VarSetCmdParser.Error THEN
+			//
+			SUPER^.M_Error(Description:=_VarSetCmdParser.ErrorDescription);
+			// next, please
+			SUPER^._SeqMain := _STEP_ERR;
+			
+		ELSE
+			//
+			IF _VarSetCmdParser.stCommand.ArrayType = DUT_Command_ArrayType.StoredPosition THEN
+				SUPER^.StoredPositions[_VarSetCmdParser.stCommand.ArrayIndex].Position := _VarSetCmdParser.stCommand.Coordinates;
+			ELSIF _VarSetCmdParser.stCommand.ArrayType = DUT_Command_ArrayType.VisionRegister THEN
+				SUPER^.VisionRegisters[_VarSetCmdParser.stCommand.ArrayIndex].Position := _VarSetCmdParser.stCommand.Coordinates;
+			ELSIF _VarSetCmdParser.stCommand.ArrayType = DUT_Command_ArrayType.Flag THEN
+				// will just let the flag take on the value of X
+				SUPER^.Flags[_VarSetCmdParser.stCommand.ArrayIndex].Value := LREAL_TO_BOOL(_VarSetCmdParser.stCommand.Coordinates.X);
+			END_IF
+			// next, please
+			SUPER^._SeqMain := _STEP_DONE;
+			
+		END_IF
+
+END_CASE]]></ST>
+    </Implementation>
+    <Method Name="M_Complete" Id="{130f8bcb-8a65-424f-bc15-3fc7e753edde}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Complete : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// once complete, reset to get back to idle
+SUPER^._UnitMode.Reset();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Execute" Id="{f570903b-8d82-43ce-845d-3b6445cd6365}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Execute : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// here we want to execute our commands/jobs/etc and set completed when done.
+IF SUPER^._SeqMain =_STEP_IDLE THEN
+	SUPER^.M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetPackML" Id="{68d991e6-dbe4-463a-80e0-5f3da08333d1}">
+      <Declaration><![CDATA[METHOD PROTECTED M_SetPackML : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[SUPER^._UnitMode(	sName := 'VarSet Processor', 
+				eInitialState := PACK_ML.State.Idle,
+				xActive := TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Starting" Id="{2949ddea-6613-413b-8ae7-28086e6ca171}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Starting : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// here we want to clear things and get ready for the execute state
+// I can consider this the "INIT" state
+SUPER^._SeqMain := _STEP_COMMAND;
+SUPER^.M_StateComplete();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

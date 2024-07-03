@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_StoredPosition" Id="{66e85fd8-6344-4340-a216-0e3ccb4605b3}">
+    <Declaration><![CDATA[TYPE DUT_StoredPosition :
+STRUCT
+	Comment: STRING;
+	Position: MC_COORD_REF;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

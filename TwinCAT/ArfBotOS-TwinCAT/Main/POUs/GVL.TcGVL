@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="GVL" Id="{1430d1bd-aa92-442c-bf72-190d0e907494}">
+    <Declaration><![CDATA[VAR_GLOBAL CONSTANT
+	/// us TODO reference this in task settings
+	dwMainInterval: DWORD := 3000;
+	/// us TODO reference this in task settings
+	dwMotionInterval: DWORD := 50;
+	/// us TODO reference this in task settings
+	dwVisionInterval: DWORD := 20000;
+	/// us TODO reference this in task settings
+	dwVisuInterval: DWORD := 100000;
+	/// array sizes
+	DIG_IN_ARR_BEG: INT := 0;
+	DIG_IN_ARR_END: INT := 11;
+	DIG_OUT_ARR_BEG: INT := 0;
+	DIG_OUT_ARR_END: INT := 11;
+	PWM_OUT_ARR_BEG: INT := 0;
+	PWM_OUT_ARR_END: INT := 11;
+	PROG_CMDS_ARR_BEG: INT := 0;
+	/// total number of commands in a program
+	PROG_CMDS_ARR_END: INT := 49;
+	PROG_ARR_BEG: INT := 0;
+	/// total number of programs 
+	PROG_ARR_END: INT := 19;
+	POS_ARR_BEG: INT := 0;
+	/// total number of stored positions
+	POS_ARR_END: INT := 49;
+	VIS_ARR_BEG: INT := 0;
+	/// total number of vision registers
+	VIS_ARR_END: INT := 49;
+	FLG_ARR_BEG: INT := 0;
+	/// total number of flags
+	FLG_ARR_END: INT := 49;
+	REG_ARR_BEG: INT := 0;
+	/// total number of registers
+	REG_ARR_END: INT := 49;
+	POSCONT_ARR_BEG: INT := 0;
+	/// total number of axes
+	POSCONT_ARR_END: INT := 5;
+	/// length of command strings for command processor.
+	/// if this is reduced then commands may stop working.
+	COMMAND_LEN: UINT := 255;
+	/// coordinates of pose 1
+	POSE_1_IDX: INT := 34;
+	/// coordinates of pose 2
+	POSE_2_IDX: INT := 35;
+	/// coordinates of pose 3
+	POSE_3_IDX: INT := 36;
+	/// coordinates of pose 4
+	POSE_4_IDX: INT := 37;
+	/// coordinates of pose 5
+	POSE_5_IDX: INT := 38;
+	/// max vel, max accel/decel, max jerk, vel factor, accel/decel factor, jerk factor
+	SPEEDS_IDX: INT := 43;
+	/// homing offsets
+	HOM_POS_IDX: INT := 44;
+	/// start position for the nc decoder
+	DEC_START_POS: INT := 45;
+	/// tool center point offset
+	TCP_POS_IDX: INT := 46;
+	/// part 2 coordinate system offset
+	PC2_POS_IDX: INT := 47;
+	/// part 1 coordinate system offset
+	PC1_POS_IDX: INT := 48;
+	/// machine (robot) coordinate system offset
+	MCS_POS_IDX: INT := 49;
+	/// vision registers
+	///RESERVED: INT:=VIS_ARR_END-4; // RESERVED
+	///RESERVED: INT:=VIS_ARR_END-3; // RESERVED
+	///RESERVED: INT:=VIS_ARR_END-2; // RESERVED
+	///RESERVED: INT:=VIS_ARR_END-1; // RESERVED
+	///RESERVED: INT:=VIS_ARR_END; // RESERVED
+	/// flags
+	HOM_TO_POSE_IDX: INT := 44;
+	///RESERVED: INT:=45;
+	///RESERVED: INT:=46;
+	INIT_DRV_IDX: INT := 47;
+	HOME_COMPLETE: INT := 48;
+	INIT_POS_IDX: INT := 49;
+END_VAR
+
+VAR_GLOBAL
+	PowerOn: BOOL;
+	Reset: BOOL;
+	ResetRtrig: R_TRIG;
+	StorePersist: BOOL;
+	/// command IO
+	///DigitalInput: ARRAY [DIG_IN_ARR_BEG..DIG_IN_ARR_END] OF BOOL;
+	///DigitalOutput: ARRAY [DIG_OUT_ARR_BEG..DIG_OUT_ARR_END] OF BOOL;
+	CmdIO: ST_LogicCmdIO;
+	/// feed rate
+	g_x: REAL := 50;
+	g_y: REAL := 50;
+	g_gripper: INT := 0;
+	Servo0Position: BYTE;
+END_VAR
+
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

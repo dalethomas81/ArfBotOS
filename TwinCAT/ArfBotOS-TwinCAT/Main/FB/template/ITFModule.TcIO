@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="ITFModule" Id="{83e2f220-b628-4cc1-8425-5ccb3ca1431d}">
+    <Declaration><![CDATA[INTERFACE ITFModule
+]]></Declaration>
+    <Method Name="M_Abort" Id="{d4b36388-2c40-4a2a-840c-a7558cccf32c}">
+      <Declaration><![CDATA[METHOD M_Abort
+]]></Declaration>
+    </Method>
+    <Method Name="M_Hold" Id="{74dca715-0832-4e57-bd11-fa5482a40ca4}">
+      <Declaration><![CDATA[METHOD M_Hold
+]]></Declaration>
+    </Method>
+    <Method Name="M_Home" Id="{fa5ae12d-e278-43b8-b9fb-522a2f8363df}">
+      <Declaration><![CDATA[METHOD M_Home
+]]></Declaration>
+    </Method>
+    <Method Name="M_Start" Id="{ede511b9-4a8a-4fd7-9a81-92329944db01}">
+      <Declaration><![CDATA[METHOD M_Start
+]]></Declaration>
+    </Method>
+    <Method Name="M_Stop" Id="{b5172065-9e2b-4628-992b-67cbdd66121e}">
+      <Declaration><![CDATA[METHOD M_Stop
+]]></Declaration>
+    </Method>
+    <Property Name="PropBusy" Id="{826777bf-f2fe-40ca-a5f3-f2f24fef4c48}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY PropBusy : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{b22156fd-0bba-43bb-9a3c-a1c235b43373}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="PropCurrentState" Id="{4900066d-af26-4295-98da-8b49be553787}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY PropCurrentState : PACK_ML.State
+]]></Declaration>
+      <Get Name="Get" Id="{eceb2763-c94a-4b06-ab47-cf1e57e608a6}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="PropErrDescription" Id="{c91c07e4-f8e0-4585-a6d3-d7b49542a264}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY PropErrDescription : STRING
+]]></Declaration>
+      <Get Name="Get" Id="{92d8f1b7-2d36-49bc-82dd-dd7e52bb62cc}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+    <Property Name="PropError" Id="{8b3b149d-5bc9-492d-bf03-7c656df23d5f}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY PropError : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{1d81e6fc-0e7b-4208-b519-b688ac452eb3}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+  </Itf>
+</TcPlcObject>

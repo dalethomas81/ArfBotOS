@@ -1,0 +1,309 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PackML" Id="{6c88eb42-407a-40dd-8e49-bce1d691f0b2}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'reflection' := ''}
+FUNCTION_BLOCK PackML
+VAR_OUTPUT
+	IUnitMode: PACK_ML.IUnitMode;
+END_VAR
+VAR
+	{attribute 'instance-path' := ''}
+	{attribute 'noinit'}
+	instance_path: STRING(255);
+	_UnitMode: PACK_ML.UnitMode;
+	_StateTimer: TON;
+	_PackMLFirstScan: BOOL := TRUE;
+	_SeqMain: INT;
+	_SeqAborting: INT;
+	_SeqClearing: INT;
+	_SeqCompleting: INT;
+	_SeqHolding: INT;
+	_SeqResetting: INT;
+	_SeqStarting: INT;
+	_SeqStopping: INT;
+	_SeqSuspending: INT;
+	_SeqUnholding: INT;
+	_SeqUnSuspending: INT;
+END_VAR
+VAR CONSTANT
+	STATE_TIME: TIME := TIME#0ms;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//
+IF _PackMLFirstScan THEN
+	_PackMLFirstScan := FALSE;
+	M_SetPackMl();
+	IUnitMode := _UnitMode;
+END_IF
+
+//
+_StateTimer(PT:=STATE_TIME);
+
+//
+CASE _UnitMode.CurrentState OF
+	PACK_ML.State.Stopped:
+		M_Stopped();
+	PACK_ML.State.Aborted:
+		M_Aborted();
+	PACK_ML.State.Held:
+		M_Held();
+	PACK_ML.State.Suspended:
+		M_Suspended();
+	PACK_ML.State.Complete:
+		M_Complete();
+	PACK_ML.State.Idle:
+		M_Idle();
+	PACK_ML.State.Resetting:
+		M_Resetting();
+	PACK_ML.State.Starting:
+		M_Starting();
+	PACK_ML.State.Execute:
+		M_Execute();
+	PACK_ML.State.Suspending:
+		M_Suspending();
+	PACK_ML.State.UnSuspending:
+		M_UnSuspending();
+	PACK_ML.State.Holding:
+		M_Holding();
+	PACK_ML.State.UnHolding:
+		M_UnHolding();
+	PACK_ML.State.Completing:
+		M_Completing();
+	PACK_ML.State.Aborting:
+		M_Aborting();
+	PACK_ML.State.Stopping:
+		M_Stopping();
+	PACK_ML.State.Clearing:
+		M_Clearing();
+END_CASE]]></ST>
+    </Implementation>
+    <Method Name="M_Aborted" Id="{1e7d8b79-5c9e-4f82-bbe2-4b62642b61c9}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Aborted : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_SeqMain := 0;
+_SeqAborting := 0;
+_SeqClearing := 0;
+_SeqCompleting := 0;
+_SeqHolding := 0;
+_SeqResetting := 0;
+_SeqStarting := 0;
+_SeqStopping := 0;
+_SeqSuspending := 0;
+_SeqUnholding := 0;
+_SeqUnSuspending := 0;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Aborting" Id="{4ccdaadd-4d64-4496-9a92-f9d54027b3e6}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Aborting : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_StateTimer.IN:=TRUE;
+
+IF _StateTimer.Q THEN
+	_StateTimer.IN:=FALSE;
+	M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Clearing" Id="{d14434d0-0c21-4aeb-9ac0-ef015f60a253}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Clearing : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_StateTimer.IN:=TRUE;
+
+IF _StateTimer.Q THEN
+	_StateTimer.IN:=FALSE;
+	M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Complete" Id="{a8d6ce7e-80d8-47c9-bc1d-450f6d3deda6}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Complete : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(*_StateTimer.IN:=TRUE;
+
+IF _StateTimer.Q THEN
+	_StateTimer.IN:=FALSE;
+	M_StateComplete();
+END_IF*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Completing" Id="{cdb4b4d5-ad61-48d7-8221-bee63d28f73e}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Completing : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_StateTimer.IN:=TRUE;
+
+IF _StateTimer.Q THEN
+	_StateTimer.IN:=FALSE;
+	M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Execute" Id="{6b6aa070-27a5-40ba-b87d-289ef11ff0ed}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Execute : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Held" Id="{e494ada4-57c2-4376-ac70-cda2694b60af}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Held : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(*_StateTimer.IN:=TRUE;
+
+IF _StateTimer.Q THEN
+	_StateTimer.IN:=FALSE;
+	M_StateComplete();
+END_IF*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Holding" Id="{d0d2c3a0-c22e-4c6e-a69f-299695504931}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Holding : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_StateTimer.IN:=TRUE;
+
+IF _StateTimer.Q THEN
+	_StateTimer.IN:=FALSE;
+	M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Idle" Id="{f7cfba5a-2f6d-4bb5-a7c7-24bbbea33671}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Idle : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(*_StateTimer.IN:=TRUE;
+
+IF _StateTimer.Q THEN
+	_StateTimer.IN:=FALSE;
+	M_StateComplete();
+END_IF*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Resetting" Id="{265b97c8-7d33-479a-a049-5413df07bbc0}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Resetting : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_StateTimer.IN:=TRUE;
+
+IF _StateTimer.Q THEN
+	_StateTimer.IN:=FALSE;
+	M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetPackML" Id="{39ef47a6-266e-47c8-9b77-da56debc7f4c}">
+      <Declaration><![CDATA[METHOD PROTECTED M_SetPackML : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_UnitMode(sName := 'Normal Operation', 
+			dwSupportedStates := PACK_ML.State.All,
+			dwAllowsLeavingFromStates := PACK_ML.State.Stopped 
+											OR PACK_ML.State.Aborted 
+											OR PACK_ML.State.Idle, 
+			dwAllowsEnteringIntoStates := PACK_ML.State.Stopped
+											OR PACK_ML.State.Aborted 
+											OR PACK_ML.State.Idle, 
+			eInitialState := PACK_ML.State.Idle,
+			xActive := TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Starting" Id="{a57fa019-c6bc-4a1b-8d70-a7fd715b2a98}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Starting : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_StateTimer.IN:=TRUE;
+
+IF _StateTimer.Q THEN
+	_StateTimer.IN:=FALSE;
+	M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_StateComplete" Id="{92d33e74-f074-4855-bfb9-ab287dcecae4}">
+      <Declaration><![CDATA[METHOD PROTECTED M_StateComplete : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_UnitMode.ActingStateCompleted();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Stopped" Id="{9d740f8a-4f3e-49bb-91d2-33529475924d}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Stopped : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(*_StateTimer.IN:=TRUE;
+
+IF _StateTimer.Q THEN
+	_StateTimer.IN:=FALSE;
+	M_StateComplete();
+END_IF*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Stopping" Id="{2a358bb2-c1f6-4a20-a8a4-b1f9186be16b}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Stopping : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_StateTimer.IN:=TRUE;
+
+IF _StateTimer.Q THEN
+	_StateTimer.IN:=FALSE;
+	M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Suspended" Id="{612d50dc-ee92-4ff0-ae48-fb8d6eb3faaa}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Suspended : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[(*_StateTimer.IN:=TRUE;
+
+IF _StateTimer.Q THEN
+	_StateTimer.IN:=FALSE;
+	M_StateComplete();
+END_IF*)]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Suspending" Id="{257ce55a-16e1-49a8-a988-70ddadfd556f}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Suspending : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_StateTimer.IN:=TRUE;
+
+IF _StateTimer.Q THEN
+	_StateTimer.IN:=FALSE;
+	M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Unholding" Id="{dd9db8d0-121c-491d-90d0-c48a6d1a9c8c}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Unholding : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_StateTimer.IN:=TRUE;
+
+IF _StateTimer.Q THEN
+	_StateTimer.IN:=FALSE;
+	M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_UnSuspending" Id="{92d160d6-e55f-49b6-aa9a-db1194f2c385}">
+      <Declaration><![CDATA[METHOD PROTECTED M_UnSuspending : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_StateTimer.IN:=TRUE;
+
+IF _StateTimer.Q THEN
+	_StateTimer.IN:=FALSE;
+	M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

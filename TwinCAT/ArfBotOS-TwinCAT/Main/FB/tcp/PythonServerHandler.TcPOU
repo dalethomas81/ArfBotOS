@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PythonServerHandler" Id="{804277ad-245a-4a3c-a537-920a77a195da}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PythonServerHandler
+VAR_INPUT
+	sIpAddress: STRING(19) := '127.0.0.1';
+	uPort: UINT := 50011;
+END_VAR
+VAR
+	_Done: BOOL;
+	_Busy: BOOL;
+	_Error: BOOL;
+	_ErrorDescription: STRING;
+	_Response: STRING(255);
+	_WorkerUid: STRING;
+	_Execute: BOOL;
+	_Reset: BOOL := FALSE;
+	_ResetRtrig: R_TRIG;
+	_Step: INT;
+	_Command: STRING(255);
+	_ReadRecordLast: DINT;
+	_TcpClient: TcpClient;
+	_TimeoutTimer: TON := (PT := TIME#2m0s0ms);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[_TimeoutTimer(IN:=_Step > 0);
+IF _TimeoutTimer.Q THEN
+	_Step := 0;
+	_Error := TRUE;
+	_ErrorDescription := 'timed out waiting for response.';
+END_IF
+
+_ResetRtrig(CLK:=_Reset);
+IF _ResetRtrig.Q THEN
+	_Reset := FALSE;
+	_Step := 0;
+END_IF
+
+_Done := _Step = 0;
+_Busy := NOT _Done;
+
+CASE _Step OF
+	0: // IDLE
+		IF _Execute THEN
+			_Execute := FALSE;
+			IF _TcpClient._M_Write(Data:=_Command) THEN
+				_ReadRecordLast := _TcpClient.dRecordRead;
+				_Step := _Step + 1;
+			ELSE
+				_Step := 0;
+			END_IF
+		END_IF
+	
+	1: // WAIT
+		IF _TcpClient.dRecordRead <> _ReadRecordLast THEN
+			_ReadRecordLast := _TcpClient.dRecordRead;
+			IF find(_TcpClient.strRead, 'res: ') = 1 THEN
+				MemUtils.MemSet(
+					pbyBuffer:=ADR(_Response),
+					byValue:=0,
+					dwSize:=SIZEOF(_Response));
+				_Response := _TcpClient.strRead;
+				_Step := 0;
+				
+			ELSIF find(_TcpClient.strRead, 'worker uid: ') = 1 THEN
+				MemUtils.MemSet(
+					pbyBuffer:=ADR(_WorkerUid),
+					byValue:=0,
+					dwSize:=SIZEOF(_WorkerUid));
+				_WorkerUid := DELETE(STR:=_TcpClient.strRead, LEN:=12, POS:=1);
+				
+			ELSIF find(_TcpClient.strRead, 'command uid: ') = 1 THEN
+				MemUtils.MemSet(
+					pbyBuffer:=ADR(_WorkerUid),
+					byValue:=0,
+					dwSize:=SIZEOF(_WorkerUid));
+				_WorkerUid := DELETE(STR:=_TcpClient.strRead, LEN:=12, POS:=1);
+				
+			END_IF
+		END_IF
+		
+END_CASE
+
+_TcpClient(
+	bEnable:= TRUE, 
+	strIpAddress:= sIpAddress, 
+	uPort:= uPort,
+	bBusyWrite=> , 
+	bDoneWrite=> , 
+	bBusyRead=> , 
+	dRecordRead=> , 
+	strRead=> );]]></ST>
+    </Implementation>
+    <Method Name="_M_Execute" Id="{1d54f7e6-4fa6-4e0f-8c65-6228efc66fc8}">
+      <Declaration><![CDATA[METHOD PROTECTED _M_Execute : BOOL
+VAR_INPUT
+	Command: STRING(255) := '';
+	Timeout: UDINT := 60;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Execute := TRUE;
+_Command:=Command;
+_TimeoutTimer.PT := UDINT_TO_TIME(Timeout * 1000);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Cancel" Id="{75d216d3-a4d7-46fb-a956-69a865fd5623}">
+      <Declaration><![CDATA[METHOD M_Cancel : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF _WorkerUid <> '' THEN
+	M_Cancel := TRUE;
+	_Command := 'kill: ';
+	_Command := CONCAT(_Command, _WorkerUid);
+	_WorkerUid := ''; // lets make sure to forget this uid in case its used again for something else
+	_Step := 0;
+	_Execute := TRUE;
+	
+ELSE
+	M_Cancel := FALSE;
+	
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Reconnect" Id="{731c66e4-a086-48d9-9121-30312d5080f2}">
+      <Declaration><![CDATA[METHOD M_Reconnect : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_TcpClient._M_Reconnect();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Reset" Id="{8ff5eef9-28b5-4305-bebc-5e20570de374}">
+      <Declaration><![CDATA[METHOD M_Reset : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[_Reset := TRUE;
+_Error := FALSE;
+_ErrorDescription := '';]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="P_Busy" Id="{6d24286d-e3e1-41d7-ba8e-32c4455b87f8}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY P_Busy : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{bf685dda-43df-458e-b288-1b59122a9755}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_Busy := _Busy;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="P_Connected" Id="{b5d488ec-005f-42a5-ae5d-b73e6b84cd93}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY P_Connected : REFERENCE TO BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{e7feaa8b-05ed-4765-85f5-9783dfc80dd4}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_Connected REF= _TcpClient.bConnected;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="P_Done" Id="{708b755f-cbb5-42c0-aace-6ce4a67def1f}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY P_Done : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{092a5bf3-a7e4-4c01-9332-6ab1a4ae00f6}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_Done := _Done;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="P_Error" Id="{7b9a3d13-95e9-4410-9f3b-3b6399fa6fb2}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY P_Error : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{6150cb1e-fcb0-4904-9f43-e0581e5fef33}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_Error := _Error;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="P_ErrorDescription" Id="{f546bf4a-eaa1-4c6c-bb65-aa6dea22cd5e}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY P_ErrorDescription : STRING
+]]></Declaration>
+      <Get Name="Get" Id="{4363a4e2-f6e6-41e5-aefe-dedaa6d60373}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_ErrorDescription := _ErrorDescription;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="P_RawReadByteArray" Id="{8e5ce9ac-6249-45b2-9d47-43e3c6ae2b18}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY P_RawReadByteArray : ARRAY[0..254] OF BYTE
+]]></Declaration>
+      <Get Name="Get" Id="{497b63b0-7868-478a-8602-b444ff8357d4}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_RawReadByteArray := _TcpClient.byteArrayRead;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="P_RawReadString" Id="{1f6a1927-a95b-431e-8983-0d7d73e6caa0}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY P_RawReadString : REFERENCE TO STRING(255)
+]]></Declaration>
+      <Get Name="Get" Id="{8c2a817d-7e69-456f-8f66-182ccdff8f32}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_RawReadString REF= _TcpClient.strRead;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="P_RecordNumber" Id="{c9f5a0ac-c563-44aa-8bfd-7e4ab4c918a0}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY P_RecordNumber : DINT
+]]></Declaration>
+      <Get Name="Get" Id="{85c95122-eefa-4b3c-94e1-dec8689bfd54}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_RecordNumber := _TcpClient.dRecordRead;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="P_Response" Id="{bb2ba885-657e-4ce3-9507-abb02ea1162c}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY P_Response : STRING(255)
+]]></Declaration>
+      <Get Name="Get" Id="{8b52196c-7910-4a37-af0e-06a2b4d54d16}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_Response := _Response;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+  </POU>
+</TcPlcObject>

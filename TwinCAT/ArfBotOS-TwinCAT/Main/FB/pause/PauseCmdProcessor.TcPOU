@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PauseCmdProcessor" Id="{761241d9-a41a-4641-86b9-9b083b6be68b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PauseCmdProcessor EXTENDS Module
+VAR_INPUT
+	Command: STRING(GVL.COMMAND_LEN) := '';
+END_VAR
+VAR_OUTPUT
+	ElapsedTime: TIME;
+	RemainingTime: TIME;
+END_VAR
+VAR
+	_Timer: TON;
+	_Timer_IN: BOOL;
+	_Timer_PT: TIME;
+	_Timer_Q: BOOL;
+	_Timer_ET: TIME;
+	_UnitModeCurrentState: PACK_ML.State;
+	_ParsePauseCmd: ParsePauseCmd;
+END_VAR
+VAR CONSTANT
+	_STEP_DONE: INT := 1000;
+	_STEP_IDLE: INT := 0;
+	_STEP_COMMAND: INT := 10;
+	_STEP_TWO: INT := 20;
+	_STEP_ERR: INT := 30;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();
+
+// PackML state machine implementation
+_UnitModeCurrentState := SUPER^._UnitMode.CurrentState;
+
+//
+CASE SUPER^._SeqMain OF
+	
+    _STEP_DONE:
+ 		_Timer_IN := FALSE;
+		SUPER^._SeqMain := _STEP_IDLE;
+        
+    _STEP_IDLE:
+		// hang out here until called to run
+        
+    _STEP_COMMAND:
+		_ParsePauseCmd(Command:=Command);
+		_Timer_PT := _ParsePauseCmd.stCommand.PauseTime;
+ 		_Timer_IN := TRUE;
+		// next, please
+		SUPER^._SeqMain := _STEP_TWO;
+		
+	_STEP_TWO:
+		IF _Timer.Q THEN
+			// next, please
+			SUPER^._SeqMain := _STEP_DONE;
+		END_IF
+
+END_CASE
+
+_Timer(
+	IN:= _Timer_IN, 
+	PT:= _Timer_PT, 
+	Q=> _Timer_Q, 
+	ET=> _Timer_ET);
+	
+ElapsedTime := _Timer_ET;
+RemainingTime := _Timer_PT - _Timer_ET;]]></ST>
+    </Implementation>
+    <Method Name="M_Complete" Id="{2e5db4a5-a489-4506-8ef9-c0b206420609}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Complete : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// once complete, reset to get back to idle
+SUPER^._UnitMode.Reset();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Execute" Id="{3817a097-cfb2-4856-abd1-75f36cc5363a}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Execute : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// here we want to execute our commands/jobs/etc and set completed when done.
+IF SUPER^._SeqMain =_STEP_IDLE THEN
+	SUPER^.M_StateComplete();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Resetting" Id="{25f52b0f-f9c8-4c07-856d-4168885b692d}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Resetting : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SUPER^._SeqResetting OF
+	0:
+		_Timer_IN := FALSE;
+		_SeqResetting := _SeqResetting + 1;
+	1:
+		IF NOT _Timer_IN THEN
+			SUPER^.M_StateComplete();
+			_SeqResetting := 0;
+		END_IF
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetPackML" Id="{6e516751-a0ab-433e-9a68-8b911bf9a0fe}">
+      <Declaration><![CDATA[METHOD PROTECTED M_SetPackML : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[SUPER^._UnitMode(	sName := 'Pause Processor',
+				eInitialState := PACK_ML.State.Idle,
+				xActive := TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Starting" Id="{c161e731-b469-46d9-a74c-2490c081ccd5}">
+      <Declaration><![CDATA[METHOD PROTECTED M_Starting : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// here we want to clear things and get ready for the execute state
+// I can consider this the "INIT" state
+SUPER^._SeqMain := _STEP_COMMAND;
+SUPER^.M_StateComplete();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

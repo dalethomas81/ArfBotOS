@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_Trackpad" Id="{d80eab9f-545b-4809-8bfc-c7c96718771a}">
+    <Declaration><![CDATA[TYPE ST_Trackpad :
+STRUCT
+	ID: USINT;
+	Active: BOOL;
+	X: UINT;
+	Y: UINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

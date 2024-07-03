@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_Command" Id="{bc90f47c-5d1d-4a76-b85b-4fab785a8038}">
+    <Declaration><![CDATA[TYPE DUT_Command :
+STRUCT
+	CommandType: DUT_CommandType;
+	CommandString: STRING(GVL.COMMAND_LEN);
+	CommandComment: STRING;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

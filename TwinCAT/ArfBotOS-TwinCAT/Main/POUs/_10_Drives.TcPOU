@@ -1,0 +1,488 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="_10_Drives" Id="{3256c2f0-e8a8-4738-aa1a-395ceff25c60}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM _10_Drives
+VAR
+	rx_heartbeat: BOOL;
+	rx_en: BOOL;
+	rx_alarm: BOOL;
+	rx_heartbeat_lost: BOOL;
+	rx_j1_limit: BOOL;
+	rx_j2_limit: BOOL;
+	rx_j3_limit: BOOL;
+	rx_j4_limit: BOOL;
+	rx_j5_limit: BOOL;
+	rx_j6_limit: BOOL;
+	pabyTxBuffer AT %QB0: ARRAY[0..31] OF BYTE;
+	pabyRxBuffer AT %IB0: ARRAY[0..31] OF BYTE;
+	InitializeDrives: BOOL;
+	FirstScan: BOOL := TRUE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//
+IF FirstScan THEN
+	M_Init(FALSE);
+END_IF
+
+_M_Init();
+_M_HandleDriveIO();
+
+// do not put anything below this
+FirstScan := FALSE;]]></ST>
+    </Implementation>
+    <Method Name="_M_HandleDriveIO" Id="{1f105a3e-ae48-4de4-9cd3-fada08b1a872}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_HandleDriveIO
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//
+HeartbeatOn(in:=NOT HeartbeatOff.Q,PT:=HeartbeatPt);
+HeartbeatOff(in:=HeartbeatOn.Q,PT:=HeartbeatPt);
+
+// need to use system time to transfer faster than 1ms
+SysLTime := LTIME();
+IF SysLTime - SysLTimeLast > TransferTime THEN
+	SysLTimeLast := SysLTime;
+	TransferTrigger := NOT TransferTrigger;
+END_IF
+
+// handle outputs
+// index 0 is for system outputs
+pabyTxBuffer[0].0:=HeartbeatOn.Q; 	// heartbeat
+pabyTxBuffer[0].1:=GVL.PowerOn; 			// enable drives
+//pabyTxBuffer[0].2:=GVL.Homing;		// homing sts
+// pabyTxBuffer[0].3:=; //
+// pabyTxBuffer[0].4:=; //
+// pabyTxBuffer[0].5:=; //
+// pabyTxBuffer[0].6:=; //
+// pabyTxBuffer[0].7:=; //
+
+// index 1 through 24 is for velocity to drive
+bufferIdx := 1;
+FOR jointIdx := 0 TO 5 BY 1 DO
+	MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[bufferIdx]), 
+					pbySrc:=ADR(SetVelocity[jointIdx]), 
+					dwSize:=SIZEOF(SetVelocity[jointIdx]));
+	bufferIdx := bufferIdx + 4;
+END_FOR
+
+//pabyTxBuffer[25]:=;
+
+// index 26 will be for gpio byte (bits 0 through 7)
+pabyTxBuffer[26].0 := GVL.CmdIO.Output[0];
+pabyTxBuffer[26].1 := GVL.CmdIO.Output[1];
+pabyTxBuffer[26].2 := GVL.CmdIO.Output[2];
+pabyTxBuffer[26].3 := GVL.CmdIO.Output[3];
+//pabyTxBuffer[26].4 := ;
+//pabyTxBuffer[26].5 := ;
+//pabyTxBuffer[26].6 := ;
+//pabyTxBuffer[26].7 := ;
+
+//pabyTxBuffer[27]:=;
+//pabyTxBuffer[28]:=;
+//pabyTxBuffer[29]:=;
+
+// Tx buffer index 30 and 31 will be for crc
+// calc crc here
+TxCrc := F_Checksum(ADR(pabyTxBuffer), 30);
+// append calc crc to tx buffer
+MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[30]), 
+				pbySrc:=ADR(TxCrc), 
+				dwSize:=2);
+
+// read and write to i2c bus
+//IF TransferTrigger THEN
+	
+	(*I2C_master_Bus1.write(usiAddress:=i2caddress,
+					pbyBuffer:=ADR(pabyTxBuffer),
+					nBufferLen:=transferlentx);
+	I2C_master_Bus1.read(usiAddress:=i2caddress,
+					pbyBuffer:=ADR(pabyRxBuffer),
+					nBufferLen:=transferlenrx);*)
+	
+	//
+	(*IF Com1Seq = 0 THEN
+		IF hCom <> systypes2.RTS_INVALID_HANDLE THEN
+			Com1Seq := 2;
+		ELSE
+			Com1Seq := 1;
+		END_IF
+	END_IF*)
+	
+//END_IF
+
+(*ReadTimeoutTimer(IN:=Com1Seq=3, PT:=ReadTimeout);
+CASE Com1Seq OF
+	0:
+		//Com1Seq := Com1Seq + 1;
+	1:
+		hCom := SysComOpen(sPort:= ComPort , pResult:= ADR(Result));
+		IF hCom <> systypes2.RTS_INVALID_HANDLE THEN
+			// Configure the connection
+			csComSettings.byParity := SYS_NOPARITY;
+			csComSettings.byStopBits := SYS_ONESTOPBIT;
+			csComSettings.sPort := ComPort;
+			csComSettings.ulBaudrate := BaudRate;// SYS_COM_BAUDRATE.SYS_BR_115200;
+			csComSettings.ulBufferSize := 0;
+			csComSettings.ulTimeout := SYS_COM_TIMEOUT.SYS_NOWAIT;
+			Result := SysComSetSettings(hCom:= hCom, pSettings:= ADR(csComSettings) , pSettingsEx:= 0);
+			Com1Seq := Com1Seq + 1;
+		END_IF
+		
+	2:
+		// Write data
+		dwWritten := SysComWrite(
+								hCom:= hCom,
+								pbyBuffer:= ADR(pabyTxBuffer)+dwOffset,	
+								ulSize:= SIZEOF(pabyTxBuffer)-dwOffset,
+								ulTimeout:= 0,
+								pResult:= ADR(Result) );
+								
+		//dwOffset := dwOffset + dwWritten;
+		
+		//IF dwOffset >= SIZEOF(pabyTxBuffer) THEN
+			//Com1Seq := Com1Seq + 1;
+			//dwOffset := 0;
+		//END_IF
+		
+	//3: 
+		//
+		SysComPurge(hCom:=hCom);
+		
+		// Read data
+		dwRead := SysComRead(
+							hCom:= hCom,
+							pbyBuffer:= ADR(pabyRxBuffer),
+							ulSize:= SIZEOF(pabyRxBuffer),
+							ulTimeout:= 5,
+							pResult:= ADR(Result));
+		//IF dwRead >= SIZEOF(pabyRxBuffer) OR ReadTimeoutTimer.Q THEN
+			Com1Seq := 0;
+		//END_IF
+		
+	3:
+		//
+		SysComClose(hCom:=hCom);
+		Com1Seq := 0;
+	
+END_CASE*)
+
+// copy crc from rx buffer
+MEMUtils.MemCpy(pbyDest:=ADR(RxCrc), 
+				pbySrc:=ADR(pabyRxBuffer[30]), 
+				dwSize:=2);
+
+// compare calc crc with rx crc
+IF RxCrc = F_Checksum(ADR(pabyRxBuffer), 30) THEN
+	// handle inputs
+	// index 0 is for system inputs
+	rx_heartbeat 		:= pabyRxBuffer[0].0;
+	rx_en 				:= pabyRxBuffer[0].1;
+	//rx_alarm 			:= pabyRxBuffer[0].2; TODO uncomment this once drive alarm output is wired
+	//rx_ 				:= pabyRxBuffer[0].3;
+	//rx_ 				:= pabyRxBuffer[0].4;
+	//rx_ 				:= pabyRxBuffer[0].5;
+	//rx_ 				:= pabyRxBuffer[0].6;
+	rx_heartbeat_lost 	:= pabyRxBuffer[0].7;
+	
+	// index 1 through 24 is for encoder data from drive
+	bufferIdx := 1;
+	FOR jointIdx := 0 TO 5 BY 1 DO
+		MEMUtils.MemCpy(pbyDest:=ADR(EncPosition[jointIdx]), 
+						pbySrc:=ADR(pabyRxBuffer[bufferIdx]), 
+						dwSize:=SIZEOF(EncPosition[jointIdx]));
+		bufferIdx := bufferIdx + 4;
+	END_FOR
+	
+	// index 25 will be for limit switch inputs
+	rx_j1_limit := pabyRxBuffer[25].0;
+	rx_j2_limit := pabyRxBuffer[25].1;
+	rx_j3_limit := pabyRxBuffer[25].2;
+	rx_j4_limit := pabyRxBuffer[25].3;
+	rx_j5_limit := pabyRxBuffer[25].4;
+	rx_j6_limit := pabyRxBuffer[25].5;
+	//rx_ := pabyRxBuffer[25].6;
+	//rx_ := pabyRxBuffer[25].7;
+	
+	// index 26 will be for gpio byte (bits 0 through 7)
+	GVL.CmdIO.Input[0] := pabyRxBuffer[26].0;
+	GVL.CmdIO.Input[1] := pabyRxBuffer[26].1;
+	GVL.CmdIO.Input[2] := pabyRxBuffer[26].2;
+	GVL.CmdIO.Input[3] := pabyRxBuffer[26].3;
+	// := pabyRxBuffer[26].4;
+	// := pabyRxBuffer[26].5;
+	// := pabyRxBuffer[26].6;
+	// := pabyRxBuffer[26].7;
+	
+	//rx_ := pabyRxBuffer[27];
+	//rx_ := pabyRxBuffer[28];
+	//rx_ := pabyRxBuffer[29];
+	
+	// Rx buffer index 30 and 31 will be for crc
+ELSE
+	// increment crc mismatch counter
+	ChecksumMisCount := ChecksumMisCount + 1;
+END_IF
+
+// https://docs.google.com/spreadsheets/d/1S5TOxwbAx8pTMUdoWMnyC9WPfphhtUME/edit#gid=595805457
+SM_Drive_PosControl_J1.in.dwActPosition := DINT_TO_DWORD(EncPosition[0]);
+SM_Drive_PosControl_J2.in.dwActPosition := DINT_TO_DWORD(EncPosition[1]);
+SM_Drive_PosControl_J3.in.dwActPosition := DINT_TO_DWORD(EncPosition[2]);
+SM_Drive_PosControl_J4.in.dwActPosition := DINT_TO_DWORD(EncPosition[3]); // spec sheet is wrong. ratio is 16:1
+SM_Drive_PosControl_J5.in.dwActPosition := DINT_TO_DWORD(EncPosition[4]);
+SM_Drive_PosControl_J6.in.dwActPosition := DINT_TO_DWORD(EncPosition[5]); // spec sheet for ratio is wrong its not 19+38/187 it is 20+38/187
+
+//
+IF FirstScan THEN
+	SM_Drive_PosControl_J1.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J1.bBusy;
+	SM_Drive_PosControl_J2.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J2.bBusy;
+	SM_Drive_PosControl_J3.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J3.bBusy;
+	SM_Drive_PosControl_J4.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J4.bBusy;
+	SM_Drive_PosControl_J5.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J5.bBusy;
+	SM_Drive_PosControl_J6.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J6.bBusy;
+END_IF
+
+//
+SM_Drive_PosControl_J1.in.bLimitNeg := TRUE;
+SM_Drive_PosControl_J2.in.bLimitNeg := TRUE;
+SM_Drive_PosControl_J3.in.bLimitNeg := rx_j3_limit;
+SM_Drive_PosControl_J4.in.bLimitNeg := rx_j4_limit;
+SM_Drive_PosControl_J5.in.bLimitNeg := TRUE;
+SM_Drive_PosControl_J6.in.bLimitNeg := TRUE;
+
+SM_Drive_PosControl_J1.in.bLimitPos := rx_j1_limit;
+SM_Drive_PosControl_J2.in.bLimitPos := rx_j2_limit;
+SM_Drive_PosControl_J3.in.bLimitPos := TRUE;
+SM_Drive_PosControl_J4.in.bLimitPos := TRUE;
+SM_Drive_PosControl_J5.in.bLimitPos := rx_j5_limit;
+SM_Drive_PosControl_J6.in.bLimitPos := rx_j6_limit;
+
+SM_Drive_PosControl_J1.in.bDriveStartRealState := rx_en;
+SM_Drive_PosControl_J1.in.bRegulatorRealState := rx_en;
+SM_Drive_PosControl_J2.in.bDriveStartRealState := rx_en;
+SM_Drive_PosControl_J2.in.bRegulatorRealState := rx_en;
+SM_Drive_PosControl_J3.in.bDriveStartRealState := rx_en;
+SM_Drive_PosControl_J3.in.bRegulatorRealState := rx_en;
+SM_Drive_PosControl_J4.in.bDriveStartRealState := rx_en;
+SM_Drive_PosControl_J4.in.bRegulatorRealState := rx_en;
+SM_Drive_PosControl_J5.in.bDriveStartRealState := rx_en;
+SM_Drive_PosControl_J5.in.bRegulatorRealState := rx_en;
+SM_Drive_PosControl_J6.in.bDriveStartRealState := rx_en;
+SM_Drive_PosControl_J6.in.bRegulatorRealState := rx_en;
+
+// convert degrees per second to revolutions per second as that is what the drives take
+SetVelocity[0] := LREAL_TO_REAL(SM_Drive_PosControl_J1.out.fSetVelocity / 360.0); 
+SetVelocity[1] := LREAL_TO_REAL(SM_Drive_PosControl_J2.out.fSetVelocity / 360.0);
+SetVelocity[2] := LREAL_TO_REAL(SM_Drive_PosControl_J3.out.fSetVelocity / 360.0);
+SetVelocity[3] := LREAL_TO_REAL(SM_Drive_PosControl_J4.out.fSetVelocity / 360.0);
+SetVelocity[4] := LREAL_TO_REAL(SM_Drive_PosControl_J5.out.fSetVelocity / 360.0);
+SetVelocity[5] := LREAL_TO_REAL(SM_Drive_PosControl_J6.out.fSetVelocity / 360.0);
+
+FirstScan := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_Init" Id="{9031c730-57b8-48ca-b284-2770517ca6ee}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_Init
+VAR_STAT
+	_Step: INT;
+	_Done: BOOL;
+	_Success: BOOL;
+	_SMC_SetPosControlParams: ARRAY[0..5] OF SMC_SetPosControlParams;
+	_i: INT;
+	_j: INT;
+	_k: INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+CASE _Step OF
+	0:
+		IF InitializeDrives THEN
+			InitializeDrives := FALSE;
+			//
+			FOR _i:=GVL.POSCONT_ARR_BEG TO GVL.POSCONT_ARR_END BY 1 DO
+				_SMC_SetPosControlParams[_i].bExecute := FALSE;
+			END_FOR
+			//
+			IF NOT PersistentVars.Flags[GVL.INIT_DRV_IDX].Value THEN
+				FOR _i:=GVL.POSCONT_ARR_BEG TO GVL.POSCONT_ARR_END BY 1 DO
+					PersistentVars.PositionControllers[_i].fKp := 0.03;
+					PersistentVars.PositionControllers[_i].fPartVelPilotControl := 1.0; // 0-1
+					PersistentVars.PositionControllers[_i].fDeadTime := 2.0;
+					PersistentVars.PositionControllers[_i].fMaxPositionDiff := 0.0;
+					PersistentVars.PositionControllers[_i].fSWMaxVelocity := 30.0;
+					PersistentVars.PositionControllers[_i].fSWMaxAcceleration := 1000.0;
+					PersistentVars.PositionControllers[_i].fSWMaxDeceleration := 1000.0;
+					PersistentVars.PositionControllers[_i].fSWMaxJerk := 10000.0;
+				END_FOR
+			END_IF
+			// next, please
+			_Step := _Step + 1;
+		END_IF
+		
+	1: 
+		//
+		FOR _i:=GVL.POSCONT_ARR_BEG TO GVL.POSCONT_ARR_END BY 1 DO
+			_SMC_SetPosControlParams[_i].bExecute := TRUE;
+		END_FOR
+		// next, please
+		_Step := _Step + 1;
+		
+	2:
+		//
+		_Done := TRUE;
+		_Success := TRUE;
+		FOR _i:=GVL.POSCONT_ARR_BEG TO GVL.POSCONT_ARR_END BY 1 DO
+			IF _SMC_SetPosControlParams[_i].bError THEN
+				_Success := FALSE;
+				EXIT;
+			END_IF
+			IF NOT _SMC_SetPosControlParams[_i].bDone THEN
+				_Success := FALSE;
+				_Done := FALSE;
+				EXIT;
+			END_IF
+		END_FOR
+		IF _Done THEN
+			// next, please
+			_Step := _Step + 1;
+		END_IF
+		
+	3:
+		//
+		FOR _i:=GVL.POSCONT_ARR_BEG TO GVL.POSCONT_ARR_END BY 1 DO
+			_SMC_SetPosControlParams[_i].bExecute := FALSE;
+		END_FOR
+		//
+		IF _Success THEN
+			PersistentVars.Flags[GVL.INIT_DRV_IDX].Value := TRUE;
+		END_IF
+		// next, please
+		_Step := 0;
+		
+END_CASE
+
+//
+_SMC_SetPosControlParams[0](
+	Axis:= SM_Drive_PosControl_J1, 
+	bExecute:= , 
+	fKp:= PersistentVars.PositionControllers[0].fKp, 
+	fPartVelPilotControl:= PersistentVars.PositionControllers[0].fPartVelPilotControl, 
+	fDeadTime:= PersistentVars.PositionControllers[0].fDeadTime, 
+	fMaxPositionDiff:=PersistentVars.PositionControllers[0].fMaxPositionDiff, 
+	bDone=> , 
+	bError=> , 
+	ErrorID=> );
+IF _SMC_SetPosControlParams[0].bDone AND NOT _SMC_SetPosControlParams[0].bError THEN
+	SM_Drive_PosControl_J1.fSWMaxVelocity 			:= PersistentVars.PositionControllers[0].fSWMaxVelocity; // 30
+	SM_Drive_PosControl_J1.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[0].fSWMaxAcceleration; // 1000
+	SM_Drive_PosControl_J1.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[0].fSWMaxDeceleration; // 1000
+	SM_Drive_PosControl_J1.fSWMaxJerk 				:= PersistentVars.PositionControllers[0].fSWMaxJerk; // 10000
+END_IF
+
+//
+_SMC_SetPosControlParams[1](
+	Axis:= SM_Drive_PosControl_J2, 
+	bExecute:= , 
+	fKp:= PersistentVars.PositionControllers[1].fKp, 
+	fPartVelPilotControl:= PersistentVars.PositionControllers[1].fPartVelPilotControl, 
+	fDeadTime:= PersistentVars.PositionControllers[1].fDeadTime, 
+	fMaxPositionDiff:=PersistentVars.PositionControllers[1].fMaxPositionDiff, 
+	bDone=> , 
+	bError=> , 
+	ErrorID=> );
+IF _SMC_SetPosControlParams[1].bDone AND NOT _SMC_SetPosControlParams[1].bError THEN
+	SM_Drive_PosControl_J2.fSWMaxVelocity 			:= PersistentVars.PositionControllers[1].fSWMaxVelocity;
+	SM_Drive_PosControl_J2.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[1].fSWMaxAcceleration;
+	SM_Drive_PosControl_J2.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[1].fSWMaxDeceleration;
+	SM_Drive_PosControl_J2.fSWMaxJerk 				:= PersistentVars.PositionControllers[1].fSWMaxJerk;
+END_IF
+
+//
+_SMC_SetPosControlParams[2](
+	Axis:= SM_Drive_PosControl_J3, 
+	bExecute:= , 
+	fKp:= PersistentVars.PositionControllers[2].fKp, 
+	fPartVelPilotControl:= PersistentVars.PositionControllers[2].fPartVelPilotControl, 
+	fDeadTime:= PersistentVars.PositionControllers[2].fDeadTime, 
+	fMaxPositionDiff:=PersistentVars.PositionControllers[2].fMaxPositionDiff, 
+	bDone=> , 
+	bError=> , 
+	ErrorID=> );
+IF _SMC_SetPosControlParams[2].bDone AND NOT _SMC_SetPosControlParams[2].bError THEN
+	SM_Drive_PosControl_J3.fSWMaxVelocity 			:= PersistentVars.PositionControllers[2].fSWMaxVelocity;
+	SM_Drive_PosControl_J3.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[2].fSWMaxAcceleration;
+	SM_Drive_PosControl_J3.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[2].fSWMaxDeceleration;
+	SM_Drive_PosControl_J3.fSWMaxJerk 				:= PersistentVars.PositionControllers[2].fSWMaxJerk;
+END_IF
+
+//
+_SMC_SetPosControlParams[3](
+	Axis:= SM_Drive_PosControl_J4, 
+	bExecute:= , 
+	fKp:= PersistentVars.PositionControllers[3].fKp, 
+	fPartVelPilotControl:= PersistentVars.PositionControllers[3].fPartVelPilotControl, 
+	fDeadTime:= PersistentVars.PositionControllers[3].fDeadTime, 
+	fMaxPositionDiff:=PersistentVars.PositionControllers[3].fMaxPositionDiff, 
+	bDone=> , 
+	bError=> , 
+	ErrorID=> );
+IF _SMC_SetPosControlParams[3].bDone AND NOT _SMC_SetPosControlParams[3].bError THEN
+	SM_Drive_PosControl_J4.fSWMaxVelocity 			:= PersistentVars.PositionControllers[3].fSWMaxVelocity;
+	SM_Drive_PosControl_J4.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[3].fSWMaxAcceleration;
+	SM_Drive_PosControl_J4.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[3].fSWMaxDeceleration;
+	SM_Drive_PosControl_J4.fSWMaxJerk 				:= PersistentVars.PositionControllers[3].fSWMaxJerk;
+END_IF
+
+//
+_SMC_SetPosControlParams[4](
+	Axis:= SM_Drive_PosControl_J5, 
+	bExecute:= , 
+	fKp:= PersistentVars.PositionControllers[4].fKp, 
+	fPartVelPilotControl:= PersistentVars.PositionControllers[4].fPartVelPilotControl, 
+	fDeadTime:= PersistentVars.PositionControllers[4].fDeadTime, 
+	fMaxPositionDiff:=PersistentVars.PositionControllers[4].fMaxPositionDiff, 
+	bDone=> , 
+	bError=> , 
+	ErrorID=> );
+IF _SMC_SetPosControlParams[4].bDone AND NOT _SMC_SetPosControlParams[4].bError THEN
+	SM_Drive_PosControl_J5.fSWMaxVelocity 			:= PersistentVars.PositionControllers[4].fSWMaxVelocity;
+	SM_Drive_PosControl_J5.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[4].fSWMaxAcceleration;
+	SM_Drive_PosControl_J5.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[4].fSWMaxDeceleration;
+	SM_Drive_PosControl_J5.fSWMaxJerk 				:= PersistentVars.PositionControllers[4].fSWMaxJerk;
+END_IF
+
+//
+_SMC_SetPosControlParams[5](
+	Axis:= SM_Drive_PosControl_J6, 
+	bExecute:= , 
+	fKp:= PersistentVars.PositionControllers[5].fKp, 
+	fPartVelPilotControl:= PersistentVars.PositionControllers[5].fPartVelPilotControl, 
+	fDeadTime:= PersistentVars.PositionControllers[5].fDeadTime, 
+	fMaxPositionDiff:=PersistentVars.PositionControllers[5].fMaxPositionDiff, 
+	bDone=> , 
+	bError=> , 
+	ErrorID=> );
+IF _SMC_SetPosControlParams[5].bDone AND NOT _SMC_SetPosControlParams[5].bError THEN
+	SM_Drive_PosControl_J6.fSWMaxVelocity 			:= PersistentVars.PositionControllers[5].fSWMaxVelocity;
+	SM_Drive_PosControl_J6.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[5].fSWMaxAcceleration;
+	SM_Drive_PosControl_J6.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[5].fSWMaxDeceleration;
+	SM_Drive_PosControl_J6.fSWMaxJerk 				:= PersistentVars.PositionControllers[5].fSWMaxJerk;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_Init" Id="{aea6e4c3-5f5a-4eff-ae8a-2de4fd010b88}">
+      <Declaration><![CDATA[METHOD M_Init : BOOL
+VAR_INPUT
+	DefaultParameters: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF DefaultParameters THEN
+	PersistentVars.Flags[GVL.INIT_DRV_IDX].Value := FALSE;
+END_IF
+InitializeDrives := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

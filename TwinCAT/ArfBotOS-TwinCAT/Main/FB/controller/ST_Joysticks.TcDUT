@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ST_Joysticks" Id="{185991db-bd55-406a-a1ea-3602fc50608b}">
+    <Declaration><![CDATA[TYPE ST_Joysticks :
+STRUCT
+	Left: ST_Joystick;
+	Right: ST_Joystick;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

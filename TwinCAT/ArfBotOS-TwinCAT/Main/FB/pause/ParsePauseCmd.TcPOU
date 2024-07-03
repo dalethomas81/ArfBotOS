@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ParsePauseCmd" Id="{155e4e57-98df-4f34-8414-c9af1793585b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ParsePauseCmd
+VAR_INPUT
+	Command: STRING(GVL.COMMAND_LEN);
+END_VAR
+VAR_OUTPUT
+	stCommand: ST_PauseCmd;
+	Error: BOOL;
+	ErrorDescription: STRING;
+END_VAR
+VAR
+	_CmdParams: ARRAY[0..GVL.COMMAND_LEN] OF STRING;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// T#30s
+
+Error:=FALSE;
+ErrorDescription:='';
+
+// split command string into commands
+_CmdParams:=F_SplitCmd(Command:=Command);
+
+stCommand.PauseTime := STRING_TO_TIME(_CmdParams[0]);]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

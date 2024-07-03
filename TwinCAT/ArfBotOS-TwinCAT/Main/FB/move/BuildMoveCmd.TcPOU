@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="BuildMoveCmd" Id="{19554b2f-3ca2-4f8d-a4a2-2e3ac3119ec0}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION BuildMoveCmd : STRING(GVL.COMMAND_LEN)
+VAR_INPUT
+	stCommand: ST_MoveCmd;
+END_VAR
+VAR
+	_Command: STRING(GVL.COMMAND_LEN);
+END_VAR
+VAR CONSTANT
+	_Delimiter: STRING := ' ';
+	_MoveTypeD: STRING(3) := 'DIR';
+	_MoveTypeL: STRING(3) := 'LIN';
+	_MoveTypeC: STRING(3) := 'CIR';
+	_ChangeTypeA: STRING(3) := 'ABS';
+	_ChangeTypeR: STRING(3) := 'REL';
+	_CoordSystemAcs: STRING(3) := 'ACS';
+	_CoordSystemMcs: STRING(3) := 'MCS';
+	_CoordSystemPc1: STRING(3) := 'PC1';
+	_CoordSystemPc2: STRING(3) := 'PC2';
+	_CoordSystemTcs: STRING(3) := 'TCS';
+	_CoordSystemWcs: STRING(3) := 'WCS';
+	_CoordSystemIcs: STRING(3) := 'ICS';
+	_CoordTypeH: STRING(3) := 'LIT';
+	_CoordTypeV: STRING(3) := 'VAR';
+	_ArrayTypeS: STRING(3) := 'STO';
+	_ArrayTypeV: STRING(3) := 'VIS';
+	_ArrayTypeF: STRING(3) := 'FLG';
+	_CircleModeBor: STRING(3) := 'BOR';
+	_CircleModeCen: STRING(3) := 'CEN';
+	_CircleModeRad: STRING(3) := 'RAD';
+	_PathChoiceClw: STRING(3) := 'CLW';
+	_PathChoiceCcw: STRING(3) := 'CCW';
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// D is direct move. L is linear move. C is a circular move
+// R is relative position. A is absolute position
+// V is variable coordinated. H is a hardcoded coordinated
+// S is stored position array. V is vision register array.
+// D|L|C R|A Speed CoordSystem X0000.00 Y0000.00 Z0000.00 A0000.00 B0000.00 C0000.00 BOR|CEN|RAD CCW|CLW X0000.00 Y0000.00 Z0000.00 A0000.00 B0000.00 C0000.00
+// 'D A 010 MCS H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
+// 'C R 010 MCS H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00 BOR CLW H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
+// 'D A 010 MCS V S 025'
+// 'D A 010 MCS V V 033'
+// 'C R 010 MCS V S 002 BOR CLW V S 005'
+// 'C R 010 MCS V S 003 BOR CLW V V 006'
+// 'C R 010 MCS V S 015 BOR CLW H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
+// 'C R 010 MCS H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00 BOR CLW V V 022'
+
+//
+_Command := '';
+
+//
+CASE stCommand.MoveType OF
+	DUT_Command_MoveType.DirectMove:
+		F_AddElement(_Command, _Delimiter, _MoveTypeD);
+	DUT_Command_MoveType.LinearMove:
+		F_AddElement(_Command, _Delimiter, _MoveTypeL);
+	DUT_Command_MoveType.CircularMove:
+		F_AddElement(_Command, _Delimiter, _MoveTypeC);
+END_CASE
+
+//
+CASE stCommand.PositionType OF
+	DUT_Command_PositionType.AbsolutePosition:
+		F_AddElement(_Command, _Delimiter, _ChangeTypeA);
+	DUT_Command_PositionType.RelativePosition:
+		F_AddElement(_Command, _Delimiter, _ChangeTypeR);
+END_CASE
+
+//
+F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Speed));
+
+//
+CASE stCommand.CoordSystem OF
+	SMC_COORD_SYSTEM.ACS:
+		F_AddElement(_Command, _Delimiter, _CoordSystemAcs);
+	SMC_COORD_SYSTEM.MCS:
+		F_AddElement(_Command, _Delimiter, _CoordSystemMcs);
+	SMC_COORD_SYSTEM.PCS_1:
+		F_AddElement(_Command, _Delimiter, _CoordSystemPc1);
+	SMC_COORD_SYSTEM.PCS_2:
+		F_AddElement(_Command, _Delimiter, _CoordSystemPc2);
+	SMC_COORD_SYSTEM.TCS:
+		F_AddElement(_Command, _Delimiter, _CoordSystemTcs);
+	SMC_COORD_SYSTEM.WCS:
+		F_AddElement(_Command, _Delimiter, _CoordSystemWcs);
+	SMC_COORD_SYSTEM.ICS:
+		F_AddElement(_Command, _Delimiter, _CoordSystemIcs);
+END_CASE
+
+//
+CASE stCommand.CoordinateType OF
+	DUT_Command_CoordinateType.Literal:
+		F_AddElement(_Command, _Delimiter, _CoordTypeH);
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.CoordRef.X));
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.CoordRef.Y));
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.CoordRef.Z));
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.CoordRef.A));
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.CoordRef.B));
+		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.CoordRef.C));
+		
+	DUT_Command_CoordinateType.Variable:
+		F_AddElement(_Command, _Delimiter, _CoordTypeV);
+		CASE stCommand.ArrayType OF
+			DUT_Command_ArrayType.StoredPosition:
+				F_AddElement(_Command, _Delimiter, _ArrayTypeS);
+			DUT_Command_ArrayType.VisionRegister:
+				F_AddElement(_Command, _Delimiter, _ArrayTypeV);
+			DUT_Command_ArrayType.Flag:
+				// on damn
+		END_CASE
+		F_AddElement(_Command, _Delimiter, UDINT_TO_STRING(stCommand.ArrayIndex));
+		
+END_CASE
+
+// only add if move type is circle
+IF stCommand.MoveType = DUT_Command_MoveType.CircularMove THEN
+	//
+	CASE stCommand.CircleMode OF
+		SMC_CIRC_MODE.BORDER:
+			F_AddElement(_Command, _Delimiter, _CircleModeBor);
+		SMC_CIRC_MODE.CENTER:
+			F_AddElement(_Command, _Delimiter, _CircleModeCen);
+		SMC_CIRC_MODE.RADIUS:
+			F_AddElement(_Command, _Delimiter, _CircleModeRad);
+	END_CASE
+	//
+	CASE stCommand.PathChoice OF
+		MC_CIRC_PATHCHOICE.CLOCKWISE:
+			F_AddElement(_Command, _Delimiter, _PathChoiceClw);
+		MC_CIRC_PATHCHOICE.COUNTER_CLOCKWISE:
+			F_AddElement(_Command, _Delimiter, _PathChoiceCcw);
+	END_CASE
+	//
+	CASE stCommand.CircularCoordinateType OF
+		DUT_Command_CoordinateType.Literal:
+			F_AddElement(_Command, _Delimiter, _CoordTypeH);
+			F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.CoordRef2.X));
+			F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.CoordRef2.Y));
+			F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.CoordRef2.Z));
+			F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.CoordRef2.A));
+			F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.CoordRef2.B));
+			F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.CoordRef2.C));
+			
+		DUT_Command_CoordinateType.Variable:
+			F_AddElement(_Command, _Delimiter, _CoordTypeV);
+			CASE stCommand.CircularArrayType OF
+				DUT_Command_ArrayType.StoredPosition:
+					F_AddElement(_Command, _Delimiter, _ArrayTypeS);
+				DUT_Command_ArrayType.VisionRegister:
+					F_AddElement(_Command, _Delimiter, _ArrayTypeV);
+				DUT_Command_ArrayType.Flag:
+					// oh damn
+			END_CASE
+			F_AddElement(_Command, _Delimiter, UDINT_TO_STRING(stCommand.CircularArrayIndex));
+			
+	END_CASE
+
+END_IF
+
+// set function equal to command
+BuildMoveCmd := _Command;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>
