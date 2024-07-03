@@ -406,4 +406,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+
 Codesys/ArfBot.~u
+/TwinCAT/ArfBotOS-TwinCAT/_Boot
