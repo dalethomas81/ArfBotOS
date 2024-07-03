@@ -47,16 +47,16 @@ END_VAR
 // know. I am sure it is some minor overlooked detail somewhere in the code...
 
 
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.a1:=ArfBotAxisGroup.Trafo.a1;//AxisGroup.Trafo.a1;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.a2:=ArfBotAxisGroup.Trafo.a2;//AxisGroup.Trafo.a2;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.a3:=ArfBotAxisGroup.Trafo.a3;//AxisGroup.Trafo.a3;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.a1:=AxisGroup.Trafo.a1;//AxisGroup.Trafo.a1;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.a2:=AxisGroup.Trafo.a2;//AxisGroup.Trafo.a2;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.a3:=AxisGroup.Trafo.a3;//AxisGroup.Trafo.a3;
 // conflicting documentation on if d1 needs to be pos or neg. only works as negative otherwise trafo reports invalid configuration
 // https://product-help.schneider-electric.com/Machine%20Expert/V2.0/zh/codesys_softmotion/codesys_softmotion/modules/_sm_trafo_pou_six_dof_robot.html
 // https://forge.codesys.com/forge/talk/Motion/thread/16e1f0327f/
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.d1:=-ArfBotAxisGroup.Trafo.d1;//-AxisGroup.Trafo.d1;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.d3:=ArfBotAxisGroup.Trafo.d3;//AxisGroup.Trafo.d3;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.d4:=ArfBotAxisGroup.Trafo.d4;//AxisGroup.Trafo.d4;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.d6:=ArfBotAxisGroup.Trafo.d6;//AxisGroup.Trafo.d6;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.d1:=-AxisGroup.Trafo.d1;//-AxisGroup.Trafo.d1;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.d3:=AxisGroup.Trafo.d3;//AxisGroup.Trafo.d3;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.d4:=AxisGroup.Trafo.d4;//AxisGroup.Trafo.d4;
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.d6:=AxisGroup.Trafo.d6;//AxisGroup.Trafo.d6;
 _SMC_TrafoConfig_ArticulatedRobot_6DOF.q3_max_deg:=160; // TODO put magic numbers somewhere appropriate
 _SMC_TrafoConfig_ArticulatedRobot_6DOF.q3_min_deg:=-160; // TODO put magic numbers somewhere appropriate
 _SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_max_deg:=160; // TODO put magic numbers somewhere appropriate

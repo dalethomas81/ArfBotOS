@@ -315,16 +315,16 @@
     <Compile Include="FB\vision\VisionCmdProcessor.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GVLs\GVL.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GVLs\PersistentVars.TcGVL">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="PlcTask.TcTTO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\GVL.TcGVL">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\PersistentVars.TcGVL">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\_00_Main.TcPOU">
@@ -369,10 +369,54 @@
       <Namespace>CmpDynamicText</Namespace>
       <SystemLibrary>true</SystemLibrary>
     </PlaceholderReference>
+    <PlaceholderReference Include="MemoryUtils">
+      <DefaultResolution>MemoryUtils, * (3S - Smart Software Solutions GmbH)</DefaultResolution>
+      <Namespace>MEMUtils</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="NetBaseSrv">
+      <DefaultResolution>Net Base Services, * (3S - Smart Software Solutions GmbH)</DefaultResolution>
+      <Namespace>NBS</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="OMAC_PackML_State_Machine">
+      <DefaultResolution>OMAC PackML State Machine, * (3S - Smart Software Solutions GmbH)</DefaultResolution>
+      <Namespace>PACK_ML</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SM3_Basic">
+      <DefaultResolution>SM3_Basic, * (CODESYS)</DefaultResolution>
+      <Namespace>SM3_Basic</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SM3_CNC">
+      <DefaultResolution>SM3_CNC, * (CODESYS)</DefaultResolution>
+      <Namespace>SM3_CNC</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SM3_CNC_Visu">
+      <DefaultResolution>SM3_CNC_Visu, * (CODESYS)</DefaultResolution>
+      <Namespace>SM3_CNC_Visu</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SM3_Drive_PosControl">
+      <DefaultResolution>SM3_Drive_PosControl, * (CODESYS)</DefaultResolution>
+      <Namespace>SM3_Drive_PosControl</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SM3_Robotics">
+      <DefaultResolution>SM3_Robotics, * (CODESYS)</DefaultResolution>
+      <Namespace>SM3_Robotics</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SM3_Robotics_Visu">
+      <DefaultResolution>SM3_Robotics_Visu, * (CODESYS)</DefaultResolution>
+      <Namespace>SM3_Robotics_Visu</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="SM3_Transformation">
+      <DefaultResolution>SM3_Transformation, * (CODESYS)</DefaultResolution>
+      <Namespace>TRAFO</Namespace>
+    </PlaceholderReference>
     <PlaceholderReference Include="Standard">
       <DefaultResolution>Standard</DefaultResolution>
       <Namespace>Tc2_Standard</Namespace>
       <SystemLibrary>true</SystemLibrary>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_NcKinematicTransformation">
+      <DefaultResolution>Tc2_NcKinematicTransformation, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_NcKinematicTransformation</Namespace>
     </PlaceholderReference>
     <PlaceholderReference Include="Tc2_Standard">
       <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
@@ -411,6 +455,45 @@
   <ItemGroup>
     <PlaceholderResolution Include="CmpDynamicText">
       <Resolution>CmpDynamicText, 3.5.17.0 (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElem3DPath">
+      <Resolution>VisuElem3DPath, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElemCamDisplayer">
+      <Resolution>VisuElemCamDisplayer, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElemMeter">
+      <Resolution>VisuElemMeter, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElems">
+      <Resolution>VisuElems, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElemsAlarm">
+      <Resolution>VisuElemsAlarm, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElemsDateTime">
+      <Resolution>VisuElemsDateTime, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElemsSpecialControls">
+      <Resolution>VisuElemsSpecialControls, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElemsWinControls">
+      <Resolution>VisuElemsWinControls, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElemTextEditor">
+      <Resolution>VisuElemTextEditor, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElemTrace">
+      <Resolution>VisuElemTrace, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElemXYChart">
+      <Resolution>VisuElemXYChart, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuInputs">
+      <Resolution>VisuInputs, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuNativeControl">
+      <Resolution>VisuNativeControl, * (System)</Resolution>
     </PlaceholderResolution>
   </ItemGroup>
   <ProjectExtensions>

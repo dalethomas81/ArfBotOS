@@ -3,38 +3,49 @@
   <POU Name="_00_Main" Id="{f495872a-eb99-4e62-a111-ca71535b5152}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM _00_Main
 VAR
-	/// group handler for all motion fbs
+	
+	// group handler for all motion fbs
 	GroupHandler: FB_GroupHandler;
-	/// tuning
+	
+	// tuning
 	MoveDistance: LREAL := 5.0;
 	MoveRelative: ARRAY[0..5] OF MC_MoveRelative;
 	TuneStart: ARRAY[0..5] OF BOOL;
 	TraceStart: ARRAY[0..5] OF BOOL;
 	TraceStop: ARRAY[0..5] OF BOOL;
-	SetTuningMoveValues: BOOL := TRUE;
-	/// homing
+	SetTuningMoveValues: BOOL:=TRUE;
+	
+	// homing
 	ProcessHome: FB_HomingProcessor;
 	HomingStatusText: STRING(255);
-	/// jogging
+	
+	// jogging
 	ProcessJog: FB_JogProcessor;
 	JogStatusText: STRING(255);
-	ButtonTextIndex: INT := 0;
-	/// cnc
+	ButtonTextIndex: INT:=0;
+	
+	// cnc
 	VisuStruct3DControl_J: VisuStruct3DControl;
 	TrackPosition: PositionTracker;
-	/// program processor
+	
+	// program processor
 	ProcessPrograms: FB_ProgramProcessor;
 	ProcessCommand_ActiveProgram: UINT := 0;
-	ActiveCommandDetails: STRING(255) := '';
-	/// controller
+	ActiveCommandDetails: STRING(255):='';
+	
+	// controller
 	Controller: FB_Controller;
-	_i: INT;
-	_j: INT;
-	_k: INT;
-	BuildTests: BOOL := FALSE;
-	FirstScan: BOOL := TRUE;
-END_VAR
-]]></Declaration>
+	
+	//
+	in_stKinToPlc      AT %I*     : NCTOPLC_NCICHANNEL_REF;
+	out_stPlcToKin     AT %Q*     : PLCTONC_NCICHANNEL_REF;
+	
+	//
+	_i, _j, _k: INT;
+	BuildTests: BOOL:=FALSE;
+	FirstScan: BOOL:=TRUE;
+
+END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[{region "utility"}
 	GVL.ResetRtrig(CLK:=GVL.Reset);
