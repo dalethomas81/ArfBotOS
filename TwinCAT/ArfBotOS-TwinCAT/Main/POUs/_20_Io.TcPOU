@@ -4,6 +4,10 @@
     <Declaration><![CDATA[PROGRAM _20_Io
 VAR
 	PowerOn: BOOL;
+    
+    //
+	pabyTxBuffer AT %QB0 : ARRAY [0..31] OF BYTE;
+	pabyRxBuffer AT %IB0: ARRAY [0..31] OF BYTE;
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -24,22 +28,6 @@ VAR_INST
 	HeartbeatOn: TON;
 	HeartbeatOff: TON;
 	HeartbeatPt: TIME:=T#1000MS;
-	SysLTime, SysLTimeLast: LTIME;
-	// with 400kps i2c baudrate the clock period is 2.5us. 
-	// transferring 32 bytes at 8 bits per byte is a total of 256 bytes.
-	// disregarding other data in the message that brings the total time for one message to 640ms (256 * 2.5us).
-	// rounding up then we will set the transfer time to 2ms to allow adequate time for messaging (tx and rx).
-	TransferTime: LTIME:=LTIME#2MS;
-	TransferTrigger: BOOL;
-	
-	//
-	pabyTxBuffer: ARRAY [0..31] OF BYTE;
-	pabyRxBuffer: ARRAY [0..31] OF BYTE;
-	transferlentx: UDINT:=32;
-	transferlenrx: UDINT:=32;
-	
-	// TODO: configuration
-	i2caddress: USINT:=9;
 	
 	//
 	rx_heartbeat: BOOL;
@@ -51,13 +39,6 @@ END_VAR]]></Declaration>
         <ST><![CDATA[//
 HeartbeatOn(in:=NOT HeartbeatOff.Q,PT:=HeartbeatPt);
 HeartbeatOff(in:=HeartbeatOn.Q,PT:=HeartbeatPt);
-
-// need to use system time to transfer faster than 1ms
-SysLTime := LTIME();
-IF SysLTime - SysLTimeLast > TransferTime THEN
-	SysLTimeLast := SysLTime;
-	TransferTrigger := NOT TransferTrigger;
-END_IF
 
 // handle outputs
 // index 0 is for system outputs
@@ -93,16 +74,6 @@ TxCrc := F_Checksum(ADR(pabyTxBuffer), 30);
 MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[30]), 
 				pbySrc:=ADR(TxCrc), 
 				dwSize:=2);
-
-// read and write to i2c bus
-//IF TransferTrigger THEN
-	(*I2C_master_Bus2.write(usiAddress:=i2caddress,
-					pbyBuffer:=ADR(pabyTxBuffer),
-					nBufferLen:=transferlentx);
-	I2C_master_Bus2.read(usiAddress:=i2caddress,
-					pbyBuffer:=ADR(pabyRxBuffer),
-					nBufferLen:=transferlenrx);*)
-//END_IF
 
 // copy crc from rx buffer
 MEMUtils.MemCpy(pbyDest:=ADR(RxCrc), 

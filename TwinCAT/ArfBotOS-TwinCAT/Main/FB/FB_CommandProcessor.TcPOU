@@ -24,12 +24,10 @@ VAR
 	_CurrentCmdIdx: UINT;
 	_ProcessMoveCommand: MoveCmdProcessor;
 	_ProcessPauseCommand: PauseCmdProcessor;
-	//_ProcessInputCommand: InputCommandProcessor;
 	_ProcessOutputCommand: OutputCmdProcessor;
 	_ProcessorDoneRtrig: R_TRIG;
-    _ProcessVisionCommand: REFERENCE TO VisionCmdProcessor; // keep vision in separate task
+    _ProcessVisionCommand: VisionCmdProcessor;
 	_ProcessVarSetCommand: VarSetCmdProcessor;
-	_ProcessCncCommand: CncCmdProcessor;
 	_ProcessLogicCommand: LogicCmdProcessor;
 	_FirstScan: BOOL:=TRUE;
 END_VAR
@@ -42,11 +40,7 @@ VAR CONSTANT
 	_STEP_ERR:              INT := 0030;
 END_VAR]]></Declaration>
     <Implementation>
-      <ST><![CDATA[// keep this reference at the top in case we reference this somewhere else first
-// hint: originally this was an issue because of the done and reset bits being referenced first
-_ProcessVisionCommand REF= _40_Vision.ProcessVisionCommand;
-
-//
+      <ST><![CDATA[//
 SUPER^();
 
 //
@@ -95,10 +89,6 @@ IF _ProcessPauseCommand.Error THEN
 	SUPER^.M_Error(Description:=CONCAT('Pause Error: ', _ProcessPauseCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
-(*IF _ProcessInputCommand.Error THEN
-	SUPER^._M_Error(Description:=CONCAT('Input Error: ', _ProcessInputCommand.ErrorDescription));
-	StatusText:=SUPER^.ErrorDescription;
-END_IF*)
 IF _ProcessOutputCommand.Error THEN
 	SUPER^.M_Error(Description:=CONCAT('Output Error: ', _ProcessOutputCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
@@ -109,10 +99,6 @@ IF _ProcessVisionCommand.Error THEN
 END_IF
 IF _ProcessVarSetCommand.Error THEN
 	SUPER^.M_Error(Description:=CONCAT('Variable Error: ', _ProcessVarSetCommand.ErrorDescription));
-	StatusText:=SUPER^.ErrorDescription;
-END_IF
-IF _ProcessCncCommand.Error THEN
-	SUPER^.M_Error(Description:=CONCAT('CNC Error: ', _ProcessCncCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
 IF _ProcessLogicCommand.Error THEN
@@ -145,7 +131,6 @@ _ProcessPauseCommand(
 	ItfUnitMode=>, 
 	Error=> );
 
-//_ProcessInputCommand();
 _ProcessOutputCommand(
 	StoredPositions:= SUPER^.StoredPositions,
 	VisionRegisters:= SUPER^.VisionRegisters,
@@ -163,24 +148,6 @@ _ProcessVarSetCommand(
 	ItfUnitMode=>, 
 	Error=> , 
 	ErrorDescription=> );
-
-_ProcessCncCommand(
-	StoredPositions:= SUPER^.StoredPositions,
-	VisionRegisters:= SUPER^.VisionRegisters,
-	Flags:= SUPER^.Flags,
-	AxisGroup:= AxisGroup, 
-	SM3_Drive_PosControl_J1:=SM_Drive_PosControl_J1,
-	SM3_Drive_PosControl_J2:=SM_Drive_PosControl_J2,
-	SM3_Drive_PosControl_J3:=SM_Drive_PosControl_J3,
-	SM3_Drive_PosControl_J4:=SM_Drive_PosControl_J4,
-	SM3_Drive_PosControl_J5:=SM_Drive_PosControl_J5,
-	SM3_Drive_PosControl_J6:=SM_Drive_PosControl_J6,
-	GapVelocity:= , 
-	AvoidGaps:= , 
-	GapAccel:= , 
-	ItfUnitMode=>, 
-	Error=> , 
-	ErrorDescription=> );
 	
 _ProcessLogicCommand(
 	StoredPositions:= SUPER^.StoredPositions,
@@ -192,6 +159,18 @@ _ProcessLogicCommand(
 	Error=> , 
 	ErrorDescription=> , 
 	CmdIO:= CmdIO);
+
+_ProcessVisionCommand(
+	VisionSystemIpAddress:= PersistentVars.VisionSystemIpAddress,
+	VisionSystemPort:= PersistentVars.VisionSystemPort,
+	StoredPositions:= PersistentVars.StoredPositions,
+	VisionRegisters:= PersistentVars.VisionRegisters,
+	Flags:= PersistentVars.Flags,
+	LogicCmdIO:= CmdIO,
+	ItfUnitMode=> ,
+	Error=> , 
+	ErrorDescription=> , 
+	VisionStateText=> );
 	
 _FirstScan := FALSE;]]></ST>
     </Implementation>
@@ -203,11 +182,9 @@ _FirstScan := FALSE;]]></ST>
 	0:
 		_ProcessMoveCommand.M_Abort();
 		_ProcessPauseCommand.M_Abort();
-		//_ProcessInputCommand.M_Abort();
 		_ProcessOutputCommand.M_Abort();
 		_ProcessVisionCommand.M_Abort();
 		_ProcessVarSetCommand.M_Abort();
-		_ProcessCncCommand.M_Abort();
 		_ProcessLogicCommand.M_Abort();
 		_SeqAborting := _SeqAborting + 1;
 	1:
@@ -217,7 +194,6 @@ _FirstScan := FALSE;]]></ST>
 			AND _ProcessOutputCommand.PropCurrentState = PACK_ML.State.Aborted
 			AND _ProcessVisionCommand.PropCurrentState = PACK_ML.State.Aborted
 			AND _ProcessVarSetCommand.PropCurrentState = PACK_ML.State.Aborted
-			AND _ProcessCncCommand.PropCurrentState = PACK_ML.State.Aborted
 			AND _ProcessLogicCommand.PropCurrentState = PACK_ML.State.Aborted THEN
 				_SeqAborting := 0;
 				SUPER^.M_StateComplete();
@@ -361,13 +337,6 @@ CASE _SeqMain OF
 						_ProcessPauseCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
 						ItfActiveModule.M_Start();
 					
-					DUT_CommandType.InputCommand: //
-						StatusText := 'Input Command in Progress.';
-						//ActiveUnitMode := _ProcessInputCommand.ItfUnitMode;
-						//ItfActiveModule := _ProcessInputCommand;
-						//_ProcessInputCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
-						//ItfActiveModule.M_Start();
-					
 					DUT_CommandType.OutputCommand: //
 						StatusText := 'Output Command in Progress.';
 						ItfActiveProcessorUnitMode := _ProcessOutputCommand.ItfUnitMode;
@@ -387,13 +356,6 @@ CASE _SeqMain OF
 						ItfActiveProcessorUnitMode := _ProcessVarsetCommand.ItfUnitMode;
 						ItfActiveModule := _ProcessVarsetCommand;
 						_ProcessVarsetCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
-						ItfActiveModule.M_Start();
-					
-					DUT_CommandType.CncCommand: //
-						StatusText := 'CNC Command in Progress.';
-						ItfActiveProcessorUnitMode := _ProcessCncCommand.ItfUnitMode;
-						ItfActiveModule := _ProcessCncCommand;
-						_ProcessCncCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
 						ItfActiveModule.M_Start();
 					
 					DUT_CommandType.LogicCommand: //
@@ -478,17 +440,14 @@ _SeqResetting := 0;]]></ST>
 		_ProcessOutputCommand.M_Home();
 		_ProcessVisionCommand.M_Home();
 		_ProcessVarSetCommand.M_Home();
-		_ProcessCncCommand.M_Home();
 		_ProcessLogicCommand.M_Home();
 		_SeqResetting := _SeqResetting + 1;
 	1:
 		IF _ProcessMoveCommand.PropCurrentState = PACK_ML.State.Idle
 			AND _ProcessPauseCommand.PropCurrentState = PACK_ML.State.Idle 
-			//AND _ProcessInputCommand.PropCurrentState = PACK_ML.State.Idle
 			AND _ProcessOutputCommand.PropCurrentState = PACK_ML.State.Idle
 			AND _ProcessVisionCommand.PropCurrentState = PACK_ML.State.Idle
 			AND _ProcessVarSetCommand.PropCurrentState = PACK_ML.State.Idle
-			AND _ProcessCncCommand.PropCurrentState = PACK_ML.State.Idle
 			AND _ProcessLogicCommand.PropCurrentState = PACK_ML.State.Idle THEN
 				_SeqResetting := 0;
 				SUPER^.M_StateComplete();

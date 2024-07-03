@@ -10,6 +10,8 @@ VAR
 	rx_heartbeat_lost: BOOL;
 	rx_j1_limit, rx_j2_limit, rx_j3_limit: BOOL;
 	rx_j4_limit, rx_j5_limit, rx_j6_limit: BOOL;
+    
+    //
 	pabyTxBuffer AT %QB0 : ARRAY [0..31] OF BYTE;
 	pabyRxBuffer AT %IB0: ARRAY [0..31] OF BYTE;
 	
@@ -44,45 +46,12 @@ VAR_INST
 	HeartbeatOn: TON;
 	HeartbeatOff: TON;
 	HeartbeatPt: TIME:=T#1000MS;
-	SysLTime, SysLTimeLast: LTIME;
-	// with 400kps i2c baudrate the clock period is 2.5us. 
-	// transferring 32 bytes at 8 bits per byte is a total of 256 bytes.
-	// disregarding other data in the message that brings the total time for one message to 640ms (256 * 2.5us).
-	// rounding up then we will set the transfer time to 1ms to allow adequate time for messaging (tx and rx).
-	TransferTime: LTIME:=LTIME#2MS;
-	TransferTrigger: BOOL;
-	
-	//
-	transferlentx: UDINT:=32;
-	transferlenrx: UDINT:=32;
-	
-	// TODO: configuration
-	i2caddress: USINT:=8;
 	
 	//
 	SetVelocity: ARRAY [0..5] OF REAL;
 	EncPosition: ARRAY [0..5] OF DINT;
 	bufferIdx: INT;
 	jointIdx: INT;
-	
-	// https://forge.codesys.com/forge/talk/Runtime/thread/02ad361df1/
-	// https://faq.codesys.com/display/CDSFAQ/SysCom
-	// https://forge.codesys.com/prj/codesys-example/serial-com/home/Home/
-	// https://unix.stackexchange.com/questions/307390/what-is-the-difference-between-ttys0-ttyusb0-and-ttyama0-in-linux
-	// https://elinux.org/RPi_Serial_Connection
-	(*Com1Seq: UDINT;
-	hCom: systypes2.RTS_IEC_HANDLE := systypes2.RTS_INVALID_HANDLE;
-	Result: systypes2.RTS_IEC_RESULT;
-	csComSettings: COM_Settings;
-	dwWritten: UDINT;
-	dwRead: UDINT;
-	dwOffset: UDINT;
-	ReadTimeoutTimer: TON;
-	ReadTimeout: TIME:=T#100MS;
-	ComPort: SYS_COM_PORTS:=SYS_COMPORT1;
-	//BaudRate: DWORD := SYS_COM_BAUDRATE.SYS_BR_115200;
-	BaudRate: DWORD := 480000000;
-	RxDataIsValid: BOOL:=FALSE;*)
 	
 	FirstScan: BOOL:=TRUE;
 	
@@ -91,13 +60,6 @@ END_VAR]]></Declaration>
         <ST><![CDATA[//
 HeartbeatOn(in:=NOT HeartbeatOff.Q,PT:=HeartbeatPt);
 HeartbeatOff(in:=HeartbeatOn.Q,PT:=HeartbeatPt);
-
-// need to use system time to transfer faster than 1ms
-SysLTime := LTIME();
-IF SysLTime - SysLTimeLast > TransferTime THEN
-	SysLTimeLast := SysLTime;
-	TransferTrigger := NOT TransferTrigger;
-END_IF
 
 // handle outputs
 // index 0 is for system outputs
@@ -142,83 +104,6 @@ TxCrc := F_Checksum(ADR(pabyTxBuffer), 30);
 MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[30]), 
 				pbySrc:=ADR(TxCrc), 
 				dwSize:=2);
-
-// read and write to i2c bus
-//IF TransferTrigger THEN
-	
-	(*I2C_master_Bus1.write(usiAddress:=i2caddress,
-					pbyBuffer:=ADR(pabyTxBuffer),
-					nBufferLen:=transferlentx);
-	I2C_master_Bus1.read(usiAddress:=i2caddress,
-					pbyBuffer:=ADR(pabyRxBuffer),
-					nBufferLen:=transferlenrx);*)
-	
-	//
-	(*IF Com1Seq = 0 THEN
-		IF hCom <> systypes2.RTS_INVALID_HANDLE THEN
-			Com1Seq := 2;
-		ELSE
-			Com1Seq := 1;
-		END_IF
-	END_IF*)
-	
-//END_IF
-
-(*ReadTimeoutTimer(IN:=Com1Seq=3, PT:=ReadTimeout);
-CASE Com1Seq OF
-	0:
-		//Com1Seq := Com1Seq + 1;
-	1:
-		hCom := SysComOpen(sPort:= ComPort , pResult:= ADR(Result));
-		IF hCom <> systypes2.RTS_INVALID_HANDLE THEN
-			// Configure the connection
-			csComSettings.byParity := SYS_NOPARITY;
-			csComSettings.byStopBits := SYS_ONESTOPBIT;
-			csComSettings.sPort := ComPort;
-			csComSettings.ulBaudrate := BaudRate;// SYS_COM_BAUDRATE.SYS_BR_115200;
-			csComSettings.ulBufferSize := 0;
-			csComSettings.ulTimeout := SYS_COM_TIMEOUT.SYS_NOWAIT;
-			Result := SysComSetSettings(hCom:= hCom, pSettings:= ADR(csComSettings) , pSettingsEx:= 0);
-			Com1Seq := Com1Seq + 1;
-		END_IF
-		
-	2:
-		// Write data
-		dwWritten := SysComWrite(
-								hCom:= hCom,
-								pbyBuffer:= ADR(pabyTxBuffer)+dwOffset,	
-								ulSize:= SIZEOF(pabyTxBuffer)-dwOffset,
-								ulTimeout:= 0,
-								pResult:= ADR(Result) );
-								
-		//dwOffset := dwOffset + dwWritten;
-		
-		//IF dwOffset >= SIZEOF(pabyTxBuffer) THEN
-			//Com1Seq := Com1Seq + 1;
-			//dwOffset := 0;
-		//END_IF
-		
-	//3: 
-		//
-		SysComPurge(hCom:=hCom);
-		
-		// Read data
-		dwRead := SysComRead(
-							hCom:= hCom,
-							pbyBuffer:= ADR(pabyRxBuffer),
-							ulSize:= SIZEOF(pabyRxBuffer),
-							ulTimeout:= 5,
-							pResult:= ADR(Result));
-		//IF dwRead >= SIZEOF(pabyRxBuffer) OR ReadTimeoutTimer.Q THEN
-			Com1Seq := 0;
-		//END_IF
-		
-	3:
-		//
-		SysComClose(hCom:=hCom);
-		Com1Seq := 0;
-	
-END_CASE*)
 
 // copy crc from rx buffer
 MEMUtils.MemCpy(pbyDest:=ADR(RxCrc), 
@@ -278,7 +163,7 @@ ELSE
 END_IF
 
 // https://docs.google.com/spreadsheets/d/1S5TOxwbAx8pTMUdoWMnyC9WPfphhtUME/edit#gid=595805457
-SM_Drive_PosControl_J1.in.dwActPosition := DINT_TO_DWORD(EncPosition[0]);
+(*SM_Drive_PosControl_J1.in.dwActPosition := DINT_TO_DWORD(EncPosition[0]);
 SM_Drive_PosControl_J2.in.dwActPosition := DINT_TO_DWORD(EncPosition[1]);
 SM_Drive_PosControl_J3.in.dwActPosition := DINT_TO_DWORD(EncPosition[2]);
 SM_Drive_PosControl_J4.in.dwActPosition := DINT_TO_DWORD(EncPosition[3]); // spec sheet is wrong. ratio is 16:1
@@ -293,7 +178,7 @@ IF FirstScan THEN
 	SM_Drive_PosControl_J4.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J4.bBusy;
 	SM_Drive_PosControl_J5.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J5.bBusy;
 	SM_Drive_PosControl_J6.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J6.bBusy;
-END_IF
+END_IF*)
 
 //
 SM_Drive_PosControl_J1.in.bLimitNeg := TRUE;

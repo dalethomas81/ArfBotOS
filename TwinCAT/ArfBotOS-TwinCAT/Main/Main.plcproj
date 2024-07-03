@@ -48,27 +48,6 @@
     <Compile Include="DUTs\DUT_VisionRegister.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="FB\cnc\BuildCncCmd.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="FB\cnc\CncCmdProcessor.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="FB\cnc\CncPathPlanner.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="FB\cnc\OriConvention.TcTLO">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="FB\cnc\ParseCncCmd.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="FB\cnc\PositionTracker.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="FB\cnc\ST_CncCmd.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="FB\controller\E_ControllerBrightness.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -339,13 +318,9 @@
     <Compile Include="POUs\_30_Visu.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\_40_Vision.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="DUTs" />
-    <Folder Include="FB\cnc" />
     <Folder Include="FB\controller" />
     <Folder Include="FB\group" />
     <Folder Include="FB\home" />
@@ -414,6 +389,10 @@
       <Namespace>Tc2_Standard</Namespace>
       <SystemLibrary>true</SystemLibrary>
     </PlaceholderReference>
+    <PlaceholderReference Include="SysSocket">
+      <DefaultResolution>SysSocket, * (System)</DefaultResolution>
+      <Namespace>SysSocket</Namespace>
+    </PlaceholderReference>
     <PlaceholderReference Include="Tc2_NcKinematicTransformation">
       <DefaultResolution>Tc2_NcKinematicTransformation, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc2_NcKinematicTransformation</Namespace>
@@ -440,7 +419,6 @@
   <ItemGroup>
     <SubObject Include="_00_Main.M_BuildTests" />
     <SubObject Include="_00_Main.M_Init" />
-    <SubObject Include="_00_Main._M_Cnc" />
     <SubObject Include="_00_Main._M_Controller" />
     <SubObject Include="_00_Main._M_GroupHandler" />
     <SubObject Include="_00_Main._M_Homing" />

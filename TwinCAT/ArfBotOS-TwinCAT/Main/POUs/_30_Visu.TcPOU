@@ -54,11 +54,6 @@ VAR
 	VarSetCmdVisu: AddVarSetCmd_VISU_STRUCT;
 	
 	//
-	CncCmdParser : ParseCncCmd;
-	stCncCmd : ST_CncCmd;
-	CncCmdVisu: AddCncCmd_VISU_STRUCT;
-	
-	//
 	LogicCmdParser : ParseLogicCmd;
 	stLogicCmd : ST_LogicCmd;
 	LogicCmdVisu: AddLogicCmd_VISU_STRUCT;
@@ -66,7 +61,17 @@ VAR
 	//
 	CurrentVisu: STRING;
 	OpenDialog: VU.FbOpenDialogExtended;
+    
+    // vision
+   	HostName   : STRING;
+	VisionSystemUrl: STRING;
+	VisionOutputImageUrl: STRING;
+	VisionSystemIpAddress_Last: STRING(19);
 
+END_VAR
+
+VAR CONSTANT
+	LocalIpAddress: STRING(19):='127.0.0.1';
 END_VAR
 ]]></Declaration>
     <Implementation>
@@ -222,6 +227,23 @@ IF (OpenDialog.xExecute AND OpenDialog.xDone)
 	OR OpenDialog.xError 
 	THEN
 		OpenDialog.xExecute := FALSE;
+END_IF
+
+// used to show the output image on the visu
+// 'http://ArfBot:5000/output'
+IF  PersistentVars.VisionSystemIpAddress <> VisionSystemIpAddress_Last THEN
+	 VisionSystemIpAddress_Last :=  PersistentVars.VisionSystemIpAddress;
+	//
+	IF PersistentVars.VisionSystemIpAddress = LocalIpAddress THEN
+		// https://forge.codesys.com/forge/talk/Runtime/thread/61d60a9fb7/
+		SysSockGetHostName(szHostName:=HostName, diNameLen:=SIZEOF(HostName));
+		VisionSystemUrl := CONCAT('http://', HostName);
+	ELSE
+		VisionSystemUrl := CONCAT('http://', PersistentVars.VisionSystemIpAddress);
+	END_IF
+	//
+	VisionSystemUrl := CONCAT(VisionSystemUrl, ':5000');
+	VisionOutputImageUrl := CONCAT(VisionSystemUrl,'/output');
 END_IF]]></ST>
     </Implementation>
   </POU>

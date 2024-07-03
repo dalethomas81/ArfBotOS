@@ -24,10 +24,6 @@ VAR
 	JogStatusText: STRING(255);
 	ButtonTextIndex: INT:=0;
 	
-	// cnc
-	VisuStruct3DControl_J: VisuStruct3DControl;
-	TrackPosition: PositionTracker;
-	
 	// program processor
 	ProcessPrograms: FB_ProgramProcessor;
 	ProcessCommand_ActiveProgram: UINT := 0;
@@ -67,7 +63,6 @@ END_VAR]]></Declaration>
 	_M_GroupHandler();
     _M_Jogging();
     _M_Homing();
-    _M_Cnc();
     _M_Processor();
 	_M_Controller();
 	_M_Tuning();
@@ -76,25 +71,6 @@ END_VAR]]></Declaration>
 // do not put anything below this
 FirstScan:=FALSE;]]></ST>
     </Implementation>
-    <Method Name="_M_Cnc" Id="{c97e4850-18dd-453d-978c-2cd37627fe3a}">
-      <Declaration><![CDATA[METHOD PRIVATE _M_Cnc : BOOL
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[// track position of robot end effector to display on hmi
-TrackPosition(
-	AxisGroup:=ArfBotAxisGroup,
-	SM3_Drive_PosControl_J1:=SM_Drive_PosControl_J1,
-	SM3_Drive_PosControl_J2:=SM_Drive_PosControl_J2,
-	SM3_Drive_PosControl_J3:=SM_Drive_PosControl_J3,
-	SM3_Drive_PosControl_J4:=SM_Drive_PosControl_J4,
-	SM3_Drive_PosControl_J5:=SM_Drive_PosControl_J5,
-	SM3_Drive_PosControl_J6:=SM_Drive_PosControl_J6,
-	VisuStruct3DTrack=>,
-	Arm=>,
-	Elbow=>,
-	Hand=>);]]></ST>
-      </Implementation>
-    </Method>
     <Method Name="_M_Controller" Id="{111d7557-61e1-48d4-ad0f-48b4ac517334}">
       <Declaration><![CDATA[METHOD PRIVATE _M_Controller : BOOL
 VAR_INPUT
