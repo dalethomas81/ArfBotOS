@@ -3,13 +3,13 @@
   <POU Name="MoveCmdProcessor" Id="{8f4275d6-46b8-4b53-89d9-00cb2bff4683}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK MoveCmdProcessor EXTENDS Module
 VAR_INPUT
-	Velocity: LREAL := 1000.0;
-	VelFactor: LREAL := 1.0;
-	Acceleration: LREAL := 1000.0;
-	AccFactor: LREAL := 0.5;
-	Jerk: LREAL := 1000.0;
-	JerkFactor: LREAL := 0.5;
-	Command: STRING(GVL.COMMAND_LEN) := '';
+	Velocity: LREAL:=1000.0;
+	VelFactor: LREAL:=1.0;
+	Acceleration: LREAL:=1000.0;
+	AccFactor: LREAL:=0.5;
+	Jerk: LREAL:=1000.0;
+	JerkFactor: LREAL:=0.5;
+	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
 	AxisGroup: AXIS_GROUP_REF_SM3;
@@ -27,37 +27,40 @@ VAR
 	_SequenceMoveLinearAbsolute: INT;
 	_SequenceMoveLinearRelative: INT;
 	_MC_GroupHalt: MC_GroupHalt;
+	
 	_MC_MoveCircularAbsolute: MC_MoveCircularAbsolute;
 	_MC_MoveCircularRelative: MC_MoveCircularRelative;
 	_MC_MoveDirectAbsolute: MC_MoveDirectAbsolute;
 	_MC_MoveDirectRelative: MC_MoveDirectRelative;
 	_MC_MoveLinearAbsolute: MC_MoveLinearAbsolute;
 	_MC_MoveLinearRelative: MC_MoveLinearRelative;
+	
 	_UnitModeCurrentState: PACK_ML.State;
 	_MoveCommandParser: ParseMoveCmd;
 	_PosRef: SMC_POS_REF;
 	_PosRef2: SMC_POS_REF;
+	
 END_VAR
 VAR CONSTANT
-	_STEP_DONE: INT := 1000;
-	_STEP_IDLE: INT := 0;
-	_STEP_COMMAND: INT := 20;
-	_STEP_GROUP_POWER_ON: INT := 22;
-	_STEP_WAIT_POWER_ON: INT := 24;
-	_STEP_GROUP_ENABLE: INT := 30;
-	_STEP_WAIT_ENABLE: INT := 35;
-	_STEP_READ_POSITION: INT := 40;
-	_STEP_WAIT_POSITION: INT := 50;
-	_STEP_SET_KINEMATICS: INT := 60;
-	_STEP_WAIT_KINEMATICS: INT := 70;
-	_STEP_SET_COORD_TRANS: INT := 71;
-	_STEP_WAIT_COORD_TRANS: INT := 72;
-	_STEP_MOVE_TYPE: INT := 80;
-	_STEP_WAIT_MOVE: INT := 90;
-	_STEP_GROUP_DISABLE: INT := 100;
-	_STEP_WAIT_DISABLE: INT := 110;
-	_STEP_GROUP_POWER_OFF: INT := 120;
-	_STEP_ERR: INT := 9999;
+	_STEP_DONE: 				INT := 1000;
+	_STEP_IDLE: 				INT := 0000;
+	_STEP_COMMAND: 				INT := 0020;
+	_STEP_GROUP_POWER_ON: 		INT := 0022;
+	_STEP_WAIT_POWER_ON: 		INT := 0024;
+	_STEP_GROUP_ENABLE: 		INT := 0030;
+	_STEP_WAIT_ENABLE: 			INT := 0035;
+	_STEP_READ_POSITION: 		INT := 0040;
+	_STEP_WAIT_POSITION: 		INT := 0050;
+	_STEP_SET_KINEMATICS: 		INT := 0060;
+	_STEP_WAIT_KINEMATICS: 		INT := 0070;
+	_STEP_SET_COORD_TRANS:		INT := 0071;
+	_STEP_WAIT_COORD_TRANS:		INT := 0072;
+	_STEP_MOVE_TYPE:			INT := 0080;
+	_STEP_WAIT_MOVE: 			INT := 0090;
+	_STEP_GROUP_DISABLE: 		INT := 0100;
+	_STEP_WAIT_DISABLE: 		INT := 0110;
+	_STEP_GROUP_POWER_OFF: 		INT := 0120;
+	_STEP_ERR: 					INT := 9999;
 END_VAR
 ]]></Declaration>
     <Implementation>

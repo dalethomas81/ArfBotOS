@@ -2,7 +2,8 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="_30_Visu" Id="{9462f316-faa5-42b7-be46-708f3ef2e1f0}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM _30_Visu
-VAR
+VAR	
+	
 	SelectedProgramNumber: INT;
 	SelectedRecipeRowIndex: INT;
 	RecipeRowSelected: BOOL;
@@ -14,39 +15,58 @@ VAR
 	CopiedCommandString: STRING(GVL.COMMAND_LEN);
 	CopiedCommandComment: STRING;
 	PasteCommand: BOOL;
-	_i: INT;
-	_j: INT;
-	_k: INT;
+	
+	_i,_j,_k: INT;
+	
 	SetStoredPositionAsCurrent: BOOL;
 	SelectedStoredPosition: UINT;
 	SetVisionRegisterAsCurrent: BOOL;
 	SelectedVisionRegister: UINT;
 	SelectedFlag: UINT;
+	
+	//
 	TeachPosition: BOOL;
 	stTeachPosition: ST_MoveCmd;
+	
+	//
 	MoveCmdParser: ParseMoveCmd;
 	stMoveCmd: ST_MoveCmd;
 	MoveCmdVisu: AddMoveCmd_VISU_STRUCT;
+	
+	//
 	OutputCmdParser: ParseOutputCmd;
 	stOutputCmd: ST_OutputCmd;
 	OutputCmdVisu: AddOutputCmd_VISU_STRUCT;
+	
+	//
 	PauseCmdParser: ParsePauseCmd;
 	stPauseCmd: ST_PauseCmd;
 	PauseCmdVisu: AddPauseCmd_VISU_STRUCT;
-	VisionCmdParser: ParseVisionCmd;
-	stVisionCmd: ST_VisionCmd;
+	
+	//
+	VisionCmdParser : ParseVisionCmd;
+	stVisionCmd : ST_VisionCmd;
 	VisionCmdVisu: AddVisionCmd_VISU_STRUCT;
-	VarSetCmdParser: ParseVarSetCmd;
-	stVarSetCmd: ST_VarSetCmd;
+	
+	//
+	VarSetCmdParser : ParseVarSetCmd;
+	stVarSetCmd : ST_VarSetCmd;
 	VarSetCmdVisu: AddVarSetCmd_VISU_STRUCT;
-	CncCmdParser: ParseCncCmd;
-	stCncCmd: ST_CncCmd;
+	
+	//
+	CncCmdParser : ParseCncCmd;
+	stCncCmd : ST_CncCmd;
 	CncCmdVisu: AddCncCmd_VISU_STRUCT;
-	LogicCmdParser: ParseLogicCmd;
-	stLogicCmd: ST_LogicCmd;
+	
+	//
+	LogicCmdParser : ParseLogicCmd;
+	stLogicCmd : ST_LogicCmd;
 	LogicCmdVisu: AddLogicCmd_VISU_STRUCT;
+	
+	//
 	CurrentVisu: STRING;
 	OpenDialog: VU.FbOpenDialogExtended;
+
 END_VAR
 ]]></Declaration>
     <Implementation>

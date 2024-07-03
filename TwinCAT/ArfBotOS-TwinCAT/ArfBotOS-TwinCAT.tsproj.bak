@@ -18,6 +18,18 @@
 				<Task Id="3" Priority="20" CycleTime="100000" AmsPort="350" AdtTasks="true">
 					<Name>PlcTask</Name>
 				</Task>
+				<Task Id="4" Priority="2" CycleTime="10000" AmsPort="351" AdtTasks="true">
+					<Name>MainTask</Name>
+				</Task>
+				<Task Id="5" Priority="3" CycleTime="10000" AmsPort="352" AdtTasks="true">
+					<Name>SoftMotion_PlanningTask</Name>
+				</Task>
+				<Task Id="6" Priority="31" CycleTime="10000" AmsPort="353" DisableFpExceptions="true" AdtTasks="true">
+					<Name>VISU_TASK</Name>
+				</Task>
+				<Task Id="7" Priority="1" CycleTime="40000" AmsPort="354" AdtTasks="true">
+					<Name>EtherCAT_Task</Name>
+				</Task>
 			</Tasks>
 		</System>
 		<Plc>

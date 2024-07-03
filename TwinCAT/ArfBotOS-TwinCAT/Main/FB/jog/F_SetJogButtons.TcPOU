@@ -6,6 +6,8 @@ VAR_INPUT
 	CoordinateSystem: SMC_COORD_SYSTEM;
 	ABC_as_ACS: BOOL;
 END_VAR
+VAR
+END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[CASE CoordinateSystem OF

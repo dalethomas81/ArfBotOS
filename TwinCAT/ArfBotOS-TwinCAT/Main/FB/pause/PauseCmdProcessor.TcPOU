@@ -3,7 +3,7 @@
   <POU Name="PauseCmdProcessor" Id="{761241d9-a41a-4641-86b9-9b083b6be68b}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK PauseCmdProcessor EXTENDS Module
 VAR_INPUT
-	Command: STRING(GVL.COMMAND_LEN) := '';
+	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_OUTPUT
 	ElapsedTime: TIME;
@@ -15,17 +15,18 @@ VAR
 	_Timer_PT: TIME;
 	_Timer_Q: BOOL;
 	_Timer_ET: TIME;
+END_VAR
+VAR
 	_UnitModeCurrentState: PACK_ML.State;
 	_ParsePauseCmd: ParsePauseCmd;
 END_VAR
 VAR CONSTANT
-	_STEP_DONE: INT := 1000;
-	_STEP_IDLE: INT := 0;
-	_STEP_COMMAND: INT := 10;
-	_STEP_TWO: INT := 20;
-	_STEP_ERR: INT := 30;
-END_VAR
-]]></Declaration>
+	_STEP_DONE: 		INT := 1000;
+	_STEP_IDLE: 		INT := 0000;
+	_STEP_COMMAND: 		INT := 0010;
+	_STEP_TWO: 			INT := 0020;
+	_STEP_ERR: 			INT := 0030;
+END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[SUPER^();
 

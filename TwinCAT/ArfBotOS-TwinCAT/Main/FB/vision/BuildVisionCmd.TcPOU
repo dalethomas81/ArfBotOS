@@ -3,19 +3,16 @@
   <POU Name="BuildVisionCmd" Id="{580bcf70-fae5-407f-8446-aaa0a1365ba4}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION BuildVisionCmd : STRING(GVL.COMMAND_LEN)
 VAR_INPUT
-	stCommand: ST_VisionCmd;
+    stCommand: ST_VisionCmd;
 END_VAR
 VAR
-	_Command: STRING(GVL.COMMAND_LEN);
+    _Command: STRING(GVL.COMMAND_LEN);
 END_VAR
 VAR CONSTANT
-	_Delimiter: STRING := ' ';
-	/// calibrate vision
-	_CommandTypeCal: STRING(3) := 'CAL';
-	/// acquire (capture) image
-	_CommandTypeAcq: STRING(3) := 'ACQ';
-	/// locate part
-	_CommandTypeLoc: STRING(3) := 'LOC';
+	_Delimiter: STRING:=' ';
+	_CommandTypeCal: STRING(3):='CAL'; // calibrate vision
+	_CommandTypeAcq: STRING(3):='ACQ'; // acquire (capture) image
+	_CommandTypeLoc: STRING(3):='LOC'; // locate part
 END_VAR
 ]]></Declaration>
     <Implementation>

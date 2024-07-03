@@ -6,7 +6,7 @@ VAR_INPUT
 	GapVelocity: LREAL := 10;
 	AvoidGaps: BOOL := TRUE;
 	GapAccel: LREAL := 500.0;
-	Command: STRING(GVL.COMMAND_LEN) := '';
+	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
 	AxisGroup: AXIS_GROUP_REF_SM3;
@@ -16,6 +16,8 @@ VAR_IN_OUT
 	SM3_Drive_PosControl_J4: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
 	SM3_Drive_PosControl_J5: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
 	SM3_Drive_PosControl_J6: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+END_VAR
+VAR_OUTPUT
 END_VAR
 VAR
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
@@ -32,18 +34,21 @@ VAR
 	_ErrorRtrig: R_TRIG;
 END_VAR
 VAR CONSTANT
-	wVarCount: WORD := 1;
+	wVarCount : WORD := 1;
 END_VAR
 VAR
-	lrR1: LREAL := 30;
-	astVar: ARRAY[0..wVarCount] OF SMC_SingleVar := [(strVarName := 'R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
-	stVarList: SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
+	lrR1 : LREAL:=30;
+	
+	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
+			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
+			
+	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
 END_VAR
 VAR CONSTANT
-	_STEP_DONE: INT := 1000;
-	_STEP_IDLE: INT := 0;
-	_STEP_COMMAND: INT := 10;
-	_STEP_ONE: INT := 20;
+	_STEP_DONE: 		INT := 1000;
+	_STEP_IDLE: 		INT := 0000;
+	_STEP_COMMAND: 		INT := 0010;
+	_STEP_ONE: 			INT := 0020;
 END_VAR
 VAR
 	_UnitModeCurrentState: PACK_ML.State;

@@ -9,16 +9,16 @@ VAR
 	_Command: STRING(GVL.COMMAND_LEN);
 END_VAR
 VAR CONSTANT
-	_Delimiter: STRING := ' ';
-	_AddString: STRING(3) := 'ADD';
-	_XYZString: STRING(3) := 'XYZ';
-	_ZYXString: STRING(3) := 'ZYX';
-	_ZYZString: STRING(3) := 'ZYZ';
-	_LiteralString: STRING(3) := 'LIT';
-	_VariableString: STRING(3) := 'VAR';
-	_StoredPositionsString: STRING(3) := 'STO';
-	_VisionRegistersString: STRING(3) := 'VIS';
-	_FlagsString: STRING(3) := 'FLG';
+	_Delimiter: STRING:=' ';
+	_AddString: STRING(3):='ADD';
+	_XYZString: STRING(3):='XYZ';
+	_ZYXString: STRING(3):='ZYX';
+	_ZYZString: STRING(3):='ZYZ';
+	_LiteralString: STRING(3):='LIT';
+	_VariableString: STRING(3):='VAR';
+	_StoredPositionsString: STRING(3):='STO';
+	_VisionRegistersString: STRING(3):='VIS';
+	_FlagsString: STRING(3):='FLG';
 END_VAR
 ]]></Declaration>
     <Implementation>

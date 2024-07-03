@@ -7,37 +7,36 @@ VAR_INPUT
 END_VAR
 VAR_OUTPUT
 	stCommand: ST_MoveCmd;
-	Error: BOOL := FALSE;
-	ErrorDescription: STRING := '';
+	Error: BOOL:= FALSE;
+	ErrorDescription: STRING:='';
 END_VAR
 VAR
-	_CmdParams: ARRAY[0..GVL.COMMAND_LEN] OF STRING;
+	_CmdParams: ARRAY [0..GVL.COMMAND_LEN] OF STRING;
 END_VAR
 VAR CONSTANT
-	_MoveTypeD: STRING(3) := 'DIR';
-	_MoveTypeL: STRING(3) := 'LIN';
-	_MoveTypeC: STRING(3) := 'CIR';
-	_ChangeTypeA: STRING(3) := 'ABS';
-	_ChangeTypeR: STRING(3) := 'REL';
-	_CoordSystemAcs: STRING(3) := 'ACS';
-	_CoordSystemMcs: STRING(3) := 'MCS';
-	_CoordSystemPc1: STRING(3) := 'PC1';
-	_CoordSystemPc2: STRING(3) := 'PC2';
-	_CoordSystemTcs: STRING(3) := 'TCS';
-	_CoordSystemWcs: STRING(3) := 'WCS';
-	_CoordSystemIcs: STRING(3) := 'ICS';
-	_CoordTypeH: STRING(3) := 'LIT';
-	_CoordTypeV: STRING(3) := 'VAR';
-	_ArrayTypeS: STRING(3) := 'STO';
-	_ArrayTypeV: STRING(3) := 'VIS';
-	_ArrayTypeF: STRING(3) := 'FLG';
-	_CircleModeBor: STRING(3) := 'BOR';
-	_CircleModeCen: STRING(3) := 'CEN';
-	_CircleModeRad: STRING(3) := 'RAD';
-	_PathChoiceClw: STRING(3) := 'CLW';
-	_PathChoiceCcw: STRING(3) := 'CCW';
-END_VAR
-]]></Declaration>
+	_MoveTypeD: STRING(3):='DIR';
+	_MoveTypeL: STRING(3):='LIN';
+	_MoveTypeC: STRING(3):='CIR';
+	_ChangeTypeA: STRING(3):='ABS';
+	_ChangeTypeR: STRING(3):='REL';
+	_CoordSystemAcs: STRING(3):='ACS';
+	_CoordSystemMcs: STRING(3):='MCS';
+	_CoordSystemPc1: STRING(3):='PC1';
+	_CoordSystemPc2: STRING(3):='PC2';
+	_CoordSystemTcs: STRING(3):='TCS';
+	_CoordSystemWcs: STRING(3):='WCS';
+	_CoordSystemIcs: STRING(3):='ICS';
+	_CoordTypeH: STRING(3):='LIT';
+	_CoordTypeV: STRING(3):='VAR';
+	_ArrayTypeS: STRING(3):='STO';
+	_ArrayTypeV: STRING(3):='VIS';
+	_ArrayTypeF: STRING(3):='FLG';
+	_CircleModeBor: STRING(3):='BOR';
+	_CircleModeCen: STRING(3):='CEN';
+	_CircleModeRad: STRING(3):='RAD';
+	_PathChoiceClw: STRING(3):='CLW';
+	_PathChoiceCcw: STRING(3):='CCW';
+END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[// D is direct move. L is linear move. C is a circular move
 // R is relative position. A is absolute position

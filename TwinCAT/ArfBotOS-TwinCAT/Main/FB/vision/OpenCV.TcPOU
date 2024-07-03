@@ -7,21 +7,21 @@
       <ST><![CDATA[SUPER^();]]></ST>
     </Implementation>
     <Method Name="M_CalibrateCamera" Id="{f8181cbb-d977-4dc5-9d9a-f6beb94ec24e}">
-      <Declaration><![CDATA[METHOD M_CalibrateCamera : BOOL
+      <Declaration><![CDATA[METHOD PUBLIC M_CalibrateCamera : BOOL
 VAR_INPUT
-	iImageWidth: UINT := 2016;
-	iImageHeight: UINT := 2000;
-	///sec
-	uTimeout: UDINT := 60;
-	///mm
-	fCalCheckerSize: REAL := 25.0;
-	iCalCheckerX: UINT := 6;
-	iCalCheckerY: UINT := 9;
+	iImageWidth: UINT:=2016;
+	iImageHeight: UINT:=2000;
+	uTimeout: UDINT:=60; //sec
+	fCalCheckerSize: REAL:=25.0; //mm
+	iCalCheckerX: UINT:=6;
+	iCalCheckerY: UINT:=9;
 END_VAR
 VAR
-	_Command: STRING(255);
-	_CalScriptFileName: STRING := '/var/opt/codesys/PlcLogic/Application/Vision/CalibrateCamera.py';
-	_CalResultFile: STRING := '/var/opt/codesys/PlcLogic/visu/outputimage.jpg';
+	_Command : STRING(255);
+END_VAR
+VAR	
+	_CalScriptFileName: STRING:='/var/opt/codesys/PlcLogic/Application/Vision/CalibrateCamera.py';
+	_CalResultFile: STRING:='/var/opt/codesys/PlcLogic/visu/outputimage.jpg';
 END_VAR
 ]]></Declaration>
       <Implementation>
@@ -58,17 +58,18 @@ END_IF]]></ST>
       </Implementation>
     </Method>
     <Method Name="M_CaptureImage" Id="{d38f4a97-5265-4a49-a236-4f8dbe120152}">
-      <Declaration><![CDATA[METHOD M_CaptureImage : BOOL
+      <Declaration><![CDATA[METHOD PUBLIC M_CaptureImage : BOOL
 VAR_INPUT
-	iImageWidth: UINT := 2016;
-	iImageHeight: UINT := 2000;
-	///sec
-	uTimeout: UDINT := 60;
+	iImageWidth: UINT:=2016;
+	iImageHeight: UINT:=2000;
+	uTimeout: UDINT:=60; //sec
 END_VAR
 VAR
-	_Command: STRING(255);
-	_ImageScriptFileName: STRING := '/var/opt/codesys/PlcLogic/Application/Vision/CaptureImage.py';
-	_CaptureImageName: STRING := '/var/opt/codesys/PlcLogic/visu/outputimage.jpg';
+	_Command : STRING(255);
+END_VAR
+VAR
+	_ImageScriptFileName: STRING:='/var/opt/codesys/PlcLogic/Application/Vision/CaptureImage.py';
+	_CaptureImageName: STRING:='/var/opt/codesys/PlcLogic/visu/outputimage.jpg';
 END_VAR
 ]]></Declaration>
       <Implementation>
@@ -100,32 +101,28 @@ END_IF
       </Implementation>
     </Method>
     <Method Name="M_LocatePart" Id="{6c14d589-4ff1-4332-97a1-15bfa9d317ed}">
-      <Declaration><![CDATA[METHOD M_LocatePart : BOOL
+      <Declaration><![CDATA[METHOD PUBLIC M_LocatePart : BOOL
 VAR_INPUT
-	iImageWidth: UINT := 2016;
-	iImageHeight: UINT := 2000;
-	///sec
-	uTimeout: UDINT := 60;
-	/// i
-	iMaxPos: UINT := 10;
-	/// j
-	dMaxOverlap: REAL := 0.0;
-	/// k
-	dScore: REAL := 0.8;
-	/// l
-	dToleranceAngle: REAL := 90.0;
-	sTemplateName: STRING := 'template.jpg';
-	sScriptFilename: STRING := 'FastTemplateMatching.py';
+	iImageWidth: UINT:=2016;
+	iImageHeight: UINT:=2000;
+	uTimeout: UDINT:=60; //sec
+	iMaxPos: UINT:=10; // i
+	dMaxOverlap: REAL:=0.0; // j
+	dScore: REAL:=0.8; // k
+	dToleranceAngle: REAL:=90.0; // l
+	sTemplateName: STRING:='template.jpg';
+	sScriptFilename: STRING:='FastTemplateMatching.py';
 END_VAR
 VAR
-	_Command: STRING(255);
+	_Command : STRING(255);
 END_VAR
 VAR CONSTANT
-	///_SCRIPT_FILE_NAME: STRING:='/var/opt/codesys/PlcLogic/Application/Vision/FastTemplateMatching.py';
-	_SCRIPT_DIR_PATH: STRING := '/var/opt/codesys/PlcLogic/Application/Vision/';
-	_RESULT_FILE_NAME: STRING := '/var/opt/codesys/PlcLogic/visu/outputimage.jpg';
-	_TEMPLATE_DIR_PATH: STRING := '/var/opt/codesys/PlcLogic/Application/Vision/Templates/';
+	//_SCRIPT_FILE_NAME: STRING:='/var/opt/codesys/PlcLogic/Application/Vision/FastTemplateMatching.py';
+	_SCRIPT_DIR_PATH: STRING:='/var/opt/codesys/PlcLogic/Application/Vision/';
+	_RESULT_FILE_NAME: STRING:='/var/opt/codesys/PlcLogic/visu/outputimage.jpg';
+	_TEMPLATE_DIR_PATH: STRING:='/var/opt/codesys/PlcLogic/Application/Vision/Templates/';
 END_VAR
+
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[

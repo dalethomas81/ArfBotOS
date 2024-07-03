@@ -4,12 +4,12 @@
     <Declaration><![CDATA[FUNCTION_BLOCK TcpClient
 VAR_INPUT
 	bEnable: BOOL;
-	strIpAddress: STRING(19) := '127.0.0.1';
-	uPort: UINT := 50011;
+	strIpAddress: STRING(19):='127.0.0.1';
+	uPort: UINT:=50011;
 END_VAR
 VAR
-	_Write: BOOL := FALSE;
-	_DataToWrite: STRING(255) := '';
+	_Write: BOOL:=FALSE;
+	_DataToWrite: STRING(255):='';
 END_VAR
 VAR_OUTPUT
 	bBusyWrite: BOOL;
@@ -20,34 +20,44 @@ VAR_OUTPUT
 	byteArrayRead: ARRAY[0..254] OF BYTE;
 	bConnected: BOOL;
 END_VAR
+
 VAR
-	_ipAddress: NBS.IPv4Address;
-	_fbTcpClient: NBS.TCP_Client;
-	_fbTcpRead: NBS.TCP_Read;
-	_fbTcpWrite: NBS.TCP_Write;
+    _ipAddress       : NBS.IPv4Address;
+    _fbTcpClient     : NBS.TCP_Client;
+    _fbTcpRead       : NBS.TCP_Read;
+    _fbTcpWrite      : NBS.TCP_Write;	
+	
 	_ConnectDelayTimer: TON;
+	
 	_WriteData: StringByteArray;
 	_ReadData: StringByteArray;
+	
 	_WriteRTRIG: R_TRIG;
-	_ConnectStep: INT;
-	_ReadStep: INT;
+	_ConnectStep, _ReadStep: INT;
 	_Read: BOOL;
 END_VAR
+
 VAR CONSTANT
-	ConnectStep_IDLE: INT := 0;
-	ConnectStep_DELAY: INT := 10;
-	ConnectStep_SETUP: INT := 20;
-	ConnectStep_ENABLE: INT := 30;
-	ConnectStep_WAIT: INT := 40;
-	ConnectStep_CONN: INT := 50;
-	WriteStep_IDLE: INT := 0;
-	WriteStep_DATA: INT := 10;
-	WriteStep_WRITE: INT := 20;
-	WriteStep_WAIT: INT := 30;
-	ReadStep_RESET: INT := 0;
-	ReadStep_IDLE: INT := 10;
-	ReadStep_ENABLE: INT := 20;
-	ReadStep_MONITOR: INT := 30;
+	ConnectStep_IDLE: 	INT:=00;
+	ConnectStep_DELAY: 	INT:=10;
+	ConnectStep_SETUP: 	INT:=20;
+	ConnectStep_ENABLE: INT:=30;
+	ConnectStep_WAIT: 	INT:=40;
+	ConnectStep_CONN: 	INT:=50;
+END_VAR
+
+VAR CONSTANT
+	WriteStep_IDLE: 	INT:=00;
+	WriteStep_DATA: 	INT:=10;
+	WriteStep_WRITE: 	INT:=20;
+	WriteStep_WAIT: 	INT:=30;
+END_VAR
+
+VAR CONSTANT
+	ReadStep_RESET: 	INT:=00;
+	ReadStep_IDLE: 		INT:=10;
+	ReadStep_ENABLE: 	INT:=20;
+	ReadStep_MONITOR: 	INT:=30;
 END_VAR
 ]]></Declaration>
     <Implementation>

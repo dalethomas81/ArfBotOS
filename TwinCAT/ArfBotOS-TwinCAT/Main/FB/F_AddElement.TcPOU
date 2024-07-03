@@ -6,9 +6,10 @@ VAR_IN_OUT
 	Command: STRING(GVL.COMMAND_LEN);
 END_VAR
 VAR_INPUT
-	/// default to space
-	Delimiter: STRING(1) := ' ';
+	Delimiter: STRING(1):=' '; // default to space
 	Element: STRING(GVL.COMMAND_LEN);
+END_VAR
+VAR
 END_VAR
 ]]></Declaration>
     <Implementation>

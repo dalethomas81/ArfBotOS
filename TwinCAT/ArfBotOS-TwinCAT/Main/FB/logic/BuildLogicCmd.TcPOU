@@ -6,10 +6,10 @@ VAR_INPUT
 	stCommand: ST_LogicCmd;
 END_VAR
 VAR
-	_Command: STRING(GVL.COMMAND_LEN);
+    _Command: STRING(GVL.COMMAND_LEN);
 END_VAR
 VAR CONSTANT
-	_Delimiter: STRING := ' ';
+	_Delimiter: STRING:=' ';
 END_VAR
 ]]></Declaration>
     <Implementation>

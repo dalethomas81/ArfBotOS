@@ -5,6 +5,8 @@
 VAR_IN_OUT
 	VarList: SMC_VarList;
 END_VAR
+VAR_INPUT
+END_VAR
 VAR_OUTPUT
 	DataOut: POINTER TO SMC_OUTQUEUE;
 	Busy: BOOL;
@@ -24,12 +26,11 @@ VAR
 	_Execute: BOOL;
 	_ResetRtrig: R_TRIG;
 	_Reset: BOOL;
-	_Sequence: INT := 0;
+	_Sequence: INT:=0;
 	_ErrorRtrig: R_TRIG;
 END_VAR
 VAR CONSTANT
-	/// before update to 3.5.19.40 '/var/opt/codesys/_cnc/'
-	_BaseCncDirectory: STRING := '_cnc/';
+	_BaseCncDirectory: STRING:='_cnc/'; // before update to 3.5.19.40 '/var/opt/codesys/_cnc/'
 END_VAR
 ]]></Declaration>
     <Implementation>

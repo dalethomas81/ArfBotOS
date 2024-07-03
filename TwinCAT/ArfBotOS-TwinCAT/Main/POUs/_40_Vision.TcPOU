@@ -2,15 +2,17 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="_40_Vision" Id="{168c2bce-5a06-487a-a077-28448e10fa0d}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM _40_Vision
+// vision is separated into its own program so that we can
+// assign it to its own core! how awesome is that?!
 VAR
 	ProcessVisionCommand: VisionCmdProcessor;
-	HostName: STRING;
+   	HostName   : STRING;
 	VisionSystemUrl: STRING;
 	VisionOutputImageUrl: STRING;
 	VisionSystemIpAddress_Last: STRING(19);
 END_VAR
 VAR CONSTANT
-	LocalIpAddress: STRING(19) := '127.0.0.1';
+	LocalIpAddress: STRING(19):='127.0.0.1';
 END_VAR
 ]]></Declaration>
     <Implementation>

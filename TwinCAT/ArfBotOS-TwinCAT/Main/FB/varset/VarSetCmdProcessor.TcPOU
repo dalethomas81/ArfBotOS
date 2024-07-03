@@ -3,13 +3,17 @@
   <POU Name="VarSetCmdProcessor" Id="{4e6d31f4-1f5e-495c-b2c6-1fabb531ce1d}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK VarSetCmdProcessor EXTENDS Module
 VAR_INPUT
-	Command: STRING(GVL.COMMAND_LEN) := '';
+	Command: STRING(GVL.COMMAND_LEN):='';
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
 END_VAR
 VAR CONSTANT
-	_STEP_DONE: INT := 1000;
-	_STEP_IDLE: INT := 0;
-	_STEP_COMMAND: INT := 10;
-	_STEP_ERR: INT := 20;
+	_STEP_DONE: 		INT := 1000;
+	_STEP_IDLE: 		INT := 0000;
+	_STEP_COMMAND: 		INT := 0010;
+	_STEP_ERR: 			INT := 0020;
 END_VAR
 VAR
 	_UnitModeCurrentState: PACK_ML.State;

@@ -2,43 +2,51 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="FB_Controller" Id="{6c3bd905-e561-44be-a365-7f9abc521e72}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_Controller EXTENDS PythonServerHandler
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
 VAR
 	Controller: ST_Controller;
-	ControllerStates: ARRAY[0..254] OF BYTE;
-	ControllerStatesTemp: ARRAY[0..254] OF BYTE;
+	ControllerStates: ARRAY [0..254] OF BYTE;
+	ControllerStatesTemp: ARRAY [0..254] OF BYTE;
 	ReadStringTemp: STRING(255);
 	RecordLast: DINT;
-	ReconnectTimer: TON := (PT := TIME#5s0ms);
+	ReconnectTimer: TON:=(PT:=T#5S);
+	
 	_SetColor: BOOL;
-	_Red: INT := 0;
-	_Green: INT := 255;
-	_Blue: INT := 0;
+	_Red: INT:=0;
+	_Green: INT:=255;
+	_Blue: INT:=0;
+	
 	_SetMicrophoneState: BOOL;
 	_MicrophoneState: BOOL;
+	
 	_SetPlayerID: BOOL;
 	_PlayerID: E_ControllerPlayerID;
+	
 	_SetBrightness: BOOL;
 	_Brightness: E_ControllerBrightness;
+	
 	_SetMotorIntensity: BOOL;
 	_Motor: E_ControllerMotor;
-	/// 0-255
-	_MotorIntensity: USINT;
-	/// ms
-	_MotorIntensityDuration: REAL;
+	_MotorIntensity: USINT; // 0-255
+	_MotorIntensityDuration: REAL; // ms
+	
 	_SetTriggerMode: BOOL;
 	_TriggerModeTrigger: E_ControllerTrigger;
 	_TriggerModeMode: E_ControllerTriggerMode;
+	
 	_SetTriggerForce: BOOL;
 	_TriggerForceTrigger: E_ControllerTrigger;
 	_TriggerForceParameter: E_ControllerTriggerForceParameter;
 	_TriggerForceIntensity: USINT;
-	_i: INT;
-	_j: INT;
-	_k: INT;
-	FirstScan: BOOL := TRUE;
+	
+	_i, _j, _k: INT;
+	FirstScan: BOOL:=TRUE;
 END_VAR
 VAR CONSTANT
-	States: STRING := 'states: ';
+	States: STRING:='states: ';
 END_VAR
 ]]></Declaration>
     <Implementation>

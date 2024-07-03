@@ -11,7 +11,7 @@ VAR_OUTPUT
 	ErrorDescription: STRING;
 END_VAR
 VAR
-	_CmdParams: ARRAY[0..GVL.COMMAND_LEN] OF STRING;
+	_CmdParams: ARRAY [0..GVL.COMMAND_LEN] OF STRING;
 	_OutputType: STRING;
 END_VAR
 ]]></Declaration>

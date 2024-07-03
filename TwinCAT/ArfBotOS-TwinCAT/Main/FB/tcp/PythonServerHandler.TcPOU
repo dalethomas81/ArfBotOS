@@ -3,8 +3,10 @@
   <POU Name="PythonServerHandler" Id="{804277ad-245a-4a3c-a537-920a77a195da}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK PythonServerHandler
 VAR_INPUT
-	sIpAddress: STRING(19) := '127.0.0.1';
-	uPort: UINT := 50011;
+	sIpAddress: STRING(19):='127.0.0.1';
+	uPort: UINT:=50011;
+END_VAR
+VAR_OUTPUT
 END_VAR
 VAR
 	_Done: BOOL;
@@ -14,13 +16,13 @@ VAR
 	_Response: STRING(255);
 	_WorkerUid: STRING;
 	_Execute: BOOL;
-	_Reset: BOOL := FALSE;
+	_Reset: BOOL:=FALSE;
 	_ResetRtrig: R_TRIG;
 	_Step: INT;
 	_Command: STRING(255);
 	_ReadRecordLast: DINT;
 	_TcpClient: TcpClient;
-	_TimeoutTimer: TON := (PT := TIME#2m0s0ms);
+	_TimeoutTimer: TON:=(PT:=T#120S);
 END_VAR
 ]]></Declaration>
     <Implementation>

@@ -6,12 +6,12 @@ VAR_INPUT
 	stCommand: ST_OutputCmd;
 END_VAR
 VAR
-	_Command: STRING(GVL.COMMAND_LEN);
+    _Command: STRING(GVL.COMMAND_LEN);
 END_VAR
 VAR CONSTANT
-	_Delimiter: STRING := ' ';
-	_OutTypeDig: STRING(3) := 'DIG';
-	_OutTypePwm: STRING(3) := 'PWM';
+	_Delimiter: STRING:=' ';
+	_OutTypeDig: STRING(3):='DIG';
+	_OutTypePwm: STRING(3):='PWM';
 END_VAR
 ]]></Declaration>
     <Implementation>

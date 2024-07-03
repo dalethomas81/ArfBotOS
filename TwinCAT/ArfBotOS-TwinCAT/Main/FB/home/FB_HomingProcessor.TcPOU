@@ -3,28 +3,19 @@
   <POU Name="FB_HomingProcessor" Id="{6c30ff35-bc31-4ed8-ab4a-320ad080dc49}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_HomingProcessor
 VAR_IN_OUT
-	J1: AXIS_REF_SM3;
-	J2: AXIS_REF_SM3;
-	J3: AXIS_REF_SM3;
-	J4: AXIS_REF_SM3;
-	J5: AXIS_REF_SM3;
-	J6: AXIS_REF_SM3;
+	J1, J2, J3, J4, J5, J6: AXIS_REF_SM3;
 	AxisGroup: AXIS_GROUP_REF_SM3;
 	GroupHandler: FB_GroupHandler;
 	Controller: FB_Controller;
 END_VAR
+
 VAR_INPUT
-	J1_Limit: BOOL;
-	J2_Limit: BOOL;
-	J3_Limit: BOOL;
-	J4_Limit: BOOL;
-	J5_Limit: BOOL;
-	J6_Limit: BOOL;
+	J1_Limit, J2_Limit, J3_Limit, J4_Limit, J5_Limit, J6_Limit: BOOL;
 	Enable: BOOL;
 	Reset: BOOL;
-	StoredPositions: REFERENCE TO ARRAY [GVL.POS_ARR_BEG..GVL.POS_ARR_END] OF DUT_StoredPosition;
-	VisionRegisters: REFERENCE TO ARRAY [GVL.VIS_ARR_BEG..GVL.VIS_ARR_END] OF DUT_VisionRegister;
-	Flags: REFERENCE TO ARRAY [GVL.FLG_ARR_BEG..GVL.FLG_ARR_END] OF DUT_Flags;
+	StoredPositions: REFERENCE TO ARRAY[GVL.POS_ARR_BEG..GVL.POS_ARR_END] OF DUT_StoredPosition;
+	VisionRegisters: REFERENCE TO ARRAY[GVL.VIS_ARR_BEG..GVL.VIS_ARR_END] OF DUT_VisionRegister;
+	Flags: REFERENCE TO ARRAY[GVL.FLG_ARR_BEG..GVL.FLG_ARR_END] OF DUT_Flags;
 END_VAR
 VAR_OUTPUT
 	Done: BOOL;
@@ -37,55 +28,54 @@ VAR
 	_ExecuteFtrig: F_TRIG;
 	_ResetRtrig: R_TRIG;
 	_ErrorRtrig: R_TRIG;
+	
 	_SequenceMain: INT;
 	_StartHoming: BOOL;
-	_SMC_Homing_J1: SMC_Homing;
-	_SMC_Homing_J2: SMC_Homing;
-	_SMC_Homing_J3: SMC_Homing;
-	_SMC_Homing_J4: SMC_Homing;
-	_SMC_Homing_J5: SMC_Homing;
-	_SMC_Homing_J6: SMC_Homing;
-	_MC_SetPosition_J1: MC_SetPosition;
-	_MC_SetPosition_J2: MC_SetPosition;
-	_MC_SetPosition_J3: MC_SetPosition;
-	_MC_SetPosition_J4: MC_SetPosition;
-	_MC_SetPosition_J5: MC_SetPosition;
-	_MC_SetPosition_J6: MC_SetPosition;
-	_HomingVelocityFast: LREAL := 10.0;
-	_HomingVelocitySlow: LREAL := 5.0;
-	_HomingVelocitySlowSlow: LREAL := 1.0;
-	_HomingAcceleration: LREAL := 1000.0;
-	_HomingJerk: LREAL := 10000.0;
+	
+	_SMC_Homing_J1, _SMC_Homing_J2, _SMC_Homing_J3: SMC_Homing;
+	_SMC_Homing_J4, _SMC_Homing_J5, _SMC_Homing_J6: SMC_Homing;
+	
+	_MC_SetPosition_J1, _MC_SetPosition_J2, _MC_SetPosition_J3: MC_SetPosition;
+	_MC_SetPosition_J4, _MC_SetPosition_J5, _MC_SetPosition_J6: MC_SetPosition;
+	
+	_HomingVelocityFast: LREAL:= 10.0;
+	_HomingVelocitySlow: LREAL:= 5.0;
+	_HomingVelocitySlowSlow: LREAL:= 1.0;
+	_HomingAcceleration: LREAL:= 1000.0;
+	_HomingJerk: LREAL:= 10000.0;
+	
 	_MoveToPose: BOOL;
 	_MoveCommand: ST_MoveCmd;
 	_MoveCommandProcessor: MoveCmdProcessor;
-	_i: INT;
-	_j: INT;
-	_k: INT;
-	_FirstScan: BOOL := TRUE;
+	
+	_i, _j, _k: INT;
+	_FirstScan: BOOL:=TRUE;
 END_VAR
+
 VAR CONSTANT
-	STEP_DONE: INT := 9999;
-	STEP_IDLE: INT := 0;
-	STEP_GROUP_ENABLE: INT := 30;
-	STEP_WAIT_ENABLE: INT := 35;
-	STEP_FAST_HOME_G1: INT := 40;
-	STEP_WAIT_FAST_HOME_G1: INT := 45;
-	STEP_SLOW_HOME_G1: INT := 50;
-	STEP_WAIT_SLOW_HOME_G1: INT := 55;
-	STEP_FAST_HOME_G2: INT := 60;
-	STEP_WAIT_FAST_HOME_G2: INT := 65;
-	STEP_SLOW_HOME_G2: INT := 70;
-	STEP_WAIT_SLOW_HOME_G2: INT := 75;
-	STEP_FAST_HOME_G3: INT := 80;
-	STEP_WAIT_FAST_HOME_G3: INT := 85;
-	STEP_SLOW_HOME_G3: INT := 90;
-	STEP_WAIT_SLOW_HOME_G3: INT := 95;
-	STEP_MOVE_TO_POSE: INT := 1000;
-	STEP_WAIT_MOVE_TO_POSE: INT := 1010;
-	STEP_WAIT_POSE_DONE: INT := 1020;
-END_VAR
-]]></Declaration>
+	STEP_DONE: 					INT := 9999;
+	STEP_IDLE: 					INT := 0000;
+	STEP_GROUP_ENABLE: 			INT := 0030;
+	STEP_WAIT_ENABLE: 			INT := 0035;
+	STEP_FAST_HOME_G1:			INT := 0040;
+	STEP_WAIT_FAST_HOME_G1:		INT := 0045;
+	STEP_SLOW_HOME_G1:			INT := 0050;
+	STEP_WAIT_SLOW_HOME_G1:		INT := 0055;
+	
+	STEP_FAST_HOME_G2:			INT := 0060;
+	STEP_WAIT_FAST_HOME_G2:		INT := 0065;
+	STEP_SLOW_HOME_G2:			INT := 0070;
+	STEP_WAIT_SLOW_HOME_G2:		INT := 0075;
+	
+	STEP_FAST_HOME_G3:			INT := 0080;
+	STEP_WAIT_FAST_HOME_G3:		INT := 0085;
+	STEP_SLOW_HOME_G3:			INT := 0090;
+	STEP_WAIT_SLOW_HOME_G3:		INT := 0095;
+	
+	STEP_MOVE_TO_POSE:			INT := 1000;
+	STEP_WAIT_MOVE_TO_POSE:		INT := 1010;
+	STEP_WAIT_POSE_DONE:		INT := 1020;
+END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[_ExecuteRtrig(CLK:=);
 _ExecuteFtrig(CLK:=);

@@ -2,35 +2,33 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="Module" Id="{06152fa3-0ee8-42bb-9309-1b5f17657eed}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK Module EXTENDS PackML IMPLEMENTS ItfModule
-VAR_INPUT
-	/// input vars
-	StoredPositions: REFERENCE TO ARRAY [GVL.POS_ARR_BEG..GVL.POS_ARR_END] OF DUT_StoredPosition;
-	VisionRegisters: REFERENCE TO ARRAY [GVL.VIS_ARR_BEG..GVL.VIS_ARR_END] OF DUT_VisionRegister;
-	Flags: REFERENCE TO ARRAY [GVL.FLG_ARR_BEG..GVL.FLG_ARR_END] OF DUT_Flags;
+
+VAR_INPUT // input vars
+	StoredPositions: REFERENCE TO ARRAY[GVL.POS_ARR_BEG..GVL.POS_ARR_END] OF DUT_StoredPosition;
+	VisionRegisters: REFERENCE TO ARRAY[GVL.VIS_ARR_BEG..GVL.VIS_ARR_END] OF DUT_VisionRegister;
+	Flags: REFERENCE TO ARRAY[GVL.FLG_ARR_BEG..GVL.FLG_ARR_END] OF DUT_Flags;
 END_VAR
-VAR_OUTPUT
-	/// output vars
+
+VAR_OUTPUT // output vars
 	ItfUnitMode: PACK_ML.IUnitMode;
 	Busy: BOOL;
 	Error: BOOL;
 	ErrorDescription: STRING;
 END_VAR
-VAR
-	/// standard local vars
-	_TimeoutTimer: TON := (PT := TIME#0ms);
-	_Home: BOOL;
-	_Start: BOOL;
-	_ModuleFirstScan: BOOL := TRUE;
-	_SeqStart: INT;
-	_SeqHome: INT;
+
+VAR // standard local vars
+	_TimeoutTimer: TON:=(PT:=T#0MS);
+	_Home, _Start: BOOL;
+	_ModuleFirstScan: BOOL:=TRUE;
+	_SeqStart, _SeqHome: INT;
 	_AbortedRtrig: R_Trig;
 END_VAR
-VAR CONSTANT
-	STEP_IDLE: INT := 0;
-	STEP_DONE: INT := 20;
-	STEP_RUN: INT := 30;
-END_VAR
-]]></Declaration>
+
+VAR CONSTANT //
+	STEP_IDLE: INT := 0000;
+	STEP_DONE: INT := 0020;
+	STEP_RUN:  INT := 0030;
+END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[SUPER^();
 
@@ -67,7 +65,10 @@ END_IF
 // do not place anything below this
 _ModuleFirstScan:=FALSE;]]></ST>
     </Implementation>
-    <Method Name="_M_Home" Id="{b6b75ed6-b5aa-4b31-9a1b-102168846c09}">
+    <Folder Name="private" Id="{98519cb4-6944-40f2-a818-cd7218887404}" />
+    <Folder Name="protected" Id="{d4437dfd-46a5-417b-b064-72e65ce2b9f7}" />
+    <Folder Name="public" Id="{e7654e6a-3b04-4ddb-8b6a-b50e3dbafc72}" />
+    <Method Name="_M_Home" Id="{b6b75ed6-b5aa-4b31-9a1b-102168846c09}" FolderPath="private\">
       <Declaration><![CDATA[METHOD PRIVATE _M_Home : BOOL
 ]]></Declaration>
       <Implementation>
@@ -107,7 +108,7 @@ _ModuleFirstScan:=FALSE;]]></ST>
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="_M_Start" Id="{f110705f-80e9-4c18-9b3f-432547227ce9}">
+    <Method Name="_M_Start" Id="{f110705f-80e9-4c18-9b3f-432547227ce9}" FolderPath="private\">
       <Declaration><![CDATA[METHOD PRIVATE _M_Start : BOOL
 ]]></Declaration>
       <Implementation>
@@ -145,7 +146,7 @@ END_CASE]]></ST>
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_Abort" Id="{e5c2715c-41fc-45b3-ba5d-b082d35ede74}">
+    <Method Name="M_Abort" Id="{e5c2715c-41fc-45b3-ba5d-b082d35ede74}" FolderPath="public\">
       <Declaration><![CDATA[METHOD M_Abort
 ]]></Declaration>
       <Implementation>
@@ -154,7 +155,7 @@ _SeqStart := 0;  _Start:=FALSE;
 _SeqHome := 0; _Home:=FALSE;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_Error" Id="{dbcfca92-733c-4c2e-a049-52c206183687}">
+    <Method Name="M_Error" Id="{dbcfca92-733c-4c2e-a049-52c206183687}" FolderPath="protected\">
       <Declaration><![CDATA[METHOD PROTECTED M_Error : BOOL
 VAR_INPUT
 	Description: STRING;
@@ -176,21 +177,21 @@ ELSE // add a space and tack on the additional error description
 END_IF]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_Hold" Id="{f895a567-6f19-4aaf-a19a-430ec9375429}">
+    <Method Name="M_Hold" Id="{f895a567-6f19-4aaf-a19a-430ec9375429}" FolderPath="public\">
       <Declaration><![CDATA[METHOD M_Hold
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[_UnitMode.Hold();]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_Home" Id="{80e95931-65c8-4c90-ad00-612ca250483e}">
+    <Method Name="M_Home" Id="{80e95931-65c8-4c90-ad00-612ca250483e}" FolderPath="public\">
       <Declaration><![CDATA[METHOD M_Home
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[_Home:=TRUE;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_Reset" Id="{9e2db144-5b4e-459a-90c5-117bc0e5923a}">
+    <Method Name="M_Reset" Id="{9e2db144-5b4e-459a-90c5-117bc0e5923a}" FolderPath="protected\">
       <Declaration><![CDATA[METHOD PROTECTED M_Reset : BOOL
 ]]></Declaration>
       <Implementation>
@@ -198,14 +199,14 @@ END_IF]]></ST>
 ErrorDescription := '';]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_Start" Id="{4fffeb3f-a502-448a-801f-62a2012af7b1}">
+    <Method Name="M_Start" Id="{4fffeb3f-a502-448a-801f-62a2012af7b1}" FolderPath="public\">
       <Declaration><![CDATA[METHOD M_Start
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[_Start := TRUE;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_Stop" Id="{10e51045-5ea3-431f-a77c-f14d9d4a03bb}">
+    <Method Name="M_Stop" Id="{10e51045-5ea3-431f-a77c-f14d9d4a03bb}" FolderPath="public\">
       <Declaration><![CDATA[METHOD M_Stop
 ]]></Declaration>
       <Implementation>

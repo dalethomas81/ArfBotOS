@@ -3,7 +3,7 @@
   <POU Name="FB_ProgramProcessor" Id="{efd5aca7-63df-4cd7-9f44-51095df5f331}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_ProgramProcessor EXTENDS Module
 VAR_IN_OUT
-	Programs: ARRAY[GVL.PROG_ARR_BEG..GVL.PROG_ARR_END] OF DUT_Program;
+	Programs: ARRAY [GVL.PROG_ARR_BEG..GVL.PROG_ARR_END] OF DUT_Program;
 	AxisGroup: AXIS_GROUP_REF_SM3;
 	GroupHandler: FB_GroupHandler;
 	CmdIO: ST_LogicCmdIO;
@@ -12,34 +12,31 @@ VAR_INPUT
 	Enable: BOOL;
 END_VAR
 VAR_OUTPUT
-	ItfActiveProcessorUnitMode: PACK_ML.IUnitMode;
+	ItfActiveProcessorUnitMode	: PACK_ML.IUnitMode;
 	ItfActiveModule: ItfModule;
 	StatusText: STRING(255);
 END_VAR
 VAR
 	_DummyUnitMode: PACK_ML.UnitMode;
 	_UnitModeCurrentState: PACK_ML.State;
-	_Returning: ARRAY[GVL.PROG_ARR_BEG..GVL.PROG_ARR_END] OF BOOL;
-	_ReturnPrograms: ARRAY[GVL.PROG_ARR_BEG..GVL.PROG_ARR_END] OF UINT;
-	/// +1 because we want to be able to tell if calling program was on last command
-	_ReturnCommands: ARRAY[GVL.PROG_CMDS_ARR_BEG..(GVL.PROG_CMDS_ARR_END + 1)] OF UINT;
+	_Returning:  ARRAY [GVL.PROG_ARR_BEG..GVL.PROG_ARR_END] OF BOOL;
+	_ReturnPrograms: ARRAY [GVL.PROG_ARR_BEG..GVL.PROG_ARR_END] OF UINT;
+	_ReturnCommands: ARRAY [GVL.PROG_CMDS_ARR_BEG..GVL.PROG_CMDS_ARR_END + 1] OF UINT; // +1 because we want to be able to tell if calling program was on last command
 	_CurrentPrgIdx: UINT;
 	_ProcessCommands: FB_CommandProcessor;
-	_Commands: ARRAY[GVL.PROG_CMDS_ARR_BEG..GVL.PROG_CMDS_ARR_END] OF DUT_Command;
-	_i: INT;
-	_j: INT;
-	_k: INT;
-	_FirstScan: BOOL := TRUE;
+	_Commands: ARRAY [GVL.PROG_CMDS_ARR_BEG..GVL.PROG_CMDS_ARR_END] OF DUT_Command;
+	_i, _j, _k: INT;
+	_FirstScan: BOOL:=TRUE;
 END_VAR
+
 VAR CONSTANT
-	_STEP_DONE: INT := 1000;
-	_STEP_IDLE: INT := 0;
-	_STEP_PRG: INT := 10;
-	_STEP_WAIT_EXECUTE: INT := 20;
-	_STEP_WAIT_IDLE: INT := 25;
-	_STEP_ERR: INT := 30;
-END_VAR
-]]></Declaration>
+	_STEP_DONE: 			INT := 1000;
+	_STEP_IDLE: 			INT := 0000;
+	_STEP_PRG:				INT := 0010;
+	_STEP_WAIT_EXECUTE:		INT := 0020;
+	_STEP_WAIT_IDLE:		INT := 0025;
+	_STEP_ERR:              INT := 0030;
+END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[//
 SUPER^();

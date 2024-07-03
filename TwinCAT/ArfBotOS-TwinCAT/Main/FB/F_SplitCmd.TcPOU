@@ -1,20 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="F_SplitCmd" Id="{4ffeb092-e2fe-4508-9822-2d3197400b13}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION F_SplitCmd : ARRAY[0..GVL.COMMAND_LEN] OF STRING
+    <Declaration><![CDATA[FUNCTION F_SplitCmd : ARRAY [0..GVL.COMMAND_LEN] OF STRING
 VAR_INPUT
-	Command: STRING(GVL.COMMAND_LEN);
-	Delimiter: STRING(1) := ' ';
+    Command: STRING(GVL.COMMAND_LEN);
+	Delimiter: STRING(1):=' ';
 END_VAR
 VAR
 	_Command: STRING(GVL.COMMAND_LEN);
 	_DelimPos: INT;
-	_i: INT;
-	_j: INT;
-	_k: INT;
+	_i, _j, _k: INT;
 END_VAR
 VAR CONSTANT
-	_SpaceChar: STRING(1) := ' ';
+	_SpaceChar: STRING(1):=' ';
 END_VAR
 ]]></Declaration>
     <Implementation>

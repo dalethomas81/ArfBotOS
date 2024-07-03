@@ -12,36 +12,35 @@ VAR_INPUT
 	Enable: BOOL;
 END_VAR
 VAR_OUTPUT
-	ItfActiveProcessorUnitMode: PACK_ML.IUnitMode;
+	ItfActiveProcessorUnitMode	: PACK_ML.IUnitMode;
 	ItfActiveModule: ItfModule;
 	StatusText: STRING(255);
 END_VAR
 VAR
-	_Commands: ARRAY[GVL.PROG_CMDS_ARR_BEG..GVL.PROG_CMDS_ARR_END] OF DUT_Command;
+	_Commands: ARRAY [GVL.PROG_CMDS_ARR_BEG..GVL.PROG_CMDS_ARR_END] OF DUT_Command;
 	_DummyUnitMode: PACK_ML.UnitMode;
 	_UnitModeCurrentState: PACK_ML.State;
 	_ActiveCommand: DUT_Command;
 	_CurrentCmdIdx: UINT;
 	_ProcessMoveCommand: MoveCmdProcessor;
 	_ProcessPauseCommand: PauseCmdProcessor;
-	///_ProcessInputCommand: InputCommandProcessor;
+	//_ProcessInputCommand: InputCommandProcessor;
 	_ProcessOutputCommand: OutputCmdProcessor;
 	_ProcessorDoneRtrig: R_TRIG;
-	/// keep vision in separate task
-	_ProcessVisionCommand: REFERENCE TO VisionCmdProcessor;
+    _ProcessVisionCommand: REFERENCE TO VisionCmdProcessor; // keep vision in separate task
 	_ProcessVarSetCommand: VarSetCmdProcessor;
 	_ProcessCncCommand: CncCmdProcessor;
 	_ProcessLogicCommand: LogicCmdProcessor;
-	_FirstScan: BOOL := TRUE;
+	_FirstScan: BOOL:=TRUE;
 END_VAR
+
 VAR CONSTANT
-	_STEP_DONE: INT := 1000;
-	_STEP_IDLE: INT := 0;
-	_STEP_CMD: INT := 10;
-	_STEP_WAIT: INT := 20;
-	_STEP_ERR: INT := 30;
-END_VAR
-]]></Declaration>
+	_STEP_DONE: 			INT := 1000;
+	_STEP_IDLE: 			INT := 0000;
+	_STEP_CMD:				INT := 0010;
+	_STEP_WAIT:				INT := 0020;
+	_STEP_ERR:              INT := 0030;
+END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[// keep this reference at the top in case we reference this somewhere else first
 // hint: originally this was an issue because of the done and reset bits being referenced first

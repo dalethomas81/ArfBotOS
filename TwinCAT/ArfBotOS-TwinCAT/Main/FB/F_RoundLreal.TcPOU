@@ -3,15 +3,13 @@
   <POU Name="F_RoundLreal" Id="{6e4b5325-49a6-45c7-a436-b44a2066c3ea}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION F_RoundLreal : LREAL
 VAR_INPUT
-	rIn: LREAL;
-	Digit: INT;
+   rIn : LREAL;      
+   Digit: INT;         
 END_VAR
+
 VAR
-	d1: DINT;
-	r0: LREAL;
-	r1: LREAL;
-	r2: LREAL;
-	Rdigit: LREAL;
+   d1 : DINT;
+   r0,r1,r2,Rdigit: LREAL;               
 END_VAR
 ]]></Declaration>
     <Implementation>

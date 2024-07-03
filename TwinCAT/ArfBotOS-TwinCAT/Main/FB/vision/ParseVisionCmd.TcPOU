@@ -3,25 +3,22 @@
   <POU Name="ParseVisionCmd" Id="{c1f3fe10-7066-4e4d-ae1a-05a0a2c8898a}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK ParseVisionCmd
 VAR_INPUT
-	Command: STRING(GVL.COMMAND_LEN);
+    Command: STRING(GVL.COMMAND_LEN);
 END_VAR
 VAR_OUTPUT
-	stCommand: ST_VisionCmd;
+    stCommand: ST_VisionCmd;
 	Error: BOOL;
 	ErrorDescription: STRING;
 END_VAR
 VAR
-	_CmdParams: ARRAY[0..GVL.COMMAND_LEN] OF STRING;
-	_CommandType: STRING;
+	_CmdParams: ARRAY [0..GVL.COMMAND_LEN] OF STRING;
+    _CommandType: STRING;
 	_StrPosition: INT;
 END_VAR
 VAR CONSTANT
-	/// calibrate vision
-	_CommandTypeCal: STRING(3) := 'CAL';
-	/// acquire (capture) image
-	_CommandTypeAcq: STRING(3) := 'ACQ';
-	/// locate part
-	_CommandTypeLoc: STRING(3) := 'LOC';
+	_CommandTypeCal: STRING(3):='CAL'; // calibrate vision
+	_CommandTypeAcq: STRING(3):='ACQ'; // acquire (capture) image
+	_CommandTypeLoc: STRING(3):='LOC'; // locate part
 END_VAR
 ]]></Declaration>
     <Implementation>

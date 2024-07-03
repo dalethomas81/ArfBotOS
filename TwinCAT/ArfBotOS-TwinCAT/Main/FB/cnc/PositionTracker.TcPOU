@@ -11,6 +11,8 @@ VAR_IN_OUT
 	SM3_Drive_PosControl_J5: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
 	SM3_Drive_PosControl_J6: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
 END_VAR
+VAR_INPUT
+END_VAR
 VAR_OUTPUT
 	VisuStruct3DTrack: VisuStruct3DTrack;
 	Arm: SMC_ArticulatedRobot_6DOF_J0_State;
@@ -20,10 +22,10 @@ END_VAR
 VAR
 	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_VisuStruct3DPathPoint: ARRAY[0..10000] OF VisuStruct3DPathPoint;
+	_VisuStruct3DPathPoint: ARRAY [0..10000] OF VisuStruct3DPathPoint;
 	_SMC_PositionTracker: SMC_PositionTracker;
 	_PositionTrackerClearR_Trig: R_Trig;
-	_Clear: BOOL := FALSE;
+	_Clear: BOOL:=FALSE;
 END_VAR
 ]]></Declaration>
     <Implementation>

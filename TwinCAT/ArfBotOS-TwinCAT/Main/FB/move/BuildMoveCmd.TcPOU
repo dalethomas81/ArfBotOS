@@ -1,37 +1,37 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <POU Name="BuildMoveCmd" Id="{19554b2f-3ca2-4f8d-a4a2-2e3ac3119ec0}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION BuildMoveCmd : STRING(GVL.COMMAND_LEN)
+    <Declaration><![CDATA[FUNCTION BuildMoveCmd : STRING(GVL.COMMAND_LEN);
 VAR_INPUT
 	stCommand: ST_MoveCmd;
 END_VAR
 VAR
-	_Command: STRING(GVL.COMMAND_LEN);
+	_Command : STRING(GVL.COMMAND_LEN);
 END_VAR
 VAR CONSTANT
-	_Delimiter: STRING := ' ';
-	_MoveTypeD: STRING(3) := 'DIR';
-	_MoveTypeL: STRING(3) := 'LIN';
-	_MoveTypeC: STRING(3) := 'CIR';
-	_ChangeTypeA: STRING(3) := 'ABS';
-	_ChangeTypeR: STRING(3) := 'REL';
-	_CoordSystemAcs: STRING(3) := 'ACS';
-	_CoordSystemMcs: STRING(3) := 'MCS';
-	_CoordSystemPc1: STRING(3) := 'PC1';
-	_CoordSystemPc2: STRING(3) := 'PC2';
-	_CoordSystemTcs: STRING(3) := 'TCS';
-	_CoordSystemWcs: STRING(3) := 'WCS';
-	_CoordSystemIcs: STRING(3) := 'ICS';
-	_CoordTypeH: STRING(3) := 'LIT';
-	_CoordTypeV: STRING(3) := 'VAR';
-	_ArrayTypeS: STRING(3) := 'STO';
-	_ArrayTypeV: STRING(3) := 'VIS';
-	_ArrayTypeF: STRING(3) := 'FLG';
-	_CircleModeBor: STRING(3) := 'BOR';
-	_CircleModeCen: STRING(3) := 'CEN';
-	_CircleModeRad: STRING(3) := 'RAD';
-	_PathChoiceClw: STRING(3) := 'CLW';
-	_PathChoiceCcw: STRING(3) := 'CCW';
+	_Delimiter: STRING:=' ';
+	_MoveTypeD: STRING(3):='DIR';
+	_MoveTypeL: STRING(3):='LIN';
+	_MoveTypeC: STRING(3):='CIR';
+	_ChangeTypeA: STRING(3):='ABS';
+	_ChangeTypeR: STRING(3):='REL';
+	_CoordSystemAcs: STRING(3):='ACS';
+	_CoordSystemMcs: STRING(3):='MCS';
+	_CoordSystemPc1: STRING(3):='PC1';
+	_CoordSystemPc2: STRING(3):='PC2';
+	_CoordSystemTcs: STRING(3):='TCS';
+	_CoordSystemWcs: STRING(3):='WCS';
+	_CoordSystemIcs: STRING(3):='ICS';
+	_CoordTypeH: STRING(3):='LIT';
+	_CoordTypeV: STRING(3):='VAR';
+	_ArrayTypeS: STRING(3):='STO';
+	_ArrayTypeV: STRING(3):='VIS';
+	_ArrayTypeF: STRING(3):='FLG';
+	_CircleModeBor: STRING(3):='BOR';
+	_CircleModeCen: STRING(3):='CEN';
+	_CircleModeRad: STRING(3):='RAD';
+	_PathChoiceClw: STRING(3):='CLW';
+	_PathChoiceCcw: STRING(3):='CCW';
 END_VAR
 ]]></Declaration>
     <Implementation>

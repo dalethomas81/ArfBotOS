@@ -3,13 +3,13 @@
   <POU Name="VisionCmdProcessor" Id="{fe68b725-9761-4240-89f1-03981366ea66}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK VisionCmdProcessor EXTENDS Module
 VAR_INPUT
-	Command: STRING(GVL.COMMAND_LEN) := '';
+	Command: STRING(GVL.COMMAND_LEN):='';
 	LogicCmdIO: REFERENCE TO ST_LogicCmdIO;
-	VisionSystemIpAddress: STRING(19) := '127.0.0.1';
-	VisionSystemPort: UINT := 50011;
+	VisionSystemIpAddress: STRING(19):='127.0.0.1';
+	VisionSystemPort: UINT:=50011;
 END_VAR
 VAR_OUTPUT
-	VisionStateText: STRING := 'READY';
+	VisionStateText: STRING:='READY';
 END_VAR
 VAR
 	_CaptureImage_Output: STRING(255);
@@ -18,9 +18,9 @@ VAR
 	_LocatePart_WorkerUid: STRING;
 	_RunCalibration_Output: STRING(255);
 	_RunCalibration_WorkerUid: STRING;
-	_Vision: OpenCV;
-	_VisionCommandParser: ParseVisionCmd;
-	_VisionDoneRtrig: R_TRIG;
+    _Vision: OpenCV;
+    _VisionCommandParser: ParseVisionCmd;
+    _VisionDoneRtrig: R_TRIG;
 	_VisionBusyRtrig: R_TRIG;
 	_VisionResult: STRING(255);
 	_ResultPosition: INT;
@@ -35,18 +35,19 @@ VAR
 	_PartsCount: UDINT;
 	_UnitModeCurrentState: PACK_ML.State;
 END_VAR
+
 VAR CONSTANT
-	_RESPONSE_CAL: STRING := 'res: CAL ';
-	_RESPONSE_LOC: STRING := 'res: LOC ';
-	_RESPONSE_CAP: STRING := 'res: CAP ';
-	_STEP_DONE: INT := 1000;
-	_STEP_IDLE: INT := 0;
-	_STEP_COMMAND: INT := 20;
-	_STEP_TRIGGER: INT := 30;
-	_STEP_WAIT: INT := 40;
-	_STEP_ERR: INT := 50;
-END_VAR
-]]></Declaration>
+	_RESPONSE_CAL:          STRING:='res: CAL ';
+	_RESPONSE_LOC:          STRING:='res: LOC ';
+	_RESPONSE_CAP:          STRING:='res: CAP ';
+
+	_STEP_DONE: 			INT := 1000;
+	_STEP_IDLE: 			INT := 0000;
+	_STEP_COMMAND: 			INT := 0020;
+	_STEP_TRIGGER: 			INT := 0030;
+	_STEP_WAIT: 			INT := 0040;
+	_STEP_ERR: 				INT := 0050;
+END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[SUPER^();
 

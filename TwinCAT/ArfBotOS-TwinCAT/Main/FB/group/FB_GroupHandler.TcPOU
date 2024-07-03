@@ -7,7 +7,7 @@ VAR_IN_OUT
 END_VAR
 VAR_INPUT
 	Enable: BOOL;
-	StoredPositions: REFERENCE TO ARRAY [GVL.POS_ARR_BEG..GVL.POS_ARR_END] OF DUT_StoredPosition;
+	StoredPositions: REFERENCE TO ARRAY[GVL.POS_ARR_BEG..GVL.POS_ARR_END] OF DUT_StoredPosition;
 END_VAR
 VAR_OUTPUT
 	Busy: BOOL;
@@ -15,12 +15,17 @@ VAR_OUTPUT
 	ErrorID: SMC_ERROR;
 END_VAR
 VAR
+	//
 	EnableFtrig: F_TRIG;
+	
+	//
 	_SeqEnableGroup: INT;
 	_SeqDisableGroup: INT;
 	_SequenceSetKinematics: INT;
 	_SequenceSetCoordTrans: INT;
 	_SeqResetGroup: INT;
+	
+	//
 	_SMC_GroupPower: SMC_GroupPower;
 	_GroupPower: BOOL;
 	_MC_GroupEnable: MC_GroupEnable;
@@ -28,11 +33,13 @@ VAR
 	_MC_GroupReset: MC_GroupReset;
 	_MC_GroupReadActualPosition: MC_GroupReadActualPosition;
 	_SMC_SetKinConfiguration: SMC_SetKinConfiguration;
-	/// coordinate transforms
+	
+    // coordinate transforms
 	_MC_SetCoordinateTransform: MC_SetCoordinateTransform;
 	_SMC_GroupSetTool: SMC_GroupSetTool;
 	_MC_COORD_REF: MC_COORD_REF;
-	_CoordinateSystem: SMC_COORD_SYSTEM := SMC_COORD_SYSTEM.ACS;
+	_CoordinateSystem: SMC_COORD_SYSTEM:=SMC_COORD_SYSTEM.ACS;
+	
 	_EnableGroup: BOOL;
 	_DisableGroup: BOOL;
 	_GroupEnabled: BOOL;
@@ -40,25 +47,28 @@ VAR
 	_SetKinematics: BOOL;
 	_SetCoordinates: BOOL;
 	_KinematicsSet: BOOL;
+	
 	_MC_GroupReadStatus: MC_GroupReadStatus;
 	_DUT_GroupStatus: DUT_GroupStatus;
+	
 END_VAR
+
 VAR CONSTANT
-	STEP_DONE: INT := 1000;
-	STEP_IDLE: INT := 0;
-	STEP_GROUP_POWER_ON: INT := 22;
-	STEP_WAIT_POWER_ON: INT := 24;
-	STEP_GROUP_ENABLE: INT := 30;
-	STEP_WAIT_ENABLE: INT := 35;
-	STEP_READ_POSITION: INT := 40;
-	STEP_WAIT_POSITION: INT := 50;
-	STEP_SET_KINEMATICS: INT := 60;
-	STEP_WAIT_KINEMATICS: INT := 70;
-	STEP_SET_COORD_TRANS: INT := 71;
-	STEP_WAIT_COORD_TRANS: INT := 72;
-	STEP_GROUP_DISABLE: INT := 100;
-	STEP_WAIT_DISABLE: INT := 110;
-	STEP_GROUP_POWER_OFF: INT := 120;
+	STEP_DONE: 				INT := 1000;
+	STEP_IDLE: 				INT := 0000;
+	STEP_GROUP_POWER_ON: 	INT := 0022;
+	STEP_WAIT_POWER_ON: 	INT := 0024;
+	STEP_GROUP_ENABLE: 		INT := 0030;
+	STEP_WAIT_ENABLE: 		INT := 0035;
+	STEP_READ_POSITION: 	INT := 0040;
+	STEP_WAIT_POSITION: 	INT := 0050;
+	STEP_SET_KINEMATICS: 	INT := 0060;
+	STEP_WAIT_KINEMATICS: 	INT := 0070;
+	STEP_SET_COORD_TRANS: 	INT := 0071;
+	STEP_WAIT_COORD_TRANS: 	INT := 0072;
+	STEP_GROUP_DISABLE: 	INT := 0100;
+	STEP_WAIT_DISABLE: 		INT := 0110;
+	STEP_GROUP_POWER_OFF: 	INT := 0120;
 END_VAR
 ]]></Declaration>
     <Implementation>

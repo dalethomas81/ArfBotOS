@@ -4,16 +4,21 @@
     <Declaration><![CDATA[FUNCTION_BLOCK OutputCmdProcessor EXTENDS Module
 VAR_INPUT
 	Enable: BOOL;
-	Command: STRING(GVL.COMMAND_LEN) := '';
+	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
-	Digital: ARRAY[GVL.DIG_OUT_ARR_BEG..GVL.DIG_OUT_ARR_END] OF BOOL;
-	Pwm: ARRAY[GVL.PWM_OUT_ARR_BEG..GVL.PWM_OUT_ARR_END] OF BYTE;
+	Digital: ARRAY [GVL.DIG_OUT_ARR_BEG..GVL.DIG_OUT_ARR_END] OF BOOL;
+	Pwm: ARRAY [GVL.PWM_OUT_ARR_BEG..GVL.PWM_OUT_ARR_END] OF BYTE;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
 END_VAR
 VAR
 	_RunRtrig: R_TRIG;
 	_SequenceDigital: INT;
 	_SequencePwm: INT;
+	
 	_UnitModeCurrentState: PACK_ML.State;
 	_OutputCommandParser: ParseOutputCmd;
 	_OutputType: DUT_OutputType;
@@ -21,13 +26,12 @@ VAR
 	_OutputValue1: LREAL;
 END_VAR
 VAR CONSTANT
-	_STEP_DONE: INT := 1000;
-	_STEP_IDLE: INT := 0;
-	_STEP_COMMAND: INT := 10;
-	_STEP_TWO: INT := 20;
-	_STEP_ERR: INT := 30;
-END_VAR
-]]></Declaration>
+	_STEP_DONE: 		INT := 1000;
+	_STEP_IDLE: 		INT := 0000;
+	_STEP_COMMAND: 		INT := 0010;
+	_STEP_TWO: 			INT := 0020;
+	_STEP_ERR: 			INT := 0030;
+END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[SUPER^();
 

@@ -15,7 +15,38 @@ _M_HandleRemoteIO();]]></ST>
     </Implementation>
     <Method Name="_M_HandleRemoteIO" Id="{95e27eb3-1cc7-4783-8f9f-46fca05a221d}">
       <Declaration><![CDATA[METHOD PRIVATE _M_HandleRemoteIO
-]]></Declaration>
+VAR_INST
+	//
+	TxCrc, RxCrc: UINT;
+	ChecksumMisCount: INT;
+	
+	//
+	HeartbeatOn: TON;
+	HeartbeatOff: TON;
+	HeartbeatPt: TIME:=T#1000MS;
+	SysLTime, SysLTimeLast: LTIME;
+	// with 400kps i2c baudrate the clock period is 2.5us. 
+	// transferring 32 bytes at 8 bits per byte is a total of 256 bytes.
+	// disregarding other data in the message that brings the total time for one message to 640ms (256 * 2.5us).
+	// rounding up then we will set the transfer time to 2ms to allow adequate time for messaging (tx and rx).
+	TransferTime: LTIME:=LTIME#2MS;
+	TransferTrigger: BOOL;
+	
+	//
+	pabyTxBuffer: ARRAY [0..31] OF BYTE;
+	pabyRxBuffer: ARRAY [0..31] OF BYTE;
+	transferlentx: UDINT:=32;
+	transferlenrx: UDINT:=32;
+	
+	// TODO: configuration
+	i2caddress: USINT:=9;
+	
+	//
+	rx_heartbeat: BOOL;
+	rx_en: BOOL;
+	rx_alarm: BOOL;
+	rx_heartbeat_lost: BOOL;
+END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[//
 HeartbeatOn(in:=NOT HeartbeatOff.Q,PT:=HeartbeatPt);

@@ -86,14 +86,16 @@ TrackPosition(
     </Method>
     <Method Name="_M_Controller" Id="{111d7557-61e1-48d4-ad0f-48b4ac517334}">
       <Declaration><![CDATA[METHOD PRIVATE _M_Controller : BOOL
+VAR_INPUT
+END_VAR
 VAR_STAT
 	_PowerRtrig: R_TRIG;
 	_PowerFtrig: F_TRIG;
 	_PowerTimerRtrig: R_TRIG;
-	_PowerTimer: TON := (PT := TIME#1s0ms);
+	_PowerTimer: TON:=(PT:=T#1S);
 	_PsButtonRtrig: R_TRIG;
 	_PsButtonFtrig: F_TRIG;
-	_PsButtonTimer: TON := (PT := TIME#2s0ms);
+	_PsButtonTimer: TON:=(PT:=T#2S);
 	_PsButtonTimerRtrig: R_TRIG;
 	_Reseting: BOOL;
 END_VAR
@@ -290,17 +292,15 @@ ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCo
     </Method>
     <Method Name="_M_Tuning" Id="{7bc5b496-9c33-4d9b-b0d8-4ee9652747d2}">
       <Declaration><![CDATA[METHOD PRIVATE _M_Tuning : BOOL
+VAR_INPUT
+END_VAR
 VAR_STAT
 	_MoveDelayTimer: ARRAY[0..5] OF TON;
 	_TraceStartFtrig: ARRAY[0..5] OF F_TRIG;
 	_MoveBusyFtrig: ARRAY[0..5] OF F_TRIG;
-	/// ms
-	_MoveDelayTime: INT := 10;
-	_i: INT;
-	_j: INT;
-	_k: INT;
-END_VAR
-]]></Declaration>
+	_MoveDelayTime: INT:=10; // ms
+	_i, _j, _k: INT;
+END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[
 // initial values
@@ -472,11 +472,11 @@ MoveRelative[5](
       </Implementation>
     </Method>
     <Method Name="M_BuildTests" Id="{9a5607a2-ed23-4572-beb3-b80fd95846d5}">
-      <Declaration><![CDATA[METHOD M_BuildTests
+      <Declaration><![CDATA[METHOD PUBLIC M_BuildTests
+VAR_INPUT
+END_VAR
 VAR
-	_i: INT;
-	_j: INT;
-	_k: INT;
+	_i, _j, _k: INT;
 END_VAR
 ]]></Declaration>
       <Implementation>

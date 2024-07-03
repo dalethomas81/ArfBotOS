@@ -10,9 +10,9 @@ END_VAR
 VAR_INPUT
 	Enable: BOOL;
 	Reset: BOOL;
-	StoredPositions: REFERENCE TO ARRAY [GVL.POS_ARR_BEG..GVL.POS_ARR_END] OF DUT_StoredPosition;
-	VisionRegisters: REFERENCE TO ARRAY [GVL.VIS_ARR_BEG..GVL.VIS_ARR_END] OF DUT_VisionRegister;
-	Flags: REFERENCE TO ARRAY [GVL.FLG_ARR_BEG..GVL.FLG_ARR_END] OF DUT_Flags;
+	StoredPositions: REFERENCE TO ARRAY[GVL.POS_ARR_BEG..GVL.POS_ARR_END] OF DUT_StoredPosition;
+	VisionRegisters: REFERENCE TO ARRAY[GVL.VIS_ARR_BEG..GVL.VIS_ARR_END] OF DUT_VisionRegister;
+	Flags: REFERENCE TO ARRAY[GVL.FLG_ARR_BEG..GVL.FLG_ARR_END] OF DUT_Flags;
 END_VAR
 VAR_OUTPUT
 	ABC_as_ACS: BOOL;
@@ -30,30 +30,36 @@ VAR
 	_ResetRtrig: R_TRIG;
 	_ErrorRtrig: R_TRIG;
 	_EnableFtrig: F_TRIG;
+	
 	_SequenceMain: INT;
 	_SequenceSetCoordTrans: INT;
+	
 	_SMC_GroupJog2: SMC_GroupJog2;
-	_ControllerCenter: USINT := 128;
-	_ControllerDeadZone: USINT := 40;
-	_OffsetExist: ARRAY[0..(GVL.MCS_POS_IDX - GVL.TCP_POS_IDX)] OF BOOL;
-	_MoveToPose: ARRAY[0..(GVL.POSE_5_IDX - GVL.POSE_1_IDX)] OF BOOL;
+	
+	_ControllerCenter: USINT:=128;
+	_ControllerDeadZone: USINT:=40;
+	
+	_OffsetExist: ARRAY[0..GVL.MCS_POS_IDX-GVL.TCP_POS_IDX] OF BOOL;
+	
+	_MoveToPose: ARRAY[0..GVL.POSE_5_IDX-GVL.POSE_1_IDX] OF BOOL;
 	_MoveCommandProcessor: MoveCmdProcessor;
-	_i: INT;
-	_j: INT;
-	_k: INT;
-	_FirstScan: BOOL := TRUE;
+	
+	_i, _j, _k: INT;
+	_FirstScan: BOOL:=TRUE;
+	
 END_VAR
+
 VAR CONSTANT
-	STEP_DONE: INT := 1000;
-	STEP_IDLE: INT := 0;
-	STEP_GROUP_ENABLE: INT := 30;
-	STEP_WAIT_ENABLE: INT := 35;
-	STEP_SET_KINEMATICS: INT := 60;
-	STEP_WAIT_KINEMATICS: INT := 70;
-	STEP_JOG: INT := 80;
-	STEP_WAIT_JOG: INT := 90;
-	STEP_GROUP_DISABLE: INT := 100;
-	STEP_WAIT_DISABLE: INT := 110;
+	STEP_DONE: 				INT := 1000;
+	STEP_IDLE: 				INT := 0000;
+	STEP_GROUP_ENABLE: 		INT := 0030;
+	STEP_WAIT_ENABLE: 		INT := 0035;
+	STEP_SET_KINEMATICS: 	INT := 0060;
+	STEP_WAIT_KINEMATICS: 	INT := 0070;
+	STEP_JOG:				INT := 0080;
+	STEP_WAIT_JOG:			INT := 0090;
+	STEP_GROUP_DISABLE: 	INT := 0100;
+	STEP_WAIT_DISABLE: 		INT := 0110;
 END_VAR
 ]]></Declaration>
     <Implementation>
