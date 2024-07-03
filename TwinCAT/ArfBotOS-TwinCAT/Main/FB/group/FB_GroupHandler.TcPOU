@@ -3,7 +3,9 @@
   <POU Name="FB_GroupHandler" Id="{f6416d9a-a888-4f6b-9b8f-cb306c7639e1}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_GroupHandler
 VAR_IN_OUT
-	AxisGroup: AXIS_GROUP_REF_SM3;
+	AxisGroup: AXES_GROUP_REF;
+    KinAxes: ST_KinAxes;
+    ChannelRef: NCTOPLC_NCICHANNEL_REF;
 END_VAR
 VAR_INPUT
 	Enable: BOOL;
@@ -26,19 +28,22 @@ VAR
 	_SeqResetGroup: INT;
 	
 	//
-	_SMC_GroupPower: SMC_GroupPower;
+	//_SMC_GroupPower: SMC_GroupPower;
 	_GroupPower: BOOL;
 	_MC_GroupEnable: MC_GroupEnable;
 	_MC_GroupDisable: MC_GroupDisable;
 	_MC_GroupReset: MC_GroupReset;
-	_MC_GroupReadActualPosition: MC_GroupReadActualPosition;
-	_SMC_SetKinConfiguration: SMC_SetKinConfiguration;
+	//_MC_GroupReadActualPosition: MC_GroupReadActualPosition;
+	//_SMC_SetKinConfiguration: SMC_SetKinConfiguration;
+    
+    //
+    _FB_KinConfigGroup      : FB_KinConfigGroup;
 	
     // coordinate transforms
 	_MC_SetCoordinateTransform: MC_SetCoordinateTransform;
-	_SMC_GroupSetTool: SMC_GroupSetTool;
+	//_SMC_GroupSetTool: SMC_GroupSetTool;
 	_MC_COORD_REF: MC_COORD_REF;
-	_CoordinateSystem: SMC_COORD_SYSTEM:=SMC_COORD_SYSTEM.ACS;
+	//_CoordinateSystem: SMC_COORD_SYSTEM:=SMC_COORD_SYSTEM.ACS;
 	
 	_EnableGroup: BOOL;
 	_DisableGroup: BOOL;
@@ -90,7 +95,7 @@ _M_DisableGroup();
 _M_SetKinematics();
 _M_ResetGroup();
 
-_MC_GroupReadStatus(
+(*_MC_GroupReadStatus(
 	AxisGroup:= AxisGroup, 
 	Enable:= Enable, 
 	Valid=> _DUT_GroupStatus.Valid, 
@@ -109,27 +114,26 @@ _MC_GroupReadStatus(
 	FirstReferencedMovementId=> _DUT_GroupStatus.FirstReferencedMovementId, 
 	LastAcceptedMovementId=> _DUT_GroupStatus.LastAcceptedMovementId, 
 	PositionLag=> _DUT_GroupStatus.PositionLag, 
-	OrientationLag=> _DUT_GroupStatus.OrientationLag);
+	OrientationLag=> _DUT_GroupStatus.OrientationLag);*)
 
 _MC_SetCoordinateTransform(
-	AxisGroup:= AxisGroup, 
+	AxesGroup:= AxisGroup, 
 	Execute:= , 
 	CoordTransform:= _MC_COORD_REF, 
-	CoordSystem:= , 
 	Done=> , 
 	Busy=> , 
 	Error=> , 
 	ErrorID=> );
 
-_SMC_GroupSetTool(
+(*_SMC_GroupSetTool(
 	AxisGroup:= AxisGroup, 
 	Execute:= , 
 	ToolOffset:= _MC_COORD_REF, 
 	Done=> , 
 	Error=> , 
-	ErrorID=> );
+	ErrorID=> );*)
 
-_SMC_GroupPower(
+(*_SMC_GroupPower(
 	AxisGroup:= AxisGroup, 
 	Enable:= _GroupPower, 
 	bRegulatorOn:= _GroupPower, 
@@ -137,19 +141,18 @@ _SMC_GroupPower(
 	Status=> , 
 	Busy=> , 
 	Error=> , 
-	ErrorID=> );
+	ErrorID=> );*)
 
 _MC_GroupEnable(
-	AxisGroup:= AxisGroup, 
+	AxesGroup:= AxisGroup, 
 	Execute:= , 
-	CompatibilityOptions:= , 
 	Done=> , 
 	Busy=> , 
 	Error=> , 
 	ErrorID=> );
 	
 _MC_GroupDisable(
-	AxisGroup:= AxisGroup, 
+	AxesGroup:= AxisGroup, 
 	Execute:= , 
 	Done=> , 
 	Busy=> , 
@@ -157,14 +160,14 @@ _MC_GroupDisable(
 	ErrorID=> );
 
 _MC_GroupReset(
-	AxisGroup:= AxisGroup, 
+	AxesGroup:= AxisGroup, 
 	Execute:= , 
 	Done=> , 
 	Busy=> , 
 	Error=> , 
 	ErrorID=> );
 
-_MC_GroupReadActualPosition(
+(*_MC_GroupReadActualPosition(
 	AxisGroup:= AxisGroup, 
 	Enable:= , 
 	CoordSystem:= _CoordinateSystem, 
@@ -173,16 +176,26 @@ _MC_GroupReadActualPosition(
 	Error=> , 
 	ErrorID=> , 
 	Position=> , 
-	KinematicConfig=> );
+	KinematicConfig=> );*)
 	
-_SMC_SetKinConfiguration(
+(*_SMC_SetKinConfiguration(
 	AxisGroup:= AxisGroup, 
 	Execute:= , 
 	ConfigData:= _MC_GroupReadActualPosition.KinematicConfig, 
 	Done=> , 
 	Busy=> , 
 	Error=> , 
-	ErrorID=> );]]></ST>
+	ErrorID=> );*)
+    
+_FB_KinConfigGroup(
+	bExecute:= , 
+	bCartesianMode:= , 
+	stAxesList:= KinAxes, 
+	stKinRefIn:= ChannelRef, 
+	bBusy=> , 
+	bDone=> , 
+	bError=> , 
+	nErrorId=> );]]></ST>
     </Implementation>
     <Method Name="_M_DisableGroup" Id="{17aa3a99-9fea-4672-a49a-0a0b6efeb4bc}">
       <Declaration><![CDATA[METHOD PRIVATE _M_DisableGroup : BOOL
@@ -276,7 +289,7 @@ CASE _SeqResetGroup OF
 		
 	1:
 		Error := FALSE;
-		ErrorID := SMC_NO_ERROR;
+		ErrorID := 0;
 		_MC_GroupReset.Execute := TRUE;
 		_SeqResetGroup := _SeqResetGroup + 1;
 	
@@ -363,14 +376,14 @@ CASE _SequenceSetCoordTrans OF
 	0: //
 		IF _SetCoordinates THEN
 			_SetCoordinates := FALSE;
-			_SMC_GroupSetTool.Execute := FALSE;
+			//_SMC_GroupSetTool.Execute := FALSE;
 			_MC_SetCoordinateTransform.Execute := FALSE;
 			_SequenceSetCoordTrans := _SequenceSetCoordTrans + 1;
 		END_IF
 	
 	1: //
 		_MC_COORD_REF := StoredPositions[GVL.MCS_POS_IDX].Position; // MCS
-		_MC_SetCoordinateTransform.CoordSystem := SMC_COORD_SYSTEM.MCS;
+		//_MC_SetCoordinateTransform.CoordSystem := SMC_COORD_SYSTEM.MCS;
 		_MC_SetCoordinateTransform.Execute := TRUE;
 		_SequenceSetCoordTrans := _SequenceSetCoordTrans + 1;
 		
@@ -381,14 +394,16 @@ CASE _SequenceSetCoordTrans OF
 										CONCAT(TO_STRING(_MC_SetCoordinateTransform.ErrorID),
 										CONCAT(' ', SMC_ErrorString(_MC_SetCoordinateTransform.ErrorID,
 													SMC_Language_Type.english)))));*)
+			//SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_SetCoordinateTransform.ErrorID)));
 			_SequenceSetCoordTrans := 10; // error step so we dont spam errors
 			
 		ELSIF _MC_SetCoordinateTransform.Done THEN
 			_MC_SetCoordinateTransform.Execute := FALSE;
-			_SequenceSetCoordTrans := _SequenceSetCoordTrans + 1;
+			//_SequenceSetCoordTrans := _SequenceSetCoordTrans + 1;
+			_SequenceSetCoordTrans := 0;
 		END_IF
 		
-	3: //
+	(*3: //
 		_MC_COORD_REF := StoredPositions[GVL.PC1_POS_IDX].Position; // PCS 1
 		_MC_SetCoordinateTransform.CoordSystem := SMC_COORD_SYSTEM.PCS_1;
 		_MC_SetCoordinateTransform.Execute := TRUE;
@@ -401,6 +416,7 @@ CASE _SequenceSetCoordTrans OF
 										CONCAT(TO_STRING(_MC_SetCoordinateTransform.ErrorID),
 										CONCAT(' ', SMC_ErrorString(_MC_SetCoordinateTransform.ErrorID,
 													SMC_Language_Type.english)))));*)
+			//SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_SetCoordinateTransform.ErrorID)));
 			_SequenceSetCoordTrans := 10; // error step so we dont spam errors
 			
 		ELSIF _MC_SetCoordinateTransform.Done THEN
@@ -421,6 +437,7 @@ CASE _SequenceSetCoordTrans OF
 										CONCAT(TO_STRING(_MC_SetCoordinateTransform.ErrorID),
 										CONCAT(' ', SMC_ErrorString(_MC_SetCoordinateTransform.ErrorID,
 													SMC_Language_Type.english)))));*)
+			//SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_SetCoordinateTransform.ErrorID)));
 			_SequenceSetCoordTrans := 10; // error step so we dont spam errors
 			
 		ELSIF _MC_SetCoordinateTransform.Done THEN
@@ -440,12 +457,13 @@ CASE _SequenceSetCoordTrans OF
 										CONCAT(TO_STRING(_SMC_GroupSetTool.ErrorID),
 										CONCAT(' ', SMC_ErrorString(_SMC_GroupSetTool.ErrorID,
 													SMC_Language_Type.english)))));*)
+			//SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_SMC_GroupSetTool.ErrorID)));
 			_SequenceSetCoordTrans := 999; // error step so we dont spam errors
 			
 		ELSIF _SMC_GroupSetTool.Done THEN
 			_SMC_GroupSetTool.Execute := FALSE;
 			_SequenceSetCoordTrans := 0;
-		END_IF
+		END_IF*)
 
 END_CASE]]></ST>
       </Implementation>

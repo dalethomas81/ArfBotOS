@@ -60,6 +60,7 @@ END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[
 // twincat hello world
+// https://infosys.beckhoff.com/content/1033/tf5240_kinematic_transformation/292852107.html?id=2424647827091372088
 (* read the IDs from the cyclic axis interface so the axes can mapped later to the kinematic group *)
 stAxesConfig.nAxisIdsAcs[1] := io_M1.NcToPlc.AxisId;
 stAxesConfig.nAxisIdsAcs[2] := io_M2.NcToPlc.AxisId;
@@ -219,10 +220,11 @@ IF ProcessHome.Reset THEN
 	HomingStatusText := '';
 END_IF
 IF ProcessHome.Error THEN
-	JogStatusText := CONCAT('Homing Processor Error: ',
+	(*JogStatusText := CONCAT('Homing Processor Error: ',
 						CONCAT(TO_STRING(ProcessHome.ErrorID),
 						CONCAT(' ', SMC_ErrorString(ProcessHome.ErrorID,
-									SMC_Language_Type.english)))) ;
+									SMC_Language_Type.english)))) ;*)
+	JogStatusText := CONCAT('Homing Processor Error: ', TO_STRING(ProcessHome.ErrorID));
 END_IF]]></ST>
       </Implementation>
     </Method>
@@ -269,10 +271,11 @@ IF ProcessJog.Reset THEN
 	JogStatusText := '';
 END_IF
 IF ProcessJog.Error THEN
-	JogStatusText := CONCAT('Jog Processor Error: ',
+	(*JogStatusText := CONCAT('Jog Processor Error: ',
 						CONCAT(TO_STRING(ProcessJog.ErrorID),
 						CONCAT(' ', SMC_ErrorString(ProcessJog.ErrorID,
-									SMC_Language_Type.english)))) ;
+									SMC_Language_Type.english)))) ;*)
+	JogStatusText := CONCAT('Jog Processor Error: ', TO_STRING(ProcessJog.ErrorID));
 END_IF]]></ST>
       </Implementation>
     </Method>

@@ -6,7 +6,7 @@ STRUCT
 	Valid: BOOL;
 	Busy: BOOL;
 	Error: BOOL;
-	ErrorID: SMC_ERROR;
+	ErrorID: UDINT;
 	GroupMoving: BOOL;
 	GroupHoming: BOOL;
 	GroupErrorStop: BOOL;

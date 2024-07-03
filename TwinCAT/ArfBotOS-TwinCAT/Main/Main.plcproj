@@ -48,12 +48,6 @@
     <Compile Include="DUTs\DUT_VisionRegister.TcDUT">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DUTs\E_KinStatus.TcTLEO">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="DUTs\ST_KinAxes.TcDUT">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="FB\controller\E_ControllerBrightness.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -362,30 +356,6 @@
       <DefaultResolution>OMAC PackML State Machine, * (3S - Smart Software Solutions GmbH)</DefaultResolution>
       <Namespace>PACK_ML</Namespace>
     </PlaceholderReference>
-    <PlaceholderReference Include="SM3_CNC">
-      <DefaultResolution>SM3_CNC, * (CODESYS)</DefaultResolution>
-      <Namespace>SM3_CNC</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="SM3_CNC_Visu">
-      <DefaultResolution>SM3_CNC_Visu, * (CODESYS)</DefaultResolution>
-      <Namespace>SM3_CNC_Visu</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="SM3_Drive_PosControl">
-      <DefaultResolution>SM3_Drive_PosControl, * (CODESYS)</DefaultResolution>
-      <Namespace>SM3_Drive_PosControl</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="SM3_Robotics">
-      <DefaultResolution>SM3_Robotics, * (CODESYS)</DefaultResolution>
-      <Namespace>SM3_Robotics</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="SM3_Robotics_Visu">
-      <DefaultResolution>SM3_Robotics_Visu, * (CODESYS)</DefaultResolution>
-      <Namespace>SM3_Robotics_Visu</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="SM3_Transformation">
-      <DefaultResolution>SM3_Transformation, * (CODESYS)</DefaultResolution>
-      <Namespace>TRAFO</Namespace>
-    </PlaceholderReference>
     <PlaceholderReference Include="Standard">
       <DefaultResolution>Standard</DefaultResolution>
       <Namespace>Tc2_Standard</Namespace>
@@ -414,6 +384,10 @@
     <PlaceholderReference Include="Tc3_MC2_AdvancedHoming">
       <DefaultResolution>Tc3_MC2_AdvancedHoming, * (Beckhoff Automation GmbH)</DefaultResolution>
       <Namespace>Tc3_MC2_AdvancedHoming</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_McCoordinatedMotion">
+      <DefaultResolution>Tc3_McCoordinatedMotion, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_McCoordinatedMotion</Namespace>
     </PlaceholderReference>
     <PlaceholderReference Include="Tc3_Module">
       <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
@@ -473,12 +447,6 @@
     </PlaceholderResolution>
     <PlaceholderResolution Include="System_VisuElemTrace">
       <Resolution>VisuElemTrace, * (System)</Resolution>
-    </PlaceholderResolution>
-    <PlaceholderResolution Include="System_VisuElemXYChart">
-      <Resolution>VisuElemXYChart, * (System)</Resolution>
-    </PlaceholderResolution>
-    <PlaceholderResolution Include="System_VisuInputs">
-      <Resolution>VisuInputs, * (System)</Resolution>
     </PlaceholderResolution>
     <PlaceholderResolution Include="System_VisuNativeControl">
       <Resolution>VisuNativeControl, * (System)</Resolution>

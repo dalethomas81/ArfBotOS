@@ -3,7 +3,7 @@
   <POU Name="FB_JogProcessor" Id="{9ad0dd5a-e160-4345-8eee-ad9cf9bfb3eb}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_JogProcessor
 VAR_IN_OUT
-	AxisGroup: AXIS_GROUP_REF_SM3;
+	AxisGroup: ST_KinAxes;
 	GroupHandler: FB_GroupHandler;
 	Controller: FB_Controller;
 END_VAR
@@ -22,7 +22,7 @@ VAR_OUTPUT
 	Done: BOOL;
 	Busy: BOOL;
 	Error: BOOL;
-	ErrorID: SMC_ERROR;
+	ErrorID: UDINT;
 END_VAR
 VAR
 	_ExecuteRtrig: R_TRIG;
@@ -169,7 +169,7 @@ END_CASE
 //
 IF _ResetRtrig.Q AND Error THEN
 	Error := FALSE;
-	ErrorID := SMC_NO_ERROR;
+	ErrorID := 0;
 	_SequenceMain := STEP_DONE;
 	GroupHandler.M_ResetGroup();
 	_MoveCommandProcessor.M_Home();

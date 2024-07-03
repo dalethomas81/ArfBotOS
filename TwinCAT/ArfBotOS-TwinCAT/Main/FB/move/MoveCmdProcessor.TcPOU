@@ -86,10 +86,11 @@ CASE SUPER^._SeqMain OF
 		IF GroupHandler.M_EnableGroup() THEN
 			SUPER^._SeqMain := _STEP_WAIT_ENABLE;
 		ELSE
-			SUPER^.M_Error(Description:=CONCAT('Group Handler Error: ',
+			(*SUPER^.M_Error(Description:=CONCAT('Group Handler Error: ',
 										CONCAT(TO_STRING(GroupHandler.ErrorID),
 										CONCAT(' ', SMC_ErrorString(GroupHandler.ErrorID,
-													SMC_Language_Type.english)))));
+													SMC_Language_Type.english)))));*)
+			SUPER^.M_Error(Description:=CONCAT('Group Handler Error: ', TO_STRING(GroupHandler.ErrorID)));
 			SUPER^._SeqMain := _STEP_ERR; // error step so we dont spam errors
 		END_IF
 		
@@ -105,10 +106,11 @@ CASE SUPER^._SeqMain OF
 		IF GroupHandler.M_SetKinematics(_MoveCommandParser.stCommand.CoordSystem) THEN
 			SUPER^._SeqMain := _STEP_WAIT_KINEMATICS;
 		ELSE
-			SUPER^.M_Error(Description:=CONCAT('Group Handler Error: ',
+			(*SUPER^.M_Error(Description:=CONCAT('Group Handler Error: ',
 										CONCAT(TO_STRING(GroupHandler.ErrorID),
 										CONCAT(' ', SMC_ErrorString(GroupHandler.ErrorID,
-													SMC_Language_Type.english)))));
+													SMC_Language_Type.english)))));*)
+			SUPER^.M_Error(Description:=CONCAT('Group Handler Error: ', TO_STRING(GroupHandler.ErrorID)));
 			SUPER^._SeqMain := _STEP_ERR; // error step so we dont spam errors
 		END_IF
 		
@@ -159,10 +161,11 @@ CASE SUPER^._SeqMain OF
 		IF GroupHandler.M_DisableGroup() THEN
 			SUPER^._SeqMain := _STEP_WAIT_DISABLE;
 		ELSE
-			SUPER^.M_Error(Description:=CONCAT('Group Handler Error: ',
+			(*SUPER^.M_Error(Description:=CONCAT('Group Handler Error: ',
 										CONCAT(TO_STRING(GroupHandler.ErrorID),
 										CONCAT(' ', SMC_ErrorString(GroupHandler.ErrorID,
-													SMC_Language_Type.english)))));
+													SMC_Language_Type.english)))));*)
+			SUPER^.M_Error(Description:=CONCAT('Group Handler Error: ', TO_STRING(GroupHandler.ErrorID)));
 			SUPER^._SeqMain := _STEP_ERR; // error step so we dont spam errors
 		END_IF
 		
@@ -182,10 +185,11 @@ CASE _SequenceMoveCircularAbsolute OF
 		
 	2: //
 		IF _MC_MoveCircularAbsolute.Error THEN
-			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
+			(*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
 										CONCAT(TO_STRING(_MC_MoveCircularAbsolute.ErrorID),
 										CONCAT(' ', SMC_ErrorString(_MC_MoveCircularAbsolute.ErrorID,
-													SMC_Language_Type.english)))));
+													SMC_Language_Type.english)))));*)
+			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveCircularAbsolute.ErrorID)));
 			_SequenceMoveCircularAbsolute := 3; // error step so we dont spam errors
 		ELSIF  _MC_MoveCircularAbsolute.Done THEN
 			_MC_MoveCircularAbsolute.Execute := FALSE;
@@ -203,10 +207,11 @@ CASE _SequenceMoveCircularRelative OF
 		
 	2: //
 		IF _MC_MoveCircularRelative.Error THEN
-			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
+			(*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
 										CONCAT(TO_STRING(_MC_MoveCircularRelative.ErrorID),
 										CONCAT(' ', SMC_ErrorString(_MC_MoveCircularRelative.ErrorID,
-													SMC_Language_Type.english)))));
+													SMC_Language_Type.english)))));*)
+			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveCircularRelative.ErrorID)));
 			_SequenceMoveCircularRelative := 3; // error step so we dont spam errors
 		ELSIF  _MC_MoveCircularRelative.Done THEN
 			_MC_MoveCircularRelative.Execute := FALSE;
@@ -224,10 +229,11 @@ CASE _SequenceMoveDirectAbsolute OF
 		
 	2: //
 		IF _MC_MoveDirectAbsolute.Error THEN
-			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
+			(*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
 										CONCAT(TO_STRING(_MC_MoveDirectAbsolute.ErrorID),
 										CONCAT(' ', SMC_ErrorString(_MC_MoveDirectAbsolute.ErrorID,
-													SMC_Language_Type.english)))));
+													SMC_Language_Type.english)))));*)
+			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveDirectAbsolute.ErrorID)));
 			_SequenceMoveDirectAbsolute := 3; // error step so we dont spam errors
 			
 		ELSIF _MC_MoveDirectAbsolute.Done THEN
@@ -246,10 +252,11 @@ CASE _SequenceMoveDirectRelative OF
 		
 	2: //
 		IF _MC_MoveDirectRelative.Error THEN
-			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
+			(*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
 										CONCAT(TO_STRING(_MC_MoveDirectRelative.ErrorID),
 										CONCAT(' ', SMC_ErrorString(_MC_MoveDirectRelative.ErrorID,
-													SMC_Language_Type.english)))));
+													SMC_Language_Type.english)))));*)
+			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveDirectRelative.ErrorID)));
 			_SequenceMoveDirectRelative := 3; // error step so we dont spam errors
 			
 		ELSIF _MC_MoveDirectRelative.Done THEN
@@ -268,10 +275,11 @@ CASE _SequenceMoveLinearAbsolute OF
 		
 	2: //
 		IF _MC_MoveLinearAbsolute.Error THEN
-			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
+			(*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
 										CONCAT(TO_STRING(_MC_MoveLinearAbsolute.ErrorID),
 										CONCAT(' ', SMC_ErrorString(_MC_MoveLinearAbsolute.ErrorID,
-													SMC_Language_Type.english)))));
+													SMC_Language_Type.english)))));*)
+			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveLinearAbsolute.ErrorID)));
 			_SequenceMoveLinearAbsolute := 3; // error step so we dont spam errors
 			
 		ELSIF _MC_MoveLinearAbsolute.Done THEN
@@ -289,10 +297,11 @@ CASE _SequenceMoveLinearRelative OF
 		
 	2: //
 		IF _MC_MoveLinearRelative.Error THEN
-		SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
+		    (*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
 										CONCAT(TO_STRING(_MC_MoveLinearRelative.ErrorID),
 										CONCAT(' ', SMC_ErrorString(_MC_MoveLinearRelative.ErrorID,
-													SMC_Language_Type.english)))));
+													SMC_Language_Type.english)))));*)
+			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveLinearRelative.ErrorID)));
 			_SequenceMoveLinearRelative := 3; // error step so we dont spam errors
 			
 		ELSIF _MC_MoveLinearRelative.Done THEN

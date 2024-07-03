@@ -586,28 +586,28 @@ _MoveCommandProcessor(
         <ST><![CDATA[
 // adjust all the persistent variables to take on the calibrated values
 StoredPositions[GVL.HOM_POS_IDX].Position.X := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X, 
-																				CurrentPosition:= J1.fActPosition, 
-																				HomeSearchDirection:= _SMC_Homing_J1.nDirection);
+																				CurrentPosition:= J1.NcToPlc.ActPos, 
+																				HomeSearchDirection:= _SMC_Homing_J1.Options.SearchDirection);
 
 StoredPositions[GVL.HOM_POS_IDX].Position.Y := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y, 
-																				CurrentPosition:= J2.fActPosition, 
-																				HomeSearchDirection:= _SMC_Homing_J2.nDirection);
+																				CurrentPosition:= J2.NcToPlc.ActPos, 
+																				HomeSearchDirection:= _SMC_Homing_J2.Options.SearchDirection);
 
 StoredPositions[GVL.HOM_POS_IDX].Position.Z := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z, 
-																				CurrentPosition:= J3.fActPosition, 
-																				HomeSearchDirection:= _SMC_Homing_J3.nDirection);
+																				CurrentPosition:= J3.NcToPlc.ActPos, 
+																				HomeSearchDirection:= _SMC_Homing_J3.Options.SearchDirection);
 
 StoredPositions[GVL.HOM_POS_IDX].Position.A := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A, 
-																				CurrentPosition:= J4.fActPosition, 
-																				HomeSearchDirection:= _SMC_Homing_J4.nDirection);
+																				CurrentPosition:= J4.NcToPlc.ActPos, 
+																				HomeSearchDirection:= _SMC_Homing_J4.Options.SearchDirection);
 
 StoredPositions[GVL.HOM_POS_IDX].Position.B := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B, 
-																				CurrentPosition:= J5.fActPosition, 
-																				HomeSearchDirection:= _SMC_Homing_J5.nDirection);
+																				CurrentPosition:= J5.NcToPlc.ActPos, 
+																				HomeSearchDirection:= _SMC_Homing_J5.Options.SearchDirection);
 
 StoredPositions[GVL.HOM_POS_IDX].Position.C := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C, 
-																				CurrentPosition:= J6.fActPosition, 
-																				HomeSearchDirection:= _SMC_Homing_J6.nDirection);
+																				CurrentPosition:= J6.NcToPlc.ActPos, 
+																				HomeSearchDirection:= _SMC_Homing_J6.Options.SearchDirection);
 
 // this isnt totally needed but will calibrate the current session without the need to rehome
 _MC_SetPosition_J1.Execute:=TRUE;

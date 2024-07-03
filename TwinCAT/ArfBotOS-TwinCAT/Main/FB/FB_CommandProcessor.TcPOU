@@ -3,7 +3,7 @@
   <POU Name="FB_CommandProcessor" Id="{97872514-f094-4f4a-8630-59a989ffd663}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_CommandProcessor EXTENDS Module
 VAR_IN_OUT
-	AxisGroup: AXIS_GROUP_REF_SM3;
+	AxisGroup: AXES_GROUP_REF;
 	GroupHandler: FB_GroupHandler;
 	CmdIO: ST_LogicCmdIO;
 	PrgProcessor: FB_ProgramProcessor;
