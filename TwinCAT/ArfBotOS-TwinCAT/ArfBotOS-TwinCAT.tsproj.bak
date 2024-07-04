@@ -2036,7 +2036,7 @@ External Setpoint Generation:
 			</ArrayInfo>
 		</DataType>
 		<DataType>
-			<Name GUID="{9F3949CA-3F5F-3AC9-6F55-4C10D1DB3E5D}" AutoDeleteType="true">DUT_CommandType</Name>
+			<Name GUID="{A79401DE-8895-AE85-3AA7-13285E48A81A}" AutoDeleteType="true">DUT_CommandType</Name>
 			<BitSize>16</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
 			<EnumInfo>
@@ -2090,11 +2090,11 @@ External Setpoint Generation:
 				</Property>
 				<Property>
 					<Name>to_string_function</Name>
-					<Value>__TO_STRING__785</Value>
+					<Value>__TO_STRING__735</Value>
 				</Property>
 				<Property>
 					<Name>to_wstring_function</Name>
-					<Value>__TO_WSTRING__785</Value>
+					<Value>__TO_WSTRING__735</Value>
 				</Property>
 				<Property>
 					<Name>generate_implicit_init_function</Name>
@@ -2102,11 +2102,11 @@ External Setpoint Generation:
 			</Properties>
 		</DataType>
 		<DataType>
-			<Name GUID="{A678822A-5E9F-9BD6-3B06-C76BF7B69D0F}" AutoDeleteType="true">DUT_Command</Name>
+			<Name GUID="{D1A49453-2F46-560D-A8D5-AF7B9206045D}" AutoDeleteType="true">DUT_Command</Name>
 			<BitSize>2720</BitSize>
 			<SubItem>
 				<Name>CommandType</Name>
-				<Type GUID="{9F3949CA-3F5F-3AC9-6F55-4C10D1DB3E5D}">DUT_CommandType</Type>
+				<Type GUID="{A79401DE-8895-AE85-3AA7-13285E48A81A}">DUT_CommandType</Type>
 				<BitSize>16</BitSize>
 				<BitOffs>0</BitOffs>
 			</SubItem>
@@ -2124,7 +2124,7 @@ External Setpoint Generation:
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{78BBBBB0-1EB0-AB35-5AB5-D60A20D7C74A}" AutoDeleteType="true">DUT_Program</Name>
+			<Name GUID="{191AF64F-2DFB-E6F6-DE83-7CD0251E920D}" AutoDeleteType="true">DUT_Program</Name>
 			<BitSize>136656</BitSize>
 			<SubItem>
 				<Name>ProgramName</Name>
@@ -2134,7 +2134,7 @@ External Setpoint Generation:
 			</SubItem>
 			<SubItem>
 				<Name>Commands</Name>
-				<Type GUID="{A678822A-5E9F-9BD6-3B06-C76BF7B69D0F}">DUT_Command</Type>
+				<Type GUID="{D1A49453-2F46-560D-A8D5-AF7B9206045D}">DUT_Command</Type>
 				<ArrayInfo>
 					<LBound>0</LBound>
 					<Elements>50</Elements>
@@ -2146,7 +2146,7 @@ External Setpoint Generation:
 		<DataType>
 			<Name IecBaseType="true">ARRAY [0..19] OF DUT_Program</Name>
 			<BitSize>2733120</BitSize>
-			<BaseType GUID="{78BBBBB0-1EB0-AB35-5AB5-D60A20D7C74A}">DUT_Program</BaseType>
+			<BaseType GUID="{191AF64F-2DFB-E6F6-DE83-7CD0251E920D}">DUT_Program</BaseType>
 			<ArrayInfo>
 				<LBound>0</LBound>
 				<Elements>20</Elements>
@@ -2174,7 +2174,7 @@ External Setpoint Generation:
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name IecBaseType="true">ARRAY [0..49] OF DUT_StoredPosition</Name>
+			<Name GUID="{2168EE36-1B90-190A-C6FC-44883BDF9896}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..49] OF DUT_StoredPosition</Name>
 			<BitSize>35200</BitSize>
 			<BaseType GUID="{34ED429A-DADD-BE80-6E1E-633706829C71}">DUT_StoredPosition</BaseType>
 			<ArrayInfo>
@@ -2194,7 +2194,7 @@ External Setpoint Generation:
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name IecBaseType="true">ARRAY [0..49] OF DUT_VisionRegister</Name>
+			<Name GUID="{32EE9F68-996C-042C-D20D-885A783D3F13}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..49] OF DUT_VisionRegister</Name>
 			<BitSize>36800</BitSize>
 			<BaseType GUID="{E1D73C68-861A-5CF1-D28C-136BFC5E3BD5}">DUT_VisionRegister</BaseType>
 			<ArrayInfo>
@@ -2225,7 +2225,7 @@ External Setpoint Generation:
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name IecBaseType="true">ARRAY [0..49] OF DUT_Flags</Name>
+			<Name GUID="{3E17E049-7235-3828-4255-C95966CFE06E}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..49] OF DUT_Flags</Name>
 			<BitSize>32800</BitSize>
 			<BaseType GUID="{1DECCFBC-CD73-8A3F-E208-31DEE8033F84}">DUT_Flags</BaseType>
 			<ArrayInfo>
@@ -2286,7 +2286,7 @@ External Setpoint Generation:
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name IecBaseType="true">ARRAY [0..5] OF DUT_PositionController</Name>
+			<Name GUID="{873E62D6-2103-62DF-E991-2F5352C4AE8B}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..5] OF DUT_PositionController</Name>
 			<BitSize>3072</BitSize>
 			<BaseType GUID="{6C6A0556-EBC5-D04D-5EEB-F615F91F008D}">DUT_PositionController</BaseType>
 			<ArrayInfo>
@@ -2408,6 +2408,7 @@ External Setpoint Generation:
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
 							<TimeComp TaskDelayCycles="1"/>
+							<ParameterChanged>289</ParameterChanged>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -4667,14 +4668,14 @@ External Setpoint Generation:
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{E1BDEF2C-BEC9-98D4-87AA-187D10793CAE}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{A4F7F559-9CA4-9D81-A01A-C33CDB18D536}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
 						<Name>PlcTask Retains</Name>
 						<Var>
 							<Name>PersistentVars.Programs</Name>
-							<Type GUID="{639A8F52-21C5-7062-CFD8-EAC8E8F30CF7}">ARRAY [0..19] OF DUT_Program</Type>
+							<Type GUID="{5CDC1CBE-29CE-4902-D3D0-D0769112028D}">ARRAY [0..19] OF DUT_Program</Type>
 							<InOut>7</InOut>
 						</Var>
 						<Var>
@@ -5174,4 +5175,127 @@ Controller: FB_Controller;
 			</Device>
 		</Io>
 	</Project>
+	<Mappings>
+		<MappingInfo Identifier="{00000000-2001-0850-0020-500810000403}" Id="#x02030010"/>
+		<OwnerA Name="TIPC^Main^Main Instance">
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^Box 1 (EasyCAT 32+32 rev 1)">
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[0]" VarB="Inputs^Byte0"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[10]" VarB="Inputs^Byte10"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[11]" VarB="Inputs^Byte11"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[12]" VarB="Inputs^Byte12"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[13]" VarB="Inputs^Byte13"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[14]" VarB="Inputs^Byte14"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[15]" VarB="Inputs^Byte15"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[16]" VarB="Inputs^Byte16"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[17]" VarB="Inputs^Byte17"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[18]" VarB="Inputs^Byte18"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[19]" VarB="Inputs^Byte19"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[1]" VarB="Inputs^Byte1"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[20]" VarB="Inputs^Byte20"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[21]" VarB="Inputs^Byte21"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[22]" VarB="Inputs^Byte22"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[23]" VarB="Inputs^Byte23"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[24]" VarB="Inputs^Byte24"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[25]" VarB="Inputs^Byte25"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[26]" VarB="Inputs^Byte26"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[27]" VarB="Inputs^Byte27"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[28]" VarB="Inputs^Byte28"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[29]" VarB="Inputs^Byte29"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[2]" VarB="Inputs^Byte2"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[30]" VarB="Inputs^Byte30"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[31]" VarB="Inputs^Byte31"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[3]" VarB="Inputs^Byte3"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[4]" VarB="Inputs^Byte4"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[5]" VarB="Inputs^Byte5"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[6]" VarB="Inputs^Byte6"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[7]" VarB="Inputs^Byte7"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[8]" VarB="Inputs^Byte8"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[9]" VarB="Inputs^Byte9"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[0]" VarB="Outputs^Byte0"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[10]" VarB="Outputs^Byte10"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[11]" VarB="Outputs^Byte11"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[12]" VarB="Outputs^Byte12"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[13]" VarB="Outputs^Byte13"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[14]" VarB="Outputs^Byte14"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[15]" VarB="Outputs^Byte15"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[16]" VarB="Outputs^Byte16"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[17]" VarB="Outputs^Byte17"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[18]" VarB="Outputs^Byte18"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[19]" VarB="Outputs^Byte19"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[1]" VarB="Outputs^Byte1"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[20]" VarB="Outputs^Byte20"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[21]" VarB="Outputs^Byte21"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[22]" VarB="Outputs^Byte22"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[23]" VarB="Outputs^Byte23"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[24]" VarB="Outputs^Byte24"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[25]" VarB="Outputs^Byte25"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[26]" VarB="Outputs^Byte26"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[27]" VarB="Outputs^Byte27"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[28]" VarB="Outputs^Byte28"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[29]" VarB="Outputs^Byte29"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[2]" VarB="Outputs^Byte2"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[30]" VarB="Outputs^Byte30"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[31]" VarB="Outputs^Byte31"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[3]" VarB="Outputs^Byte3"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[4]" VarB="Outputs^Byte4"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[5]" VarB="Outputs^Byte5"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[6]" VarB="Outputs^Byte6"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[7]" VarB="Outputs^Byte7"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[8]" VarB="Outputs^Byte8"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[9]" VarB="Outputs^Byte9"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 1">
+				<Link VarA="PlcTask Inputs^_00_Main.io_M1.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.io_M1.PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 2">
+				<Link VarA="PlcTask Inputs^_00_Main.io_M2.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.io_M2.PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 3">
+				<Link VarA="PlcTask Inputs^_00_Main.io_M3.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.io_M3.PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 4">
+				<Link VarA="PlcTask Inputs^_00_Main.io_M4.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.io_M4.PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 5">
+				<Link VarA="PlcTask Inputs^_00_Main.io_M5.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.io_M5.PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 6">
+				<Link VarA="PlcTask Inputs^_00_Main.io_M6.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.io_M6.PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS 1">
+				<Link VarA="PlcTask Inputs^_00_Main.io_X.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.io_X.PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS 2">
+				<Link VarA="PlcTask Inputs^_00_Main.io_Y.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.io_Y.PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS 3">
+				<Link VarA="PlcTask Inputs^_00_Main.io_Z.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.io_Z.PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS 4">
+				<Link VarA="PlcTask Inputs^_00_Main.io_A.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.io_A.PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS 5">
+				<Link VarA="PlcTask Inputs^_00_Main.io_B.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.io_B.PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS 6">
+				<Link VarA="PlcTask Inputs^_00_Main.io_C.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.io_C.PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Kinematic Channel">
+				<Link VarA="PlcTask Inputs^_00_Main.in_stKinToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.out_stPlcToKin" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+		</OwnerA>
+	</Mappings>
 </TcSmProject>

@@ -63,6 +63,9 @@ END_VAR]]></Declaration>
       <ST><![CDATA[
 // twincat hello world
 
+// separate file is needed when using L4 Kinematics transformation (6 Axis)
+// https://infosys.beckhoff.com/content/1033/tf5400_tc3_advanced_motion_pack/8403043979.html?id=9115801577672301435
+
 IF FirstScan THEN
     // https://infosys.beckhoff.com/content/1033/tf5240_kinematic_transformation/292852107.html?id=2424647827091372088
     (* read the IDs from the cyclic axis interface so the axes can mapped later to the kinematic group *)

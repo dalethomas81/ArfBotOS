@@ -344,26 +344,10 @@
       <Namespace>CmpDynamicText</Namespace>
       <SystemLibrary>true</SystemLibrary>
     </PlaceholderReference>
-    <PlaceholderReference Include="MemoryUtils">
-      <DefaultResolution>MemoryUtils, * (3S - Smart Software Solutions GmbH)</DefaultResolution>
-      <Namespace>MEMUtils</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="NetBaseSrv">
-      <DefaultResolution>Net Base Services, * (3S - Smart Software Solutions GmbH)</DefaultResolution>
-      <Namespace>NBS</Namespace>
-    </PlaceholderReference>
-    <PlaceholderReference Include="OMAC_PackML_State_Machine">
-      <DefaultResolution>OMAC PackML State Machine, * (3S - Smart Software Solutions GmbH)</DefaultResolution>
-      <Namespace>PACK_ML</Namespace>
-    </PlaceholderReference>
     <PlaceholderReference Include="Standard">
       <DefaultResolution>Standard</DefaultResolution>
       <Namespace>Tc2_Standard</Namespace>
       <SystemLibrary>true</SystemLibrary>
-    </PlaceholderReference>
-    <PlaceholderReference Include="SysSocket">
-      <DefaultResolution>SysSocket, * (System)</DefaultResolution>
-      <Namespace>SysSocket</Namespace>
     </PlaceholderReference>
     <PlaceholderReference Include="Tc2_MC2">
       <DefaultResolution>Tc2_MC2, * (Beckhoff Automation GmbH)</DefaultResolution>
@@ -417,39 +401,6 @@
   <ItemGroup>
     <PlaceholderResolution Include="CmpDynamicText">
       <Resolution>CmpDynamicText, 3.5.17.0 (System)</Resolution>
-    </PlaceholderResolution>
-    <PlaceholderResolution Include="System_VisuElem3DPath">
-      <Resolution>VisuElem3DPath, * (System)</Resolution>
-    </PlaceholderResolution>
-    <PlaceholderResolution Include="System_VisuElemCamDisplayer">
-      <Resolution>VisuElemCamDisplayer, * (System)</Resolution>
-    </PlaceholderResolution>
-    <PlaceholderResolution Include="System_VisuElemMeter">
-      <Resolution>VisuElemMeter, * (System)</Resolution>
-    </PlaceholderResolution>
-    <PlaceholderResolution Include="System_VisuElems">
-      <Resolution>VisuElems, * (System)</Resolution>
-    </PlaceholderResolution>
-    <PlaceholderResolution Include="System_VisuElemsAlarm">
-      <Resolution>VisuElemsAlarm, * (System)</Resolution>
-    </PlaceholderResolution>
-    <PlaceholderResolution Include="System_VisuElemsDateTime">
-      <Resolution>VisuElemsDateTime, * (System)</Resolution>
-    </PlaceholderResolution>
-    <PlaceholderResolution Include="System_VisuElemsSpecialControls">
-      <Resolution>VisuElemsSpecialControls, * (System)</Resolution>
-    </PlaceholderResolution>
-    <PlaceholderResolution Include="System_VisuElemsWinControls">
-      <Resolution>VisuElemsWinControls, * (System)</Resolution>
-    </PlaceholderResolution>
-    <PlaceholderResolution Include="System_VisuElemTextEditor">
-      <Resolution>VisuElemTextEditor, * (System)</Resolution>
-    </PlaceholderResolution>
-    <PlaceholderResolution Include="System_VisuElemTrace">
-      <Resolution>VisuElemTrace, * (System)</Resolution>
-    </PlaceholderResolution>
-    <PlaceholderResolution Include="System_VisuNativeControl">
-      <Resolution>VisuNativeControl, * (System)</Resolution>
     </PlaceholderResolution>
   </ItemGroup>
   <ProjectExtensions>

@@ -71,14 +71,14 @@ pabyTxBuffer[5] := GVL.CmdIO.Pwm[3];
 // calc crc here
 TxCrc := F_Checksum(ADR(pabyTxBuffer), 30);
 // append calc crc to tx buffer
-MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[30]), 
-				pbySrc:=ADR(TxCrc), 
-				dwSize:=2);
+MemCpy( destAddr:=ADR(pabyTxBuffer[30]), 
+        srcAddr:=ADR(TxCrc), 
+        n:=2);
 
 // copy crc from rx buffer
-MEMUtils.MemCpy(pbyDest:=ADR(RxCrc), 
-				pbySrc:=ADR(pabyRxBuffer[30]), 
-				dwSize:=2);
+MemCpy( destAddr:=ADR(RxCrc), 
+		srcAddr:=ADR(pabyRxBuffer[30]), 
+		n:=2);
 
 // compare calc crc with rx crc
 IF RxCrc = F_Checksum(ADR(pabyRxBuffer), 30) THEN

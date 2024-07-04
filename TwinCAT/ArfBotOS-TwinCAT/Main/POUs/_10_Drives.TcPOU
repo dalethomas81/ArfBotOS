@@ -57,7 +57,11 @@ VAR_INST
 	
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[//
+        <ST><![CDATA[// process images of the encoder and drive
+// https://infosys.beckhoff.com/content/1033/tf50x0_tc3_nc_ptp/10650582539.html?id=9197998846476281621
+// https://infosys.beckhoff.com/content/1033/tf50x0_tc3_nc_ptp/10650598155.html?id=428682353028589629
+
+//
 HeartbeatOn(in:=NOT HeartbeatOff.Q,PT:=HeartbeatPt);
 HeartbeatOff(in:=HeartbeatOn.Q,PT:=HeartbeatPt);
 
@@ -75,9 +79,9 @@ pabyTxBuffer[0].1:=GVL.PowerOn; 			// enable drives
 // index 1 through 24 is for velocity to drive
 bufferIdx := 1;
 FOR jointIdx := 0 TO 5 BY 1 DO
-	MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[bufferIdx]), 
-					pbySrc:=ADR(SetVelocity[jointIdx]), 
-					dwSize:=SIZEOF(SetVelocity[jointIdx]));
+	MemCpy( destAddr:=ADR(pabyTxBuffer[bufferIdx]), 
+            srcAddr:=ADR(SetVelocity[jointIdx]), 
+            n:=SIZEOF(SetVelocity[jointIdx]));
 	bufferIdx := bufferIdx + 4;
 END_FOR
 
@@ -101,14 +105,14 @@ pabyTxBuffer[26].3 := GVL.CmdIO.Output[3];
 // calc crc here
 TxCrc := F_Checksum(ADR(pabyTxBuffer), 30);
 // append calc crc to tx buffer
-MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[30]), 
-				pbySrc:=ADR(TxCrc), 
-				dwSize:=2);
+MemCpy( destAddr:=ADR(pabyTxBuffer[30]), 
+        srcAddr:=ADR(TxCrc), 
+        n:=2);
 
 // copy crc from rx buffer
-MEMUtils.MemCpy(pbyDest:=ADR(RxCrc), 
-				pbySrc:=ADR(pabyRxBuffer[30]), 
-				dwSize:=2);
+MemCpy( destAddr:=ADR(RxCrc), 
+        srcAddr:=ADR(pabyRxBuffer[30]), 
+        n:=2);
 
 // compare calc crc with rx crc
 IF RxCrc = F_Checksum(ADR(pabyRxBuffer), 30) THEN
@@ -126,9 +130,9 @@ IF RxCrc = F_Checksum(ADR(pabyRxBuffer), 30) THEN
 	// index 1 through 24 is for encoder data from drive
 	bufferIdx := 1;
 	FOR jointIdx := 0 TO 5 BY 1 DO
-		MEMUtils.MemCpy(pbyDest:=ADR(EncPosition[jointIdx]), 
-						pbySrc:=ADR(pabyRxBuffer[bufferIdx]), 
-						dwSize:=SIZEOF(EncPosition[jointIdx]));
+		MemCpy( destAddr:=ADR(EncPosition[jointIdx]), 
+                srcAddr:=ADR(pabyRxBuffer[bufferIdx]), 
+                n:=SIZEOF(EncPosition[jointIdx]));
 		bufferIdx := bufferIdx + 4;
 	END_FOR
 	
