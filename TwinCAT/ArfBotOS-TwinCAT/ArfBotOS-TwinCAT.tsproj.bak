@@ -2035,9 +2035,270 @@ External Setpoint Generation:
 				<Elements>32</Elements>
 			</ArrayInfo>
 		</DataType>
+		<DataType>
+			<Name GUID="{9F3949CA-3F5F-3AC9-6F55-4C10D1DB3E5D}" AutoDeleteType="true">DUT_CommandType</Name>
+			<BitSize>16</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
+			<EnumInfo>
+				<Text><![CDATA[Disabled]]></Text>
+				<Enum>0</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[MoveCommand]]></Text>
+				<Enum>1</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[PauseCommand]]></Text>
+				<Enum>2</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[InputCommand]]></Text>
+				<Enum>3</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[OutputCommand]]></Text>
+				<Enum>4</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[VisionCommand]]></Text>
+				<Enum>5</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[CncCommand]]></Text>
+				<Enum>6</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[VarSetCommand]]></Text>
+				<Enum>7</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[LogicCommand]]></Text>
+				<Enum>8</Enum>
+			</EnumInfo>
+			<Properties>
+				<Property>
+					<Name>textlistenumeration</Name>
+				</Property>
+				<Property>
+					<Name>qualified_only</Name>
+				</Property>
+				<Property>
+					<Name>strict</Name>
+				</Property>
+				<Property>
+					<Name>to_string</Name>
+				</Property>
+				<Property>
+					<Name>to_string_function</Name>
+					<Value>__TO_STRING__785</Value>
+				</Property>
+				<Property>
+					<Name>to_wstring_function</Name>
+					<Value>__TO_WSTRING__785</Value>
+				</Property>
+				<Property>
+					<Name>generate_implicit_init_function</Name>
+				</Property>
+			</Properties>
+		</DataType>
+		<DataType>
+			<Name GUID="{A678822A-5E9F-9BD6-3B06-C76BF7B69D0F}" AutoDeleteType="true">DUT_Command</Name>
+			<BitSize>2720</BitSize>
+			<SubItem>
+				<Name>CommandType</Name>
+				<Type GUID="{9F3949CA-3F5F-3AC9-6F55-4C10D1DB3E5D}">DUT_CommandType</Type>
+				<BitSize>16</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>CommandString</Name>
+				<Type GUID="{18071995-0000-0000-0000-0001000000FF}">STRING(255)</Type>
+				<BitSize>2048</BitSize>
+				<BitOffs>16</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>CommandComment</Name>
+				<Type GUID="{18071995-0000-0000-0000-000100000050}">STRING(80)</Type>
+				<BitSize>648</BitSize>
+				<BitOffs>2064</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name GUID="{78BBBBB0-1EB0-AB35-5AB5-D60A20D7C74A}" AutoDeleteType="true">DUT_Program</Name>
+			<BitSize>136656</BitSize>
+			<SubItem>
+				<Name>ProgramName</Name>
+				<Type GUID="{18071995-0000-0000-0000-000100000050}">STRING(80)</Type>
+				<BitSize>648</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Commands</Name>
+				<Type GUID="{A678822A-5E9F-9BD6-3B06-C76BF7B69D0F}">DUT_Command</Type>
+				<ArrayInfo>
+					<LBound>0</LBound>
+					<Elements>50</Elements>
+				</ArrayInfo>
+				<BitSize>136000</BitSize>
+				<BitOffs>656</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name IecBaseType="true">ARRAY [0..19] OF DUT_Program</Name>
+			<BitSize>2733120</BitSize>
+			<BaseType GUID="{78BBBBB0-1EB0-AB35-5AB5-D60A20D7C74A}">DUT_Program</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>20</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion" AutoDeleteType="true">MC_COORD_REF</Name>
+			<BitSize>32</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-00000000000F}">OTCID</BaseType>
+		</DataType>
+		<DataType>
+			<Name GUID="{34ED429A-DADD-BE80-6E1E-633706829C71}" AutoDeleteType="true">DUT_StoredPosition</Name>
+			<BitSize>704</BitSize>
+			<SubItem>
+				<Name>Comment</Name>
+				<Type GUID="{18071995-0000-0000-0000-000100000050}">STRING(80)</Type>
+				<BitSize>648</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Position</Name>
+				<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
+				<BitSize>32</BitSize>
+				<BitOffs>672</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name IecBaseType="true">ARRAY [0..49] OF DUT_StoredPosition</Name>
+			<BitSize>35200</BitSize>
+			<BaseType GUID="{34ED429A-DADD-BE80-6E1E-633706829C71}">DUT_StoredPosition</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>50</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{E1D73C68-861A-5CF1-D28C-136BFC5E3BD5}" AutoDeleteType="true">DUT_VisionRegister</Name>
+			<BitSize>736</BitSize>
+			<ExtendsType GUID="{34ED429A-DADD-BE80-6E1E-633706829C71}">DUT_StoredPosition</ExtendsType>
+			<SubItem>
+				<Name>Scaling</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000D}">REAL</Type>
+				<BitSize>32</BitSize>
+				<BitOffs>704</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name IecBaseType="true">ARRAY [0..49] OF DUT_VisionRegister</Name>
+			<BitSize>36800</BitSize>
+			<BaseType GUID="{E1D73C68-861A-5CF1-D28C-136BFC5E3BD5}">DUT_VisionRegister</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>50</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{1DECCFBC-CD73-8A3F-E208-31DEE8033F84}" AutoDeleteType="true">DUT_Flags</Name>
+			<BitSize>656</BitSize>
+			<SubItem>
+				<Name>Comment</Name>
+				<Type GUID="{18071995-0000-0000-0000-000100000050}">STRING(80)</Type>
+				<BitSize>648</BitSize>
+				<BitOffs>0</BitOffs>
+				<Default>
+					<String><![CDATA[]]></String>
+				</Default>
+			</SubItem>
+			<SubItem>
+				<Name>Value</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000030}">BOOL</Type>
+				<BitSize>8</BitSize>
+				<BitOffs>648</BitOffs>
+				<Default>
+					<Bool>false</Bool>
+				</Default>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name IecBaseType="true">ARRAY [0..49] OF DUT_Flags</Name>
+			<BitSize>32800</BitSize>
+			<BaseType GUID="{1DECCFBC-CD73-8A3F-E208-31DEE8033F84}">DUT_Flags</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>50</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{6C6A0556-EBC5-D04D-5EEB-F615F91F008D}" AutoDeleteType="true">DUT_PositionController</Name>
+			<BitSize>512</BitSize>
+			<SubItem>
+				<Name>fKp</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>fPartVelPilotControl</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>64</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>fDeadTime</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>128</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>fMaxPositionDiff</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>192</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>fSWMaxVelocity</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>256</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>fSWMaxAcceleration</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>320</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>fSWMaxDeceleration</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>384</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>fSWMaxJerk</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>448</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name IecBaseType="true">ARRAY [0..5] OF DUT_PositionController</Name>
+			<BitSize>3072</BitSize>
+			<BaseType GUID="{6C6A0556-EBC5-D04D-5EEB-F615F91F008D}">DUT_PositionController</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>6</Elements>
+			</ArrayInfo>
+		</DataType>
 	</DataTypes>
 	<ImageDatas>
 		<ImageData Id="1000">424d360300000000000036000000280000001000000010000000010018000000000000000000c40e0000c40e00000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc9c9c95757573333334f4f4fc1c1c1ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8181815c5c5ce3e3e3fffffff0f0f03b3b3bcfcfcfffffffffffffffffffffffffffffffffffffffffffffffffffffff252525fcfcfcf7f7f7b8b8b8ffffffe3e3e35d5d5dfffffffffffffffffffffffffffffffffffffffffffffffff0f0f0474747ffffff878787101010eaeaeaffffff343434ffffffffffffffffffffffffffffffffffffffffffffffffb8b8b8878787ffffffdbdbdb636363fdfdfdeeeeee4e4e4effffffffffffffffffffffffffffffffffffffffffffffffc0c0c07f7f7fffffffffffffffffffffffff838383656565ffffffffffffffffffffffffffffffffffffffffffffffffdbdbdb606060ffffffc4c4c4828282d5d5d5b8b8b81d1d1dfffffffffffffffffffffffffffffffffffffffffffffffffefefe393939f7f7f7fdfdfdcfcfcfffffffc8c8c86e6e6effffffffffffffffffffffffffffffffffffffffffffffffffffffafafaf414141c1c1c1fefefed4d4d4363636e3e3e3f9f9f97171712020203333334747475a5a5a6e6e6e8181819595959b9b9b5454545656563232326b6b6bc8c8c8ffffffb1b1b1282828969696a0a0a0a1a1a1a1a1a1a2a2a2a2a2a2a3a3a35353536b6b6b939593f4f6f4f7f9f7fcfdfcffffff757575626262c8c8c8c8c8c8c8c8c8c9c9c9c9c9c9c9c9c9c9c9c93333339cb79b329d30329d30309b2f5bd05affffff787878757575ededededededededededededeeeeeeeeeeeeeeeeee393939a4cba34cea494deb494ce94961db5effffffb3b3b32727278c8c8c9393939393939494949494949595959595954b4b4b6f6f6f989898fbfbfbfffffffffffffffffffbfbfb7676761e1e1e2c2c2c3b3b3b4b4b4b5a5a5a6a6a6a7979797c7c7c4d4d4db4b4b4fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdfefefeffffffffffffffffffffffff</ImageData>
+		<ImageData Id="1001">424d360300000000000036000000280000001000000010000000010018000000000000000000c40e0000c40e00000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc6c6c65353535050509e9e9ef4f4f4ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff636363656565d9d9d9e9e9e98585856c6c6cfffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfd3b3b3bfffffff3f3f3efefefffffff555555cdcdcdffffffffffffdadada5454544d4d4d828282f6f6f6ffffffcfcfcf6d6d6dffffff646464545454ffffffa9a9a9959595ffffffd5d5d5181818101010232323222222585858d4d4d4929292a9a9a9ffffff3a3a3a353535ffffffcdcdcd757575fafafa191919131313969696ababab707070343434525252565656c3c3c3ffffff383838323232ffffffd7d7d7686868adadad0303038f8f8fd4d4d4c4c4c4b4b4b4989898565656353535a1a1a1ffffff626262484848fcfcfcbfbfbf8484845353530c0c0ccececeedededdcdcdcccccccbcbcbcababab646464646464ffffffd5d5d5cfcfcfffffff737373bebebe7f7f7f0f0f0f707070c0c0c0f1f1f1e5e5e5d4d4d4c4c4c4b4b4b4363636b1b1b1ffffffffffffc0c0c03d3d3dffffffd5d5d52929291919194b4b4ba6a6a6d9d9d9edededdcdcdcccccccadadad4747472b2b2b343434383838e4e4e4ffffffffffffe1e1e16d6d6d343434323232818181c0c0c0f1f1f1e5e5e5d4d4d4c4c4c46161614040406d6d6dd1d1d1fffffffffffffffffffefefeb7b7b76565653737375d5d5da6a6a6d8d8d8ededed8080804a4a4ae7e7e7c0c0c0cacacaffffffffffffffffffffffffffffffebebeba3a3a35f5f5f494949898989bfbfbf2b2b2be3e3e3767676b0b0b0fbfbfbfffffffffffffffffffffffffffffffffffffefefed7d7d79f9f9f525252535353575757f1f1f1d5d5d5c0c0c0fffffffffffffffffffffffffffffffffffffffffffffffffffffff6f6f6dbdbdb7878784c4c4c9f9f9fb0b0b0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9f9f9bbbbbbdededeffffffffffffffffffffffff</ImageData>
+		<ImageData Id="1002">424d360500000000000036040000280000001000000010000000010008000000000000000000c40e0000c40e00000001000000010000000000ff000080ff008000ff008080ff800000ff800080ff808000ffc0c0c0ffc0dcc0fff0caa6ff002040ff002060ff002080ff0020a0ff0020c0ff0020e0ff004000ff004020ff004040ff004060ff004080ff0040a0ff0040c0ff0040e0ff006000ff006020ff006040ff006060ff006080ff0060a0ff0060c0ff0060e0ff008000ff008020ff008040ff008060ff008080ff0080a0ff0080c0ff0080e0ff00a000ff00a020ff00a040ff00a060ff00a080ff00a0a0ff00a0c0ff00a0e0ff00c000ff00c020ff00c040ff00c060ff00c080ff00c0a0ff00c0c0ff00c0e0ff00e000ff00e020ff00e040ff00e060ff00e080ff00e0a0ff00e0c0ff00e0e0ff400000ff400020ff400040ff400060ff400080ff4000a0ff4000c0ff4000e0ff402000ff402020ff402040ff402060ff402080ff4020a0ff4020c0ff4020e0ff404000ff404020ff404040ff404060ff404080ff4040a0ff4040c0ff4040e0ff406000ff406020ff406040ff406060ff406080ff4060a0ff4060c0ff4060e0ff408000ff408020ff408040ff408060ff408080ff4080a0ff4080c0ff4080e0ff40a000ff40a020ff40a040ff40a060ff40a080ff40a0a0ff40a0c0ff40a0e0ff40c000ff40c020ff40c040ff40c060ff40c080ff40c0a0ff40c0c0ff40c0e0ff40e000ff40e020ff40e040ff40e060ff40e080ff40e0a0ff40e0c0ff40e0e0ff800000ff800020ff800040ff800060ff800080ff8000a0ff8000c0ff8000e0ff802000ff802020ff802040ff802060ff802080ff8020a0ff8020c0ff8020e0ff804000ff804020ff804040ff804060ff804080ff8040a0ff8040c0ff8040e0ff806000ff806020ff806040ff806060ff806080ff8060a0ff8060c0ff8060e0ff808000ff808020ff808040ff808060ff808080ff8080a0ff8080c0ff8080e0ff80a000ff80a020ff80a040ff80a060ff80a080ff80a0a0ff80a0c0ff80a0e0ff80c000ff80c020ff80c040ff80c060ff80c080ff80c0a0ff80c0c0ff80c0e0ff80e000ff80e020ff80e040ff80e060ff80e080ff80e0a0ff80e0c0ff80e0e0ffc00000ffc00020ffc00040ffc00060ffc00080ffc000a0ffc000c0ffc000e0ffc02000ffc02020ffc02040ffc02060ffc02080ffc020a0ffc020c0ffc020e0ffc04000ffc04020ffc04040ffc04060ffc04080ffc040a0ffc040c0ffc040e0ffc06000ffc06020ffc06040ffc06060ffc06080ffc060a0ffc060c0ffc060e0ffc08000ffc08020ffc08040ffc08060ffc08080ffc080a0ffc080c0ffc080e0ffc0a000ffc0a020ffc0a040ffc0a060ffc0a080ffc0a0a0ffc0a0c0ffc0a0e0ffc0c000ffc0c020ffc0c040ffc0c060ffc0c080ffc0c0a0fff0fbffffa4a0a0ff808080ff0000ffff00ff00ff00ffffffff0000ffff00ffffffff00ffffffffffafefffffffffffffffffffffffffffff075556aff6ffffffffffffffffffffffff565556efffffffffffffffffffffffff0756f957f6ffffffffffffffffffffffffef9ff957f6ffffffffeddbf6ffffffffffff5ff954fcfcfcfcfc04049b07ffffffffff2532fcfcfcfcc90404db09ffffffffff79faffffffffede4f6ffffffffffffff79faffffffffffffffffffffffffffff79faffffffffffffffffffffffffffff79faffffffffffffffffffffffffff08793908ffffffffffffffffffffffffbd6a6abdfffffffffffffffffffffffff67272f6ffffffffffffffffffffffffffb4b4ffffffffffffffffffffffffffff0808ffffffffffffffffff</ImageData>
 	</ImageDatas>
 	<Project ProjectGUID="{CA42EB36-CB6B-418A-B554-7163163680CE}" Target64Bit="true" ShowHideConfigurations="#x6">
 		<System>
@@ -2146,6 +2407,7 @@ External Setpoint Generation:
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -2299,6 +2561,7 @@ External Setpoint Generation:
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -2452,6 +2715,7 @@ External Setpoint Generation:
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -2605,6 +2869,7 @@ External Setpoint Generation:
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -2758,6 +3023,7 @@ External Setpoint Generation:
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -2911,6 +3177,7 @@ External Setpoint Generation:
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -3064,6 +3331,7 @@ External Setpoint Generation:
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -3217,6 +3485,7 @@ External Setpoint Generation:
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -3370,6 +3639,7 @@ External Setpoint Generation:
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -3523,6 +3793,7 @@ External Setpoint Generation:
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -3676,6 +3947,7 @@ External Setpoint Generation:
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -3829,6 +4101,7 @@ External Setpoint Generation:
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -3918,7 +4191,7 @@ External Setpoint Generation:
 					</Vars>
 				</Axis>
 				<Channel Id="2" ChannelType="4" AxesColumns="#x3f">
-					<Name>Kinematics</Name>
+					<Name>Kinematic Channel</Name>
 					<Vars VarGrpType="1">
 						<Name>Inputs</Name>
 						<Var>
@@ -3934,7 +4207,7 @@ External Setpoint Generation:
 						</Var>
 					</Vars>
 					<Group Id="7" GroupType="12" SetpointGeneratorType="1">
-						<Name>Group 7</Name>
+						<Name>SixAxisGroup</Name>
 						<Parameter ChannelId="2">
 							<Dxd EnableSoftPositionLimits="true" VeloVertexFactorC0="0.1" VeloVertexFactorC1="1" CriticalVertexAngleLow="10" CriticalVertexAngleHigh="75"/>
 							<Encoder NoMotionWindow="1" NoMotionFilterTime="0.01"/>
@@ -3942,7 +4215,7 @@ External Setpoint Generation:
 							<Kinematic OidKinematicTrafo="#x01010020"/>
 						</Parameter>
 						<Module Id="#x01010020" KeepUnrestoredLinks="2">
-							<Name>Group 7_Obj1 (Six Axis Articulated (S_CBBCBC))</Name>
+							<Name>SixAxis (Six Axis Articulated (S_CBBCBC))</Name>
 							<ImageId>1000</ImageId>
 							<TmcDesc GUID="{A6EBA1E5-47E0-4980-BA1E-9F090F6F9362}">
 								<Name>Six Axis Articulated (S_CBBCBC)</Name>
@@ -4125,7 +4398,7 @@ External Setpoint Generation:
 									</Value>
 									<Value>
 										<Name>Tool offset OID</Name>
-										<Value>0</Value>
+										<Value>16842768</Value>
 									</Value>
 									<Value>
 										<Name>Arm length L1</Name>
@@ -4154,42 +4427,511 @@ External Setpoint Generation:
 								</ParameterValues>
 							</TmcDesc>
 						</Module>
+						<Module Id="#x01010010" KeepUnrestoredLinks="2">
+							<Name>FlangeOffset (Tool Offset)</Name>
+							<ImageId>1001</ImageId>
+							<TmcDesc GUID="{79E880F8-72E9-4BF6-9968-CA98307CB7AD}">
+								<Name>Tool Offset</Name>
+								<CLSID ClassFactory="TcNcKin">{05010032-0000-0000-F000-000000000064}</CLSID>
+								<Info>
+									<ImageData>424d360300000000000036000000280000001000000010000000010018000000000000000000c40e0000c40e00000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc6c6c65353535050509e9e9ef4f4f4ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff636363656565d9d9d9e9e9e98585856c6c6cfffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfd3b3b3bfffffff3f3f3efefefffffff555555cdcdcdffffffffffffdadada5454544d4d4d828282f6f6f6ffffffcfcfcf6d6d6dffffff646464545454ffffffa9a9a9959595ffffffd5d5d5181818101010232323222222585858d4d4d4929292a9a9a9ffffff3a3a3a353535ffffffcdcdcd757575fafafa191919131313969696ababab707070343434525252565656c3c3c3ffffff383838323232ffffffd7d7d7686868adadad0303038f8f8fd4d4d4c4c4c4b4b4b4989898565656353535a1a1a1ffffff626262484848fcfcfcbfbfbf8484845353530c0c0ccececeedededdcdcdcccccccbcbcbcababab646464646464ffffffd5d5d5cfcfcfffffff737373bebebe7f7f7f0f0f0f707070c0c0c0f1f1f1e5e5e5d4d4d4c4c4c4b4b4b4363636b1b1b1ffffffffffffc0c0c03d3d3dffffffd5d5d52929291919194b4b4ba6a6a6d9d9d9edededdcdcdcccccccadadad4747472b2b2b343434383838e4e4e4ffffffffffffe1e1e16d6d6d343434323232818181c0c0c0f1f1f1e5e5e5d4d4d4c4c4c46161614040406d6d6dd1d1d1fffffffffffffffffffefefeb7b7b76565653737375d5d5da6a6a6d8d8d8ededed8080804a4a4ae7e7e7c0c0c0cacacaffffffffffffffffffffffffffffffebebeba3a3a35f5f5f494949898989bfbfbf2b2b2be3e3e3767676b0b0b0fbfbfbfffffffffffffffffffffffffffffffffffffefefed7d7d79f9f9f525252535353575757f1f1f1d5d5d5c0c0c0fffffffffffffffffffffffffffffffffffffffffffffffffffffff6f6f6dbdbdb7878784c4c4c9f9f9fb0b0b0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9f9f9bbbbbbdededeffffffffffffffffffffffff</ImageData>
+								</Info>
+								<Licenses>
+									<License>
+										<LicenseId>{C0BF0BC1-CBED-4D55-86DC-0706BF289DCE}</LicenseId>
+									</License>
+								</Licenses>
+								<InitSequence>SO</InitSequence>
+								<Contexts>
+									<Context>
+										<Id>1</Id>
+										<Name>Default</Name>
+									</Context>
+								</Contexts>
+								<Parameters>
+									<Group><![CDATA[Configuration]]></Group>
+									<Group><![CDATA[Kinematic]]></Group>
+									<Group><![CDATA[Dynamic]]></Group>
+									<Group><![CDATA[Drive Torques]]></Group>
+									<Parameter Group="Kinematic">
+										<Name>Extension X</Name>
+										<Comment><![CDATA[x-component of tool offset.]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>0</Value>
+										</Default>
+										<PTCID>#x05010020</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Extension Y</Name>
+										<Comment><![CDATA[y-component of tool offset.]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>0</Value>
+										</Default>
+										<PTCID>#x05010021</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Extension Z</Name>
+										<Comment><![CDATA[z-component of tool offset.]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>0</Value>
+										</Default>
+										<PTCID>#x05010022</PTCID>
+									</Parameter>
+								</Parameters>
+								<Properties>
+									<Property>
+										<Name>Category</Name>
+										<Value>MC Object</Value>
+									</Property>
+								</Properties>
+								<ParentOTCID>#x05070070</ParentOTCID>
+								<ParameterValues>
+									<Value>
+										<Name>Extension X</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Extension Y</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Extension Z</Name>
+										<Value>0</Value>
+									</Value>
+								</ParameterValues>
+							</TmcDesc>
+						</Module>
+						<Module Id="#x01010030" KeepUnrestoredLinks="2">
+							<Name>UCS1 (Coordinate Frame)</Name>
+							<ImageId>1002</ImageId>
+							<TmcDesc GUID="{D2858F83-8230-43B5-89F9-76806794012A}">
+								<Name>Coordinate Frame</Name>
+								<CLSID ClassFactory="TcNcKin">{0501007E-0000-0000-F000-000000000064}</CLSID>
+								<Info>
+									<ImageData>424d360500000000000036040000280000001000000010000000010008000000000000000000c40e0000c40e00000001000000010000000000ff000080ff008000ff008080ff800000ff800080ff808000ffc0c0c0ffc0dcc0fff0caa6ff002040ff002060ff002080ff0020a0ff0020c0ff0020e0ff004000ff004020ff004040ff004060ff004080ff0040a0ff0040c0ff0040e0ff006000ff006020ff006040ff006060ff006080ff0060a0ff0060c0ff0060e0ff008000ff008020ff008040ff008060ff008080ff0080a0ff0080c0ff0080e0ff00a000ff00a020ff00a040ff00a060ff00a080ff00a0a0ff00a0c0ff00a0e0ff00c000ff00c020ff00c040ff00c060ff00c080ff00c0a0ff00c0c0ff00c0e0ff00e000ff00e020ff00e040ff00e060ff00e080ff00e0a0ff00e0c0ff00e0e0ff400000ff400020ff400040ff400060ff400080ff4000a0ff4000c0ff4000e0ff402000ff402020ff402040ff402060ff402080ff4020a0ff4020c0ff4020e0ff404000ff404020ff404040ff404060ff404080ff4040a0ff4040c0ff4040e0ff406000ff406020ff406040ff406060ff406080ff4060a0ff4060c0ff4060e0ff408000ff408020ff408040ff408060ff408080ff4080a0ff4080c0ff4080e0ff40a000ff40a020ff40a040ff40a060ff40a080ff40a0a0ff40a0c0ff40a0e0ff40c000ff40c020ff40c040ff40c060ff40c080ff40c0a0ff40c0c0ff40c0e0ff40e000ff40e020ff40e040ff40e060ff40e080ff40e0a0ff40e0c0ff40e0e0ff800000ff800020ff800040ff800060ff800080ff8000a0ff8000c0ff8000e0ff802000ff802020ff802040ff802060ff802080ff8020a0ff8020c0ff8020e0ff804000ff804020ff804040ff804060ff804080ff8040a0ff8040c0ff8040e0ff806000ff806020ff806040ff806060ff806080ff8060a0ff8060c0ff8060e0ff808000ff808020ff808040ff808060ff808080ff8080a0ff8080c0ff8080e0ff80a000ff80a020ff80a040ff80a060ff80a080ff80a0a0ff80a0c0ff80a0e0ff80c000ff80c020ff80c040ff80c060ff80c080ff80c0a0ff80c0c0ff80c0e0ff80e000ff80e020ff80e040ff80e060ff80e080ff80e0a0ff80e0c0ff80e0e0ffc00000ffc00020ffc00040ffc00060ffc00080ffc000a0ffc000c0ffc000e0ffc02000ffc02020ffc02040ffc02060ffc02080ffc020a0ffc020c0ffc020e0ffc04000ffc04020ffc04040ffc04060ffc04080ffc040a0ffc040c0ffc040e0ffc06000ffc06020ffc06040ffc06060ffc06080ffc060a0ffc060c0ffc060e0ffc08000ffc08020ffc08040ffc08060ffc08080ffc080a0ffc080c0ffc080e0ffc0a000ffc0a020ffc0a040ffc0a060ffc0a080ffc0a0a0ffc0a0c0ffc0a0e0ffc0c000ffc0c020ffc0c040ffc0c060ffc0c080ffc0c0a0fff0fbffffa4a0a0ff808080ff0000ffff00ff00ff00ffffffff0000ffff00ffffffff00ffffffffffafefffffffffffffffffffffffffffff075556aff6ffffffffffffffffffffffff565556efffffffffffffffffffffffff0756f957f6ffffffffffffffffffffffffef9ff957f6ffffffffeddbf6ffffffffffff5ff954fcfcfcfcfc04049b07ffffffffff2532fcfcfcfcc90404db09ffffffffff79faffffffffede4f6ffffffffffffff79faffffffffffffffffffffffffffff79faffffffffffffffffffffffffffff79faffffffffffffffffffffffffff08793908ffffffffffffffffffffffffbd6a6abdfffffffffffffffffffffffff67272f6ffffffffffffffffffffffffffb4b4ffffffffffffffffffffffffffff0808ffffffffffffffffff</ImageData>
+								</Info>
+								<InitSequence>SO</InitSequence>
+								<Contexts>
+									<Context>
+										<Id>1</Id>
+										<Name>Default</Name>
+									</Context>
+								</Contexts>
+								<Parameters>
+									<Group><![CDATA[Configuration]]></Group>
+									<Group><![CDATA[Kinematic]]></Group>
+									<Group><![CDATA[Dynamic]]></Group>
+									<Group><![CDATA[Drive Torques]]></Group>
+									<Parameter Group="Configuration">
+										<Name>Rotation convention</Name>
+										<Comment><![CDATA[Set the interpretation of the rotation angles.]]></Comment>
+										<BitSize>32</BitSize>
+										<BaseType GUID="{51331DA4-5C7F-468D-9414-F84151973968}" Namespace="MC">CoordInterpretation_SO3</BaseType>
+										<Default>
+											<Value>#x605</Value>
+										</Default>
+										<PTCID>#x05010116</PTCID>
+									</Parameter>
+									<Parameter Group="Configuration">
+										<Name>Definition direction</Name>
+										<Comment><![CDATA[Set the definition direction.]]></Comment>
+										<BitSize>32</BitSize>
+										<BaseType GUID="{173BACEF-49A7-4284-8B3C-5DF99756AD53}" Namespace="MC">ReferenceDefDir</BaseType>
+										<Default>
+											<Value>0</Value>
+										</Default>
+										<PTCID>#x05010117</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Translation X</Name>
+										<Comment><![CDATA[Translation in x-direction]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010110</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Translation Y</Name>
+										<Comment><![CDATA[Translation in y-direction]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010111</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Translation Z</Name>
+										<Comment><![CDATA[Translation in z-direction]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010112</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Rotation 1</Name>
+										<Comment><![CDATA[Rotation angle 1, interpretation set by rotation convention]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[°]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010113</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Rotation 2</Name>
+										<Comment><![CDATA[Rotation angle 2, interpretation set by rotation convention]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[°]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010114</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Rotation 3</Name>
+										<Comment><![CDATA[Rotation angle 3, interpretation set by rotation convention]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[°]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010115</PTCID>
+									</Parameter>
+								</Parameters>
+								<Properties>
+									<Property>
+										<Name>Category</Name>
+										<Value>MC Object</Value>
+									</Property>
+								</Properties>
+								<ParentOTCID>#x05070070</ParentOTCID>
+								<ParameterValues>
+									<Value>
+										<Name>Rotation convention</Name>
+										<EnumText>Rotation_Z3Y2X1_DIN9300</EnumText>
+									</Value>
+									<Value>
+										<Name>Definition direction</Name>
+										<EnumText>toReference</EnumText>
+									</Value>
+									<Value>
+										<Name>Translation X</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Translation Y</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Translation Z</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Rotation 1</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Rotation 2</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Rotation 3</Name>
+										<Value>0</Value>
+									</Value>
+								</ParameterValues>
+							</TmcDesc>
+						</Module>
 					</Group>
 				</Channel>
 			</NC>
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{C425E30A-DB9D-6044-EC61-4DDBBBED1A9C}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{E1BDEF2C-BEC9-98D4-87AA-187D10793CAE}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
+					<Vars VarGrpType="8" AreaNo="4">
+						<Name>PlcTask Retains</Name>
+						<Var>
+							<Name>PersistentVars.Programs</Name>
+							<Type GUID="{639A8F52-21C5-7062-CFD8-EAC8E8F30CF7}">ARRAY [0..19] OF DUT_Program</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>PersistentVars.VisionSystemPort</Name>
+							<Type>UINT</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>PersistentVars.StoredPositions</Name>
+							<Type GUID="{2168EE36-1B90-190A-C6FC-44883BDF9896}">ARRAY [0..49] OF DUT_StoredPosition</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>PersistentVars.VisionRegisters</Name>
+							<Type GUID="{32EE9F68-996C-042C-D20D-885A783D3F13}">ARRAY [0..49] OF DUT_VisionRegister</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>PersistentVars.Flags</Name>
+							<Type GUID="{3E17E049-7235-3828-4255-C95966CFE06E}">ARRAY [0..49] OF DUT_Flags</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>PersistentVars.PositionControllers</Name>
+							<Type GUID="{873E62D6-2103-62DF-E991-2F5352C4AE8B}">ARRAY [0..5] OF DUT_PositionController</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>PersistentVars.VisionSystemIpAddress</Name>
+							<Comment><![CDATA[ vision]]></Comment>
+							<Type>STRING(19)</Type>
+							<InOut>7</InOut>
+						</Var>
+					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
 						<Var>
-							<Name>MAIN.Output1</Name>
-							<Comment><![CDATA[ https://infosys.beckhoff.com/content/1033/tc3_plc_intro/11948825611.html?id=1756449079294237528]]></Comment>
-							<Type>BOOL</Type>
+							<Name>_10_Drives.pabyTxBuffer</Name>
+							<Type GUID="{A6CC6AFE-FE37-C02D-2C0C-FB1479660FEB}">ARRAY [0..31] OF BYTE</Type>
 						</Var>
 						<Var>
-							<Name>MAIN.BufferOut</Name>
+							<Name>_20_Io.pabyTxBuffer</Name>
 							<Type GUID="{A6CC6AFE-FE37-C02D-2C0C-FB1479660FEB}">ARRAY [0..31] OF BYTE</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.out_stPlcToKin</Name>
+							<Type GUID="{48415C2A-E750-483B-A619-8655B2BEA4B8}" Namespace="MC">PLCTONC_NCICHANNEL_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_X.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_Y.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_Z.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_A.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_B.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_C.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_M1.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_M2.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_M3.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_M4.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_M5.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_M6.PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 					</Vars>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
 						<Var>
-							<Name>MAIN.Input0</Name>
-							<Type>BOOL</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.Bit16_RisingTestRamp</Name>
-							<Type>UINT</Type>
-						</Var>
-						<Var>
-							<Name>MAIN.BufferIn</Name>
+							<Name>_20_Io.pabyRxBuffer</Name>
 							<Type GUID="{A6CC6AFE-FE37-C02D-2C0C-FB1479660FEB}">ARRAY [0..31] OF BYTE</Type>
 						</Var>
+						<Var>
+							<Name>_10_Drives.pabyRxBuffer</Name>
+							<Type GUID="{A6CC6AFE-FE37-C02D-2C0C-FB1479660FEB}">ARRAY [0..31] OF BYTE</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.in_stKinToPlc</Name>
+							<Comment><![CDATA[ group handler for all motion fbs
+GroupHandler: FB_GroupHandler;
+ tuning
+MoveDistance: LREAL := 5.0;
+MoveRelative: ARRAY[0..5] OF MC_MoveRelative;
+TuneStart: ARRAY[0..5] OF BOOL;
+TraceStart: ARRAY[0..5] OF BOOL;
+TraceStop: ARRAY[0..5] OF BOOL;
+SetTuningMoveValues: BOOL:=TRUE;
+ homing
+ProcessHome: FB_HomingProcessor;
+HomingStatusText: STRING(255);
+ jogging
+ProcessJog: FB_JogProcessor;
+JogStatusText: STRING(255);
+ButtonTextIndex: INT:=0;
+ program processor
+ProcessPrograms: FB_ProgramProcessor;
+ProcessCommand_ActiveProgram: UINT := 0;
+ActiveCommandDetails: STRING(255):='';
+ controller
+Controller: FB_Controller;
+]]></Comment>
+							<Type GUID="{56354211-98EF-4057-9322-975DEAD0E29D}" Namespace="MC">NCTOPLC_NCICHANNEL_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_X.NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_Y.NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_Z.NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_A.NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_B.NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_C.NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_M1.NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_M2.NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_M3.NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_M4.NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_M5.NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_M6.NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
 					</Vars>
+					<UnrestoredVarLinks ImportTime="2024-07-03T20:35:14">
+						<OwnerA Name="InputDst" Prefix="TIPC^Main^Main Instance" Type="1">
+							<OwnerB Name="TIID^Device 1 (EtherCAT)^Box 1 (EasyCAT 32+32 rev 1)">
+								<Link VarA="MAIN.BufferIn[0]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte0" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[10]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte10" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[11]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte11" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[12]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte12" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[13]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte13" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[14]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte14" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[15]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte15" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[16]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte16" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[17]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte17" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[18]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte18" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[19]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte19" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[1]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte1" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[20]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte20" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[21]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte21" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[22]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte22" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[23]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte23" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[24]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte24" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[25]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte25" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[26]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte26" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[27]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte27" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[28]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte28" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[29]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte29" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[2]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte2" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[30]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte30" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[31]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte31" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[3]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte3" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[4]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte4" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[5]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte5" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[6]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte6" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[7]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte7" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[8]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte8" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferIn[9]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte9" RestoreInfo="ANotFound"/>
+							</OwnerB>
+						</OwnerA>
+						<OwnerA Name="OutputSrc" Prefix="TIPC^Main^Main Instance" Type="2">
+							<OwnerB Name="TIID^Device 1 (EtherCAT)^Box 1 (EasyCAT 32+32 rev 1)">
+								<Link VarA="MAIN.BufferOut[0]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte0" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[10]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte10" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[11]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte11" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[12]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte12" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[13]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte13" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[14]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte14" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[15]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte15" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[16]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte16" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[17]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte17" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[18]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte18" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[19]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte19" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[1]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte1" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[20]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte20" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[21]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte21" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[22]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte22" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[23]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte23" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[24]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte24" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[25]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte25" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[26]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte26" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[27]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte27" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[28]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte28" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[29]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte29" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[2]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte2" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[30]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte30" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[31]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte31" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[3]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte3" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[4]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte4" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[5]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte5" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[6]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte6" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[7]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte7" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[8]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte8" RestoreInfo="ANotFound"/>
+								<Link VarA="MAIN.BufferOut[9]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte9" RestoreInfo="ANotFound"/>
+							</OwnerB>
+						</OwnerA>
+					</UnrestoredVarLinks>
 					<Contexts>
 						<Context>
 							<Id>0</Id>
@@ -4432,75 +5174,4 @@ External Setpoint Generation:
 			</Device>
 		</Io>
 	</Project>
-	<Mappings>
-		<MappingInfo Identifier="{00000000-2001-0850-0020-500810000403}" Id="#x02030010"/>
-		<OwnerA Name="TIPC^Main^Main Instance">
-			<OwnerB Name="TIID^Device 1 (EtherCAT)^Box 1 (EasyCAT 32+32 rev 1)">
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[0]" VarB="Inputs^Byte0"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[10]" VarB="Inputs^Byte10"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[11]" VarB="Inputs^Byte11"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[12]" VarB="Inputs^Byte12"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[13]" VarB="Inputs^Byte13"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[14]" VarB="Inputs^Byte14"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[15]" VarB="Inputs^Byte15"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[16]" VarB="Inputs^Byte16"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[17]" VarB="Inputs^Byte17"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[18]" VarB="Inputs^Byte18"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[19]" VarB="Inputs^Byte19"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[1]" VarB="Inputs^Byte1"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[20]" VarB="Inputs^Byte20"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[21]" VarB="Inputs^Byte21"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[22]" VarB="Inputs^Byte22"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[23]" VarB="Inputs^Byte23"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[24]" VarB="Inputs^Byte24"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[25]" VarB="Inputs^Byte25"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[26]" VarB="Inputs^Byte26"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[27]" VarB="Inputs^Byte27"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[28]" VarB="Inputs^Byte28"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[29]" VarB="Inputs^Byte29"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[2]" VarB="Inputs^Byte2"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[30]" VarB="Inputs^Byte30"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[31]" VarB="Inputs^Byte31"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[3]" VarB="Inputs^Byte3"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[4]" VarB="Inputs^Byte4"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[5]" VarB="Inputs^Byte5"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[6]" VarB="Inputs^Byte6"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[7]" VarB="Inputs^Byte7"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[8]" VarB="Inputs^Byte8"/>
-				<Link VarA="PlcTask Inputs^MAIN.BufferIn[9]" VarB="Inputs^Byte9"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[0]" VarB="Outputs^Byte0"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[10]" VarB="Outputs^Byte10"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[11]" VarB="Outputs^Byte11"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[12]" VarB="Outputs^Byte12"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[13]" VarB="Outputs^Byte13"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[14]" VarB="Outputs^Byte14"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[15]" VarB="Outputs^Byte15"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[16]" VarB="Outputs^Byte16"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[17]" VarB="Outputs^Byte17"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[18]" VarB="Outputs^Byte18"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[19]" VarB="Outputs^Byte19"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[1]" VarB="Outputs^Byte1"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[20]" VarB="Outputs^Byte20"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[21]" VarB="Outputs^Byte21"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[22]" VarB="Outputs^Byte22"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[23]" VarB="Outputs^Byte23"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[24]" VarB="Outputs^Byte24"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[25]" VarB="Outputs^Byte25"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[26]" VarB="Outputs^Byte26"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[27]" VarB="Outputs^Byte27"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[28]" VarB="Outputs^Byte28"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[29]" VarB="Outputs^Byte29"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[2]" VarB="Outputs^Byte2"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[30]" VarB="Outputs^Byte30"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[31]" VarB="Outputs^Byte31"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[3]" VarB="Outputs^Byte3"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[4]" VarB="Outputs^Byte4"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[5]" VarB="Outputs^Byte5"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[6]" VarB="Outputs^Byte6"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[7]" VarB="Outputs^Byte7"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[8]" VarB="Outputs^Byte8"/>
-				<Link VarA="PlcTask Outputs^MAIN.BufferOut[9]" VarB="Outputs^Byte9"/>
-			</OwnerB>
-		</OwnerA>
-	</Mappings>
 </TcSmProject>

@@ -4,7 +4,7 @@
     <Declaration><![CDATA[FUNCTION_BLOCK FB_HomingProcessor
 VAR_IN_OUT
 	J1, J2, J3, J4, J5, J6: AXIS_REF;
-	AxisGroup: AXIS_GROUP_REF_SM3;
+	AxisGroup: AXES_GROUP_REF;
 	GroupHandler: FB_GroupHandler;
 	Controller: FB_Controller;
 END_VAR

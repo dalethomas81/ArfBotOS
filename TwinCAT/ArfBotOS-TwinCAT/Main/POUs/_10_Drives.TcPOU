@@ -179,7 +179,7 @@ IF FirstScan THEN
 	SM_Drive_PosControl_J5.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J5.bBusy;
 	SM_Drive_PosControl_J6.bHWLimitEnable := TRUE;//NOT _00_Main.SMC_Homing_J6.bBusy;
 END_IF*)
-
+(*
 //
 SM_Drive_PosControl_J1.in.bLimitNeg := TRUE;
 SM_Drive_PosControl_J2.in.bLimitNeg := TRUE;
@@ -215,6 +215,7 @@ SetVelocity[2] := LREAL_TO_REAL(SM_Drive_PosControl_J3.out.fSetVelocity / 360.0)
 SetVelocity[3] := LREAL_TO_REAL(SM_Drive_PosControl_J4.out.fSetVelocity / 360.0);
 SetVelocity[4] := LREAL_TO_REAL(SM_Drive_PosControl_J5.out.fSetVelocity / 360.0);
 SetVelocity[5] := LREAL_TO_REAL(SM_Drive_PosControl_J6.out.fSetVelocity / 360.0);
+*)
 
 FirstScan := FALSE;]]></ST>
       </Implementation>
@@ -227,12 +228,12 @@ VAR_STAT
 	_Step: INT;
 	_Done: BOOL;
 	_Success: BOOL;
-	_SMC_SetPosControlParams: ARRAY[0..5] OF SMC_SetPosControlParams;
+	//_SMC_SetPosControlParams: ARRAY[0..5] OF SMC_SetPosControlParams;
 	_i, _j, _k: INT;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
+        <ST><![CDATA[(*
 CASE _Step OF
 	0:
 		IF InitializeDrives THEN
@@ -406,7 +407,8 @@ IF _SMC_SetPosControlParams[5].bDone AND NOT _SMC_SetPosControlParams[5].bError 
 	SM_Drive_PosControl_J6.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[5].fSWMaxAcceleration;
 	SM_Drive_PosControl_J6.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[5].fSWMaxDeceleration;
 	SM_Drive_PosControl_J6.fSWMaxJerk 				:= PersistentVars.PositionControllers[5].fSWMaxJerk;
-END_IF]]></ST>
+END_IF
+*)]]></ST>
       </Implementation>
     </Method>
     <Method Name="M_Init" Id="{aea6e4c3-5f5a-4eff-ae8a-2de4fd010b88}">

@@ -15,9 +15,9 @@ STRUCT
 	GroupDisabled: BOOL;
 	TrackingDynamicCS: BOOL;
 	InSync: BOOL;
-	ActiveMovementId: SMC_Movement_Id;
-	FirstReferencedMovementId: SMC_Movement_Id;
-	LastAcceptedMovementId: SMC_Movement_Id;
+	//ActiveMovementId: SMC_Movement_Id;
+	//FirstReferencedMovementId: SMC_Movement_Id;
+	//LastAcceptedMovementId: SMC_Movement_Id;
 	PositionLag: LREAL;
 	OrientationLag: LREAL;
 END_STRUCT

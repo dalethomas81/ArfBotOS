@@ -5,32 +5,32 @@
 VAR
 	
 	// group handler for all motion fbs
-	GroupHandler: FB_GroupHandler;
+	//GroupHandler: FB_GroupHandler;
 	
 	// tuning
-	MoveDistance: LREAL := 5.0;
-	MoveRelative: ARRAY[0..5] OF MC_MoveRelative;
-	TuneStart: ARRAY[0..5] OF BOOL;
-	TraceStart: ARRAY[0..5] OF BOOL;
-	TraceStop: ARRAY[0..5] OF BOOL;
-	SetTuningMoveValues: BOOL:=TRUE;
+	//MoveDistance: LREAL := 5.0;
+	//MoveRelative: ARRAY[0..5] OF MC_MoveRelative;
+	//TuneStart: ARRAY[0..5] OF BOOL;
+	//TraceStart: ARRAY[0..5] OF BOOL;
+	//TraceStop: ARRAY[0..5] OF BOOL;
+	//SetTuningMoveValues: BOOL:=TRUE;
 	
 	// homing
-	ProcessHome: FB_HomingProcessor;
-	HomingStatusText: STRING(255);
+	//ProcessHome: FB_HomingProcessor;
+	//HomingStatusText: STRING(255);
 	
 	// jogging
-	ProcessJog: FB_JogProcessor;
-	JogStatusText: STRING(255);
-	ButtonTextIndex: INT:=0;
+	//ProcessJog: FB_JogProcessor;
+	//JogStatusText: STRING(255);
+	//ButtonTextIndex: INT:=0;
 	
 	// program processor
-	ProcessPrograms: FB_ProgramProcessor;
-	ProcessCommand_ActiveProgram: UINT := 0;
-	ActiveCommandDetails: STRING(255):='';
+	//ProcessPrograms: FB_ProgramProcessor;
+	//ProcessCommand_ActiveProgram: UINT := 0;
+	//ActiveCommandDetails: STRING(255):='';
 	
 	// controller
-	Controller: FB_Controller;
+	//Controller: FB_Controller;
 	
 	//
 	in_stKinToPlc      AT %I*     : NCTOPLC_NCICHANNEL_REF;
@@ -49,6 +49,8 @@ VAR
     io_M4                 : AXIS_REF;
     io_M5                 : AXIS_REF;
     io_M6                 : AXIS_REF;
+    
+    nErrId: UDINT;
 
 	
 	//
@@ -60,25 +62,35 @@ END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[
 // twincat hello world
-// https://infosys.beckhoff.com/content/1033/tf5240_kinematic_transformation/292852107.html?id=2424647827091372088
-(* read the IDs from the cyclic axis interface so the axes can mapped later to the kinematic group *)
-stAxesConfig.nAxisIdsAcs[1] := io_M1.NcToPlc.AxisId;
-stAxesConfig.nAxisIdsAcs[2] := io_M2.NcToPlc.AxisId;
-stAxesConfig.nAxisIdsAcs[3] := io_M3.NcToPlc.AxisId;
-stAxesConfig.nAxisIdsAcs[4] := io_M4.NcToPlc.AxisId;
-stAxesConfig.nAxisIdsAcs[5] := io_M5.NcToPlc.AxisId;
-stAxesConfig.nAxisIdsAcs[6] := io_M6.NcToPlc.AxisId;
-stAxesConfig.nAxisIdsMcs[1] := io_X.NcToPlc.AxisId;
-stAxesConfig.nAxisIdsMcs[2] := io_Y.NcToPlc.AxisId;
-stAxesConfig.nAxisIdsMcs[3] := io_Z.NcToPlc.AxisId;
-stAxesConfig.nAxisIdsMcs[4] := io_A.NcToPlc.AxisId;
-stAxesConfig.nAxisIdsMcs[5] := io_B.NcToPlc.AxisId;
-stAxesConfig.nAxisIdsMcs[6] := io_C.NcToPlc.AxisId;
+
+IF FirstScan THEN
+    // https://infosys.beckhoff.com/content/1033/tf5240_kinematic_transformation/292852107.html?id=2424647827091372088
+    (* read the IDs from the cyclic axis interface so the axes can mapped later to the kinematic group *)
+    (*stAxesConfig.nAxisIdsAcs[1] := io_M1.NcToPlc.AxisId;
+    stAxesConfig.nAxisIdsAcs[2] := io_M2.NcToPlc.AxisId;
+    stAxesConfig.nAxisIdsAcs[3] := io_M3.NcToPlc.AxisId;
+    stAxesConfig.nAxisIdsAcs[4] := io_M4.NcToPlc.AxisId;
+    stAxesConfig.nAxisIdsAcs[5] := io_M5.NcToPlc.AxisId;
+    stAxesConfig.nAxisIdsAcs[6] := io_M6.NcToPlc.AxisId;
+    stAxesConfig.nAxisIdsMcs[1] := io_X.NcToPlc.AxisId;
+    stAxesConfig.nAxisIdsMcs[2] := io_Y.NcToPlc.AxisId;
+    stAxesConfig.nAxisIdsMcs[3] := io_Z.NcToPlc.AxisId;
+    stAxesConfig.nAxisIdsMcs[4] := io_A.NcToPlc.AxisId;
+    stAxesConfig.nAxisIdsMcs[5] := io_B.NcToPlc.AxisId;
+    stAxesConfig.nAxisIdsMcs[6] := io_C.NcToPlc.AxisId;*)
+    
+    // I think this can be done alternatively?
+    // https://infosys.beckhoff.com/content/1033/tf5110-tf5113_tc3_kinematic_transformation/1955942667.html?id=285201448759597051
+    nErrId := F_KinGetAcsMcsAxisIds (stAxesConfig, in_stKinToPlc);
+    IF nErrId=0 THEN
+        ;(*Axes List is valid*)
+    END_IF
+END_IF
 
 
 
 {region "utility"}
-	GVL.ResetRtrig(CLK:=GVL.Reset);
+	(*GVL.ResetRtrig(CLK:=GVL.Reset);
 	IF GVL.ResetRtrig.Q THEN
 		GVL.Reset := FALSE;
 	END_IF
@@ -90,16 +102,16 @@ stAxesConfig.nAxisIdsMcs[6] := io_C.NcToPlc.AxisId;
 	IF BuildTests THEN
 		BuildTests := FALSE;
 		M_BuildTests();
-	END_IF
+	END_IF*)
 {endregion}
      
 {region "methods"}
-	_M_GroupHandler();
-    _M_Jogging();
-    _M_Homing();
-    _M_Processor();
-	_M_Controller();
-	_M_Tuning();
+	//_M_GroupHandler();
+    //_M_Jogging();
+    //_M_Homing();
+    //_M_Processor();
+	//_M_Controller();
+	//_M_Tuning();
 {endregion}
 
 // do not put anything below this
@@ -122,7 +134,7 @@ VAR_STAT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
+        <ST><![CDATA[(*
 // dont get sleepy
 Controller(sIpAddress:= '127.0.0.1', uPort:= 50013);
 
@@ -168,21 +180,23 @@ _PsButtonTimerRtrig(CLK:=_PsButtonTimer.Q);
 IF _PsButtonTimerRtrig.Q THEN
 	_Reseting := FALSE; // ps button was held down too long so we dont reset
 	ProcessHome.M_StartHoming();
-END_IF]]></ST>
+END_IF
+*)]]></ST>
       </Implementation>
     </Method>
     <Method Name="_M_GroupHandler" Id="{39e1494b-f21b-4425-b5e3-86e0f472492e}">
       <Declaration><![CDATA[METHOD PRIVATE _M_GroupHandler : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
+        <ST><![CDATA[(*
 GroupHandler(
 	AxisGroup:= ArfBotAxisGroup,
 	Enable:= GVL.PowerOn,
 	StoredPositions:= PersistentVars.StoredPositions,
 	Busy=> , 
 	Error=> , 
-	ErrorID=> );]]></ST>
+	ErrorID=> );
+    *)]]></ST>
       </Implementation>
     </Method>
     <Method Name="_M_Homing" Id="{bf4b7640-1df3-46ff-b6ca-dc416adad7e8}">
@@ -215,7 +229,7 @@ GroupHandler(
 	Busy=> , 
 	Error=> , 
 	ErrorID=> );*)
-
+(*
 IF ProcessHome.Reset THEN
 	HomingStatusText := '';
 END_IF
@@ -225,19 +239,20 @@ IF ProcessHome.Error THEN
 						CONCAT(' ', SMC_ErrorString(ProcessHome.ErrorID,
 									SMC_Language_Type.english)))) ;*)
 	JogStatusText := CONCAT('Homing Processor Error: ', TO_STRING(ProcessHome.ErrorID));
-END_IF]]></ST>
+END_IF
+*)]]></ST>
       </Implementation>
     </Method>
     <Method Name="_M_Jogging" Id="{0244d8b9-9bfb-4b7e-b2e7-dffe5ddef546}">
       <Declaration><![CDATA[METHOD PRIVATE _M_Jogging : BOOL
 VAR_STAT
 	EnableRtrig: R_TRIG;
-	CoordSystemLast: SMC_COORD_SYSTEM;
+	//CoordSystemLast: SMC_COORD_SYSTEM;
 	ABC_AS_ACSLast: BOOL;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
+        <ST><![CDATA[(*
 // dont get sleepy
 ProcessJog(
 	AxisGroup:= ArfBotAxisGroup,
@@ -276,14 +291,15 @@ IF ProcessJog.Error THEN
 						CONCAT(' ', SMC_ErrorString(ProcessJog.ErrorID,
 									SMC_Language_Type.english)))) ;*)
 	JogStatusText := CONCAT('Jog Processor Error: ', TO_STRING(ProcessJog.ErrorID));
-END_IF]]></ST>
+END_IF
+*)]]></ST>
       </Implementation>
     </Method>
     <Method Name="_M_Processor" Id="{d0cb92ac-a65b-4a94-99d2-d1aa2daea05c}">
       <Declaration><![CDATA[METHOD PRIVATE _M_Processor : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
+        <ST><![CDATA[(*
 IF GVL.ResetRtrig.Q THEN
 	ProcessPrograms.M_Home();
 END_IF
@@ -310,7 +326,8 @@ ActiveCommandDetails := CONCAT(ActiveCommandDetails, TO_STRING(ProcessPrograms.P
 ActiveCommandDetails := CONCAT(ActiveCommandDetails, ': ');
 ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandString);
 ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' Comment: ');
-ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandComment);]]></ST>
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandComment);
+*)]]></ST>
       </Implementation>
     </Method>
     <Method Name="_M_Tuning" Id="{7bc5b496-9c33-4d9b-b0d8-4ee9652747d2}">
@@ -325,7 +342,7 @@ VAR_STAT
 	_i, _j, _k: INT;
 END_VAR]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
+        <ST><![CDATA[(*
 // initial values
 IF SetTuningMoveValues AND_THEN PersistentVars.Flags[GVL.INIT_DRV_IDX].Value THEN
 	SetTuningMoveValues := FALSE;
@@ -491,7 +508,8 @@ MoveRelative[5](
 	Active=> , 
 	CommandAborted=> , 
 	Error=> , 
-	ErrorID=> );]]></ST>
+	ErrorID=> );
+    *)]]></ST>
       </Implementation>
     </Method>
     <Method Name="M_BuildTests" Id="{9a5607a2-ed23-4572-beb3-b80fd95846d5}">
@@ -503,7 +521,7 @@ VAR
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[
+        <ST><![CDATA[(*
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[1].Commands[_i].CommandType := DUT_CommandType.Disabled;
@@ -656,6 +674,7 @@ END_FOR
 PersistentVars.Programs[15].ProgramName := 'Egg Place Routine';
 PersistentVars.Programs[15].Commands[0].CommandType := DUT_CommandType.Disabled;
 PersistentVars.Programs[15].Commands[0].CommandString := '';
+*)
 *)]]></ST>
       </Implementation>
     </Method>
@@ -664,7 +683,7 @@ PersistentVars.Programs[15].Commands[0].CommandString := '';
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
-// check if arfbot has been initialized
+(*// check if arfbot has been initialized
 IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
 	// poses
 	PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Value := FALSE;
@@ -737,7 +756,8 @@ PersistentVars.Flags[GVL.HOME_COMPLETE].Comment := 'Axes are homed';
 PersistentVars.Flags[GVL.HOME_COMPLETE].Value := FALSE;
 
 //
-PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';]]></ST>
+PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';
+*)]]></ST>
       </Implementation>
     </Method>
   </POU>

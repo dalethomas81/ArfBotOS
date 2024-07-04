@@ -251,13 +251,13 @@ CASE _SeqEnableGroup OF
 		
 	2:
 		// TODO add timeout timer here
-		IF _SMC_GroupPower.Error THEN
-			Error := TRUE;
-			ErrorID := _SMC_GroupPower.ErrorID;
-			_SeqEnableGroup := 0;
-		ELSIF _SMC_GroupPower.Status THEN
+		//IF _SMC_GroupPower.Error THEN
+		//	Error := TRUE;
+		//	ErrorID := _SMC_GroupPower.ErrorID;
+		//	_SeqEnableGroup := 0;
+		//ELSIF _SMC_GroupPower.Status THEN
 			_SeqEnableGroup := _SeqEnableGroup + 1;
-		END_IF
+		//END_IF
 		
 	3:
 		_MC_GroupEnable.Execute := TRUE;
@@ -315,39 +315,39 @@ CASE _SequenceSetKinematics OF
 		IF _SetKinematics THEN
 			_SetKinematics := FALSE;
 			_KinematicsSet := FALSE;
-			_MC_GroupReadActualPosition.Enable := FALSE;
-			_SMC_SetKinConfiguration.Execute := FALSE;
+			//_MC_GroupReadActualPosition.Enable := FALSE;
+			//_SMC_SetKinConfiguration.Execute := FALSE;
 			_SequenceSetKinematics := _SequenceSetKinematics + 1;
 		END_IF
 		
 	1: // read group position
-		_MC_GroupReadActualPosition.Enable := TRUE;
+		//_MC_GroupReadActualPosition.Enable := TRUE;
 		_SequenceSetKinematics := _SequenceSetKinematics + 1;
 		
 	2: // wait for group read position
 		// TODO add timeout timer here
-		IF _MC_GroupReadActualPosition.Error THEN
-			Error := TRUE;
-			ErrorID := _MC_GroupReadActualPosition.ErrorID;
-			_SequenceSetKinematics := 0;
-		ELSIF _MC_GroupReadActualPosition.Valid THEN
+		//IF _MC_GroupReadActualPosition.Error THEN
+		//	Error := TRUE;
+		//	ErrorID := _MC_GroupReadActualPosition.ErrorID;
+		//	_SequenceSetKinematics := 0;
+		//ELSIF _MC_GroupReadActualPosition.Valid THEN
 			_SequenceSetKinematics := _SequenceSetKinematics + 1;
-		END_IF
+		//END_IF
 		
 	3: // set kinematics
-		_SMC_SetKinConfiguration.Execute := TRUE;
+		//_SMC_SetKinConfiguration.Execute := TRUE;
 		_SequenceSetKinematics := _SequenceSetKinematics + 1;
 		
 	4: // wait for set kinematics
 		// TODO add timeout timer here
-		IF _SMC_SetKinConfiguration.Error THEN
-			Error := TRUE;
-			ErrorID := _SMC_SetKinConfiguration.ErrorID;
-			_SequenceSetKinematics := 0;
-		ELSIF _SMC_SetKinConfiguration.Done THEN
-			_SMC_SetKinConfiguration.Execute := FALSE;
+		//IF _SMC_SetKinConfiguration.Error THEN
+		//	Error := TRUE;
+		//	ErrorID := _SMC_SetKinConfiguration.ErrorID;
+		//	_SequenceSetKinematics := 0;
+		//ELSIF _SMC_SetKinConfiguration.Done THEN
+		//	_SMC_SetKinConfiguration.Execute := FALSE;
 			_SequenceSetKinematics := _SequenceSetKinematics + 1;
-		END_IF
+		//END_IF
 		
 	5:
 		_SetCoordinates := TRUE;
@@ -360,11 +360,11 @@ CASE _SequenceSetKinematics OF
 			ErrorID := _MC_SetCoordinateTransform.ErrorID;
 			_SequenceSetCoordTrans := 0;
 			_SequenceSetKinematics := 0;
-		ELSIF _SMC_GroupSetTool.Error THEN
-			Error := TRUE;
-			ErrorID := _SMC_GroupSetTool.ErrorID;
-			_SequenceSetCoordTrans := 0;
-			_SequenceSetKinematics := 0;
+		//ELSIF _SMC_GroupSetTool.Error THEN
+		//	Error := TRUE;
+		//	ErrorID := _SMC_GroupSetTool.ErrorID;
+		//	_SequenceSetCoordTrans := 0;
+		//	_SequenceSetKinematics := 0;
 		ELSIF _SequenceSetCoordTrans <= 0 THEN
 			_KinematicsSet := TRUE;
 			_SequenceSetKinematics := 0;
@@ -445,6 +445,15 @@ CASE _SequenceSetCoordTrans OF
 			_SequenceSetCoordTrans := _SequenceSetCoordTrans + 1;
 		END_IF
 		
+        
+        // TODO :(
+        ///////////////////////////////
+        // in twincat, we will need to unlock the parameter using its ID
+        // then write to the parameter via ADS
+        // then lock the parameter back
+        // https://infosys.beckhoff.com/content/1033/tf5110-tf5113_tc3_kinematic_transformation/1955902347.html?id=3846917459939213436
+        //////////////////////////////
+        
 	7:  // set tool offset
 		_MC_COORD_REF := StoredPositions[GVL.TCP_POS_IDX].Position; // TCP
 		_SMC_GroupSetTool.Execute := TRUE;
@@ -503,13 +512,13 @@ END_IF]]></ST>
     <Method Name="M_SetKinematics" Id="{c272ee22-b56a-4a21-938f-13e5df726fce}">
       <Declaration><![CDATA[METHOD M_SetKinematics : BOOL
 VAR_INPUT
-	CoordinateSystem: SMC_COORD_SYSTEM;
+	//CoordinateSystem: SMC_COORD_SYSTEM;
 END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF _GroupEnabled AND NOT Error THEN
 	M_SetKinematics := TRUE;
-	_CoordinateSystem := CoordinateSystem;
+	//_CoordinateSystem := CoordinateSystem;
 	_SetKinematics := TRUE;
 	_KinematicsSet := FALSE;
 ELSE
