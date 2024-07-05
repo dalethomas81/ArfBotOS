@@ -69,7 +69,7 @@ END_VAR]]></Declaration>
 IF FirstScan THEN
     // https://infosys.beckhoff.com/content/1033/tf5240_kinematic_transformation/292852107.html?id=2424647827091372088
     (* read the IDs from the cyclic axis interface so the axes can mapped later to the kinematic group *)
-    (*stAxesConfig.nAxisIdsAcs[1] := io_M1.NcToPlc.AxisId;
+    stAxesConfig.nAxisIdsAcs[1] := io_M1.NcToPlc.AxisId;
     stAxesConfig.nAxisIdsAcs[2] := io_M2.NcToPlc.AxisId;
     stAxesConfig.nAxisIdsAcs[3] := io_M3.NcToPlc.AxisId;
     stAxesConfig.nAxisIdsAcs[4] := io_M4.NcToPlc.AxisId;
@@ -80,14 +80,14 @@ IF FirstScan THEN
     stAxesConfig.nAxisIdsMcs[3] := io_Z.NcToPlc.AxisId;
     stAxesConfig.nAxisIdsMcs[4] := io_A.NcToPlc.AxisId;
     stAxesConfig.nAxisIdsMcs[5] := io_B.NcToPlc.AxisId;
-    stAxesConfig.nAxisIdsMcs[6] := io_C.NcToPlc.AxisId;*)
+    stAxesConfig.nAxisIdsMcs[6] := io_C.NcToPlc.AxisId;
     
     // I think this can be done alternatively?
     // https://infosys.beckhoff.com/content/1033/tf5110-tf5113_tc3_kinematic_transformation/1955942667.html?id=285201448759597051
-    nErrId := F_KinGetAcsMcsAxisIds (stAxesConfig, in_stKinToPlc);
-    IF nErrId=0 THEN
-        ;(*Axes List is valid*)
-    END_IF
+    //nErrId := F_KinGetAcsMcsAxisIds (stAxesConfig, in_stKinToPlc);
+    //IF nErrId=0 THEN
+        //;(*Axes List is valid*)
+    //END_IF
 END_IF
 
 

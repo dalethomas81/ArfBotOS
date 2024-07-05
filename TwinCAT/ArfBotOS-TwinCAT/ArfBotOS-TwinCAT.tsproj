@@ -2036,6 +2036,24 @@ External Setpoint Generation:
 			</ArrayInfo>
 		</DataType>
 		<DataType>
+			<Name GUID="{BDF5EB32-C28B-833D-0B82-527D00442D17}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..5] OF UINTARR2</Name>
+			<BitSize>192</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000035}">UINTARR2</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>6</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{189ECD13-08C9-33F7-3CE7-1B1294068BF9}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..5] OF USINT</Name>
+			<BitSize>48</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000002}">USINT</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>6</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
 			<Name GUID="{A79401DE-8895-AE85-3AA7-13285E48A81A}" AutoDeleteType="true">DUT_CommandType</Name>
 			<BitSize>16</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
@@ -2307,22 +2325,6 @@ External Setpoint Generation:
 				<Task Id="3" Priority="20" CycleTime="100000" AmsPort="350" AdtTasks="true">
 					<Name>PlcTask</Name>
 				</Task>
-				<Task Id="4" Priority="2" CycleTime="10000" AmsPort="351" AdtTasks="true">
-					<Name>MainTask</Name>
-				</Task>
-				<Task Id="5" Priority="3" CycleTime="10000" AmsPort="352" AdtTasks="true">
-					<Name>SoftMotion_PlanningTask</Name>
-				</Task>
-				<Task Id="6" Priority="31" CycleTime="10000" AmsPort="353" DisableFpExceptions="true" AdtTasks="true">
-					<Name>VISU_TASK</Name>
-				</Task>
-				<Task Id="7" Priority="1" CycleTime="40000" AmsPort="354" AdtTasks="true">
-					<Name>EtherCAT_Task</Name>
-				</Task>
-				<Task Id="10" Priority="32" AdtTasks="true" JobTask="true">
-					<Name>Job Task</Name>
-					<ImageId>327</ImageId>
-				</Task>
 			</Tasks>
 		</System>
 		<Motion>
@@ -2344,10 +2346,17 @@ External Setpoint Generation:
 				</SvbTask>
 				<Axis Id="1" CreateSymbols="true" AxisType="1">
 					<Name>ACS 1</Name>
+					<ImageId>139</ImageId>
 					<AxisPara>
+						<Velo Maximum="180"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="1">
+						<EncPara EncMode="1">
+							<SoftEndMinControl Enable="true" Range="-180"/>
+							<SoftEndMaxControl Enable="true" Range="180"/>
+							<Inc HomingSensorSource="9"/>
+						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
 							<Var>
@@ -2406,9 +2415,8 @@ External Setpoint Generation:
 					</Encoder>
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
-							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<Analog VeloReferenz="200" TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
 							<TimeComp TaskDelayCycles="1"/>
-							<ParameterChanged>289</ParameterChanged>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -2499,6 +2507,7 @@ External Setpoint Generation:
 				</Axis>
 				<Axis Id="2" CreateSymbols="true" AxisType="1">
 					<Name>ACS 2</Name>
+					<ImageId>139</ImageId>
 					<AxisPara>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
@@ -2653,6 +2662,7 @@ External Setpoint Generation:
 				</Axis>
 				<Axis Id="3" CreateSymbols="true" AxisType="1">
 					<Name>ACS 3</Name>
+					<ImageId>139</ImageId>
 					<AxisPara>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
@@ -2807,6 +2817,7 @@ External Setpoint Generation:
 				</Axis>
 				<Axis Id="4" CreateSymbols="true" AxisType="1">
 					<Name>ACS 4</Name>
+					<ImageId>139</ImageId>
 					<AxisPara>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
@@ -2961,6 +2972,7 @@ External Setpoint Generation:
 				</Axis>
 				<Axis Id="5" CreateSymbols="true" AxisType="1">
 					<Name>ACS 5</Name>
+					<ImageId>139</ImageId>
 					<AxisPara>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
@@ -4191,7 +4203,7 @@ External Setpoint Generation:
 						</Var>
 					</Vars>
 				</Axis>
-				<Channel Id="2" ChannelType="4" AxesColumns="#x3f">
+				<Channel Id="2" Disabled="true" ChannelType="4" AxesColumns="#x3f">
 					<Name>Kinematic Channel</Name>
 					<Vars VarGrpType="1">
 						<Name>Inputs</Name>
@@ -4667,8 +4679,8 @@ External Setpoint Generation:
 			</NC>
 		</Motion>
 		<Plc>
-			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{A4F7F559-9CA4-9D81-A01A-C33CDB18D536}" TmcPath="Main\Main.tmc">
+			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{5F532251-1495-5A7E-414A-B99816B373B2}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
@@ -4676,11 +4688,6 @@ External Setpoint Generation:
 						<Var>
 							<Name>PersistentVars.Programs</Name>
 							<Type GUID="{5CDC1CBE-29CE-4902-D3D0-D0769112028D}">ARRAY [0..19] OF DUT_Program</Type>
-							<InOut>7</InOut>
-						</Var>
-						<Var>
-							<Name>PersistentVars.VisionSystemPort</Name>
-							<Type>UINT</Type>
 							<InOut>7</InOut>
 						</Var>
 						<Var>
@@ -4699,6 +4706,11 @@ External Setpoint Generation:
 							<InOut>7</InOut>
 						</Var>
 						<Var>
+							<Name>PersistentVars.VisionSystemPort</Name>
+							<Type>UINT</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
 							<Name>PersistentVars.PositionControllers</Name>
 							<Type GUID="{873E62D6-2103-62DF-E991-2F5352C4AE8B}">ARRAY [0..5] OF DUT_PositionController</Type>
 							<InOut>7</InOut>
@@ -4714,6 +4726,9 @@ External Setpoint Generation:
 						<Name>PlcTask Outputs</Name>
 						<Var>
 							<Name>_10_Drives.pabyTxBuffer</Name>
+							<Comment><![CDATA[rx_j1_limit, rx_j2_limit, rx_j3_limit: BOOL;
+rx_j4_limit, rx_j5_limit, rx_j6_limit: BOOL;
+]]></Comment>
 							<Type GUID="{A6CC6AFE-FE37-C02D-2C0C-FB1479660FEB}">ARRAY [0..31] OF BYTE</Type>
 						</Var>
 						<Var>
@@ -4771,6 +4786,15 @@ External Setpoint Generation:
 						<Var>
 							<Name>_00_Main.io_M6.PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_10_Drives.EncoderIn</Name>
+							<Type GUID="{BDF5EB32-C28B-833D-0B82-527D00442D17}">ARRAY [0..5] OF UINTARR2</Type>
+						</Var>
+						<Var>
+							<Name>_10_Drives.DigitalInputs</Name>
+							<Comment><![CDATA[ Digital Input 1..8]]></Comment>
+							<Type GUID="{189ECD13-08C9-33F7-3CE7-1B1294068BF9}">ARRAY [0..5] OF USINT</Type>
 						</Var>
 					</Vars>
 					<Vars VarGrpType="1">
@@ -4835,19 +4859,19 @@ Controller: FB_Controller;
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.io_M1.NcToPlc</Name>
-							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
-						</Var>
-						<Var>
 							<Name>_00_Main.io_M2.NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.io_M3.NcToPlc</Name>
+							<Name>_00_Main.io_M1.NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
 							<Name>_00_Main.io_M4.NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_M3.NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
@@ -4857,6 +4881,12 @@ Controller: FB_Controller;
 						<Var>
 							<Name>_00_Main.io_M6.NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_10_Drives.VelocityOut</Name>
+							<Comment><![CDATA[SetVelocity: ARRAY [0..5] OF REAL;
+EncPosition: ARRAY [0..5] OF DINT;]]></Comment>
+							<Type GUID="{BDF5EB32-C28B-833D-0B82-527D00442D17}">ARRAY [0..5] OF UINTARR2</Type>
 						</Var>
 					</Vars>
 					<UnrestoredVarLinks ImportTime="2024-07-03T20:35:14">
@@ -5247,27 +5277,45 @@ Controller: FB_Controller;
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 1">
 				<Link VarA="PlcTask Inputs^_00_Main.io_M1.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.VelocityOut[0]" VarB="Drive^Outputs^Out^nDataOut1"/>
 				<Link VarA="PlcTask Outputs^_00_Main.io_M1.PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.DigitalInputs[0]" VarB="Drive^Inputs^In^nState8"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.EncoderIn[0]" VarB="Enc^Inputs^In^nDataIn1"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 2">
 				<Link VarA="PlcTask Inputs^_00_Main.io_M2.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.VelocityOut[1]" VarB="Drive^Outputs^Out^nDataOut1"/>
 				<Link VarA="PlcTask Outputs^_00_Main.io_M2.PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.DigitalInputs[1]" VarB="Drive^Inputs^In^nState8"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.EncoderIn[1]" VarB="Enc^Inputs^In^nDataIn1"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 3">
 				<Link VarA="PlcTask Inputs^_00_Main.io_M3.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.VelocityOut[2]" VarB="Drive^Outputs^Out^nDataOut1"/>
 				<Link VarA="PlcTask Outputs^_00_Main.io_M3.PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.DigitalInputs[2]" VarB="Drive^Inputs^In^nState8"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.EncoderIn[2]" VarB="Enc^Inputs^In^nDataIn1"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 4">
 				<Link VarA="PlcTask Inputs^_00_Main.io_M4.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.VelocityOut[3]" VarB="Drive^Outputs^Out^nDataOut1"/>
 				<Link VarA="PlcTask Outputs^_00_Main.io_M4.PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.DigitalInputs[3]" VarB="Drive^Inputs^In^nState8"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.EncoderIn[3]" VarB="Enc^Inputs^In^nDataIn1"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 5">
 				<Link VarA="PlcTask Inputs^_00_Main.io_M5.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.VelocityOut[4]" VarB="Drive^Outputs^Out^nDataOut1"/>
 				<Link VarA="PlcTask Outputs^_00_Main.io_M5.PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.DigitalInputs[4]" VarB="Drive^Inputs^In^nState8"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.EncoderIn[4]" VarB="Enc^Inputs^In^nDataIn1"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 6">
 				<Link VarA="PlcTask Inputs^_00_Main.io_M6.NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Inputs^_10_Drives.VelocityOut[5]" VarB="Drive^Outputs^Out^nDataOut1"/>
 				<Link VarA="PlcTask Outputs^_00_Main.io_M6.PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.DigitalInputs[5]" VarB="Drive^Inputs^In^nState8"/>
+				<Link VarA="PlcTask Outputs^_10_Drives.EncoderIn[5]" VarB="Enc^Inputs^In^nDataIn1"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS 1">
 				<Link VarA="PlcTask Inputs^_00_Main.io_X.NcToPlc" VarB="Outputs^ToPlc"/>

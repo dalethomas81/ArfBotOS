@@ -8,12 +8,19 @@ VAR
 	rx_en: BOOL;
 	rx_alarm: BOOL;
 	rx_heartbeat_lost: BOOL;
-	rx_j1_limit, rx_j2_limit, rx_j3_limit: BOOL;
-	rx_j4_limit, rx_j5_limit, rx_j6_limit: BOOL;
+	//rx_j1_limit, rx_j2_limit, rx_j3_limit: BOOL;
+	//rx_j4_limit, rx_j5_limit, rx_j6_limit: BOOL;
     
     //
 	pabyTxBuffer AT %QB0 : ARRAY [0..31] OF BYTE;
 	pabyRxBuffer AT %IB0: ARRAY [0..31] OF BYTE;
+    
+	//SetVelocity: ARRAY [0..5] OF REAL;
+	//EncPosition: ARRAY [0..5] OF DINT;
+    
+    VelocityOut AT %I*: ARRAY [0..5] OF UINTARR2;
+    EncoderIn AT %Q*: ARRAY [0..5] OF UINTARR2;
+    DigitalInputs AT %Q*: ARRAY [0..5] OF USINT; // Digital Input 1..8
 	
 	//
 	InitializeDrives: BOOL;
@@ -48,8 +55,6 @@ VAR_INST
 	HeartbeatPt: TIME:=T#1000MS;
 	
 	//
-	SetVelocity: ARRAY [0..5] OF REAL;
-	EncPosition: ARRAY [0..5] OF DINT;
 	bufferIdx: INT;
 	jointIdx: INT;
 	
@@ -60,6 +65,8 @@ END_VAR]]></Declaration>
         <ST><![CDATA[// process images of the encoder and drive
 // https://infosys.beckhoff.com/content/1033/tf50x0_tc3_nc_ptp/10650582539.html?id=9197998846476281621
 // https://infosys.beckhoff.com/content/1033/tf50x0_tc3_nc_ptp/10650598155.html?id=428682353028589629
+// https://www.dmcinfo.com/latest-thinking/blog/id/10336/how-to-link-hardware-io-in-beckhoff-twincat-3
+
 
 //
 HeartbeatOn(in:=NOT HeartbeatOff.Q,PT:=HeartbeatPt);
@@ -80,8 +87,8 @@ pabyTxBuffer[0].1:=GVL.PowerOn; 			// enable drives
 bufferIdx := 1;
 FOR jointIdx := 0 TO 5 BY 1 DO
 	MemCpy( destAddr:=ADR(pabyTxBuffer[bufferIdx]), 
-            srcAddr:=ADR(SetVelocity[jointIdx]), 
-            n:=SIZEOF(SetVelocity[jointIdx]));
+            srcAddr:=ADR(VelocityOut[jointIdx]), 
+            n:=SIZEOF(VelocityOut[jointIdx]));
 	bufferIdx := bufferIdx + 4;
 END_FOR
 
@@ -130,19 +137,19 @@ IF RxCrc = F_Checksum(ADR(pabyRxBuffer), 30) THEN
 	// index 1 through 24 is for encoder data from drive
 	bufferIdx := 1;
 	FOR jointIdx := 0 TO 5 BY 1 DO
-		MemCpy( destAddr:=ADR(EncPosition[jointIdx]), 
+		MemCpy( destAddr:=ADR(EncoderIn[jointIdx]), 
                 srcAddr:=ADR(pabyRxBuffer[bufferIdx]), 
-                n:=SIZEOF(EncPosition[jointIdx]));
+                n:=SIZEOF(EncoderIn[jointIdx]));
 		bufferIdx := bufferIdx + 4;
 	END_FOR
 	
-	// index 25 will be for limit switch inputs
-	rx_j1_limit := pabyRxBuffer[25].0;
-	rx_j2_limit := pabyRxBuffer[25].1;
-	rx_j3_limit := pabyRxBuffer[25].2;
-	rx_j4_limit := pabyRxBuffer[25].3;
-	rx_j5_limit := pabyRxBuffer[25].4;
-	rx_j6_limit := pabyRxBuffer[25].5;
+	// index 25 will be for home switch inputs
+	DigitalInputs[0].0 := pabyRxBuffer[25].0;
+	DigitalInputs[1].0 := pabyRxBuffer[25].1;
+	DigitalInputs[2].0 := pabyRxBuffer[25].2;
+	DigitalInputs[3].0 := pabyRxBuffer[25].3;
+	DigitalInputs[4].0 := pabyRxBuffer[25].4;
+	DigitalInputs[5].0 := pabyRxBuffer[25].5;
 	//rx_ := pabyRxBuffer[25].6;
 	//rx_ := pabyRxBuffer[25].7;
 	
