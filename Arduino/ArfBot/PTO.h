@@ -19,7 +19,7 @@ class PTO {
   public:
     PTO(int In_DirPin, int In_PulsePin);
     void init();
-    void run(float RevolutionsPerSecond, float StepsPerRevolution);
+    void run(int Frequency);
     int turnON();
     int turnOFF();
 };

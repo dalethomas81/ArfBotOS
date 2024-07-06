@@ -63,6 +63,14 @@ END_VAR]]></Declaration>
       <ST><![CDATA[
 // twincat hello world
 
+// https://docs.google.com/spreadsheets/d/1S5TOxwbAx8pTMUdoWMnyC9WPfphhtUME/edit#gid=595805457
+
+// drive process image
+// https://infosys.beckhoff.com/content/1033/tf50x0_tc3_nc_ptp/10650598155.html?id=428682353028589629
+
+// axis process image
+// https://infosys.beckhoff.com/content/1033/tf50x0_tc3_nc_ptp/10650582539.html?id=9197998846476281621
+
 // separate file is needed when using L4 Kinematics transformation (6 Axis)
 // https://infosys.beckhoff.com/content/1033/tf5400_tc3_advanced_motion_pack/8403043979.html?id=9115801577672301435
 
