@@ -2346,13 +2346,13 @@ External Setpoint Generation:
 				</SvbTask>
 				<Axis Id="1" CreateSymbols="true" AxisType="1">
 					<Name>ACS 1</Name>
-					<ImageId>139</ImageId>
 					<AxisPara>
+						<General UnitName="Degree"/>
 						<Velo Maximum="180"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
-					<Encoder Name="Enc" EncType="1">
-						<EncPara EncMode="1">
+					<Encoder Name="Enc" EncType="16">
+						<EncPara ScaleFactorNumerator="0.00225" EncMode="1" MaxCount="#xffffffff">
 							<SoftEndMinControl Enable="true" Range="-180"/>
 							<SoftEndMaxControl Enable="true" Range="180"/>
 							<Inc HomingSensorSource="9"/>
@@ -2507,11 +2507,12 @@ External Setpoint Generation:
 				</Axis>
 				<Axis Id="2" CreateSymbols="true" AxisType="1">
 					<Name>ACS 2</Name>
-					<ImageId>139</ImageId>
 					<AxisPara>
+						<General UnitName="Degree"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
-					<Encoder Name="Enc" EncType="1">
+					<Encoder Name="Enc" EncType="16">
+						<EncPara ScaleFactorNumerator="0.0018" MaxCount="#xffffffff"/>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
 							<Var>
@@ -2662,11 +2663,12 @@ External Setpoint Generation:
 				</Axis>
 				<Axis Id="3" CreateSymbols="true" AxisType="1">
 					<Name>ACS 3</Name>
-					<ImageId>139</ImageId>
 					<AxisPara>
+						<General UnitName="Degree"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
-					<Encoder Name="Enc" EncType="1">
+					<Encoder Name="Enc" EncType="16">
+						<EncPara ScaleFactorNumerator="0.0018" MaxCount="#xffffffff"/>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
 							<Var>
@@ -2817,11 +2819,12 @@ External Setpoint Generation:
 				</Axis>
 				<Axis Id="4" CreateSymbols="true" AxisType="1">
 					<Name>ACS 4</Name>
-					<ImageId>139</ImageId>
 					<AxisPara>
+						<General UnitName="Degree"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
-					<Encoder Name="Enc" EncType="1">
+					<Encoder Name="Enc" EncType="16">
+						<EncPara ScaleFactorNumerator="0.0020089285714286" MaxCount="#xffffffff"/>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
 							<Var>
@@ -2972,11 +2975,12 @@ External Setpoint Generation:
 				</Axis>
 				<Axis Id="5" CreateSymbols="true" AxisType="1">
 					<Name>ACS 5</Name>
-					<ImageId>139</ImageId>
 					<AxisPara>
+						<General UnitName="Degree"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
-					<Encoder Name="Enc" EncType="1">
+					<Encoder Name="Enc" EncType="16">
+						<EncPara ScaleFactorNumerator="0.00916732472209317" MaxCount="#xffffffff"/>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
 							<Var>
@@ -3128,9 +3132,11 @@ External Setpoint Generation:
 				<Axis Id="6" CreateSymbols="true" AxisType="1">
 					<Name>ACS 6</Name>
 					<AxisPara>
+						<General UnitName="Degree"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="1">
+						<EncPara ScaleFactorNumerator="0.00445475638051044" MaxCount="#xffffffff"/>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
 							<Var>
