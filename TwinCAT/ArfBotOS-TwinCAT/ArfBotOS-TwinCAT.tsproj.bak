@@ -2036,24 +2036,6 @@ External Setpoint Generation:
 			</ArrayInfo>
 		</DataType>
 		<DataType>
-			<Name GUID="{BDF5EB32-C28B-833D-0B82-527D00442D17}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..5] OF UINTARR2</Name>
-			<BitSize>192</BitSize>
-			<BaseType GUID="{18071995-0000-0000-0000-000000000035}">UINTARR2</BaseType>
-			<ArrayInfo>
-				<LBound>0</LBound>
-				<Elements>6</Elements>
-			</ArrayInfo>
-		</DataType>
-		<DataType>
-			<Name GUID="{189ECD13-08C9-33F7-3CE7-1B1294068BF9}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..5] OF USINT</Name>
-			<BitSize>48</BitSize>
-			<BaseType GUID="{18071995-0000-0000-0000-000000000002}">USINT</BaseType>
-			<ArrayInfo>
-				<LBound>0</LBound>
-				<Elements>6</Elements>
-			</ArrayInfo>
-		</DataType>
-		<DataType>
 			<Name GUID="{A79401DE-8895-AE85-3AA7-13285E48A81A}" AutoDeleteType="true">DUT_CommandType</Name>
 			<BitSize>16</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
@@ -2162,7 +2144,7 @@ External Setpoint Generation:
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name IecBaseType="true">ARRAY [0..19] OF DUT_Program</Name>
+			<Name GUID="{5CDC1CBE-29CE-4902-D3D0-D0769112028D}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..19] OF DUT_Program</Name>
 			<BitSize>2733120</BitSize>
 			<BaseType GUID="{191AF64F-2DFB-E6F6-DE83-7CD0251E920D}">DUT_Program</BaseType>
 			<ArrayInfo>
@@ -2348,10 +2330,10 @@ External Setpoint Generation:
 					<Name>ACS 1</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Velo Maximum="180"/>
+						<Velo Maximum="90"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
-					<Encoder Name="Enc" EncType="16">
+					<Encoder Name="Enc" EncType="1">
 						<EncPara ScaleFactorNumerator="0.00225" EncMode="1" MaxCount="#xffffffff">
 							<SoftEndMinControl Enable="true" Range="-180"/>
 							<SoftEndMaxControl Enable="true" Range="180"/>
@@ -2415,7 +2397,7 @@ External Setpoint Generation:
 					</Encoder>
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
-							<Analog VeloReferenz="200" TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<Analog VeloReferenz="737.2575" TorqueSetpointScale="10" ScaleFactorActTorque="0.1" TabIpolType="2"/>
 							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
@@ -2509,10 +2491,14 @@ External Setpoint Generation:
 					<Name>ACS 2</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
+						<Velo Maximum="90"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
-						<EncPara ScaleFactorNumerator="0.0018" MaxCount="#xffffffff"/>
+						<EncPara ScaleFactorNumerator="0.0018" MaxCount="#xffffffff">
+							<SoftEndMinControl Enable="true" Range="-180"/>
+							<SoftEndMaxControl Enable="true" Range="180"/>
+						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
 							<Var>
@@ -2571,7 +2557,7 @@ External Setpoint Generation:
 					</Encoder>
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
-							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<Analog VeloReferenz="589.806" TorqueSetpointScale="10" ScaleFactorActTorque="0.1" TabIpolType="2"/>
 							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
@@ -2665,10 +2651,14 @@ External Setpoint Generation:
 					<Name>ACS 3</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
+						<Velo Maximum="90"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
-						<EncPara ScaleFactorNumerator="0.0018" MaxCount="#xffffffff"/>
+						<EncPara ScaleFactorNumerator="0.0018" MaxCount="#xffffffff">
+							<SoftEndMinControl Enable="true" Range="-180"/>
+							<SoftEndMaxControl Enable="true" Range="180"/>
+						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
 							<Var>
@@ -2727,7 +2717,7 @@ External Setpoint Generation:
 					</Encoder>
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
-							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<Analog VeloReferenz="589.806" TorqueSetpointScale="10" ScaleFactorActTorque="0.1" TabIpolType="2"/>
 							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
@@ -2821,10 +2811,14 @@ External Setpoint Generation:
 					<Name>ACS 4</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
+						<Velo Maximum="90"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
-						<EncPara ScaleFactorNumerator="0.0020089285714286" MaxCount="#xffffffff"/>
+						<EncPara ScaleFactorNumerator="0.0020089285714286" MaxCount="#xffffffff">
+							<SoftEndMinControl Enable="true" Range="-180"/>
+							<SoftEndMaxControl Enable="true" Range="180"/>
+						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
 							<Var>
@@ -2883,7 +2877,7 @@ External Setpoint Generation:
 					</Encoder>
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
-							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<Analog VeloReferenz="438.84375" TorqueSetpointScale="10" ScaleFactorActTorque="0.1" TabIpolType="2"/>
 							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
@@ -2977,10 +2971,14 @@ External Setpoint Generation:
 					<Name>ACS 5</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
+						<Velo Maximum="90"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
-						<EncPara ScaleFactorNumerator="0.00916732472209317" MaxCount="#xffffffff"/>
+						<EncPara ScaleFactorNumerator="0.00916732472209317" MaxCount="#xffffffff">
+							<SoftEndMinControl Enable="true" Range="-180"/>
+							<SoftEndMaxControl Enable="true" Range="180"/>
+						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
 							<Var>
@@ -3039,7 +3037,7 @@ External Setpoint Generation:
 					</Encoder>
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
-							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<Analog VeloReferenz="1502.690446" TorqueSetpointScale="10" ScaleFactorActTorque="0.1" TabIpolType="2"/>
 							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
@@ -3133,10 +3131,14 @@ External Setpoint Generation:
 					<Name>ACS 6</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
+						<Velo Maximum="90"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
-					<Encoder Name="Enc" EncType="1">
-						<EncPara ScaleFactorNumerator="0.00445475638051044" MaxCount="#xffffffff"/>
+					<Encoder Name="Enc" EncType="16">
+						<EncPara ScaleFactorNumerator="0.00445475638051044" MaxCount="#xffffffff">
+							<SoftEndMinControl Enable="true" Range="-180"/>
+							<SoftEndMaxControl Enable="true" Range="180"/>
+						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
 							<Var>
@@ -3195,7 +3197,7 @@ External Setpoint Generation:
 					</Encoder>
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
-							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<Analog VeloReferenz="1459.690023" TorqueSetpointScale="10" ScaleFactorActTorque="0.1" TabIpolType="2"/>
 							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
@@ -4686,7 +4688,7 @@ External Setpoint Generation:
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{5F532251-1495-5A7E-414A-B99816B373B2}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{B78DA953-E2E4-B078-29C4-C89C252E1587}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
@@ -4694,6 +4696,11 @@ External Setpoint Generation:
 						<Var>
 							<Name>PersistentVars.Programs</Name>
 							<Type GUID="{5CDC1CBE-29CE-4902-D3D0-D0769112028D}">ARRAY [0..19] OF DUT_Program</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>PersistentVars.VisionSystemPort</Name>
+							<Type>UINT</Type>
 							<InOut>7</InOut>
 						</Var>
 						<Var>
@@ -4712,11 +4719,6 @@ External Setpoint Generation:
 							<InOut>7</InOut>
 						</Var>
 						<Var>
-							<Name>PersistentVars.VisionSystemPort</Name>
-							<Type>UINT</Type>
-							<InOut>7</InOut>
-						</Var>
-						<Var>
 							<Name>PersistentVars.PositionControllers</Name>
 							<Type GUID="{873E62D6-2103-62DF-E991-2F5352C4AE8B}">ARRAY [0..5] OF DUT_PositionController</Type>
 							<InOut>7</InOut>
@@ -4730,13 +4732,6 @@ External Setpoint Generation:
 					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
-						<Var>
-							<Name>_10_Drives.pabyTxBuffer</Name>
-							<Comment><![CDATA[rx_j1_limit, rx_j2_limit, rx_j3_limit: BOOL;
-rx_j4_limit, rx_j5_limit, rx_j6_limit: BOOL;
-]]></Comment>
-							<Type GUID="{A6CC6AFE-FE37-C02D-2C0C-FB1479660FEB}">ARRAY [0..31] OF BYTE</Type>
-						</Var>
 						<Var>
 							<Name>_20_Io.pabyTxBuffer</Name>
 							<Type GUID="{A6CC6AFE-FE37-C02D-2C0C-FB1479660FEB}">ARRAY [0..31] OF BYTE</Type>
@@ -4793,24 +4788,11 @@ rx_j4_limit, rx_j5_limit, rx_j6_limit: BOOL;
 							<Name>_00_Main.io_M6.PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
-						<Var>
-							<Name>_10_Drives.EncoderIn</Name>
-							<Type GUID="{BDF5EB32-C28B-833D-0B82-527D00442D17}">ARRAY [0..5] OF UINTARR2</Type>
-						</Var>
-						<Var>
-							<Name>_10_Drives.DigitalInputs</Name>
-							<Comment><![CDATA[ Digital Input 1..8]]></Comment>
-							<Type GUID="{189ECD13-08C9-33F7-3CE7-1B1294068BF9}">ARRAY [0..5] OF USINT</Type>
-						</Var>
 					</Vars>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
 						<Var>
 							<Name>_20_Io.pabyRxBuffer</Name>
-							<Type GUID="{A6CC6AFE-FE37-C02D-2C0C-FB1479660FEB}">ARRAY [0..31] OF BYTE</Type>
-						</Var>
-						<Var>
-							<Name>_10_Drives.pabyRxBuffer</Name>
 							<Type GUID="{A6CC6AFE-FE37-C02D-2C0C-FB1479660FEB}">ARRAY [0..31] OF BYTE</Type>
 						</Var>
 						<Var>
@@ -4865,19 +4847,19 @@ Controller: FB_Controller;
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.io_M2.NcToPlc</Name>
-							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
-						</Var>
-						<Var>
 							<Name>_00_Main.io_M1.NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.io_M4.NcToPlc</Name>
+							<Name>_00_Main.io_M2.NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
 							<Name>_00_Main.io_M3.NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.io_M4.NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
@@ -4887,12 +4869,6 @@ Controller: FB_Controller;
 						<Var>
 							<Name>_00_Main.io_M6.NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
-						</Var>
-						<Var>
-							<Name>_10_Drives.VelocityOut</Name>
-							<Comment><![CDATA[SetVelocity: ARRAY [0..5] OF REAL;
-EncPosition: ARRAY [0..5] OF DINT;]]></Comment>
-							<Type GUID="{BDF5EB32-C28B-833D-0B82-527D00442D17}">ARRAY [0..5] OF UINTARR2</Type>
 						</Var>
 					</Vars>
 					<UnrestoredVarLinks ImportTime="2024-07-03T20:35:14">
@@ -4966,6 +4942,64 @@ EncPosition: ARRAY [0..5] OF DINT;]]></Comment>
 								<Link VarA="MAIN.BufferOut[7]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte7" RestoreInfo="ANotFound"/>
 								<Link VarA="MAIN.BufferOut[8]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte8" RestoreInfo="ANotFound"/>
 								<Link VarA="MAIN.BufferOut[9]" TypeA="BYTE" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Outputs^Byte9" RestoreInfo="ANotFound"/>
+							</OwnerB>
+						</OwnerA>
+					</UnrestoredVarLinks>
+					<UnrestoredVarLinks ImportTime="2024-07-06T00:49:30">
+						<OwnerA Name="InputDst" Prefix="TIPC^Main^Main Instance" Type="1">
+							<OwnerB Name="TIID^Device 1 (EtherCAT)^Box 1 (EasyCAT 32+32 rev 1)">
+								<Link VarA="_10_Drives.pabyRxBuffer[0]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte0" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[10]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte10" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[11]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte11" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[12]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte12" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[13]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte13" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[14]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte14" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[15]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte15" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[16]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte16" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[17]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte17" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[18]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte18" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[19]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte19" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[1]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte1" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[20]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte20" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[21]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte21" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[22]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte22" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[23]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte23" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[24]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte24" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[25]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte25" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[26]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte26" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[27]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte27" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[28]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte28" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[29]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte29" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[2]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte2" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[30]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte30" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[31]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte31" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[3]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte3" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[4]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte4" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[5]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte5" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[6]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte6" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[7]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte7" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[8]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte8" RestoreInfo="ANotFound"/>
+								<Link VarA="_10_Drives.pabyRxBuffer[9]" TypeA="BYTE" InOutA="0" GuidA="{18071995-0000-0000-0000-000000000001}" VarB="Inputs^Byte9" RestoreInfo="ANotFound"/>
+							</OwnerB>
+						</OwnerA>
+						<OwnerA Name="OutputSrc" Prefix="TIPC^Main^Main Instance" Type="2">
+							<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 1">
+								<Link VarA="_10_Drives.DigitalInputs[0]" TypeA="USINT" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Drive^Inputs^In^nState8" RestoreInfo="ANotFound"/>
+							</OwnerB>
+							<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 2">
+								<Link VarA="_10_Drives.DigitalInputs[1]" TypeA="USINT" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Drive^Inputs^In^nState8" RestoreInfo="ANotFound"/>
+							</OwnerB>
+							<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 3">
+								<Link VarA="_10_Drives.DigitalInputs[2]" TypeA="USINT" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Drive^Inputs^In^nState8" RestoreInfo="ANotFound"/>
+							</OwnerB>
+							<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 4">
+								<Link VarA="_10_Drives.DigitalInputs[3]" TypeA="USINT" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Drive^Inputs^In^nState8" RestoreInfo="ANotFound"/>
+							</OwnerB>
+							<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 5">
+								<Link VarA="_10_Drives.DigitalInputs[4]" TypeA="USINT" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Drive^Inputs^In^nState8" RestoreInfo="ANotFound"/>
+							</OwnerB>
+							<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 6">
+								<Link VarA="_10_Drives.DigitalInputs[5]" TypeA="USINT" InOutA="1" GuidA="{18071995-0000-0000-0000-000000000002}" VarB="Drive^Inputs^In^nState8" RestoreInfo="ANotFound"/>
 							</OwnerB>
 						</OwnerA>
 					</UnrestoredVarLinks>
@@ -5212,116 +5246,109 @@ EncPosition: ARRAY [0..5] OF DINT;]]></Comment>
 		</Io>
 	</Project>
 	<Mappings>
-		<MappingInfo Identifier="{00000000-2001-0850-0020-500810000403}" Id="#x02030010"/>
+		<MappingInfo Identifier="{00000000-0010-0304-3000-040310000403}" Id="#x02030010"/>
 		<MappingInfo Identifier="{05000010-2001-0850-3000-040300205008}" Id="#x02030020" Watchdog="14000000040000000400000004000000"/>
-		<OwnerA Name="TIPC^Main^Main Instance">
+		<OwnerA Name="TINC^NC-Task 1 SAF^Axes^ACS 1">
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Box 1 (EasyCAT 32+32 rev 1)">
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[0]" VarB="Inputs^Byte0"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[10]" VarB="Inputs^Byte10"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[11]" VarB="Inputs^Byte11"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[12]" VarB="Inputs^Byte12"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[13]" VarB="Inputs^Byte13"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[14]" VarB="Inputs^Byte14"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[15]" VarB="Inputs^Byte15"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[16]" VarB="Inputs^Byte16"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[17]" VarB="Inputs^Byte17"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[18]" VarB="Inputs^Byte18"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[19]" VarB="Inputs^Byte19"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[1]" VarB="Inputs^Byte1"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[20]" VarB="Inputs^Byte20"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[21]" VarB="Inputs^Byte21"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[22]" VarB="Inputs^Byte22"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[23]" VarB="Inputs^Byte23"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[24]" VarB="Inputs^Byte24"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[25]" VarB="Inputs^Byte25"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[26]" VarB="Inputs^Byte26"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[27]" VarB="Inputs^Byte27"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[28]" VarB="Inputs^Byte28"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[29]" VarB="Inputs^Byte29"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[2]" VarB="Inputs^Byte2"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[30]" VarB="Inputs^Byte30"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[31]" VarB="Inputs^Byte31"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[3]" VarB="Inputs^Byte3"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[4]" VarB="Inputs^Byte4"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[5]" VarB="Inputs^Byte5"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[6]" VarB="Inputs^Byte6"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[7]" VarB="Inputs^Byte7"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[8]" VarB="Inputs^Byte8"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.pabyRxBuffer[9]" VarB="Inputs^Byte9"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[0]" VarB="Outputs^Byte0"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[10]" VarB="Outputs^Byte10"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[11]" VarB="Outputs^Byte11"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[12]" VarB="Outputs^Byte12"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[13]" VarB="Outputs^Byte13"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[14]" VarB="Outputs^Byte14"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[15]" VarB="Outputs^Byte15"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[16]" VarB="Outputs^Byte16"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[17]" VarB="Outputs^Byte17"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[18]" VarB="Outputs^Byte18"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[19]" VarB="Outputs^Byte19"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[1]" VarB="Outputs^Byte1"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[20]" VarB="Outputs^Byte20"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[21]" VarB="Outputs^Byte21"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[22]" VarB="Outputs^Byte22"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[23]" VarB="Outputs^Byte23"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[24]" VarB="Outputs^Byte24"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[25]" VarB="Outputs^Byte25"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[26]" VarB="Outputs^Byte26"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[27]" VarB="Outputs^Byte27"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[28]" VarB="Outputs^Byte28"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[29]" VarB="Outputs^Byte29"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[2]" VarB="Outputs^Byte2"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[30]" VarB="Outputs^Byte30"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[31]" VarB="Outputs^Byte31"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[3]" VarB="Outputs^Byte3"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[4]" VarB="Outputs^Byte4"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[5]" VarB="Outputs^Byte5"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[6]" VarB="Outputs^Byte6"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[7]" VarB="Outputs^Byte7"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[8]" VarB="Outputs^Byte8"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.pabyTxBuffer[9]" VarB="Outputs^Byte9"/>
+				<Link VarA="Drive^Inputs^In^nState8" VarB="Inputs^Byte25" Size="1"/>
+				<Link VarA="Drive^Outputs^Out^nCtrl1" VarB="Outputs^Byte13"/>
+				<Link VarA="Drive^Outputs^Out^nCtrl2" VarB="Outputs^Byte14"/>
+				<Link VarA="Drive^Outputs^Out^nDataOut1[0]" VarB="Outputs^Byte1"/>
+				<Link VarA="Drive^Outputs^Out^nDataOut1[0]" VarB="Outputs^Byte2" Size="8" OffsA="8"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[0]" VarB="Inputs^Byte1"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[0]" VarB="Inputs^Byte2" Size="8" OffsA="8"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[1]" VarB="Inputs^Byte3"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[1]" VarB="Inputs^Byte4" Size="8" OffsA="8"/>
 			</OwnerB>
+		</OwnerA>
+		<OwnerA Name="TINC^NC-Task 1 SAF^Axes^ACS 2">
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^Box 1 (EasyCAT 32+32 rev 1)">
+				<Link VarA="Drive^Inputs^In^nState8" VarB="Inputs^Byte25" Size="1" OffsB="1"/>
+				<Link VarA="Drive^Outputs^Out^nCtrl1" VarB="Outputs^Byte15"/>
+				<Link VarA="Drive^Outputs^Out^nCtrl2" VarB="Outputs^Byte16"/>
+				<Link VarA="Drive^Outputs^Out^nDataOut1[0]" VarB="Outputs^Byte3"/>
+				<Link VarA="Drive^Outputs^Out^nDataOut1[0]" VarB="Outputs^Byte4" Size="8" OffsA="8"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[0]" VarB="Inputs^Byte5"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[0]" VarB="Inputs^Byte6" Size="8" OffsA="8"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[1]" VarB="Inputs^Byte7"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[1]" VarB="Inputs^Byte8" Size="8" OffsA="8"/>
+			</OwnerB>
+		</OwnerA>
+		<OwnerA Name="TINC^NC-Task 1 SAF^Axes^ACS 3">
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^Box 1 (EasyCAT 32+32 rev 1)">
+				<Link VarA="Drive^Inputs^In^nState8" VarB="Inputs^Byte25" Size="1" OffsB="2"/>
+				<Link VarA="Drive^Outputs^Out^nCtrl1" VarB="Outputs^Byte17"/>
+				<Link VarA="Drive^Outputs^Out^nCtrl2" VarB="Outputs^Byte18"/>
+				<Link VarA="Drive^Outputs^Out^nDataOut1[0]" VarB="Outputs^Byte5"/>
+				<Link VarA="Drive^Outputs^Out^nDataOut1[0]" VarB="Outputs^Byte6" Size="8" OffsA="8"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[0]" VarB="Inputs^Byte10" Size="8" OffsA="8"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[0]" VarB="Inputs^Byte9"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[1]" VarB="Inputs^Byte11"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[1]" VarB="Inputs^Byte12" Size="8" OffsA="8"/>
+			</OwnerB>
+		</OwnerA>
+		<OwnerA Name="TINC^NC-Task 1 SAF^Axes^ACS 4">
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^Box 1 (EasyCAT 32+32 rev 1)">
+				<Link VarA="Drive^Inputs^In^nState8" VarB="Inputs^Byte25" Size="1" OffsB="3"/>
+				<Link VarA="Drive^Outputs^Out^nCtrl1" VarB="Outputs^Byte19"/>
+				<Link VarA="Drive^Outputs^Out^nCtrl2" VarB="Outputs^Byte20"/>
+				<Link VarA="Drive^Outputs^Out^nDataOut1[0]" VarB="Outputs^Byte7"/>
+				<Link VarA="Drive^Outputs^Out^nDataOut1[0]" VarB="Outputs^Byte8" Size="8" OffsA="8"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[0]" VarB="Inputs^Byte13"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[0]" VarB="Inputs^Byte14" Size="8" OffsA="8"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[1]" VarB="Inputs^Byte15"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[1]" VarB="Inputs^Byte16" Size="8" OffsA="8"/>
+			</OwnerB>
+		</OwnerA>
+		<OwnerA Name="TINC^NC-Task 1 SAF^Axes^ACS 5">
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^Box 1 (EasyCAT 32+32 rev 1)">
+				<Link VarA="Drive^Inputs^In^nState8" VarB="Inputs^Byte25" Size="1" OffsB="4"/>
+				<Link VarA="Drive^Outputs^Out^nCtrl1" VarB="Outputs^Byte21"/>
+				<Link VarA="Drive^Outputs^Out^nCtrl2" VarB="Outputs^Byte22"/>
+				<Link VarA="Drive^Outputs^Out^nDataOut1[0]" VarB="Outputs^Byte10" Size="8" OffsA="8"/>
+				<Link VarA="Drive^Outputs^Out^nDataOut1[0]" VarB="Outputs^Byte9"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[0]" VarB="Inputs^Byte17"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[0]" VarB="Inputs^Byte18" Size="8" OffsA="8"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[1]" VarB="Inputs^Byte19"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[1]" VarB="Inputs^Byte20" Size="8" OffsA="8"/>
+			</OwnerB>
+		</OwnerA>
+		<OwnerA Name="TINC^NC-Task 1 SAF^Axes^ACS 6">
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^Box 1 (EasyCAT 32+32 rev 1)">
+				<Link VarA="Drive^Outputs^Out^nCtrl1" VarB="Outputs^Byte23"/>
+				<Link VarA="Drive^Outputs^Out^nCtrl2" VarB="Outputs^Byte24"/>
+				<Link VarA="Drive^Outputs^Out^nDataOut1[0]" VarB="Outputs^Byte11"/>
+				<Link VarA="Drive^Outputs^Out^nDataOut1[0]" VarB="Outputs^Byte12" Size="8" OffsA="8"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[0]" VarB="Inputs^Byte21"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[0]" VarB="Inputs^Byte22" Size="8" OffsA="8"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[1]" VarB="Inputs^Byte23"/>
+				<Link VarA="Enc^Inputs^In^nDataIn1[1]" VarB="Inputs^Byte24" Size="8" OffsA="8"/>
+			</OwnerB>
+		</OwnerA>
+		<OwnerA Name="TIPC^Main^Main Instance">
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 1">
 				<Link VarA="PlcTask Inputs^_00_Main.io_M1.NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.VelocityOut[0]" VarB="Drive^Outputs^Out^nDataOut1"/>
 				<Link VarA="PlcTask Outputs^_00_Main.io_M1.PlcToNc" VarB="Inputs^FromPlc"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.DigitalInputs[0]" VarB="Drive^Inputs^In^nState8"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.EncoderIn[0]" VarB="Enc^Inputs^In^nDataIn1"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 2">
 				<Link VarA="PlcTask Inputs^_00_Main.io_M2.NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.VelocityOut[1]" VarB="Drive^Outputs^Out^nDataOut1"/>
 				<Link VarA="PlcTask Outputs^_00_Main.io_M2.PlcToNc" VarB="Inputs^FromPlc"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.DigitalInputs[1]" VarB="Drive^Inputs^In^nState8"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.EncoderIn[1]" VarB="Enc^Inputs^In^nDataIn1"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 3">
 				<Link VarA="PlcTask Inputs^_00_Main.io_M3.NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.VelocityOut[2]" VarB="Drive^Outputs^Out^nDataOut1"/>
 				<Link VarA="PlcTask Outputs^_00_Main.io_M3.PlcToNc" VarB="Inputs^FromPlc"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.DigitalInputs[2]" VarB="Drive^Inputs^In^nState8"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.EncoderIn[2]" VarB="Enc^Inputs^In^nDataIn1"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 4">
 				<Link VarA="PlcTask Inputs^_00_Main.io_M4.NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.VelocityOut[3]" VarB="Drive^Outputs^Out^nDataOut1"/>
 				<Link VarA="PlcTask Outputs^_00_Main.io_M4.PlcToNc" VarB="Inputs^FromPlc"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.DigitalInputs[3]" VarB="Drive^Inputs^In^nState8"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.EncoderIn[3]" VarB="Enc^Inputs^In^nDataIn1"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 5">
 				<Link VarA="PlcTask Inputs^_00_Main.io_M5.NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.VelocityOut[4]" VarB="Drive^Outputs^Out^nDataOut1"/>
 				<Link VarA="PlcTask Outputs^_00_Main.io_M5.PlcToNc" VarB="Inputs^FromPlc"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.DigitalInputs[4]" VarB="Drive^Inputs^In^nState8"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.EncoderIn[4]" VarB="Enc^Inputs^In^nDataIn1"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 6">
 				<Link VarA="PlcTask Inputs^_00_Main.io_M6.NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Inputs^_10_Drives.VelocityOut[5]" VarB="Drive^Outputs^Out^nDataOut1"/>
 				<Link VarA="PlcTask Outputs^_00_Main.io_M6.PlcToNc" VarB="Inputs^FromPlc"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.DigitalInputs[5]" VarB="Drive^Inputs^In^nState8"/>
-				<Link VarA="PlcTask Outputs^_10_Drives.EncoderIn[5]" VarB="Enc^Inputs^In^nDataIn1"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS 1">
 				<Link VarA="PlcTask Inputs^_00_Main.io_X.NcToPlc" VarB="Outputs^ToPlc"/>
