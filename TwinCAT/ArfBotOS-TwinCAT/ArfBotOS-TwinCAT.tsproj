@@ -2071,14 +2071,14 @@ External Setpoint Generation:
 					<Name>ACS 1</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Velo Maximum="90"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="10" Maximum="90"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
-					<Encoder Name="Enc" EncType="1">
-						<EncPara ScaleFactorNumerator="0.00225" EncMode="1" MaxCount="#xffffffff">
+					<Encoder Name="Enc" EncType="16">
+						<EncPara ScaleFactorNumerator="0.00225" EncMode="1" MaxCount="#x0000ffff">
 							<SoftEndMinControl Enable="true" Range="-180"/>
 							<SoftEndMaxControl Enable="true" Range="180"/>
-							<Inc HomingSensorSource="9"/>
+							<Inc RefPosition="166" HomingSensorSource="9"/>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -2232,13 +2232,14 @@ External Setpoint Generation:
 					<Name>ACS 2</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Velo Maximum="90"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="5" Maximum="90"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
-						<EncPara ScaleFactorNumerator="0.0018" MaxCount="#xffffffff">
+						<EncPara ScaleFactorNumerator="0.0018" Inverse="true" EncMode="1" MaxCount="#xffffffff">
 							<SoftEndMinControl Enable="true" Range="-180"/>
 							<SoftEndMaxControl Enable="true" Range="180"/>
+							<Inc RefSearchInverse="true" RefSyncInverse="false" RefPosition="-35.27" HomingSensorSource="9"/>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -2297,7 +2298,7 @@ External Setpoint Generation:
 						</Vars>
 					</Encoder>
 					<Drive Name="Drive" DrvType="5">
-						<DrvPara>
+						<DrvPara Inverse="true">
 							<Analog VeloReferenz="589.806" TorqueSetpointScale="10" ScaleFactorActTorque="0.1" TabIpolType="2"/>
 							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
@@ -2392,13 +2393,14 @@ External Setpoint Generation:
 					<Name>ACS 3</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Velo Maximum="90"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="10" Maximum="90"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
-						<EncPara ScaleFactorNumerator="0.0018" MaxCount="#xffffffff">
+						<EncPara ScaleFactorNumerator="0.0018" Inverse="true" EncMode="1" MaxCount="#xffffffff">
 							<SoftEndMinControl Enable="true" Range="-180"/>
 							<SoftEndMaxControl Enable="true" Range="180"/>
+							<Inc RefPosition="145" HomingSensorSource="9"/>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -2457,7 +2459,7 @@ External Setpoint Generation:
 						</Vars>
 					</Encoder>
 					<Drive Name="Drive" DrvType="5">
-						<DrvPara>
+						<DrvPara Inverse="true">
 							<Analog VeloReferenz="589.806" TorqueSetpointScale="10" ScaleFactorActTorque="0.1" TabIpolType="2"/>
 							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
@@ -2552,13 +2554,14 @@ External Setpoint Generation:
 					<Name>ACS 4</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Velo Maximum="90"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="10" Maximum="90"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
-						<EncPara ScaleFactorNumerator="0.0020089285714286" MaxCount="#xffffffff">
+						<EncPara ScaleFactorNumerator="0.0020089285714286" EncMode="1" MaxCount="#xffffffff">
 							<SoftEndMinControl Enable="true" Range="-180"/>
 							<SoftEndMaxControl Enable="true" Range="180"/>
+							<Inc RefSearchInverse="true" RefSyncInverse="false" RefPosition="-166" HomingSensorSource="9"/>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -2617,7 +2620,7 @@ External Setpoint Generation:
 						</Vars>
 					</Encoder>
 					<Drive Name="Drive" DrvType="5">
-						<DrvPara>
+						<DrvPara Inverse="true">
 							<Analog VeloReferenz="438.84375" TorqueSetpointScale="10" ScaleFactorActTorque="0.1" TabIpolType="2"/>
 							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
@@ -2712,13 +2715,14 @@ External Setpoint Generation:
 					<Name>ACS 5</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Velo Maximum="90"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="10" Maximum="90"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
-						<EncPara ScaleFactorNumerator="0.00916732472209317" MaxCount="#xffffffff">
+						<EncPara ScaleFactorNumerator="0.00916732472209317" Inverse="true" EncMode="1" MaxCount="#xffffffff">
 							<SoftEndMinControl Enable="true" Range="-180"/>
 							<SoftEndMaxControl Enable="true" Range="180"/>
+							<Inc RefSearchInverse="true" RefSyncInverse="false" RefPosition="-77" HomingSensorSource="9"/>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -2777,7 +2781,7 @@ External Setpoint Generation:
 						</Vars>
 					</Encoder>
 					<Drive Name="Drive" DrvType="5">
-						<DrvPara>
+						<DrvPara Inverse="true">
 							<Analog VeloReferenz="1502.690446" TorqueSetpointScale="10" ScaleFactorActTorque="0.1" TabIpolType="2"/>
 							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
@@ -2872,13 +2876,14 @@ External Setpoint Generation:
 					<Name>ACS 6</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Velo Maximum="90"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="10" Maximum="90"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
-						<EncPara ScaleFactorNumerator="0.00445475638051044" MaxCount="#xffffffff">
+						<EncPara ScaleFactorNumerator="0.00445475638051044" EncMode="1" MaxCount="#xffffffff">
 							<SoftEndMinControl Enable="true" Range="-180"/>
 							<SoftEndMaxControl Enable="true" Range="180"/>
+							<Inc RefPosition="178" HomingSensorSource="9"/>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -2937,7 +2942,7 @@ External Setpoint Generation:
 						</Vars>
 					</Encoder>
 					<Drive Name="Drive" DrvType="5">
-						<DrvPara>
+						<DrvPara Inverse="true">
 							<Analog VeloReferenz="1459.690023" TorqueSetpointScale="10" ScaleFactorActTorque="0.1" TabIpolType="2"/>
 							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
