@@ -8,14 +8,14 @@ PTO::PTO(int In_DirPin, int In_PulsePin, int In_EnablePin) {
   enablePin = In_EnablePin;
 }
 
-void PTO::run(int Frequency){
+void PTO::run(int16_t Frequency){
   if (Frequency != 0 && DriveEnabled) {
 
     bOffOneshot = true;
 
     float Period, PulseTime;
-    Period = 1 / Frequency; // seconds
-    PulseTime = (Period * 1000 * 1000) / 2; // microseconds
+    Period = 1 / float(abs(Frequency)); // seconds
+    PulseTime = (Period * 1000 * 1000) / 2; // microseconds divide by 2 for 50% duty cycle
 
     _SysTime = ARM_DWT_CYCCNT;
     if (_SysTime - _SysTime_Last > (F_CPU_ACTUAL / 1000000 * PulseTime)) {
@@ -24,11 +24,7 @@ void PTO::run(int Frequency){
     }
 
     Direction = (Frequency < 0 ? HIGH : LOW);
-
-    //if (Direction != Direction_Last){
-    //  Direction_Last = Direction;
-      digitalWriteFast(dirPin, Direction);
-    //}
+    digitalWriteFast(dirPin, Direction);
 
   } else {
     if (bOffOneshot){

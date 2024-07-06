@@ -62,7 +62,7 @@ const int HeartbeatLed = 17;
 
 union u_pto {
   uint8_t b[2];
-  int ival;
+  int16_t ival;
 } Frequency[6];
 
 union u_enc {
@@ -87,26 +87,26 @@ byte Control2[6];
 
 // dirPin, pulsePin, enablePin
 PTO Drive[] = {	PTO(J1_DirPin, J1_PulsePin, J1_EnablePin),
-				PTO(J2_DirPin, J2_PulsePin, J2_EnablePin), 
-				PTO(J3_DirPin, J3_PulsePin, J3_EnablePin), 
-				PTO(J4_DirPin, J4_PulsePin, J4_EnablePin), 
-				PTO(J5_DirPin, J5_PulsePin, J5_EnablePin), 
-				PTO(J6_DirPin, J6_PulsePin, J6_EnablePin)};
+                PTO(J2_DirPin, J2_PulsePin, J2_EnablePin), 
+                PTO(J3_DirPin, J3_PulsePin, J3_EnablePin), 
+                PTO(J4_DirPin, J4_PulsePin, J4_EnablePin), 
+                PTO(J5_DirPin, J5_PulsePin, J5_EnablePin), 
+                PTO(J6_DirPin, J6_PulsePin, J6_EnablePin)};
 
 //set encoder pins
 Encoder Position[] = {Encoder(J1_EncPinA, J1_EncPinB),
-					Encoder(J2_EncPinA, J2_EncPinB),
-					Encoder(J3_EncPinA, J3_EncPinB),
-					Encoder(J4_EncPinA, J4_EncPinB),
-					Encoder(J5_EncPinA, J5_EncPinB),
-					Encoder(J6_EncPinA, J6_EncPinB)};
+                      Encoder(J2_EncPinA, J2_EncPinB),
+                      Encoder(J3_EncPinA, J3_EncPinB),
+                      Encoder(J4_EncPinA, J4_EncPinB),
+                      Encoder(J5_EncPinA, J5_EncPinB),
+                      Encoder(J6_EncPinA, J6_EncPinB)};
 
-InputDebounced Limit[] = {	InputDebounced(J1_CalPin, INPUT_PULLUP, 1),
-							InputDebounced(J2_CalPin, INPUT_PULLUP, 1),
-							InputDebounced(J3_CalPin, INPUT_PULLUP, 1),
-							InputDebounced(J4_CalPin, INPUT_PULLUP, 1),
-							InputDebounced(J5_CalPin, INPUT_PULLUP, 1),
-							InputDebounced(J6_CalPin, INPUT_PULLUP, 1)};
+InputDebounced Limit[] = {InputDebounced(J1_CalPin, INPUT_PULLUP, 1),
+                          InputDebounced(J2_CalPin, INPUT_PULLUP, 1),
+                          InputDebounced(J3_CalPin, INPUT_PULLUP, 1),
+                          InputDebounced(J4_CalPin, INPUT_PULLUP, 1),
+                          InputDebounced(J5_CalPin, INPUT_PULLUP, 1),
+                          InputDebounced(J6_CalPin, INPUT_PULLUP, 1)};
 
 void setup() {
 
@@ -149,9 +149,6 @@ void setup() {
   
 }
 
-bool tx_heartbeat, rx_heartbeat, rx_heartbeat_last, rx_heartbeat_lost;
-bool tx_en, rx_en, rx_en_last;
-bool tx_alarm;
 bool LimitState[6];
 void loop() {
 
@@ -161,7 +158,8 @@ void loop() {
   // ESM_BOOT                   0x03          // 
   // ESM_SAFEOP                 0x04          // safe-operational
   // ESM_OP                     0x08          // operational
-  unsigned char Status = EASYCAT.MainTask(); 
+  //unsigned char Status = EASYCAT.MainTask();
+  EASYCAT.MainTask();
 
   handleTx();
   handleRx();
@@ -170,9 +168,9 @@ void loop() {
   
 	for (int i=0;i<=5;i++){
 		if (DriveControl[i].Enable) {
-			Drive[i].turnON()
+			Drive[i].turnON();
 		} else {
-			Drive[i].turnOFF()
+			Drive[i].turnOFF();
 		}
 		if (DriveControl[i].Minus) {
 		}
@@ -185,8 +183,7 @@ void loop() {
 	SerialOutputTimer = millis();
 	if (SerialOutputTimer - SerialOutputTimer_last > 1000) {
 		SerialOutputTimer_last = SerialOutputTimer;
-		tx_heartbeat = !tx_heartbeat;
-		//handleSerial();
+		handleSerial();
 	}
 }
 
@@ -254,7 +251,7 @@ void handleRx(){
 	int k=1;
 	for (int i=0;i<=5;i++){
 		for (int j=0;j<=1;j++){
-		  SetVelocity[i].b[j]=RxBuffer[k++];
+		  Frequency[i].b[j]=RxBuffer[k++];
 		}
 	}
 
@@ -264,7 +261,7 @@ void handleRx(){
 	}
 	
 	// bytes 13 through 24 are used for control from motion
-	int k=13;
+	k=13;
 	for (int i=0;i<=5;i++){
 		// get nctrl1
 		DriveControl[i].Enable = RxBuffer[k] & B00001000;
@@ -280,7 +277,7 @@ void handleRx(){
 void handleInputs(){
 
 	for (int i=0;i<=5;i++){
-		LimitState[i] = !Limit.read();
+		LimitState[i] = !Limit[i].read();
 	}
 
 }
@@ -290,10 +287,10 @@ void handleOutputs(){
 }
 
 void handleSerial(){
-  Serial.print(tx_heartbeat);
-  Serial.print(" ");
-  Serial.print(rx_heartbeat);
-  Serial.print(" ");
+  Serial.print(Frequency[0].ival);
+  //Serial.print(" ");
+  //Serial.print(rx_heartbeat);
+  //Serial.print(" ");
   Serial.println();
 }
 
