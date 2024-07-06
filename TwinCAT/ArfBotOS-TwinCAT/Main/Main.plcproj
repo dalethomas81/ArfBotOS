@@ -309,9 +309,6 @@
     <Compile Include="POUs\_00_Main.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\_10_Drives.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="POUs\_20_Io.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -393,9 +390,6 @@
     <SubObject Include="_00_Main._M_Jogging" />
     <SubObject Include="_00_Main._M_Processor" />
     <SubObject Include="_00_Main._M_Tuning" />
-    <SubObject Include="_10_Drives.M_Init" />
-    <SubObject Include="_10_Drives._M_HandleDriveIO" />
-    <SubObject Include="_10_Drives._M_Init" />
     <SubObject Include="_20_Io._M_HandleRemoteIO" />
   </ItemGroup>
   <ItemGroup>
@@ -406,8 +400,8 @@
   <ProjectExtensions>
     <PlcProjectOptions>
       <XmlArchive>
-  <Data>
-    <o xml:space="preserve" t="OptionKey">
+        <Data>
+          <o xml:space="preserve" t="OptionKey">
       <v n="Name">"&lt;ProjectRoot&gt;"</v>
       <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
         <v>{192FAD59-8248-4824-A8DE-9177C94C195A}</v>
@@ -474,14 +468,14 @@
       </d>
       <d n="Values" t="Hashtable" />
     </o>
-  </Data>
-  <TypeList>
-    <Type n="Boolean">System.Boolean</Type>
-    <Type n="Hashtable">System.Collections.Hashtable</Type>
-    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
-    <Type n="String">System.String</Type>
-  </TypeList>
-</XmlArchive>
+        </Data>
+        <TypeList>
+          <Type n="Boolean">System.Boolean</Type>
+          <Type n="Hashtable">System.Collections.Hashtable</Type>
+          <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+          <Type n="String">System.String</Type>
+        </TypeList>
+      </XmlArchive>
     </PlcProjectOptions>
   </ProjectExtensions>
 </Project>

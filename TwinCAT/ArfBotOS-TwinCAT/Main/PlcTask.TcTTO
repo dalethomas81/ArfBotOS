@@ -8,9 +8,6 @@
       <Name>_00_Main</Name>
     </PouCall>
     <PouCall>
-      <Name>_10_Drives</Name>
-    </PouCall>
-    <PouCall>
       <Name>_20_Io</Name>
     </PouCall>
     <TaskFBGuid>{8f6828a7-316f-45c2-90b8-652f659862d2}</TaskFBGuid>

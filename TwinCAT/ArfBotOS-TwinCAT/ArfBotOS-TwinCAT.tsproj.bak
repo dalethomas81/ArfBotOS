@@ -5315,6 +5315,7 @@ Controller: FB_Controller;
 		</OwnerA>
 		<OwnerA Name="TINC^NC-Task 1 SAF^Axes^ACS 6">
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Box 1 (EasyCAT 32+32 rev 1)">
+				<Link VarA="Drive^Inputs^In^nState8" VarB="Inputs^Byte25" Size="1" OffsB="5"/>
 				<Link VarA="Drive^Outputs^Out^nCtrl1" VarB="Outputs^Byte23"/>
 				<Link VarA="Drive^Outputs^Out^nCtrl2" VarB="Outputs^Byte24"/>
 				<Link VarA="Drive^Outputs^Out^nDataOut1[0]" VarB="Outputs^Byte11"/>
