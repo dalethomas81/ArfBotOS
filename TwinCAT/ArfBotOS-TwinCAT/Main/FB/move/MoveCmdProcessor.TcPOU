@@ -12,7 +12,7 @@ VAR_INPUT
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
-	AxisGroup: AXIS_GROUP_REF_SM3;
+	AxisGroup: AXES_GROUP_REF;
 	GroupHandler: FB_GroupHandler;
 END_VAR
 VAR_OUTPUT

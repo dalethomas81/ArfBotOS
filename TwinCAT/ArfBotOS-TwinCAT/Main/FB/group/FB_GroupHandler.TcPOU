@@ -382,7 +382,7 @@ CASE _SequenceSetCoordTrans OF
 		END_IF
 	
 	1: //
-		_MC_COORD_REF := StoredPositions[GVL.MCS_POS_IDX].Position; // MCS
+		//_MC_COORD_REF := StoredPositions[GVL.MCS_POS_IDX].Position; // MCS
 		//_MC_SetCoordinateTransform.CoordSystem := SMC_COORD_SYSTEM.MCS;
 		_MC_SetCoordinateTransform.Execute := TRUE;
 		_SequenceSetCoordTrans := _SequenceSetCoordTrans + 1;

@@ -93,7 +93,7 @@ CASE _SequenceMain OF
 	STEP_DONE: // done
 		Busy := FALSE;
 		Done := TRUE;
-		_MoveCommandProcessor.M_Home();
+		//_MoveCommandProcessor.M_Home();
 		_SequenceMain := STEP_IDLE;
 		
 		_SMC_Homing_J1.Execute := FALSE;
@@ -102,12 +102,6 @@ CASE _SequenceMain OF
 		_SMC_Homing_J4.Execute := FALSE;
 		_SMC_Homing_J5.Execute := FALSE;
 		_SMC_Homing_J6.Execute := FALSE;
-		(*J1.bSWLimitEnable := TRUE;
-		J2.bSWLimitEnable := TRUE;
-		J3.bSWLimitEnable := TRUE;
-		J4.bSWLimitEnable := TRUE;
-		J5.bSWLimitEnable := TRUE;
-		J6.bSWLimitEnable := TRUE;*)
 		
 	STEP_IDLE: // IDLE
 		IF _StartHoming AND Enable THEN
@@ -119,33 +113,27 @@ CASE _SequenceMain OF
 		END_IF
 		
 	STEP_GROUP_ENABLE:
-		IF GroupHandler.M_EnableGroup() THEN
+		//IF GroupHandler.M_EnableGroup() THEN
 			_SequenceMain := STEP_WAIT_ENABLE;
-		ELSE
-			_SequenceMain := STEP_DONE;
-			Error := TRUE;
-			ErrorID := GroupHandler.ErrorID;
-		END_IF
+		//ELSE
+		//	_SequenceMain := STEP_DONE;
+		//	Error := TRUE;
+		//	ErrorID := GroupHandler.ErrorID;
+		//END_IF
 		
 	STEP_WAIT_ENABLE:
 		// TODO add timeout timer here
-		IF GroupHandler.P_GroupEnabled THEN
+		//IF GroupHandler.P_GroupEnabled THEN
 			_SequenceMain := STEP_FAST_HOME_G1;
-		END_IF;
+		//END_IF;
 		
 	STEP_FAST_HOME_G1:	
 		_SMC_Homing_J1.Execute := TRUE;
 		_SMC_Homing_J2.Execute := TRUE;
 		_SMC_Homing_J3.Execute := TRUE;
-		//_SMC_Homing_J1.bReturnToZero := FALSE;
-		//_SMC_Homing_J2.bReturnToZero := FALSE;
-		//_SMC_Homing_J3.bReturnToZero := FALSE;
 		_SMC_Homing_J1.Options.SearchVelocity := _HomingVelocitySlow;
 		_SMC_Homing_J2.Options.SearchVelocity := _HomingVelocitySlow;
 		_SMC_Homing_J3.Options.SearchVelocity := _HomingVelocitySlow;
-		//J1.bSWLimitEnable := FALSE;
-		//J2.bSWLimitEnable := FALSE;
-		//J3.bSWLimitEnable := FALSE;
 		_SequenceMain := STEP_WAIT_FAST_HOME_G1;
 		
 	STEP_WAIT_FAST_HOME_G1: // wait fast home group 1
@@ -162,9 +150,6 @@ CASE _SequenceMain OF
 		_SMC_Homing_J1.Execute := TRUE;
 		_SMC_Homing_J2.Execute := TRUE;
 		_SMC_Homing_J3.Execute := TRUE;
-		//_SMC_Homing_J1.bReturnToZero := TRUE;
-		//_SMC_Homing_J2.bReturnToZero := TRUE;
-		//_SMC_Homing_J3.bReturnToZero := TRUE;
 		_SMC_Homing_J1.Options.SearchVelocity := _HomingVelocitySlowSlow;
 		_SMC_Homing_J2.Options.SearchVelocity := _HomingVelocitySlowSlow;
 		_SMC_Homing_J3.Options.SearchVelocity := _HomingVelocitySlowSlow;
@@ -202,8 +187,6 @@ CASE _SequenceMain OF
 	STEP_SLOW_HOME_G2:
 		_SMC_Homing_J4.Execute := TRUE;
 		_SMC_Homing_J5.Execute := TRUE;
-		//_SMC_Homing_J4.bReturnToZero := TRUE;
-		//_SMC_Homing_J5.bReturnToZero := TRUE;
 		_SMC_Homing_J4.Options.SearchVelocity := _HomingVelocitySlowSlow;
 		_SMC_Homing_J5.Options.SearchVelocity := _HomingVelocitySlowSlow;
 		_SequenceMain := STEP_WAIT_SLOW_HOME_G2;
@@ -218,9 +201,7 @@ CASE _SequenceMain OF
 		
 	STEP_FAST_HOME_G3:
 		_SMC_Homing_J6.Execute := TRUE;
-		//_SMC_Homing_J6.bReturnToZero := FALSE;
 		_SMC_Homing_J6.Options.SearchVelocity := _HomingVelocitySlow;
-		//J6.bSWLimitEnable := FALSE;
 		_SequenceMain := STEP_WAIT_FAST_HOME_G3;
 		
 	STEP_WAIT_FAST_HOME_G3:
@@ -231,7 +212,6 @@ CASE _SequenceMain OF
 		
 	STEP_SLOW_HOME_G3:
 		_SMC_Homing_J6.Execute := TRUE;
-		//_SMC_Homing_J6.bReturnToZero := TRUE;
 		_SMC_Homing_J6.Options.SearchVelocity := _HomingVelocitySlowSlow;
 		_SequenceMain := STEP_WAIT_SLOW_HOME_G3;
 		
@@ -304,13 +284,12 @@ IF _ErrorRtrig.Q THEN
 	END_IF
 END_IF
 
-// TODO make search direction configurable for any robot
-//
-_ST_HomingOptions_J1.SearchDirection := MC_Negative_Direction;
+// https://infosys.beckhoff.com/content/1033/tcplclibmc2/458433931.html?id=4042515396221059782
+//_ST_HomingOptions_J1.SearchDirection := MC_Negative_Direction;
 _SMC_Homing_J1(
 	Axis:= J1, 
 	Execute:= , 
-	Position:= StoredPositions[GVL.HOM_POS_IDX].Position.X, 
+	Position:=StoredPositions[GVL.HOM_POS_IDX].Position.X, // DEFAULT_HOME_POSITION, 
 	HomingMode:= MC_HomingMode.MC_DefaultHoming, 
 	BufferMode:= , 
 	Options:= _ST_HomingOptions_J1, 
@@ -321,152 +300,79 @@ _SMC_Homing_J1(
 	CommandAborted=> , 
 	Error=> , 
 	ErrorID=> );
-(*_SMC_Homing_J1(
-	Axis:=J1 , 
-	Execute:= ,
-	Position:= StoredPositions[GVL.HOM_POS_IDX].Position.X, 
-	fVelocitySlow:= , 
-	fVelocityFast:= _HomingVelocityFast, 
-	fAcceleration:= _HomingAcceleration, 
-	fDeceleration:= _HomingAcceleration, 
-	fJerk:= _HomingJerk, 
-	nDirection:= MC_direction.negative, 
-	bReferenceSwitch:= NOT J1_Limit, 
-	fSignalDelay:= , 
-	nHomingMode:= , 
-	bReturnToZero:= , 
-	bIndexOccured:= , 
-	fIndexPosition:= , 
-	bIgnoreHWLimit:= TRUE, 
-	bDone=> , 
-	bBusy=> , 
-	bCommandAborted=> , 
-	bError=> , 
-	nErrorID=> , 
-	bStartLatchingIndex=> );
-	
 _SMC_Homing_J2(
-	Axis:=J2 , 
-	bExecute:= , 
-	fHomePosition:= StoredPositions[GVL.HOM_POS_IDX].Position.Y,  
-	fVelocitySlow:= , 
-	fVelocityFast:= _HomingVelocityFast, 
-	fAcceleration:= _HomingAcceleration, 
-	fDeceleration:= _HomingAcceleration,
-	fJerk:= _HomingJerk, 
-	nDirection:= MC_Direction.negative, 
-	bReferenceSwitch:= NOT J2_Limit, 
-	fSignalDelay:= , 
-	nHomingMode:= , 
-	bReturnToZero:= , 
-	bIndexOccured:= , 
-	fIndexPosition:= , 
-	bIgnoreHWLimit:= TRUE, 
-	bDone=> , 
-	bBusy=> , 
-	bCommandAborted=> , 
-	bError=> , 
-	nErrorID=> , 
-	bStartLatchingIndex=> );
-	
+	Axis:= J2, 
+	Execute:= , 
+	Position:=StoredPositions[GVL.HOM_POS_IDX].Position.Y, // DEFAULT_HOME_POSITION, 
+	HomingMode:= MC_HomingMode.MC_DefaultHoming, 
+	BufferMode:= , 
+	Options:= _ST_HomingOptions_J2, 
+	bCalibrationCam:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
 _SMC_Homing_J3(
-	Axis:=J3 , 
-	bExecute:= , 
-	fHomePosition:= StoredPositions[GVL.HOM_POS_IDX].Position.Z, 
-	fVelocitySlow:= , 
-	fVelocityFast:= _HomingVelocityFast, 
-	fAcceleration:= _HomingAcceleration, 
-	fDeceleration:= _HomingAcceleration,
-	fJerk:= _HomingJerk, 
-	nDirection:= MC_Direction.positive, 
-	bReferenceSwitch:= NOT J3_Limit, 
-	fSignalDelay:= , 
-	nHomingMode:= , 
-	bReturnToZero:= , 
-	bIndexOccured:= , 
-	fIndexPosition:= , 
-	bIgnoreHWLimit:= TRUE, 
-	bDone=> , 
-	bBusy=> , 
-	bCommandAborted=> , 
-	bError=> , 
-	nErrorID=> , 
-	bStartLatchingIndex=> );
-	
+	Axis:= J3, 
+	Execute:= , 
+	Position:=StoredPositions[GVL.HOM_POS_IDX].Position.Z, // DEFAULT_HOME_POSITION, 
+	HomingMode:= MC_HomingMode.MC_DefaultHoming, 
+	BufferMode:= , 
+	Options:= _ST_HomingOptions_J3, 
+	bCalibrationCam:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
 _SMC_Homing_J4(
-	Axis:=J4 , 
-	bExecute:= ,
-	fHomePosition:= StoredPositions[GVL.HOM_POS_IDX].Position.A, 
-	fVelocitySlow:= , 
-	fVelocityFast:= _HomingVelocityFast, 
-	fAcceleration:= _HomingAcceleration, 
-	fDeceleration:= _HomingAcceleration,
-	fJerk:= _HomingJerk, 
-	nDirection:= MC_Direction.positive, 
-	bReferenceSwitch:= NOT J4_Limit, 
-	fSignalDelay:= , 
-	nHomingMode:= , 
-	bReturnToZero:= , 
-	bIndexOccured:= , 
-	fIndexPosition:= , 
-	bIgnoreHWLimit:= TRUE, 
-	bDone=> , 
-	bBusy=> , 
-	bCommandAborted=> , 
-	bError=> , 
-	nErrorID=> , 
-	bStartLatchingIndex=> );
-	
+	Axis:= J4, 
+	Execute:= , 
+	Position:=StoredPositions[GVL.HOM_POS_IDX].Position.A, // DEFAULT_HOME_POSITION, 
+	HomingMode:= MC_HomingMode.MC_DefaultHoming, 
+	BufferMode:= , 
+	Options:= _ST_HomingOptions_J4, 
+	bCalibrationCam:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
 _SMC_Homing_J5(
-	Axis:=J5 , 
-	bExecute:= , 
-	fHomePosition:= StoredPositions[GVL.HOM_POS_IDX].Position.B,  
-	fVelocitySlow:= , 
-	fVelocityFast:= _HomingVelocityFast, 
-	fAcceleration:= _HomingAcceleration, 
-	fDeceleration:= _HomingAcceleration,
-	fJerk:= _HomingJerk, 
-	nDirection:= MC_Direction.positive, 
-	bReferenceSwitch:= NOT J5_Limit, 
-	fSignalDelay:= , 
-	nHomingMode:= , 
-	bReturnToZero:= , 
-	bIndexOccured:= , 
-	fIndexPosition:= , 
-	bIgnoreHWLimit:= TRUE, 
-	bDone=> , 
-	bBusy=> , 
-	bCommandAborted=> , 
-	bError=> , 
-	nErrorID=> , 
-	bStartLatchingIndex=> );
-	
+	Axis:= J5, 
+	Execute:= , 
+	Position:=StoredPositions[GVL.HOM_POS_IDX].Position.B, // DEFAULT_HOME_POSITION, 
+	HomingMode:= MC_HomingMode.MC_DefaultHoming, 
+	BufferMode:= , 
+	Options:= _ST_HomingOptions_J5, 
+	bCalibrationCam:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
 _SMC_Homing_J6(
-	Axis:=J6 , 
-	bExecute:= , 
-	fHomePosition:= StoredPositions[GVL.HOM_POS_IDX].Position.C, 
-	fVelocitySlow:= , 
-	fVelocityFast:= _HomingVelocityFast, 
-	fAcceleration:= _HomingAcceleration, 
-	fDeceleration:= _HomingAcceleration,
-	fJerk:= _HomingJerk, 
-	nDirection:= MC_Direction.negative, 
-	bReferenceSwitch:= NOT J6_Limit, 
-	fSignalDelay:= , 
-	nHomingMode:= , 
-	bReturnToZero:= , 
-	bIndexOccured:= , 
-	fIndexPosition:= , 
-	bIgnoreHWLimit:= TRUE, 
-	bDone=> , 
-	bBusy=> , 
-	bCommandAborted=> , 
-	bError=> , 
-	nErrorID=> , 
-	bStartLatchingIndex=> );
-    *)
+	Axis:= J6, 
+	Execute:= , 
+	Position:=StoredPositions[GVL.HOM_POS_IDX].Position.C, // DEFAULT_HOME_POSITION, 
+	HomingMode:= MC_HomingMode.MC_DefaultHoming, 
+	BufferMode:= , 
+	Options:= _ST_HomingOptions_J6, 
+	bCalibrationCam:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
 	
 //
+(*
 _ST_SetPositionsOptions_J1.ClearPositionLag := TRUE;
 _MC_SetPosition_J1(
 	Axis:= J1, 
@@ -532,9 +438,12 @@ _MC_SetPosition_J6(
 	Done=> , 
 	Busy=> , 
 	Error=> , 
-	ErrorID=> );]]></ST>
+	ErrorID=> );
+    *)]]></ST>
     </Implementation>
-    <Method Name="_M_HandlePose" Id="{8dbad245-108d-44dc-844d-47ebe55e9287}">
+    <Folder Name="private" Id="{e1ed6b77-9798-48c9-8936-2629def057bb}" />
+    <Folder Name="public" Id="{d78dbefb-b47c-4f80-bc4e-2ff84a391da0}" />
+    <Method Name="_M_HandlePose" Id="{8dbad245-108d-44dc-844d-47ebe55e9287}" FolderPath="private\">
       <Declaration><![CDATA[METHOD PRIVATE _M_HandlePose : BOOL
 VAR
 	_MoveCommand: ST_MoveCmd;
@@ -554,7 +463,7 @@ END_VAR
 			_MoveCommand.PositionType 		:= DUT_Command_PositionType.AbsolutePosition;
 			_MoveCommand.CoordinateType 	:= DUT_Command_CoordinateType.Literal;
 			_MoveCommand.Speed 				:= _PoseSpeed;
-			_MoveCommand.CoordSystem 		:= SMC_COORD_SYSTEM.ACS;
+			//_MoveCommand.CoordSystem 		:= SMC_COORD_SYSTEM.ACS;
 			_MoveCommand.CoordRef 			:= StoredPositions[GVL.POSE_2_IDX].Position;
 			//
 			_MoveCommandProcessor.Command := BuildMoveCmd(_MoveCommand);
@@ -579,7 +488,7 @@ _MoveCommandProcessor(
 	Error=> );]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_SetHome" Id="{ac8ad3ff-e2e3-4571-99f3-004f0df0c316}">
+    <Method Name="M_SetHome" Id="{ac8ad3ff-e2e3-4571-99f3-004f0df0c316}" FolderPath="public\">
       <Declaration><![CDATA[METHOD M_SetHome : BOOL
 ]]></Declaration>
       <Implementation>
@@ -618,7 +527,7 @@ _MC_SetPosition_J5.Execute:=TRUE;
 _MC_SetPosition_J6.Execute:=TRUE;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_StartHoming" Id="{1ff714ca-aba4-448a-bc01-bf0eab578f27}">
+    <Method Name="M_StartHoming" Id="{1ff714ca-aba4-448a-bc01-bf0eab578f27}" FolderPath="public\">
       <Declaration><![CDATA[METHOD M_StartHoming : BOOL
 ]]></Declaration>
       <Implementation>

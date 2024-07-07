@@ -33,6 +33,9 @@
     <Compile Include="DUTs\DUT_Command_CoordinateType.TcTLEO">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DUTs\DUT_COORD_REF.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="DUTs\DUT_Flags.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -341,6 +344,10 @@
       <Namespace>CmpDynamicText</Namespace>
       <SystemLibrary>true</SystemLibrary>
     </PlaceholderReference>
+    <PlaceholderReference Include="OMAC_PackML_State_Machine">
+      <DefaultResolution>OMAC PackML State Machine, * (3S - Smart Software Solutions GmbH)</DefaultResolution>
+      <Namespace>PACK_ML</Namespace>
+    </PlaceholderReference>
     <PlaceholderReference Include="Standard">
       <DefaultResolution>Standard</DefaultResolution>
       <Namespace>Tc2_Standard</Namespace>
@@ -395,6 +402,24 @@
   <ItemGroup>
     <PlaceholderResolution Include="CmpDynamicText">
       <Resolution>CmpDynamicText, 3.5.17.0 (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElemMeter">
+      <Resolution>VisuElemMeter, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElems">
+      <Resolution>VisuElems, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElemsSpecialControls">
+      <Resolution>VisuElemsSpecialControls, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElemsWinControls">
+      <Resolution>VisuElemsWinControls, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuElemTextEditor">
+      <Resolution>VisuElemTextEditor, * (System)</Resolution>
+    </PlaceholderResolution>
+    <PlaceholderResolution Include="System_VisuNativeControl">
+      <Resolution>VisuNativeControl, * (System)</Resolution>
     </PlaceholderResolution>
   </ItemGroup>
   <ProjectExtensions>

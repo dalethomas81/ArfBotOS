@@ -2400,7 +2400,7 @@ External Setpoint Generation:
 						<EncPara ScaleFactorNumerator="0.0018" Inverse="true" EncMode="1" MaxCount="#xffffffff">
 							<SoftEndMinControl Enable="true" Range="-180"/>
 							<SoftEndMaxControl Enable="true" Range="180"/>
-							<Inc RefPosition="143" HomingSensorSource="9"/>
+							<Inc RefPosition="145" HomingSensorSource="9"/>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
