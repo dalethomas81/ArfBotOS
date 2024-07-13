@@ -4733,7 +4733,7 @@ Controller: FB_Controller;
 			</Project>
 		</Plc>
 		<Cpp>
-			<Project Disabled="true" GUID="{34E0D58B-6220-480E-9921-919E8E375D2A}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.vcxproj" TmcFilePath="Untitled1\Untitled1.tmc">
+			<Project GUID="{34E0D58B-6220-480E-9921-919E8E375D2A}" Name="Untitled1" PrjFilePath="Untitled1\Untitled1.vcxproj" TmcFilePath="Untitled1\Untitled1.tmc">
 				<Instance Id="#x01010040" KeepUnrestoredLinks="2" ClassFactoryId="C++ Module Vendor|Untitled1|0.0.0.1">
 					<Name>Untitled1_Obj1 (Module1)</Name>
 					<TmcDesc GUID="{458A340C-8112-4A55-8E72-3AB15F26414C}" ClassFactoryId="C++ Module Vendor|Untitled1|0.0.0.1">

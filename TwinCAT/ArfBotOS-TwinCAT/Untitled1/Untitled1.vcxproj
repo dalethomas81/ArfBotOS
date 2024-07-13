@@ -99,23 +99,23 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|TwinCAT RT (x64)'">
     <ClCompile>
       <PrecompiledHeader>Create</PrecompiledHeader>
-      <AdditionalIncludeDirectories>C:\Users\dale\Desktop\ucrt;C:\Users\dale\Desktop\trin;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\rl-0.7.0\rl\std;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\rl-0.7.0;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\eigen3;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\bullet;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\GitHub\ArfBotOS\TwinCAT\RoboticsLibrary;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
-      <PreprocessorDefinitions>COIN_DLL;RL_SG_ODE;dDOUBLE;RL_SG_PQP;RL_SG_SOLID;RL_SG_BULLET;BOOST_ALL_NO_LIB;RL_MDL_NLOPT;_USE_MATH_DEFINES;_TM_DEFINED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <AdditionalOptions>
       </AdditionalOptions>
-      <CallingConvention>Cdecl</CallingConvention>
+      <CallingConvention>StdCall</CallingConvention>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <SDLCheck>true</SDLCheck>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <ConformanceMode>true</ConformanceMode>
+      <SDLCheck>false</SDLCheck>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <ConformanceMode>Default</ConformanceMode>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libxml2.lib;libxslt.lib;libiconv.lib;zlib.lib;rlkins.lib;nlopt.lib;rlmdls.lib;rlhals.lib;BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;Coin4.lib;ode_double.lib;PQP.lib;solid3.lib;rlsgs.lib;rlplans.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>F:\GitHub\ArfBotOS\TwinCAT\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>F:\GitHub\ArfBotOS\TwinCAT\x64\Release\RoboticsLibrary.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OptimizeReferences>false</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
