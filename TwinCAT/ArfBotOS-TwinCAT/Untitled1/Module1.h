@@ -4,6 +4,14 @@
 
 #include "Untitled1Interfaces.h"
 
+// robotics library
+//#include <iostream>
+#include <rl/math/Transform.h>
+#include <rl/math/Unit.h>
+#include <rl/mdl/Kinematic.h>
+#include <rl/mdl/Model.h>a
+#include <rl/mdl/XmlFactory.h>
+
 class CModule1 
 	: public ITComObject
 	, public ITcADI
