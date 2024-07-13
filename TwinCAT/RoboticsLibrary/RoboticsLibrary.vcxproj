@@ -70,6 +70,11 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\rl-0.7.0\rl\std;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\rl-0.7.0;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\eigen3;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\bullet;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib;$(LibraryPath)</LibraryPath>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -125,11 +130,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>COIN_DLL;RL_SG_ODE;dDOUBLE;RL_SG_PQP;RL_SG_SOLID;RL_SG_BULLET;BOOST_ALL_NO_LIB;RL_MDL_NLOPT;_USE_MATH_DEFINES;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\rl-0.7.0\rl\std;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\rl-0.7.0;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\eigen3;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\bullet;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CallingConvention>StdCall</CallingConvention>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -138,6 +145,35 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libxml2.lib;libxslt.lib;libiconv.lib;zlib.lib;rlkins.lib;nlopt.lib;rlmdls.lib;rlhals.lib;BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;Coin4.lib;ode_double.lib;PQP.lib;solid3.lib;rlsgs.lib;rlplans.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ForceSymbolReferences>
+      </ForceSymbolReferences>
+    </Lib>
+    <ProjectReference>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <PostBuildEvent>
+      <Command>lib /out:$(OutDir)RoboticsLibraryFull.lib $(OutDir)RoboticsLibrary.lib "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\libxml2.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\libxslt.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\libiconv.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\zlib.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\rlkins.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\nlopt.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\rlmdls.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\rlhals.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\BulletCollision.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\BulletDynamics.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\BulletSoftBody.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\LinearMath.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\Coin4.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\ode_double.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\PQP.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\solid3.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\rlsgs.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\rlplans.lib"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="framework.h" />

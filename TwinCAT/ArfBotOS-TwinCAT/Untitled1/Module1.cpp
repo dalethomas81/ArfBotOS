@@ -6,7 +6,7 @@
 #include "Module1.h"
 #include "Untitled1Version.h"
 
-#include "F:\GitHub\ArfBotOS\TwinCAT\RoboticsLibrary\RoboticsLibrary.h"
+#include "RoboticsLibrary.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // CModule1
@@ -175,7 +175,10 @@ HRESULT CModule1::CycleUpdate(ITcTask* ipTask, ITcUnknown* ipCaller, ULONG_PTR c
 	//m_counter+=m_Inputs.Value;
 	//m_counter++;
 
-	m_Outputs.Value = RoboticsL::add(m_counter, 100);
+	int hello = RoboticsL::HelloWorld();
+
+	m_counter = RoboticsL::add(m_counter, 1);
+	m_Outputs.Value = hello;
 
 	return hr;
 }
