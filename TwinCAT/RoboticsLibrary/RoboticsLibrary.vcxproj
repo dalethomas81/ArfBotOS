@@ -146,8 +146,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libxml2.lib;libxslt.lib;libiconv.lib;zlib.lib;rlkins.lib;nlopt.lib;rlmdls.lib;rlhals.lib;BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;Coin4.lib;ode_double.lib;PQP.lib;solid3.lib;rlsgs.lib;rlplans.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib;$(UniversalCRTSdkDir)Lib$(UCRTVersion)\ucrt\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libxml2.lib;libxslt.lib;libiconv.lib;zlib.lib;rlkins.lib;nlopt.lib;rlmdls.lib;rlhals.lib;BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;Coin4.lib;ode_double.lib;PQP.lib;solid3.lib;rlsgs.lib;rlplans.lib;libcmt.lib;msvcprt.lib;ucrt.lib;vcruntime.lib;Kernel32.lib;ucrtd.lib;vcruntimed.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ForceSymbolReferences>
       </ForceSymbolReferences>
     </Lib>

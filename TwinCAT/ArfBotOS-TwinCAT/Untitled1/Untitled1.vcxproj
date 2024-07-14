@@ -39,7 +39,7 @@
     <TcSignWindowsSha1CertName>$(TWINCATTESTCERTIFICATE)</TcSignWindowsSha1CertName>
     <TcSignWindowsSha1CertId>
     </TcSignWindowsSha1CertId>
-    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|TwinCAT RT (x86)'" Label="Configuration">
@@ -89,6 +89,7 @@
     <TcIntrinEnable>false</TcIntrinEnable>
     <TcUseTcCrt>true</TcUseTcCrt>
     <TcExcludeTcCrtLib>false</TcExcludeTcCrtLib>
+    <TcFrameworkForPlatformToolsetEnable>true</TcFrameworkForPlatformToolsetEnable>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|TwinCAT RT (x86)'">
   </ItemDefinitionGroup>
@@ -100,7 +101,7 @@
     <ClCompile>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <AdditionalIncludeDirectories>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\rl-0.7.0\rl\std;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\rl-0.7.0;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\eigen3;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\bullet;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include;..\..\RoboticsLibrary;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
+      <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
       <PreprocessorDefinitions>COIN_DLL;RL_SG_ODE;dDOUBLE;RL_SG_PQP;RL_SG_SOLID;RL_SG_BULLET;BOOST_ALL_NO_LIB;RL_MDL_NLOPT;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -111,14 +112,16 @@
       <SDLCheck>false</SDLCheck>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <ConformanceMode>Default</ConformanceMode>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib;..\..\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>RoboticsLibrary.lib;libxml2.lib;libxslt.lib;libiconv.lib;zlib.lib;rlkins.lib;nlopt.lib;rlmdls.lib;rlhals.lib;BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;Coin4.lib;ode_double.lib;PQP.lib;solid3.lib;rlsgs.lib;rlplans.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib;..\..\x64\Release;$(UniversalCRTSdkDir)Lib$(UCRTVersion)\ucrt\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>RoboticsLibrary.lib;libxml2.lib;libxslt.lib;libiconv.lib;zlib.lib;rlkins.lib;nlopt.lib;rlmdls.lib;rlhals.lib;BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;Coin4.lib;ode_double.lib;PQP.lib;solid3.lib;rlsgs.lib;rlplans.lib;libcmt.lib;msvcprt.lib;ucrt.lib;vcruntime.lib;Kernel32.lib;ucrtd.lib;vcruntimed.lib;msvcrtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OptimizeReferences>false</OptimizeReferences>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ForceSymbolReferences>
       </ForceSymbolReferences>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
