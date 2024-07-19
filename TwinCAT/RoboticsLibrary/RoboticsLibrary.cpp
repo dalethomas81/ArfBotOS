@@ -19,7 +19,7 @@ int RoboticsL::add(int x, int y)
 
 int RoboticsL::HelloWorld() {
 	
-	//rl::mdl::XmlFactory factory;
+	rl::mdl::XmlFactory factory;
 	//std::shared_ptr<rl::mdl::Model> model(factory.create("C:\\Program Files\\Robotics Library\\0.7.0\\MSVC\\14.1\\x64\\share\\rl-0.7.0\\examples\\rlmdl\\unimation-puma560.xml"));
 	//rl::mdl::Kinematic* kinematics = dynamic_cast<rl::mdl::Kinematic*>(model.get());
 	//rl::math::Vector q(6);

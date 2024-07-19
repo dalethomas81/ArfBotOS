@@ -1,5 +1,15 @@
 #pragma once
 
+/*
+#ifdef ROBOTICSLIBRARY_EXPORTS
+#define ROBOTICSLIBRARY_API __declspec(dllexport)
+#else
+#define ROBOTICSLIBRARY_API __declspec(dllimport)
+#endif
+*/
+
+
+//class ROBOTICSLIBRARY_API RoboticsL {
 class RoboticsL {
 public:
 	static int add(int x, int y);

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -130,14 +130,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>COIN_DLL;RL_SG_ODE;dDOUBLE;RL_SG_PQP;RL_SG_SOLID;RL_SG_BULLET;BOOST_ALL_NO_LIB;RL_MDL_NLOPT;_USE_MATH_DEFINES;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>COIN_DLL;RL_SG_ODE;dDOUBLE;RL_SG_PQP;RL_SG_SOLID;RL_SG_BULLET;BOOST_ALL_NO_LIB;RL_MDL_NLOPT;_USE_MATH_DEFINES;NDEBUG;_LIB;_MT;_DLL;ROBOTICSLIBRARY_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\rl-0.7.0\rl\std;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\rl-0.7.0;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\eigen3;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\bullet;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CallingConvention>StdCall</CallingConvention>
-      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -157,6 +157,7 @@
     </ProjectReference>
     <PostBuildEvent>
       <Command>lib /out:$(OutDir)RoboticsLibraryFull.lib $(OutDir)RoboticsLibrary.lib "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\libxml2.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\libxslt.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\libiconv.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\zlib.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\rlkins.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\nlopt.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\rlmdls.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\rlhals.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\BulletCollision.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\BulletDynamics.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\BulletSoftBody.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\LinearMath.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\Coin4.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\ode_double.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\PQP.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\solid3.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\rlsgs.lib" "C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib\rlplans.lib"
+
 
 
 
