@@ -2027,6 +2027,61 @@ External Setpoint Generation:
 			</SubItem>
 		</DataType>
 		<DataType>
+			<Name GUID="{05010001-0000-0000-E000-000000000064}" TcBaseType="true">ITcNcTrafo</Name>
+			<BitSize X64="64">32</BitSize>
+			<BaseType GUID="{00000001-0000-0000-E000-000000000064}">ITcUnknown</BaseType>
+			<Method>
+				<Name>Forward</Name>
+				<ReturnType GUID="{18071995-0000-0000-0000-000000000019}">HRESULT</ReturnType>
+				<ReturnBitSize>32</ReturnBitSize>
+				<Parameter>
+					<Name>p</Name>
+					<Type GUID="{082AF37D-C470-42C2-A856-80CD5C30114A}" PointerTo="1">TcNcTrafoParameter</Type>
+					<BitSize X64="64">32</BitSize>
+				</Parameter>
+			</Method>
+			<Method>
+				<Name>Backward</Name>
+				<ReturnType GUID="{18071995-0000-0000-0000-000000000019}">HRESULT</ReturnType>
+				<ReturnBitSize>32</ReturnBitSize>
+				<Parameter>
+					<Name>p</Name>
+					<Type GUID="{082AF37D-C470-42C2-A856-80CD5C30114A}" PointerTo="1">TcNcTrafoParameter</Type>
+					<BitSize X64="64">32</BitSize>
+				</Parameter>
+			</Method>
+			<Method>
+				<Name>TrafoSupported</Name>
+				<ReturnType GUID="{18071995-0000-0000-0000-000000000019}">HRESULT</ReturnType>
+				<ReturnBitSize>32</ReturnBitSize>
+				<Parameter>
+					<Name>p</Name>
+					<Type GUID="{082AF37D-C470-42C2-A856-80CD5C30114A}" PointerTo="1">TcNcTrafoParameter</Type>
+					<BitSize X64="64">32</BitSize>
+				</Parameter>
+				<Parameter>
+					<Name>fwd</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000030}">BOOL</Type>
+					<BitSize>8</BitSize>
+				</Parameter>
+			</Method>
+			<Method>
+				<Name>GetDimensions</Name>
+				<ReturnType GUID="{18071995-0000-0000-0000-000000000019}">HRESULT</ReturnType>
+				<ReturnBitSize>32</ReturnBitSize>
+				<Parameter>
+					<Name>pFwdInput</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000008}" PointerTo="1">UDINT</Type>
+					<BitSize X64="64">32</BitSize>
+				</Parameter>
+				<Parameter>
+					<Name>pFwdOutput</Name>
+					<Type GUID="{18071995-0000-0000-0000-000000000008}" PointerTo="1">UDINT</Type>
+					<BitSize X64="64">32</BitSize>
+				</Parameter>
+			</Method>
+		</DataType>
+		<DataType>
 			<Name GUID="{A6CC6AFE-FE37-C02D-2C0C-FB1479660FEB}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..31] OF BYTE</Name>
 			<BitSize>256</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000001}">BYTE</BaseType>
@@ -4435,6 +4490,150 @@ External Setpoint Generation:
 						</Module>
 					</Group>
 				</Channel>
+				<Channel Id="3" ChannelType="4" AxesColumns="#x3f">
+					<Name>TrafoChannel</Name>
+					<Vars VarGrpType="1">
+						<Name>Inputs</Name>
+						<Var>
+							<Name>FromPlc</Name>
+							<Type GUID="{48415C2A-E750-483B-A619-8655B2BEA4B8}" Namespace="MC">PLCTONC_NCICHANNEL_REF</Type>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2">
+						<Name>Outputs</Name>
+						<Var>
+							<Name>ToPlc</Name>
+							<Type GUID="{56354211-98EF-4057-9322-975DEAD0E29D}" Namespace="MC">NCTOPLC_NCICHANNEL_REF</Type>
+						</Var>
+					</Vars>
+					<Group Id="14" GroupType="12" SetpointGeneratorType="1">
+						<Name>SixAxisGroup</Name>
+						<Parameter ChannelId="3">
+							<Dxd EnableSoftPositionLimits="true" VeloVertexFactorC0="0.1" VeloVertexFactorC1="1" CriticalVertexAngleLow="10" CriticalVertexAngleHigh="75"/>
+							<Encoder NoMotionWindow="1" NoMotionFilterTime="0.01"/>
+							<Fifo FifoDimension="1" FifoLength="1000" FifoOverrideType="2" FifoOverrideChangeTime="1" TimeUnitFifo="0.01"/>
+							<Kinematic OidKinematicTrafo="#x01010040"/>
+						</Parameter>
+						<Module Id="#x01010040" KeepUnrestoredLinks="2" ClassFactoryId="C++ Module Vendor|TC_Driver|0.0.0.1">
+							<Name>Group 14_Obj1 (SixAxisArticulatedTrafo)</Name>
+							<TmcDesc GUID="{F0A059DE-A7FB-41E4-ADBB-F976E6E17E7B}" ClassFactoryId="C++ Module Vendor|TC_Driver|0.0.0.1">
+								<Name>SixAxisArticulatedTrafo</Name>
+								<CLSID ClassFactory="TC_Driver">{F0A059DE-A7FB-41E4-ADBB-F976E6E17E7B}</CLSID>
+								<Licenses>
+									<License>
+										<LicenseId>{304D006A-8299-4560-AB79-438534B50288}</LicenseId>
+									</License>
+								</Licenses>
+								<InitSequence>PSO</InitSequence>
+								<Contexts>
+									<Context>
+										<Id>1</Id>
+										<ManualConfig>
+											<OTCID>#x05000020</OTCID>
+										</ManualConfig>
+										<Priority>8</Priority>
+										<CycleTime>10000000</CycleTime>
+									</Context>
+								</Contexts>
+								<Interfaces>
+									<Interface DisableCodeGeneration="true">
+										<Type GUID="{00000012-0000-0000-E000-000000000064}">ITComObject</Type>
+									</Interface>
+									<Interface DisableCodeGeneration="true">
+										<Type GUID="{03000012-0000-0000-E000-000000000064}">ITcADI</Type>
+									</Interface>
+									<Interface DisableCodeGeneration="true">
+										<Type GUID="{03000018-0000-0000-E000-000000000064}">ITcWatchSource</Type>
+									</Interface>
+									<Interface>
+										<Type GUID="{05010001-0000-0000-E000-000000000064}">ITcNcTrafo</Type>
+									</Interface>
+								</Interfaces>
+								<Parameters>
+									<Parameter>
+										<Name>Arm length L1</Name>
+										<Comment TxtId=""><![CDATA[Arm length of 1st arm component.]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<PTCID>#x00000001</PTCID>
+										<ContextId>1</ContextId>
+									</Parameter>
+									<Parameter>
+										<Name>Arm length L2</Name>
+										<Comment TxtId=""><![CDATA[Arm length of 2nd arm component.]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<PTCID>#x00000002</PTCID>
+										<ContextId>1</ContextId>
+									</Parameter>
+									<Parameter>
+										<Name>Arm length L3</Name>
+										<Comment TxtId=""><![CDATA[Arm length of 3rd arm component]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<PTCID>#x00000003</PTCID>
+										<ContextId>1</ContextId>
+									</Parameter>
+									<Parameter>
+										<Name>Arm offset D1</Name>
+										<Comment TxtId=""><![CDATA[x-offset between 1st and 2nd joint]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<PTCID>#x00000004</PTCID>
+										<ContextId>1</ContextId>
+									</Parameter>
+									<Parameter>
+										<Name>Arm offset D2</Name>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<PTCID>#x00000005</PTCID>
+										<ContextId>1</ContextId>
+									</Parameter>
+									<Parameter>
+										<Name>Arm offset D3</Name>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<PTCID>#x00000006</PTCID>
+										<ContextId>1</ContextId>
+									</Parameter>
+								</Parameters>
+								<ParentOTCID>#x050700e0</ParentOTCID>
+								<ParameterValues>
+									<Value>
+										<Name>Arm length L1</Name>
+										<Value>100</Value>
+									</Value>
+									<Value>
+										<Name>Arm length L2</Name>
+										<Value>200</Value>
+									</Value>
+									<Value>
+										<Name>Arm length L3</Name>
+										<Value>300</Value>
+									</Value>
+									<Value>
+										<Name>Arm offset D1</Name>
+										<Value>10</Value>
+									</Value>
+									<Value>
+										<Name>Arm offset D2</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Arm offset D3</Name>
+										<Value>-10</Value>
+									</Value>
+								</ParameterValues>
+							</TmcDesc>
+						</Module>
+					</Group>
+				</Channel>
 			</NC>
 		</Motion>
 		<Plc>
@@ -4733,7 +4932,8 @@ Controller: FB_Controller;
 			</Project>
 		</Plc>
 		<Cpp>
-			<Project GUID="{DC82C237-0D50-42D4-ABCE-517CD5A9F870}" Name="Robotics" PrjFilePath="Robotics\Robotics.vcxproj" TmcFilePath="Robotics\Robotics.tmc"/>
+			<Project GUID="{76475196-7928-4686-AA50-E1FF336EFAD9}" Name="Kinematics" PrjFilePath="Kinematics\Kinematics.vcxproj" TmcFilePath="Kinematics\Kinematics.tmc"/>
+			<Project GUID="{A2A4C246-A13E-4FCE-B3CA-780D84C150AD}" Name="TC_Driver" PrjFilePath="TC_Driver\TC_Driver.vcxproj" TmcFilePath="TC_Driver\TC_Driver.tmc"/>
 		</Cpp>
 		<Io>
 			<Device Id="1" DevType="111" DevFlags="#x0003" AmsPort="28673" AmsNetId="169.254.221.73.2.1" RemoteName="Device 1 (EtherCAT)" InfoImageId="2">
@@ -5090,7 +5290,7 @@ Controller: FB_Controller;
 				<Link VarA="PlcTask Inputs^_00_Main.io_C.NcToPlc" VarB="Outputs^ToPlc"/>
 				<Link VarA="PlcTask Outputs^_00_Main.io_C.PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
-			<OwnerB Name="TINC^NC-Task 1 SAF^Kinematic Channel">
+			<OwnerB Name="TINC^NC-Task 1 SAF^TrafoChannel">
 				<Link VarA="PlcTask Inputs^_00_Main.in_stKinToPlc" VarB="Outputs^ToPlc"/>
 				<Link VarA="PlcTask Outputs^_00_Main.out_stPlcToKin" VarB="Inputs^FromPlc"/>
 			</OwnerB>

@@ -74,6 +74,9 @@
     <IncludePath>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\rl-0.7.0\rl\std;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\rl-0.7.0;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\eigen3;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\bullet;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib;$(LibraryPath)</LibraryPath>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
+    <CopyLocalDebugSymbols>false</CopyLocalDebugSymbols>
+    <CopyCppRuntimeToOutputDir>false</CopyCppRuntimeToOutputDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -137,7 +140,11 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\rl-0.7.0\rl\std;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\rl-0.7.0;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\eigen3;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include\bullet;C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CallingConvention>StdCall</CallingConvention>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <AdditionalOptions> /kernel %(AdditionalOptions)</AdditionalOptions>
+      <ExceptionHandling>false</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -145,12 +152,16 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libxml2.lib;libxslt.lib;libiconv.lib;zlib.lib;rlkins.lib;nlopt.lib;rlmdls.lib;rlhals.lib;BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;Coin4.lib;ode_double.lib;PQP.lib;solid3.lib;rlsgs.lib;rlplans.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>C:\Program Files\Robotics Library\0.7.0\MSVC\14.1\x64\lib;$(UniversalCRTSdkDir)Lib$(UCRTVersion)\ucrt\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libxml2.lib;libxslt.lib;libiconv.lib;zlib.lib;rlkins.lib;nlopt.lib;rlmdls.lib;rlhals.lib;BulletCollision.lib;BulletDynamics.lib;BulletSoftBody.lib;LinearMath.lib;Coin4.lib;ode_double.lib;PQP.lib;solid3.lib;rlsgs.lib;rlplans.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ForceSymbolReferences>
       </ForceSymbolReferences>
+      <AdditionalOptions>
+      </AdditionalOptions>
     </Lib>
     <ProjectReference>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
