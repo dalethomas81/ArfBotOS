@@ -36,6 +36,12 @@
     <ClInclude Include="SixAxisArticulatedTrafo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TcNcKinematicsInterfaces.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TcNcKinematicsServices.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TcPch.cpp">

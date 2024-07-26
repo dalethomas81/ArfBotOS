@@ -119,6 +119,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SixAxisArticulatedTrafo.h" />
+    <ClInclude Include="TcNcKinematicsInterfaces.h" />
+    <ClInclude Include="TcNcKinematicsServices.h" />
     <ClInclude Include="TcPch.h" />
     <ClInclude Include="TC_DriverClassFactory.h" />
     <ClInclude Include="TC_DriverDriver.h" />
