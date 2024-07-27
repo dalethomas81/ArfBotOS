@@ -2082,6 +2082,320 @@ External Setpoint Generation:
 			</Method>
 		</DataType>
 		<DataType>
+			<Name GUID="{ADEE0E93-451B-4823-AF4F-5A22722A4BE1}" Namespace="MC" TcBaseType="true">MC_AXES_CONVENTION</Name>
+			<BitSize>32</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000008}">UDINT</BaseType>
+			<EnumInfo>
+				<Text><![CDATA[mcAxesConv2DCartesianXY]]></Text>
+				<Enum>#x200</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[mcAxesConv3DCartesianXYZ]]></Text>
+				<Enum>#x300</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[mcAxesConv3DCartesianXYC]]></Text>
+				<Enum>#x302</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[mcAxesConv4DCartesianXYZC]]></Text>
+				<Enum>#x400</Enum>
+			</EnumInfo>
+			<Hides>
+				<Hide GUID="{3A036ED9-236C-4FAB-BD94-2C8D698824CC}"/>
+			</Hides>
+		</DataType>
+		<DataType>
+			<Name GUID="{DB32B687-3D0A-4CC9-8479-83F8B89A3F6A}" Namespace="MC" TcBaseType="true">MC_BLENDING_STRATEGY</Name>
+			<BitSize>16</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000005}">UINT</BaseType>
+			<EnumInfo>
+				<Text><![CDATA[mcBlendingGeo]]></Text>
+				<Enum>#x0</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[mcBlendingSuperpos]]></Text>
+				<Enum>#x1</Enum>
+			</EnumInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{440D214F-02C0-4BD7-B6C4-AD4578C2D208}" Namespace="MC" TcBaseType="true">MC_BLENDING_PATH_TYPE</Name>
+			<BitSize>16</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000005}">UINT</BaseType>
+			<EnumInfo>
+				<Text><![CDATA[mcBlendingPathTypePoly5]]></Text>
+				<Enum>#x100</Enum>
+			</EnumInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{5025008F-B662-4EDE-B75E-A643373758F1}" Namespace="MC" TcBaseType="true">OverrideBehavior</Name>
+			<BitSize>32</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000008}">UDINT</BaseType>
+			<EnumInfo>
+				<Text><![CDATA[Disable]]></Text>
+				<Enum>1</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[Enable]]></Text>
+				<Enum>2</Enum>
+			</EnumInfo>
+			<Properties>
+				<Property>
+					<Name>plcAttribute_qualified_only</Name>
+				</Property>
+				<Property>
+					<Name>plcAttribute_strict</Name>
+				</Property>
+			</Properties>
+		</DataType>
+		<DataType>
+			<Name GUID="{DB9169AE-6AF9-4994-9F36-F1067592C967}" Namespace="MC">MC_GROUP_TYPE</Name>
+			<BitSize>32</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000008}">UDINT</BaseType>
+			<EnumInfo>
+				<Text><![CDATA[mcGroupTypeInvalid]]></Text>
+				<Enum>0</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[mcGroupTypeCA]]></Text>
+				<Enum>1</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[mcGroupTypeCM]]></Text>
+				<Enum>3</Enum>
+			</EnumInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{6B93C4EA-DEE3-49CC-86A6-CEF078FEFD24}" Namespace="MC">MC_GROUP_STATE</Name>
+			<BitSize>16</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000005}">UINT</BaseType>
+			<EnumInfo>
+				<Text><![CDATA[mcGroupStateInvalid]]></Text>
+				<Enum>0</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[mcGroupStateDisabled]]></Text>
+				<Enum>1</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[mcGroupStateStandby]]></Text>
+				<Enum>2</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[mcGroupStateMoving]]></Text>
+				<Enum>3</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[mcGroupStateStopping]]></Text>
+				<Enum>4</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[mcGroupStateErrorStop]]></Text>
+				<Enum>5</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[mcGroupStateHoming]]></Text>
+				<Enum>6</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[mcGroupStateNotReady]]></Text>
+				<Enum>7</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[mcGroupStateSuspended]]></Text>
+				<Enum>8</Enum>
+			</EnumInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{A0584CC8-265F-4385-AA12-C3A71CCE6A97}" Namespace="MC">ST_GroupStatusFlags</Name>
+			<BitSize>16</BitSize>
+			<SubItem>
+				<Name>IsEnableRequested</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<Comment><![CDATA[Indicates whether Group has been enabled (e.g. via MC_GroupEnable)
+and will return to Group State Standby when the situation permits.
+(This information is usually only relevant when group is in error state.)]]></Comment>
+				<BitSize>1</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>AllAxesStanding</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<Comment><![CDATA[Indicate whether all axes are physically standing, i.e. velocity and acceleration are zero. This definition differs from the definition of the GroupStateMoving, which indicates whether a Motion Command is currently active.]]></Comment>
+				<BitSize>1</BitSize>
+				<BitOffs>1</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>InPosition</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<Comment><![CDATA[Indicates whether the group is in position.]]></Comment>
+				<BitSize>1</BitSize>
+				<BitOffs>2</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name GUID="{51F0F443-1D05-4E13-ADFA-62EA48380092}" Namespace="MC">ST_GroupStatus</Name>
+			<BitSize>32</BitSize>
+			<SubItem>
+				<Name>State</Name>
+				<Type GUID="{6B93C4EA-DEE3-49CC-86A6-CEF078FEFD24}" Namespace="MC">MC_GROUP_STATE</Type>
+				<Comment><![CDATA[0 = Invalid	(mcGroupStateInvalid),
+1 = Disabled	(mcGroupStateDisabled),
+2 = Standby	(mcGroupStateStandby),
+3 = Moving	(mcGroupStateMoving),
+4 = Stopping	(mcGroupStateStopping),
+5 = ErrorStop	(mcGroupStateErrorStop),
+6 = Homing	(mcGroupStateHoming),
+7 = NotReady	(mcGroupStateNotReady),
+8 = Suspended	(mcGroupStateSuspended)]]></Comment>
+				<BitSize>16</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Flags</Name>
+				<Type GUID="{A0584CC8-265F-4385-AA12-C3A71CCE6A97}" Namespace="MC">ST_GroupStatusFlags</Type>
+				<BitSize>16</BitSize>
+				<BitOffs>16</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name GUID="{F40562BB-DCFF-4B18-8E31-192F15F03476}" Namespace="MC" TcBaseType="true">MCTOPLC_GROUP_COMMON_PART</Name>
+			<BitSize>512</BitSize>
+			<SubItem>
+				<Name>GroupOID</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000F}">OTCID</Type>
+				<Comment><![CDATA[TcCOM-Object-Id (OID) of this Group]]></Comment>
+				<BitSize>32</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>GroupType</Name>
+				<Type GUID="{DB9169AE-6AF9-4994-9F36-F1067592C967}" Namespace="MC">MC_GROUP_TYPE</Type>
+				<Comment><![CDATA[Actual Type of this Group:
+0 = Invalid            (mcGroupTypeInvalid),
+1 = CollisionAvoidance (mcGroupTypeCA),
+3 = CoordinatedMotion  (mcGroupTypeCM)]]></Comment>
+				<BitSize>32</BitSize>
+				<BitOffs>32</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>GroupStatus</Name>
+				<Type GUID="{51F0F443-1D05-4E13-ADFA-62EA48380092}" Namespace="MC">ST_GroupStatus</Type>
+				<BitSize>32</BitSize>
+				<BitOffs>64</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>GroupErrorId</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000008}">UDINT</Type>
+				<Comment><![CDATA[Current Error Identifier (0 = no error)]]></Comment>
+				<BitSize>32</BitSize>
+				<BitOffs>96</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>GroupAxesCount</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000008}">UDINT</Type>
+				<Comment><![CDATA[Number of Axes that are currently part of this Group 
+(e.g. added via MC_AddAxisToGroup)]]></Comment>
+				<BitSize>32</BitSize>
+				<BitOffs>128</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>ActOverrideFactor</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<Comment><![CDATA[Actual/Active override factor (1.0 = 100%)]]></Comment>
+				<BitSize>64</BitSize>
+				<BitOffs>192</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name GUID="{EB1F033C-2651-4B56-9F0C-CB33B288FCFC}" Namespace="MC" TcBaseType="true">CDT_MCTOPLC_GROUP_CM</Name>
+			<BitSize>1536</BitSize>
+			<SubItem>
+				<Name>Common</Name>
+				<Type GUID="{F40562BB-DCFF-4B18-8E31-192F15F03476}" Namespace="MC">MCTOPLC_GROUP_COMMON_PART</Type>
+				<BitSize>512</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>PathVelo</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>512</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>InvokeId</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000008}">UDINT</Type>
+				<BitSize>32</BitSize>
+				<BitOffs>576</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>IsInBlendingSegment</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000010}">BIT</Type>
+				<BitSize>1</BitSize>
+				<BitOffs>608</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>RemainingTimeActiveJob</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>640</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>RemainingCartesianDistanceActiveJob</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>704</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>ActiveBlockerId</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000008}">UDINT</Type>
+				<BitSize>32</BitSize>
+				<BitOffs>768</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>RemainingTimeToSync</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>832</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>RemainingCartesianDistanceToSync</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>896</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name GUID="{2DF9018F-144A-47C3-8291-E6F4AFD6BD62}" Namespace="MC" TcBaseType="true">PLCTOMC_GROUP_COMMON_PART</Name>
+			<BitSize>256</BitSize>
+			<SubItem>
+				<Name>OverrideFactor</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<Comment><![CDATA[Desired override factor (1.0 = 100%, default value is 1.0)]]></Comment>
+				<BitSize>64</BitSize>
+				<BitOffs>0</BitOffs>
+				<Default>
+					<Value>1.0</Value>
+				</Default>
+			</SubItem>
+			<Default>
+				<SubItem>
+					<Name>OverrideFactor</Name>
+					<Value>1.0</Value>
+				</SubItem>
+			</Default>
+		</DataType>
+		<DataType>
+			<Name GUID="{762962EF-0BB3-42E3-80C3-82A3958BB33D}" Namespace="MC" TcBaseType="true">CDT_PLCTOMC_GROUP_CM</Name>
+			<BitSize>1024</BitSize>
+			<SubItem>
+				<Name>Common</Name>
+				<Type GUID="{2DF9018F-144A-47C3-8291-E6F4AFD6BD62}" Namespace="MC">PLCTOMC_GROUP_COMMON_PART</Type>
+				<BitSize>256</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
 			<Name GUID="{A6CC6AFE-FE37-C02D-2C0C-FB1479660FEB}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..31] OF BYTE</Name>
 			<BitSize>256</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000001}">BYTE</BaseType>
@@ -2090,9 +2404,85 @@ External Setpoint Generation:
 				<Elements>32</Elements>
 			</ArrayInfo>
 		</DataType>
+		<DataType>
+			<Name GUID="{260A4C07-588B-43A4-9DE1-0381D61130FD}" Namespace="MC" TcBaseType="true">CDT_MCTOPLC_GROUP_CA</Name>
+			<BitSize>1536</BitSize>
+			<SubItem>
+				<Name>Common</Name>
+				<Type GUID="{F40562BB-DCFF-4B18-8E31-192F15F03476}" Namespace="MC">MCTOPLC_GROUP_COMMON_PART</Type>
+				<BitSize>512</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name GUID="{467F4325-10DF-4BC1-88DD-E8240EB4F8E3}" Namespace="MC" TcBaseType="true">CDT_MCTOPLC_GROUP</Name>
+			<BitSize>1536</BitSize>
+			<SubItem>
+				<Name>Common</Name>
+				<Type GUID="{F40562BB-DCFF-4B18-8E31-192F15F03476}" Namespace="MC">MCTOPLC_GROUP_COMMON_PART</Type>
+				<BitSize>512</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>CA</Name>
+				<Type GUID="{260A4C07-588B-43A4-9DE1-0381D61130FD}" Namespace="MC">CDT_MCTOPLC_GROUP_CA</Type>
+				<BitSize>1536</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>CM</Name>
+				<Type GUID="{EB1F033C-2651-4B56-9F0C-CB33B288FCFC}" Namespace="MC">CDT_MCTOPLC_GROUP_CM</Type>
+				<BitSize>1536</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name GUID="{BAE35DD4-8FAE-4745-9207-33776C056045}" Namespace="MC" TcBaseType="true">CDT_PLCTOMC_GROUP_CA</Name>
+			<BitSize>1024</BitSize>
+			<SubItem>
+				<Name>Common</Name>
+				<Type GUID="{2DF9018F-144A-47C3-8291-E6F4AFD6BD62}" Namespace="MC">PLCTOMC_GROUP_COMMON_PART</Type>
+				<BitSize>256</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name GUID="{0E2E3852-A98C-4AF3-81E2-209EE128940C}" Namespace="MC" TcBaseType="true">CDT_PLCTOMC_GROUP</Name>
+			<BitSize>1024</BitSize>
+			<SubItem>
+				<Name>Common</Name>
+				<Type GUID="{2DF9018F-144A-47C3-8291-E6F4AFD6BD62}" Namespace="MC">PLCTOMC_GROUP_COMMON_PART</Type>
+				<BitSize>256</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>CA</Name>
+				<Type GUID="{BAE35DD4-8FAE-4745-9207-33776C056045}" Namespace="MC">CDT_PLCTOMC_GROUP_CA</Type>
+				<BitSize>1024</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>CM</Name>
+				<Type GUID="{762962EF-0BB3-42E3-80C3-82A3958BB33D}" Namespace="MC">CDT_PLCTOMC_GROUP_CM</Type>
+				<BitSize>1024</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Dxd</Name>
+				<Type GUID="{762962EF-0BB3-42E3-80C3-82A3958BB33D}" Namespace="MC">CDT_PLCTOMC_GROUP_CM</Type>
+				<BitSize>1024</BitSize>
+				<BitOffs>0</BitOffs>
+				<Properties>
+					<Property>
+						<Name>plcAttribute_hide</Name>
+					</Property>
+				</Properties>
+			</SubItem>
+		</DataType>
 	</DataTypes>
 	<ImageDatas>
 		<ImageData Id="1000">424d360300000000000036000000280000001000000010000000010018000000000000000000c40e0000c40e00000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc9c9c95757573333334f4f4fc1c1c1ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8181815c5c5ce3e3e3fffffff0f0f03b3b3bcfcfcfffffffffffffffffffffffffffffffffffffffffffffffffffffff252525fcfcfcf7f7f7b8b8b8ffffffe3e3e35d5d5dfffffffffffffffffffffffffffffffffffffffffffffffff0f0f0474747ffffff878787101010eaeaeaffffff343434ffffffffffffffffffffffffffffffffffffffffffffffffb8b8b8878787ffffffdbdbdb636363fdfdfdeeeeee4e4e4effffffffffffffffffffffffffffffffffffffffffffffffc0c0c07f7f7fffffffffffffffffffffffff838383656565ffffffffffffffffffffffffffffffffffffffffffffffffdbdbdb606060ffffffc4c4c4828282d5d5d5b8b8b81d1d1dfffffffffffffffffffffffffffffffffffffffffffffffffefefe393939f7f7f7fdfdfdcfcfcfffffffc8c8c86e6e6effffffffffffffffffffffffffffffffffffffffffffffffffffffafafaf414141c1c1c1fefefed4d4d4363636e3e3e3f9f9f97171712020203333334747475a5a5a6e6e6e8181819595959b9b9b5454545656563232326b6b6bc8c8c8ffffffb1b1b1282828969696a0a0a0a1a1a1a1a1a1a2a2a2a2a2a2a3a3a35353536b6b6b939593f4f6f4f7f9f7fcfdfcffffff757575626262c8c8c8c8c8c8c8c8c8c9c9c9c9c9c9c9c9c9c9c9c93333339cb79b329d30329d30309b2f5bd05affffff787878757575ededededededededededededeeeeeeeeeeeeeeeeee393939a4cba34cea494deb494ce94961db5effffffb3b3b32727278c8c8c9393939393939494949494949595959595954b4b4b6f6f6f989898fbfbfbfffffffffffffffffffbfbfb7676761e1e1e2c2c2c3b3b3b4b4b4b5a5a5a6a6a6a7979797c7c7c4d4d4db4b4b4fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdfefefeffffffffffffffffffffffff</ImageData>
+		<ImageData Id="1001">424d360300000000000036000000280000001000000010000000010018000000000000000000c40e0000c40e00000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9a9a9a3030303b3b3b2c2c2cffffffffffffffffffffffffffffffffffffffffffffffffffffffe4e4e4cfcfcfcfcfcf747474bababaffffff3a3a3ad4d4d4ffffffffffffffffffffffffffffffffffffffffffffffff6161615b5b5b707070707070dbdbdbffffff8b8b8b262626ffffffffffffffffffffffffffffffffffffffffffffffff6f6f6fddddddffffffffffffffffffffffffffffff3b3b3bffffffffffffffffffffffffffffffffffffffffffffffffa7a7a77d7d7dffffffd6d6d6d5d5d5ffffff777777232323ffffffffffffffffffffffffffffffffffffffffffffffffffffff585858ccccccffffffedededffffff3b3b3beaeaeaffffffffffffffffffffffffffffffffffffffffffffffffffffffeeeeee363636f6f6f6ffffffffffff3c3c3cffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffbbbbbb5a5a5affffffffffff3c3c3cfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefe6f6f6facacacffffff3c3c3cfffffff9f9f97171712020203333334747475a5a5a6e6e6e8181819595959b9b9b5d5d5db1b1b15151510f0f0f474747ffffffb1b1b1282828969696a0a0a0a1a1a1a1a1a1a2a2a2a2a2a2a3a3a35353536b6b6b939593f4f6f4a7a8a7edeeedffffff757575626262c8c8c8c8c8c8c8c8c8c9c9c9c9c9c9c9c9c9c9c9c93333339cb79b329d30329d30309b2f5bd05affffff787878757575ededededededededededededeeeeeeeeeeeeeeeeee393939a4cba34cea494deb494ce94961db5effffffb3b3b32727278c8c8c9393939393939494949494949595959595954b4b4b6f6f6f989898fbfbfbfffffffffffffffffffbfbfb7676761e1e1e2c2c2c3b3b3b4b4b4b5a5a5a6a6a6a7979797c7c7c4d4d4db4b4b4fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdfefefeffffffffffffffffffffffff</ImageData>
 	</ImageDatas>
 	<Project ProjectGUID="{CA42EB36-CB6B-418A-B554-7163163680CE}" Target64Bit="true" ShowHideConfigurations="#x6">
 		<System>
@@ -2105,6 +2495,10 @@ External Setpoint Generation:
 				</Task>
 				<Task Id="6" Priority="1" CycleTime="100000" AmsPort="351" AdtTasks="true">
 					<Name>C++ Task</Name>
+				</Task>
+				<Task Id="7" Priority="32" AdtTasks="true" JobTask="true">
+					<Name>Job Task</Name>
+					<ImageId>327</ImageId>
 				</Task>
 			</Tasks>
 		</System>
@@ -3092,7 +3486,7 @@ External Setpoint Generation:
 					</Vars>
 				</Axis>
 				<Axis Id="7" CreateSymbols="true" AxisType="5" GroupId="8">
-					<Name>MCS 1</Name>
+					<Name>MCS X</Name>
 					<AxisPara>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
@@ -3246,7 +3640,7 @@ External Setpoint Generation:
 					</Vars>
 				</Axis>
 				<Axis Id="8" CreateSymbols="true" AxisType="5" GroupId="9">
-					<Name>MCS 2</Name>
+					<Name>MCS Y</Name>
 					<AxisPara>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
@@ -3400,7 +3794,7 @@ External Setpoint Generation:
 					</Vars>
 				</Axis>
 				<Axis Id="9" CreateSymbols="true" AxisType="5" GroupId="10">
-					<Name>MCS 3</Name>
+					<Name>MCS Z</Name>
 					<AxisPara>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
@@ -3554,7 +3948,7 @@ External Setpoint Generation:
 					</Vars>
 				</Axis>
 				<Axis Id="10" CreateSymbols="true" AxisType="5" GroupId="11">
-					<Name>MCS 4</Name>
+					<Name>MCS A</Name>
 					<AxisPara>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
@@ -3708,7 +4102,7 @@ External Setpoint Generation:
 					</Vars>
 				</Axis>
 				<Axis Id="11" CreateSymbols="true" AxisType="5" GroupId="12">
-					<Name>MCS 5</Name>
+					<Name>MCS B</Name>
 					<AxisPara>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
@@ -3862,7 +4256,7 @@ External Setpoint Generation:
 					</Vars>
 				</Axis>
 				<Axis Id="12" CreateSymbols="true" AxisType="5" GroupId="13">
-					<Name>MCS 6</Name>
+					<Name>MCS C</Name>
 					<AxisPara>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
@@ -4283,7 +4677,7 @@ External Setpoint Generation:
 							<Fifo FifoDimension="1" FifoLength="1000" FifoOverrideType="2" FifoOverrideChangeTime="1" TimeUnitFifo="0.01"/>
 							<Kinematic OidKinematicTrafo="#x01010040"/>
 						</Parameter>
-						<Module Id="#x01010040" KeepUnrestoredLinks="2" ClassFactoryId="C++ Module Vendor|TC_Driver|0.0.0.1">
+						<Module Id="#x01010040" KeepUnrestoredLinks="2" AutoReloadTmc="true" ClassFactoryId="C++ Module Vendor|TC_Driver|0.0.0.1">
 							<Name>Group 14_Obj1 (SixAxisArticulatedTrafo)</Name>
 							<TmcDesc GUID="{F0A059DE-A7FB-41E4-ADBB-F976E6E17E7B}" ClassFactoryId="C++ Module Vendor|TC_Driver|0.0.0.1">
 								<Name>SixAxisArticulatedTrafo</Name>
@@ -4298,10 +4692,10 @@ External Setpoint Generation:
 									<Context>
 										<Id>1</Id>
 										<ManualConfig>
-											<OTCID>#x05000020</OTCID>
+											<OTCID>#x05000010</OTCID>
 										</ManualConfig>
-										<Priority>8</Priority>
-										<CycleTime>10000000</CycleTime>
+										<Priority>4</Priority>
+										<CycleTime>2000000</CycleTime>
 									</Context>
 								</Contexts>
 								<Interfaces>
@@ -4320,54 +4714,72 @@ External Setpoint Generation:
 								</Interfaces>
 								<Parameters>
 									<Parameter>
-										<Name>Arm length L1</Name>
+										<Name>ArmLengthL1</Name>
 										<Comment TxtId=""><![CDATA[Arm length of 1st arm component.]]></Comment>
 										<BitSize>64</BitSize>
 										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
 										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>10</Value>
+										</Default>
 										<PTCID>#x00000001</PTCID>
 										<ContextId>1</ContextId>
 									</Parameter>
 									<Parameter>
-										<Name>Arm length L2</Name>
+										<Name>ArmLengthL2</Name>
 										<Comment TxtId=""><![CDATA[Arm length of 2nd arm component.]]></Comment>
 										<BitSize>64</BitSize>
 										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
 										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>10</Value>
+										</Default>
 										<PTCID>#x00000002</PTCID>
 										<ContextId>1</ContextId>
 									</Parameter>
 									<Parameter>
-										<Name>Arm length L3</Name>
+										<Name>ArmLengthL3</Name>
 										<Comment TxtId=""><![CDATA[Arm length of 3rd arm component]]></Comment>
 										<BitSize>64</BitSize>
 										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
 										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>10</Value>
+										</Default>
 										<PTCID>#x00000003</PTCID>
 										<ContextId>1</ContextId>
 									</Parameter>
 									<Parameter>
-										<Name>Arm offset D1</Name>
+										<Name>ArmOffsetD1</Name>
 										<Comment TxtId=""><![CDATA[x-offset between 1st and 2nd joint]]></Comment>
 										<BitSize>64</BitSize>
 										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
 										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>10</Value>
+										</Default>
 										<PTCID>#x00000004</PTCID>
 										<ContextId>1</ContextId>
 									</Parameter>
 									<Parameter>
-										<Name>Arm offset D2</Name>
+										<Name>ArmOfffsetD2</Name>
 										<BitSize>64</BitSize>
 										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
 										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>10</Value>
+										</Default>
 										<PTCID>#x00000005</PTCID>
 										<ContextId>1</ContextId>
 									</Parameter>
 									<Parameter>
-										<Name>Arm offset D3</Name>
+										<Name>ArmOffsetD3</Name>
 										<BitSize>64</BitSize>
 										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
 										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>10</Value>
+										</Default>
 										<PTCID>#x00000006</PTCID>
 										<ContextId>1</ContextId>
 									</Parameter>
@@ -4375,27 +4787,27 @@ External Setpoint Generation:
 								<ParentOTCID>#x050700e0</ParentOTCID>
 								<ParameterValues>
 									<Value>
-										<Name>Arm length L1</Name>
+										<Name>ArmLengthL1</Name>
 										<Value>100</Value>
 									</Value>
 									<Value>
-										<Name>Arm length L2</Name>
+										<Name>ArmLengthL2</Name>
 										<Value>200</Value>
 									</Value>
 									<Value>
-										<Name>Arm length L3</Name>
+										<Name>ArmLengthL3</Name>
 										<Value>300</Value>
 									</Value>
 									<Value>
-										<Name>Arm offset D1</Name>
+										<Name>ArmOffsetD1</Name>
 										<Value>10</Value>
 									</Value>
 									<Value>
-										<Name>Arm offset D2</Name>
+										<Name>ArmOfffsetD2</Name>
 										<Value>0</Value>
 									</Value>
 									<Value>
-										<Name>Arm offset D3</Name>
+										<Name>ArmOffsetD3</Name>
 										<Value>-10</Value>
 									</Value>
 								</ParameterValues>
@@ -4403,11 +4815,441 @@ External Setpoint Generation:
 						</Module>
 					</Group>
 				</Channel>
+				<Channel Id="4" ChannelType="4" AxesColumns="#x3f">
+					<Name>Channel 4</Name>
+					<Vars VarGrpType="1">
+						<Name>Inputs</Name>
+						<Var>
+							<Name>FromPlc</Name>
+							<Type GUID="{48415C2A-E750-483B-A619-8655B2BEA4B8}" Namespace="MC">PLCTONC_NCICHANNEL_REF</Type>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2">
+						<Name>Outputs</Name>
+						<Var>
+							<Name>ToPlc</Name>
+							<Type GUID="{56354211-98EF-4057-9322-975DEAD0E29D}" Namespace="MC">NCTOPLC_NCICHANNEL_REF</Type>
+						</Var>
+					</Vars>
+					<Group Id="15" GroupType="12" SetpointGeneratorType="1">
+						<Name>Group 15</Name>
+						<Parameter ChannelId="4">
+							<Dxd EnableSoftPositionLimits="true" VeloVertexFactorC0="0.1" VeloVertexFactorC1="1" CriticalVertexAngleLow="10" CriticalVertexAngleHigh="75"/>
+							<Encoder NoMotionWindow="1" NoMotionFilterTime="0.01"/>
+							<Fifo FifoDimension="1" FifoLength="1000" FifoOverrideType="2" FifoOverrideChangeTime="1" TimeUnitFifo="0.01"/>
+							<Kinematic OidKinematicTrafo="#x01010010"/>
+						</Parameter>
+						<Module Id="#x01010010" KeepUnrestoredLinks="2">
+							<Name>Group 15_Obj1 (4D-SCARA (S_CCZC))</Name>
+							<ImageId>1001</ImageId>
+							<TmcDesc GUID="{E7398E65-FAB9-46C9-85A8-8436924D9B13}">
+								<Name>4D-SCARA (S_CCZC)</Name>
+								<CLSID ClassFactory="TcNcKin">{0501002A-0000-0000-F000-000000000064}</CLSID>
+								<Info>
+									<ImageData>424d360300000000000036000000280000001000000010000000010018000000000000000000c40e0000c40e00000000000000000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff9a9a9a3030303b3b3b2c2c2cffffffffffffffffffffffffffffffffffffffffffffffffffffffe4e4e4cfcfcfcfcfcf747474bababaffffff3a3a3ad4d4d4ffffffffffffffffffffffffffffffffffffffffffffffff6161615b5b5b707070707070dbdbdbffffff8b8b8b262626ffffffffffffffffffffffffffffffffffffffffffffffff6f6f6fddddddffffffffffffffffffffffffffffff3b3b3bffffffffffffffffffffffffffffffffffffffffffffffffa7a7a77d7d7dffffffd6d6d6d5d5d5ffffff777777232323ffffffffffffffffffffffffffffffffffffffffffffffffffffff585858ccccccffffffedededffffff3b3b3beaeaeaffffffffffffffffffffffffffffffffffffffffffffffffffffffeeeeee363636f6f6f6ffffffffffff3c3c3cffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffbbbbbb5a5a5affffffffffff3c3c3cfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffefefe6f6f6facacacffffff3c3c3cfffffff9f9f97171712020203333334747475a5a5a6e6e6e8181819595959b9b9b5d5d5db1b1b15151510f0f0f474747ffffffb1b1b1282828969696a0a0a0a1a1a1a1a1a1a2a2a2a2a2a2a3a3a35353536b6b6b939593f4f6f4a7a8a7edeeedffffff757575626262c8c8c8c8c8c8c8c8c8c9c9c9c9c9c9c9c9c9c9c9c93333339cb79b329d30329d30309b2f5bd05affffff787878757575ededededededededededededeeeeeeeeeeeeeeeeee393939a4cba34cea494deb494ce94961db5effffffb3b3b32727278c8c8c9393939393939494949494949595959595954b4b4b6f6f6f989898fbfbfbfffffffffffffffffffbfbfb7676761e1e1e2c2c2c3b3b3b4b4b4b5a5a5a6a6a6a7979797c7c7c4d4d4db4b4b4fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffdfdfdfefefeffffffffffffffffffffffff</ImageData>
+								</Info>
+								<Licenses>
+									<License>
+										<LicenseId>{EDABAF2B-31BD-44EA-812D-3BEA277A1355}</LicenseId>
+									</License>
+								</Licenses>
+								<InitSequence>SO</InitSequence>
+								<Contexts>
+									<Context>
+										<Id>1</Id>
+										<Name>Default</Name>
+										<ManualConfig>
+											<OTCID>#x05000010</OTCID>
+										</ManualConfig>
+										<Priority>4</Priority>
+										<CycleTime>2000000</CycleTime>
+									</Context>
+								</Contexts>
+								<Interfaces>
+									<Interface>
+										<Type GUID="{0500000F-0000-0000-E000-000000000064}">ITcNcBaseTrafo</Type>
+									</Interface>
+								</Interfaces>
+								<Parameters>
+									<Group><![CDATA[Configuration]]></Group>
+									<Group><![CDATA[TCP extension]]></Group>
+									<Group><![CDATA[ACStoDOF coupling]]></Group>
+									<Group><![CDATA[Kinematic]]></Group>
+									<Group><![CDATA[Dynamic]]></Group>
+									<Group><![CDATA[Drive Torques]]></Group>
+									<Parameter Group="Configuration">
+										<Name>MCS offset</Name>
+										<Comment><![CDATA[Static offset of the 1st joint in respect to the MCS coordinate frame.]]></Comment>
+										<BitSize>192</BitSize>
+										<BaseType GUID="{E56A7D77-004A-4573-87EE-6B2BDBEE35E5}" Namespace="MC">Shift3D</BaseType>
+										<PTCID>#x05010069</PTCID>
+									</Parameter>
+									<Parameter Group="Configuration">
+										<Name>Spatial reference definition</Name>
+										<Comment><![CDATA[Specification of the spatial reference node.]]></Comment>
+										<BitSize>512</BitSize>
+										<BaseType GUID="{152DCDDC-177E-5BB7-A6AD-90668A9E54BF}" Namespace="MC">ReferenceInfo</BaseType>
+										<PTCID>#x05010100</PTCID>
+									</Parameter>
+									<Parameter Group="TCP extension">
+										<Name>Flange rotation A</Name>
+										<Comment><![CDATA[Rotation angle around the local x-axis.]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[°]]></Unit>
+										<Default>
+											<Value>180</Value>
+										</Default>
+										<PTCID>#x0501006d</PTCID>
+									</Parameter>
+									<Parameter Group="TCP extension">
+										<Name>Tool offset OID</Name>
+										<Comment><![CDATA[Set tool extension.]]></Comment>
+										<BitSize>32</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000F}">OTCID</BaseType>
+										<Default>
+											<Value>0</Value>
+										</Default>
+										<PTCID>#x0501007c</PTCID>
+									</Parameter>
+									<Parameter Group="ACStoDOF coupling">
+										<Name>Gear coupling</Name>
+										<Comment><![CDATA[Coupling parameter resulting in an addtional z-motion of the TCP when the c-axis rotates.]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm / °]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010080</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Inner arm length</Name>
+										<Comment><![CDATA[Length of handle between 1st and 2nd joint.]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>380</Value>
+										</Default>
+										<PTCID>#x05010020</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Outer arm length</Name>
+										<Comment><![CDATA[Length of handle between 2nd joint and linear z-joint.]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>950</Value>
+										</Default>
+										<PTCID>#x05010021</PTCID>
+									</Parameter>
+								</Parameters>
+								<Properties>
+									<Property>
+										<Name>Category</Name>
+										<Value>MC Object</Value>
+									</Property>
+								</Properties>
+								<ParentOTCID>#x050700f0</ParentOTCID>
+								<ParameterValues>
+									<Value>
+										<Name>MCS offset.Xshift</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>MCS offset.Yshift</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>MCS offset.Zshift</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Spatial reference definition.Translation X</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Spatial reference definition.Translation Y</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Spatial reference definition.Translation Z</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Spatial reference definition.Rotation 1</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Spatial reference definition.Rotation 2</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Spatial reference definition.Rotation 3</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Spatial reference definition.Rotation convention</Name>
+										<EnumText>Rotation_Z3Y2X1_DIN9300</EnumText>
+									</Value>
+									<Value>
+										<Name>Spatial reference definition.Spatial reference</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Spatial reference definition.Definition direction</Name>
+										<EnumText>toReference</EnumText>
+									</Value>
+									<Value>
+										<Name>Flange rotation A</Name>
+										<Value>180</Value>
+									</Value>
+									<Value>
+										<Name>Tool offset OID</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Gear coupling</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Inner arm length</Name>
+										<Value>380</Value>
+									</Value>
+									<Value>
+										<Name>Outer arm length</Name>
+										<Value>950</Value>
+									</Value>
+								</ParameterValues>
+							</TmcDesc>
+						</Module>
+					</Group>
+				</Channel>
+				<Modules>
+					<Module Id="#x05120010" KeepUnrestoredLinks="2">
+						<Name>Group1 (MC Group Coordinated Motion)</Name>
+						<ImageId>468</ImageId>
+						<TmcDesc GUID="{8FAC954E-515F-490B-95E8-C4A8C88230A1}" TcSmClass="TComMcGroupObj">
+							<Name>MC Group Coordinated Motion</Name>
+							<CLSID ClassFactory="TcNc3">{050300C3-0000-0000-F000-000000000064}</CLSID>
+							<Licenses>
+								<License>
+									<LicenseId>{A15FA260-08A3-4DCD-93E9-5F22F7D234ED}</LicenseId>
+								</License>
+							</Licenses>
+							<InitSequence>PSO</InitSequence>
+							<Contexts>
+								<Context>
+									<Id>0</Id>
+									<ManualConfig>
+										<OTCID>#x05000010</OTCID>
+									</ManualConfig>
+									<Priority>4</Priority>
+									<CycleTime>2000000</CycleTime>
+									<DependOn>ParentObject</DependOn>
+								</Context>
+								<Context>
+									<Id>1</Id>
+									<ManualConfig>
+										<OTCID>#x05000020</OTCID>
+									</ManualConfig>
+									<Priority>8</Priority>
+									<CycleTime>10000000</CycleTime>
+									<DependOn>ParentObject</DependOn>
+								</Context>
+							</Contexts>
+							<Parameters>
+								<Group><![CDATA[General]]></Group>
+								<Group><![CDATA[GeoBlending-specific]]></Group>
+								<Parameter HideParameter="true">
+									<Name>TraceLevel</Name>
+									<BitSize>32</BitSize>
+									<BaseType GUID="{8007AE3B-86BB-40F2-B385-EF87FCC239A4}">TcTraceLevel</BaseType>
+									<Default>
+										<Value>2</Value>
+									</Default>
+									<PTCID>#x03002103</PTCID>
+								</Parameter>
+								<Parameter HideParameter="true">
+									<Name>Ctx_TaskOid</Name>
+									<Comment><![CDATA[Task implementing ICyclicCaller for cyclic execution of this module]]></Comment>
+									<BitSize>32</BitSize>
+									<BaseType GUID="{18071995-0000-0000-0000-00000000000F}">OTCID</BaseType>
+									<PTCID>#x03002060</PTCID>
+								</Parameter>
+								<Parameter Group="General">
+									<Name>Spatial Axes Convention</Name>
+									<BitSize>32</BitSize>
+									<BaseType GUID="{ADEE0E93-451B-4823-AF4F-5A22722A4BE1}" Namespace="MC">MC_AXES_CONVENTION</BaseType>
+									<Default>
+										<Value>#x400</Value>
+									</Default>
+									<PTCID>#x05030200</PTCID>
+								</Parameter>
+								<Parameter Group="General">
+									<Name>Additional Axes Count</Name>
+									<Comment><![CDATA[Number of axes without a spatial interpretation. Allowed values are [0,...,8].]]></Comment>
+									<BitSize>32</BitSize>
+									<BaseType GUID="{18071995-0000-0000-0000-000000000008}">UDINT</BaseType>
+									<Default>
+										<Value>0</Value>
+									</Default>
+									<PTCID>#x05030201</PTCID>
+								</Parameter>
+								<Parameter Group="General">
+									<Name>Blending Strategy</Name>
+									<BitSize>16</BitSize>
+									<BaseType GUID="{DB32B687-3D0A-4CC9-8479-83F8B89A3F6A}" Namespace="MC">MC_BLENDING_STRATEGY</BaseType>
+									<Default>
+										<Value>#x0</Value>
+									</Default>
+									<PTCID>#x05030202</PTCID>
+								</Parameter>
+								<Parameter Group="GeoBlending-specific">
+									<Name>Blending Path Type</Name>
+									<BitSize>16</BitSize>
+									<BaseType GUID="{440D214F-02C0-4BD7-B6C4-AD4578C2D208}" Namespace="MC">MC_BLENDING_PATH_TYPE</BaseType>
+									<Default>
+										<Value>#x100</Value>
+									</Default>
+									<PTCID>#x05030203</PTCID>
+								</Parameter>
+								<Parameter Group="General">
+									<Name>Time-Override Ramp Time</Name>
+									<Comment><![CDATA[Time it takes to transition the time-override factor from 0 to 100% or vice versa.]]></Comment>
+									<BitSize>64</BitSize>
+									<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+									<Unit><![CDATA[s]]></Unit>
+									<Default>
+										<Value>2.0</Value>
+									</Default>
+									<PTCID>#x050300a6</PTCID>
+								</Parameter>
+								<Parameter Group="General">
+									<Name>Tracking Override Behavior</Name>
+									<Comment><![CDATA[Defines whether the tracking movement is affected by override changes]]></Comment>
+									<BitSize>32</BitSize>
+									<BaseType GUID="{5025008F-B662-4EDE-B75E-A643373758F1}" Namespace="MC">OverrideBehavior</BaseType>
+									<Default>
+										<Value>1</Value>
+									</Default>
+									<PTCID>#x050300e3</PTCID>
+								</Parameter>
+								<Parameter HideParameter="true" Group="General">
+									<Name>Command Queue Size</Name>
+									<BitSize>32</BitSize>
+									<BaseType GUID="{18071995-0000-0000-0000-000000000008}">UDINT</BaseType>
+									<Default>
+										<Value>1000</Value>
+									</Default>
+									<PTCID>#x05030086</PTCID>
+								</Parameter>
+								<Parameter HideParameter="true" Group="General">
+									<Name>Command Processing Count</Name>
+									<Comment><![CDATA[ Number of commands processed per NPT cycle. ]]></Comment>
+									<BitSize>32</BitSize>
+									<BaseType GUID="{18071995-0000-0000-0000-000000000008}">UDINT</BaseType>
+									<Default>
+										<Value>3</Value>
+									</Default>
+									<PTCID>#x05030087</PTCID>
+								</Parameter>
+							</Parameters>
+							<DataAreas>
+								<DataArea>
+									<AreaNo AreaType="OutputSrc" CreateSymbols="true" ShowSymbols="true">1</AreaNo>
+									<Name>Group Outputs</Name>
+									<ContextId>0</ContextId>
+									<ByteSize>192</ByteSize>
+									<Symbol>
+										<Name>ToPLC</Name>
+										<BitSize>1536</BitSize>
+										<BaseType GUID="{EB1F033C-2651-4B56-9F0C-CB33B288FCFC}">MC.CDT_MCTOPLC_GROUP_CM</BaseType>
+										<BitOffs>0</BitOffs>
+									</Symbol>
+								</DataArea>
+								<DataArea>
+									<AreaNo AreaType="InputDst" CreateSymbols="true" ShowSymbols="true">2</AreaNo>
+									<Name>Group Inputs</Name>
+									<ContextId>0</ContextId>
+									<ByteSize>128</ByteSize>
+									<Symbol>
+										<Name>FromPLC</Name>
+										<BitSize>1024</BitSize>
+										<BaseType GUID="{762962EF-0BB3-42E3-80C3-82A3958BB33D}">MC.CDT_PLCTOMC_GROUP_CM</BaseType>
+										<BitOffs>0</BitOffs>
+									</Symbol>
+								</DataArea>
+							</DataAreas>
+							<Properties>
+								<Property>
+									<Name>Category</Name>
+									<Value>MC Object</Value>
+								</Property>
+								<Property>
+									<Name>Category</Name>
+									<Value>MC GroupModule</Value>
+								</Property>
+							</Properties>
+							<ParentOTCID>#x05000100</ParentOTCID>
+							<ParameterValues>
+								<Value>
+									<Name>TraceLevel</Name>
+									<EnumText>tlWarning</EnumText>
+								</Value>
+								<Value>
+									<Name>Ctx_TaskOid</Name>
+									<Value>83886096</Value>
+								</Value>
+								<Value>
+									<Name>Spatial Axes Convention</Name>
+									<EnumText>mcAxesConv3DCartesianXYZ</EnumText>
+								</Value>
+								<Value>
+									<Name>Additional Axes Count</Name>
+									<Value>3</Value>
+								</Value>
+								<Value>
+									<Name>Blending Strategy</Name>
+									<EnumText>mcBlendingGeo</EnumText>
+								</Value>
+								<Value>
+									<Name>Blending Path Type</Name>
+									<EnumText>mcBlendingPathTypePoly5</EnumText>
+								</Value>
+								<Value>
+									<Name>Time-Override Ramp Time</Name>
+									<Value>2</Value>
+								</Value>
+								<Value>
+									<Name>Tracking Override Behavior</Name>
+									<EnumText>Disable</EnumText>
+								</Value>
+								<Value>
+									<Name>Command Queue Size</Name>
+									<Value>1000</Value>
+								</Value>
+								<Value>
+									<Name>Command Processing Count</Name>
+									<Value>3</Value>
+								</Value>
+							</ParameterValues>
+						</TmcDesc>
+					</Module>
+					<Parameters>
+						<Parameter>
+							<PTCID>#x300a11b</PTCID>
+							<Data>02010070</Data>
+						</Parameter>
+					</Parameters>
+				</Modules>
 			</NC>
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{4068F960-3503-D792-C9E0-B04CEE555EE6}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{44FF0BBE-69F8-607A-1F7D-01E1B57B706E}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
@@ -4468,6 +5310,10 @@ External Setpoint Generation:
 							<Name>_00_Main.mcs[6].PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
+						<Var>
+							<Name>_00_Main.stGroupRef.PlcToNc</Name>
+							<Type GUID="{0E2E3852-A98C-4AF3-81E2-209EE128940C}" Namespace="MC">CDT_PLCTOMC_GROUP</Type>
+						</Var>
 					</Vars>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
@@ -4526,6 +5372,10 @@ External Setpoint Generation:
 						<Var>
 							<Name>_00_Main.mcs[6].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.stGroupRef.NcToPlc</Name>
+							<Type GUID="{467F4325-10DF-4BC1-88DD-E8240EB4F8E3}" Namespace="MC">CDT_MCTOPLC_GROUP</Type>
 						</Var>
 					</Vars>
 					<UnrestoredVarLinks ImportTime="2024-07-03T20:35:14">
@@ -4768,7 +5618,6 @@ External Setpoint Generation:
 			</Project>
 		</Plc>
 		<Cpp>
-			<Project GUID="{76475196-7928-4686-AA50-E1FF336EFAD9}" Name="Kinematics" PrjFilePath="Kinematics\Kinematics.vcxproj" TmcFilePath="Kinematics\Kinematics.tmc"/>
 			<Project GUID="{A2A4C246-A13E-4FCE-B3CA-780D84C150AD}" Name="TC_Driver" PrjFilePath="TC_Driver\TC_Driver.vcxproj" TmcFilePath="TC_Driver\TC_Driver.tmc"/>
 		</Cpp>
 		<Io>
@@ -5102,29 +5951,32 @@ External Setpoint Generation:
 				<Link VarA="PlcTask Inputs^_00_Main.acs[6].NcToPlc" VarB="Outputs^ToPlc"/>
 				<Link VarA="PlcTask Outputs^_00_Main.acs[6].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
-			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS 1">
-				<Link VarA="PlcTask Inputs^_00_Main.mcs[1].NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.mcs[1].PlcToNc" VarB="Inputs^FromPlc"/>
-			</OwnerB>
-			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS 2">
-				<Link VarA="PlcTask Inputs^_00_Main.mcs[2].NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.mcs[2].PlcToNc" VarB="Inputs^FromPlc"/>
-			</OwnerB>
-			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS 3">
-				<Link VarA="PlcTask Inputs^_00_Main.mcs[3].NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.mcs[3].PlcToNc" VarB="Inputs^FromPlc"/>
-			</OwnerB>
-			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS 4">
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS A">
 				<Link VarA="PlcTask Inputs^_00_Main.mcs[4].NcToPlc" VarB="Outputs^ToPlc"/>
 				<Link VarA="PlcTask Outputs^_00_Main.mcs[4].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
-			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS 5">
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS B">
 				<Link VarA="PlcTask Inputs^_00_Main.mcs[5].NcToPlc" VarB="Outputs^ToPlc"/>
 				<Link VarA="PlcTask Outputs^_00_Main.mcs[5].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
-			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS 6">
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS C">
 				<Link VarA="PlcTask Inputs^_00_Main.mcs[6].NcToPlc" VarB="Outputs^ToPlc"/>
 				<Link VarA="PlcTask Outputs^_00_Main.mcs[6].PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS X">
+				<Link VarA="PlcTask Inputs^_00_Main.mcs[1].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.mcs[1].PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS Y">
+				<Link VarA="PlcTask Inputs^_00_Main.mcs[2].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.mcs[2].PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS Z">
+				<Link VarA="PlcTask Inputs^_00_Main.mcs[3].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.mcs[3].PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Objects^Group1 (MC Group Coordinated Motion)">
+				<Link VarA="PlcTask Inputs^_00_Main.stGroupRef.NcToPlc" VarB="Group Outputs^ToPLC"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^TrafoChannel">
 				<Link VarA="PlcTask Inputs^_00_Main.in_stKinToPlc" VarB="Outputs^ToPlc"/>
