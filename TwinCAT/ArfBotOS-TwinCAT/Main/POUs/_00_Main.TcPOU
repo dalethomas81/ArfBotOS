@@ -37,10 +37,13 @@ VAR
 	fbKinCheckActualStatus: FB_KinCheckActualStatus;
 	fbKinCalcTrafo: FB_KinCalcTrafo;
 	mcPower: ARRAY[1..6] OF MC_Power;
-    mcAddAxisToGroup: ARRAY[1..6] OF MC_AddAxisToGroup;
+    mcAddAxisToGroup: ARRAY[1..12] OF MC_AddAxisToGroup;
+    AddAxesToGroup: BOOL;
 	fbGroupEnable: MC_GroupEnable;
 	fbGroupReadStatus: MC_GroupReadStatus;
-    path: MC_PATH_DATA_REF;
+	buffer: ARRAY[1..4096] OF BYTE;
+	path: MC_PATH_DATA_REF(ADR(buffer), SIZEOF(buffer));
+    AddPath: BOOL;
     fbMoveLinPrep: MC_MoveLinearAbsolutePreparation;
     aTargetPos: ARRAY[1..6] OF MC_LREAL;
     aTransitionParam: ARRAY[1..2] OF MC_LREAL;
@@ -96,7 +99,7 @@ IF FirstScan THEN
     (* read the IDs from the cyclic axis interface so the axes can mapped later to the kinematic group *)
 	FOR _i:=1 TO 6 BY 1 DO
 		stAxesConfig.nAxisIdsAcs[_i] := acs[_i].NcToPlc.AxisId;
-    	stAxesConfig.nAxisIdsMcs[_i] := mcs[_i+5].NcToPlc.AxisId;
+    	stAxesConfig.nAxisIdsMcs[_i] := mcs[_i].NcToPlc.AxisId;
 	END_FOR
 
 END_IF
@@ -104,7 +107,7 @@ END_IF
 //
 fbGroupReadStatus(
 	AxesGroup:= stGroupRef, 
-	Enable:= , 
+	Enable:= TRUE, 
 	Valid=> , 
 	Busy=> , 
 	GroupMoving=> , 
@@ -156,17 +159,26 @@ mcAddAxisToGroup[3].IdentInGroup := ACS3;
 mcAddAxisToGroup[4].IdentInGroup := ACS4;
 mcAddAxisToGroup[5].IdentInGroup := ACS5;
 mcAddAxisToGroup[6].IdentInGroup := ACS6;
-//mcAddAxisToGroup[7].IdentInGroup := MCS_X;
-//mcAddAxisToGroup[8].IdentInGroup := MCS_Y;
-//mcAddAxisToGroup[9].IdentInGroup := MCS_Z;
-//mcAddAxisToGroup[10].IdentInGroup := MCS_A1;
-//mcAddAxisToGroup[11].IdentInGroup := MCS_B1;
-//mcAddAxisToGroup[12].IdentInGroup := MCS_C1;
+mcAddAxisToGroup[7].IdentInGroup := MCS_X;
+mcAddAxisToGroup[8].IdentInGroup := MCS_Y;
+mcAddAxisToGroup[9].IdentInGroup := MCS_Z;
+mcAddAxisToGroup[10].IdentInGroup := MCS_A1;
+mcAddAxisToGroup[11].IdentInGroup := MCS_B1;
+mcAddAxisToGroup[12].IdentInGroup := MCS_C1;
 FOR _i:=1 TO 6 BY 1 DO
     mcAddAxisToGroup[_i](
         AxesGroup:= stGroupRef, 
         Axis:= acs[_i], 
-        Execute:= , 
+        Execute:= AddAxesToGroup, 
+        IdentInGroup:= , 
+        Done=> , 
+        Busy=> , 
+        Error=> , 
+        ErrorId=> );
+    mcAddAxisToGroup[_i + 6](
+        AxesGroup:= stGroupRef, 
+        Axis:= mcs[_i], 
+        Execute:= AddAxesToGroup, 
         IdentInGroup:= , 
         Done=> , 
         Busy=> , 
@@ -184,7 +196,10 @@ fbGroupEnable(
 	ErrorId=> );
     
 //
-A_AddPaths();
+IF AddPath THEN
+    AddPath := FALSE;
+    A_AddPaths();
+END_IF
 
 // move
 fbMovePath(
@@ -237,6 +252,8 @@ ELSE
 END_IF
 
 
+
+//
 fbKinConfigGroup(
 	bExecute:= , 
 	bCartesianMode:= , // false acs can be moved directly | true movement happens in cartesian space

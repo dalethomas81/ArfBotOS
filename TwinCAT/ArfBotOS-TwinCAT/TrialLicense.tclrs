@@ -2,9 +2,9 @@
 <TcLicenseInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2011/11/TcLicenseInfo">
 	<LicenseInfo>
 		<SystemId>{872FD770-CEDF-6CB0-9B02-ED904705F248}</SystemId>
-		<IssueTime>2024-07-26T04:05:00</IssueTime>
-		<ExpireTime>2024-08-03T00:00:00</ExpireTime>
-		<LicenseKey>e8b406d1a51763b47abc9b04c8586285bde509515321abd8f3fa173a26cc8c1fa7a040764d593923c4308aa48a591513ceaec4db25f02083f666be1b5fe177f52799b5c908fdafad1a67864767c7763087b690d3c22373f72fc164884c6e47c0ca826f2405d60189809cdbace3a7c752776aba041ef668e1850410710af3e91c58832c942b41fba66f4175333f5b7ff6c4400e55b026452d288e672422b2bc7bb219832fc8f521950f31b35a5c4e064bc0adf3d6cc11fac33b9c0b61560e8c8cf098e28a7b5a0153be7f521c642b306c9450a4afe1685e8c4b73eb69acc949045aef361f8527616d5f706c343a1646af3acf4eb20935ef038568affa0e38075a</LicenseKey>
+		<IssueTime>2024-07-28T21:41:00</IssueTime>
+		<ExpireTime>2024-08-05T00:00:00</ExpireTime>
+		<LicenseKey>cef0a930082e9cf7163f8fd8d8708efbecb6653c9d8a53f6bac19581e3fb9af8a862e0885e7db6e75e6fef408420279208bc250bc36c47efecd6cd2de14667903f726f68c07155adaa2e0cb4e06596dd82f721cb7f5f405b60070f17c16346c8781ec5c2e4adf6eeba1fe177b311740ec052cf741a1ceff78fe0be349fe59a99357b95a9e242a8e388a30206eccf7fc0dc706c2d4fae27e667ebbf0879233fda020b852747f8a03081136623cb67cd3d7fcbab070ede43b3ef4f2a0093581e6feceaee11810016d96882d6e2568593fc8c642eb845544c2cd49d7340ade7c91de80df6c199b0b3c26083ee20f3be43e48c296814958a4edc3d42ddba37531078</LicenseKey>
 		<License>
 			<LicenseId>{BF78CFC7-2E63-42C3-8C07-BB6C346BFB8B}</LicenseId>
 			<Name>TC3 NC PTP Axes Pack 25</Name>
@@ -34,6 +34,11 @@
 			<LicenseId>{66689887-CCBD-452C-AC9A-039D997C6E66}</LicenseId>
 			<Name>TC3 PLC</Name>
 			<OrderNo>TC1200</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{A15FA260-08A3-4DCD-93E9-5F22F7D234ED}</LicenseId>
+			<Name>TC3 Motion Pick-and-Place</Name>
+			<OrderNo>TF5420</OrderNo>
 		</License>
 		<License>
 			<LicenseId>{304D006A-8299-4560-AB79-438534B50288}</LicenseId>
