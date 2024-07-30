@@ -2,6 +2,9 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="_00_Main" Id="{f495872a-eb99-4e62-a111-ca71535b5152}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM _00_Main
+VAR CONSTANT
+	NumberOfAxes: UINT:=4;
+END_VAR
 VAR
 	
 	// group handler for all motion fbs
@@ -31,12 +34,11 @@ VAR
 	
 	// controller
 	//Controller: FB_Controller;
-	
 	fbKinConfigGroup: FB_KinConfigGroup;
 	fbKinResetGroup: FB_KinResetGroup;
 	fbKinCheckActualStatus: FB_KinCheckActualStatus;
 	fbKinCalcTrafo: FB_KinCalcTrafo;
-	mcPower: ARRAY[1..6] OF MC_Power;
+	mcPower: ARRAY[1..NumberOfAxes] OF MC_Power;
     mcAddAxisToGroup: ARRAY[1..12] OF MC_AddAxisToGroup;
     AddAxesToGroup: BOOL;
 	fbGroupEnable: MC_GroupEnable;
@@ -45,13 +47,14 @@ VAR
 	path: MC_PATH_DATA_REF(ADR(buffer), SIZEOF(buffer));
     AddPath: BOOL;
     fbMoveLinPrep: MC_MoveLinearAbsolutePreparation;
-    aTargetPos: ARRAY[1..6] OF MC_LREAL;
+    aTargetPos: ARRAY[1..NumberOfAxes] OF MC_LREAL;
     aTransitionParam: ARRAY[1..2] OF MC_LREAL;
     bMovePrepError: BOOL;
     fbMovePath: MC_MovePath;
     fbStop: MC_GroupStop;
     fbUngroupAxes: MC_UngroupAllAxes;
     fbGroupReset: MC_GroupReset;
+	fbGroupSetOvr: MC_GroupSetOverride;
     
 	bEnable: BOOL;
 	
@@ -64,8 +67,8 @@ VAR
 	uMetaInfoOut			: U_KinMetaInfo;
 
     stAxesConfig: ST_KinAxes;
-	acs: ARRAY[1..6] OF AXIS_REF;
-	mcs: ARRAY[1..6] OF AXIS_REF;
+	acs: ARRAY[1..NumberOfAxes] OF AXIS_REF;
+	mcs: ARRAY[1..NumberOfAxes] OF AXIS_REF;
     
     nErrId: UDINT;   
     eKinOperationState     : E_KINSTATUS;
@@ -74,10 +77,19 @@ VAR
     stGroupRef : AXES_GROUP_REF;
 	
 	//
-	_i, _j, _k: INT;
+	_i, _j, _k: UINT;
 	BuildTests: BOOL:=FALSE;
 	FirstScan: BOOL:=TRUE;
 
+	MoveGroup: BOOL;
+	StopGroup: BOOL;
+	UngroupAxes: BOOL;
+	ResetGroup: BOOL;
+	EnableGroup: BOOL;
+	ConfigKinGroup: BOOL;
+	ResetKinGroup: BOOL;
+	CheckKinStatus: BOOL;
+	CalculateTrafo: BOOL;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[
@@ -97,7 +109,7 @@ END_VAR]]></Declaration>
 IF FirstScan THEN
     // https://infosys.beckhoff.com/content/1033/tf5240_kinematic_transformation/292852107.html?id=2424647827091372088
     (* read the IDs from the cyclic axis interface so the axes can mapped later to the kinematic group *)
-	FOR _i:=1 TO 6 BY 1 DO
+	FOR _i:=1 TO NumberOfAxes BY 1 DO
 		stAxesConfig.nAxisIdsAcs[_i] := acs[_i].NcToPlc.AxisId;
     	stAxesConfig.nAxisIdsMcs[_i] := mcs[_i].NcToPlc.AxisId;
 	END_FOR
@@ -121,6 +133,16 @@ fbGroupReadStatus(
 	InPosition=> , 
 	Error=> , 
 	ErrorId=> );
+	
+fbGroupSetOvr(
+	AxesGroup:= stGroupRef, 
+	Enable:= TRUE, 
+	VelFactor:= 1.0 , 
+	Enabled=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorId=> , 
+	ActualVelFactor=> );
 
 (*
 IF F_KinGetChnOperationState (in_stKinToPlc)<> KinStatus_InvalidItfVersion THEN 
@@ -137,9 +159,21 @@ END_IF
 *)
 
 // power
-FOR _i:=1 TO 6 BY 1 DO
+FOR _i:=1 TO NumberOfAxes BY 1 DO
 	mcPower[_i](
 		Axis:= acs[_i], 
+		Enable:= bEnable, 
+		Enable_Positive:= bEnable, 
+		Enable_Negative:= bEnable, 
+		Override:= , 
+		BufferMode:= , 
+		Options:= , 
+		Status=> , 
+		Busy=> , 
+		Error=> , 
+		ErrorID=> );
+	mcPower[_i](
+		Axis:= mcs[_i], 
 		Enable:= bEnable, 
 		Enable_Positive:= bEnable, 
 		Enable_Negative:= bEnable, 
@@ -153,6 +187,7 @@ FOR _i:=1 TO 6 BY 1 DO
 END_FOR
 
 // add
+(*
 mcAddAxisToGroup[1].IdentInGroup := ACS1;
 mcAddAxisToGroup[2].IdentInGroup := ACS2;
 mcAddAxisToGroup[3].IdentInGroup := ACS3;
@@ -165,8 +200,17 @@ mcAddAxisToGroup[9].IdentInGroup := MCS_Z;
 mcAddAxisToGroup[10].IdentInGroup := MCS_A1;
 mcAddAxisToGroup[11].IdentInGroup := MCS_B1;
 mcAddAxisToGroup[12].IdentInGroup := MCS_C1;
-FOR _i:=1 TO 6 BY 1 DO
-    mcAddAxisToGroup[_i](
+*)
+mcAddAxisToGroup[1].IdentInGroup := ACS1;
+mcAddAxisToGroup[2].IdentInGroup := ACS2;
+mcAddAxisToGroup[3].IdentInGroup := ACS3;
+mcAddAxisToGroup[4].IdentInGroup := ACS4;
+mcAddAxisToGroup[5].IdentInGroup := MCS_X;
+mcAddAxisToGroup[6].IdentInGroup := MCS_Y;
+mcAddAxisToGroup[7].IdentInGroup := MCS_Z;
+mcAddAxisToGroup[8].IdentInGroup := MCS_C1;
+FOR _i:=1 TO NumberOfAxes BY 1 DO
+    (*mcAddAxisToGroup[_i](
         AxesGroup:= stGroupRef, 
         Axis:= acs[_i], 
         Execute:= AddAxesToGroup, 
@@ -174,8 +218,8 @@ FOR _i:=1 TO 6 BY 1 DO
         Done=> , 
         Busy=> , 
         Error=> , 
-        ErrorId=> );
-    mcAddAxisToGroup[_i + 6](
+        ErrorId=> );*)
+    mcAddAxisToGroup[_i + 4](
         AxesGroup:= stGroupRef, 
         Axis:= mcs[_i], 
         Execute:= AddAxesToGroup, 
@@ -189,7 +233,7 @@ END_FOR
 // enable
 fbGroupEnable(
 	AxesGroup:= stGroupRef, 
-	Execute:= , 
+	Execute:= EnableGroup, 
 	Done=> , 
 	Busy=> , 
 	Error=> , 
@@ -205,7 +249,7 @@ END_IF
 fbMovePath(
 	AxesGroup:= stGroupRef, 
 	PathData:= path, 
-	Execute:= , 
+	Execute:= MoveGroup, 
 	Done=> , 
 	Busy=> , 
 	Active=> , 
@@ -216,7 +260,7 @@ fbMovePath(
 // stop
 fbStop(
 	AxesGroup:= stGroupRef, 
-	Execute:= , 
+	Execute:= StopGroup, 
 	Deceleration:= , 
 	Jerk:= MC_IGNORE, 
 	Done=> , 
@@ -229,7 +273,7 @@ fbStop(
 // ungroup
 fbUngroupAxes(
 	AxesGroup:= stGroupRef, 
-	Execute:= , 
+	Execute:= UngroupAxes, 
 	Done=> , 
 	Busy=> , 
 	Error=> , 
@@ -238,7 +282,7 @@ fbUngroupAxes(
 // reset
 fbGroupReset(
 	AxesGroup:= stGroupRef, 
-	Execute:= , 
+	Execute:= ResetGroup, 
 	Done=> , 
 	Busy=> , 
 	Error=> , 
@@ -255,7 +299,7 @@ END_IF
 
 //
 fbKinConfigGroup(
-	bExecute:= , 
+	bExecute:= ConfigKinGroup, 
 	bCartesianMode:= , // false acs can be moved directly | true movement happens in cartesian space
 	stAxesList:= stAxesConfig, 
 	stKinRefIn:= in_stKinToPlc, 
@@ -265,7 +309,7 @@ fbKinConfigGroup(
 	nErrorId=> );
 	
 fbKinResetGroup(
-	bExecute:= , 
+	bExecute:= ResetKinGroup, 
 	nItpChannelId:= , 
 	stKinRefIn:= in_stKinToPlc, 
 	stAxesList:= stAxesConfig, 
@@ -275,7 +319,7 @@ fbKinResetGroup(
 	nErrorId=> );
 	
 fbKinCheckActualStatus(
-	bExecute:= , 
+	bExecute:= CheckKinStatus, 
 	stAxesListReference:= stAxesConfig, 
 	stKinRefIn:= in_stKinToPlc, 
 	eKinStatus=> , 
@@ -287,9 +331,9 @@ fbKinCheckActualStatus(
 // https://infosys.beckhoff.com/content/1033/tf5110-tf5113_tc3_kinematic_transformation/5737129739.html?id=6958083974342297833
 // apparently we cannot use this for user specific transformations. dammit.
 fbKinCalcTrafo(
-	bExecute:= , 
+	bExecute:= CalculateTrafo, 
 	bForward:= , 
-	oidTrafo:= 16#01010040, // find object id in the General tab of the kinematic group
+	oidTrafo:= 16#01010010,//16#01010040, // find object id in the General tab of the kinematic group
 	stAxesPosIn:= stAxesPosIn, // if forward, these would be joint positions. if reverse, these would be cartesian
 	stAxesPosOut:= stAxesPosOut, // if forward, these would be cartesian. if reverse, these would be joint positions
 	uMetaInfoIn:= uMetaInfoIn, 
