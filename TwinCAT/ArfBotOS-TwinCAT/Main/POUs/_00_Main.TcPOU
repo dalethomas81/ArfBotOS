@@ -38,6 +38,10 @@ VAR
 	fbKinResetGroup: FB_KinResetGroup;
 	fbKinCheckActualStatus: FB_KinCheckActualStatus;
 	fbKinCalcTrafo: FB_KinCalcTrafo;
+	fbKinCalcMultiTrafo: FB_KinCalcMultiTrafo;
+    stKinCalcMultiIn      : ST_KinCalcMultiTrafoIn; 
+    stKinCalcMultiOut     : ST_KinCalcMultiTrafoOut; 
+	
 	mcPower: ARRAY[1..NumberOfAxes] OF MC_Power;
     mcAddAxisToGroup: ARRAY[1..12] OF MC_AddAxisToGroup;
     AddAxesToGroup: BOOL;
@@ -90,6 +94,7 @@ VAR
 	ResetKinGroup: BOOL;
 	CheckKinStatus: BOOL;
 	CalculateTrafo: BOOL;
+	CalculateMultiTrafo: BOOL;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[
@@ -330,10 +335,10 @@ fbKinCheckActualStatus(
 
 // https://infosys.beckhoff.com/content/1033/tf5110-tf5113_tc3_kinematic_transformation/5737129739.html?id=6958083974342297833
 // apparently we cannot use this for user specific transformations. dammit.
-fbKinCalcTrafo(
+(*fbKinCalcTrafo(
 	bExecute:= CalculateTrafo, 
 	bForward:= , 
-	oidTrafo:= 16#01010010,//16#01010040, // find object id in the General tab of the kinematic group
+	oidTrafo:= 16#01010040, // find object id in the General tab of the kinematic group
 	stAxesPosIn:= stAxesPosIn, // if forward, these would be joint positions. if reverse, these would be cartesian
 	stAxesPosOut:= stAxesPosOut, // if forward, these would be cartesian. if reverse, these would be joint positions
 	uMetaInfoIn:= uMetaInfoIn, 
@@ -342,6 +347,36 @@ fbKinCalcTrafo(
 	bDone=> , 
 	bError=> , 
 	nErrorId=> );
+	
+stKinCalcMultiIn.hdr.nColumnsIn := 4;
+stKinCalcMultiIn.hdr.nColumnsOut := 4;
+stKinCalcMultiIn.hdr.nLines := 2;
+stKinCalcMultiIn.hdr.uMetaInfo.eScara := E_KinMetaInfoScara.scaraLeftArm;
+stKinCalcMultiIn.hdr.bGetMetaInfo := TRUE;
+
+// Positions
+stKinCalcMultiIn.fPos[1][1]:=0;
+stKinCalcMultiIn.fPos[1][2]:=90;
+stKinCalcMultiIn.fPos[1][3]:=0;
+stKinCalcMultiIn.fPos[1][4]:=0;
+
+stKinCalcMultiIn.fPos[2][1]:=0;
+stKinCalcMultiIn.fPos[2][2]:=-90;
+stKinCalcMultiIn.fPos[2][3]:=0;
+stKinCalcMultiIn.fPos[2][4]:=0;
+	
+fbKinCalcMultiTrafo(
+	bExecute:= CalculateMultiTrafo, 
+	bForward:= , 
+	oidTrafo:= 16#01010040, // find object id in the General tab of the kinematic group 
+ 	pDataIn  := ADR(stKinCalcMultiIn), 
+ 	nSizeIn  := SIZEOF(stKinCalcMultiIn), 
+ 	pDataOut := ADR(stKinCalcMultiOut), 
+ 	nSizeOut := SIZEOF(stKinCalcMultiOut),
+	bBusy=> , 
+	bDone=> , 
+	bError=> , 
+	nErrorId=> );*)
 
 {region "utility"}
 	(*GVL.ResetRtrig(CLK:=GVL.Reset);

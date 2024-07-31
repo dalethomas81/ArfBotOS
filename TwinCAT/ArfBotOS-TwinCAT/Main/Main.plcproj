@@ -309,6 +309,12 @@
     <Compile Include="POUs\MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="POUs\ST_KinCalcMultiTrafoIn.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\ST_KinCalcMultiTrafoOut.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="POUs\_00_Main.TcPOU">
       <SubType>Code</SubType>
     </Compile>

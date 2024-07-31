@@ -4341,7 +4341,7 @@ and will return to Group State Standby when the situation permits.
 						</Module>
 					</Group>
 				</Channel>
-				<Channel Id="3" Disabled="true" ChannelType="4" AxesColumns="#x3f">
+				<Channel Id="3" ChannelType="4" AxesColumns="#x3f">
 					<Name>CustomTransformation</Name>
 					<Vars VarGrpType="1">
 						<Name>Inputs</Name>
@@ -4450,7 +4450,7 @@ and will return to Group State Standby when the situation permits.
 										<ContextId>1</ContextId>
 									</Parameter>
 									<Parameter>
-										<Name>ArmOfffsetD2</Name>
+										<Name>ArmOffsetD2</Name>
 										<BitSize>64</BitSize>
 										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
 										<Unit><![CDATA[mm]]></Unit>
@@ -4491,7 +4491,7 @@ and will return to Group State Standby when the situation permits.
 										<Value>10</Value>
 									</Value>
 									<Value>
-										<Name>ArmOfffsetD2</Name>
+										<Name>ArmOffsetD2</Name>
 										<Value>0</Value>
 									</Value>
 									<Value>
@@ -4937,7 +4937,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{4A4553D3-9521-3AAF-8E3B-61E7AF670408}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{98774859-7616-2B77-F166-B5ACD0277718}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
@@ -5646,13 +5646,13 @@ and will return to Group State Standby when the situation permits.
 				<Link VarA="PlcTask Inputs^_00_Main.mcs[3].NcToPlc" VarB="Outputs^ToPlc"/>
 				<Link VarA="PlcTask Outputs^_00_Main.mcs[3].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^CustomTransformation">
+				<Link VarA="PlcTask Inputs^_00_Main.in_stKinToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.out_stPlcToKin" VarB="Inputs^FromPlc"/>
+			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Objects^Group1 (MC Group Coordinated Motion)">
 				<Link VarA="PlcTask Inputs^_00_Main.stGroupRef.NcToPlc" VarB="Group Outputs^ToPLC"/>
 				<Link VarA="PlcTask Outputs^_00_Main.stGroupRef.PlcToNc" VarB="Group Inputs^FromPLC"/>
-			</OwnerB>
-			<OwnerB Name="TINC^NC-Task 1 SAF^Scara">
-				<Link VarA="PlcTask Inputs^_00_Main.in_stKinToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.out_stPlcToKin" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 		</OwnerA>
 	</Mappings>
