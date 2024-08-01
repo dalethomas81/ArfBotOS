@@ -3945,6 +3945,312 @@ and will return to Group State Standby when the situation permits.
 					</Vars>
 				</Axis>
 				<Axis Id="10" CreateSymbols="true" AxisType="1" GroupId="11">
+					<Name>MCS A</Name>
+					<AxisPara>
+						<OtherSettings AllowMotionCmdToSlave="true"/>
+					</AxisPara>
+					<Encoder Name="Enc" EncType="1">
+						<Vars VarGrpType="1">
+							<Name>Inputs</Name>
+							<Var>
+								<Name>In</Name>
+								<Type GUID="{901C2423-655B-45CE-B7E3-21F174F0F99F}" Namespace="MC">NCENCODERSTRUCT_IN2B</Type>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn1</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn2</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn3</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn4</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn5</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn6</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn7</Name>
+									<Comment><![CDATA[Drive Velocity Actual Value
+]]></Comment>
+								</SubVar>
+							</Var>
+						</Vars>
+						<Vars VarGrpType="2">
+							<Name>Outputs</Name>
+							<Var>
+								<Name>Out</Name>
+								<Type GUID="{9CC50AB2-5D79-4869-A3C2-1FA7761BAFEA}" Namespace="MC">NCENCODERSTRUCT_OUT2</Type>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut1</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut2</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut3</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut4</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut5</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut6</Name>
+								</SubVar>
+							</Var>
+						</Vars>
+					</Encoder>
+					<Drive Name="Drive" DrvType="5">
+						<DrvPara>
+							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+						</DrvPara>
+						<Vars VarGrpType="1">
+							<Name>Inputs</Name>
+							<Var>
+								<Name>In</Name>
+								<Type GUID="{F95C7C69-0C87-46C4-9559-1285CCA5B23A}" Namespace="MC">NCDRIVESTRUCT_IN2</Type>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn1</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn2</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn3</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn4</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn5</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn6</Name>
+								</SubVar>
+							</Var>
+						</Vars>
+						<Vars VarGrpType="2">
+							<Name>Outputs</Name>
+							<Var>
+								<Name>Out</Name>
+								<Type GUID="{644DC4BD-3D15-4DCB-94C7-24F3A5D579AA}" Namespace="MC">NCDRIVESTRUCT_OUT2</Type>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut1</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut2</Name>
+								</SubVar>
+								<SubVar>
+									<Name>nCtrl2</Name>
+									<Comment><![CDATA[Digital Outputs Setpoint Generator:
+0x41 (0100 0001) = Minus (0x42 for inverse motor polarity)
+0x42 (0100 0010) = Plus (0x41 for inverse motor polarity)
+0x80 (1000 0000) = Stop
+]]></Comment>
+								</SubVar>
+								<SubVar>
+									<Name>nCtrl3</Name>
+									<Comment><![CDATA[Digital Outputs (Setpoint Generator + Position Controller):
+0x41 (0100 0001) = Minus (0x42 for inverse motor polarity)
+0x42 (0100 0010) = Plus (0x41 for inverse motor polarity)
+0x80 (1000 0000) = Stop
+]]></Comment>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut3</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut4</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut5</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut6</Name>
+								</SubVar>
+							</Var>
+						</Vars>
+					</Drive>
+					<Controller Name="Ctrl" CtrType="1">
+						<CtrPara PriorControlFactor="1">
+							<Observer BandWidth="20"/>
+						</CtrPara>
+					</Controller>
+					<Vars VarGrpType="1" InsertType="1">
+						<Name>Inputs</Name>
+						<Var>
+							<Name>FromPlc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2" InsertType="1">
+						<Name>Outputs</Name>
+						<Var>
+							<Name>ToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+					</Vars>
+				</Axis>
+				<Axis Id="11" CreateSymbols="true" AxisType="1" GroupId="12">
+					<Name>MCS B</Name>
+					<AxisPara>
+						<OtherSettings AllowMotionCmdToSlave="true"/>
+					</AxisPara>
+					<Encoder Name="Enc" EncType="1">
+						<Vars VarGrpType="1">
+							<Name>Inputs</Name>
+							<Var>
+								<Name>In</Name>
+								<Type GUID="{901C2423-655B-45CE-B7E3-21F174F0F99F}" Namespace="MC">NCENCODERSTRUCT_IN2B</Type>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn1</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn2</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn3</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn4</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn5</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn6</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn7</Name>
+									<Comment><![CDATA[Drive Velocity Actual Value
+]]></Comment>
+								</SubVar>
+							</Var>
+						</Vars>
+						<Vars VarGrpType="2">
+							<Name>Outputs</Name>
+							<Var>
+								<Name>Out</Name>
+								<Type GUID="{9CC50AB2-5D79-4869-A3C2-1FA7761BAFEA}" Namespace="MC">NCENCODERSTRUCT_OUT2</Type>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut1</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut2</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut3</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut4</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut5</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut6</Name>
+								</SubVar>
+							</Var>
+						</Vars>
+					</Encoder>
+					<Drive Name="Drive" DrvType="5">
+						<DrvPara>
+							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+						</DrvPara>
+						<Vars VarGrpType="1">
+							<Name>Inputs</Name>
+							<Var>
+								<Name>In</Name>
+								<Type GUID="{F95C7C69-0C87-46C4-9559-1285CCA5B23A}" Namespace="MC">NCDRIVESTRUCT_IN2</Type>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn1</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn2</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn3</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn4</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn5</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataIn6</Name>
+								</SubVar>
+							</Var>
+						</Vars>
+						<Vars VarGrpType="2">
+							<Name>Outputs</Name>
+							<Var>
+								<Name>Out</Name>
+								<Type GUID="{644DC4BD-3D15-4DCB-94C7-24F3A5D579AA}" Namespace="MC">NCDRIVESTRUCT_OUT2</Type>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut1</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut2</Name>
+								</SubVar>
+								<SubVar>
+									<Name>nCtrl2</Name>
+									<Comment><![CDATA[Digital Outputs Setpoint Generator:
+0x41 (0100 0001) = Minus (0x42 for inverse motor polarity)
+0x42 (0100 0010) = Plus (0x41 for inverse motor polarity)
+0x80 (1000 0000) = Stop
+]]></Comment>
+								</SubVar>
+								<SubVar>
+									<Name>nCtrl3</Name>
+									<Comment><![CDATA[Digital Outputs (Setpoint Generator + Position Controller):
+0x41 (0100 0001) = Minus (0x42 for inverse motor polarity)
+0x42 (0100 0010) = Plus (0x41 for inverse motor polarity)
+0x80 (1000 0000) = Stop
+]]></Comment>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut3</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut4</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut5</Name>
+								</SubVar>
+								<SubVar TypeFormatIndex="2">
+									<Name>nDataOut6</Name>
+								</SubVar>
+							</Var>
+						</Vars>
+					</Drive>
+					<Controller Name="Ctrl" CtrType="1">
+						<CtrPara PriorControlFactor="1">
+							<Observer BandWidth="20"/>
+						</CtrPara>
+					</Controller>
+					<Vars VarGrpType="1" InsertType="1">
+						<Name>Inputs</Name>
+						<Var>
+							<Name>FromPlc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+					</Vars>
+					<Vars VarGrpType="2" InsertType="1">
+						<Name>Outputs</Name>
+						<Var>
+							<Name>ToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+					</Vars>
+				</Axis>
+				<Axis Id="12" CreateSymbols="true" AxisType="1" GroupId="13">
 					<Name>MCS C</Name>
 					<AxisPara>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
@@ -4893,11 +5199,11 @@ and will return to Group State Standby when the situation permits.
 								</Value>
 								<Value>
 									<Name>Spatial Axes Convention</Name>
-									<EnumText>mcAxesConv4DCartesianXYZC</EnumText>
+									<EnumText>mcAxesConv3DCartesianXYZ</EnumText>
 								</Value>
 								<Value>
 									<Name>Additional Axes Count</Name>
-									<Value>0</Value>
+									<Value>3</Value>
 								</Value>
 								<Value>
 									<Name>Blending Strategy</Name>
@@ -4937,7 +5243,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{98774859-7616-2B77-F166-B5ACD0277718}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{D28C3181-021D-47F9-05ED-01C56BBACC26}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
@@ -4967,6 +5273,14 @@ and will return to Group State Standby when the situation permits.
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
+							<Name>_00_Main.acs[5].PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.acs[6].PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
 							<Name>_00_Main.mcs[1].PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
@@ -4980,6 +5294,14 @@ and will return to Group State Standby when the situation permits.
 						</Var>
 						<Var>
 							<Name>_00_Main.mcs[4].PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.mcs[5].PlcToNc</Name>
+							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.mcs[6].PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
@@ -5014,6 +5336,14 @@ and will return to Group State Standby when the situation permits.
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
+							<Name>_00_Main.acs[5].NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.acs[6].NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
 							<Name>_00_Main.mcs[1].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
@@ -5027,6 +5357,14 @@ and will return to Group State Standby when the situation permits.
 						</Var>
 						<Var>
 							<Name>_00_Main.mcs[4].NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.mcs[5].NcToPlc</Name>
+							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.mcs[6].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
@@ -5253,36 +5591,6 @@ and will return to Group State Standby when the situation permits.
 							</OwnerB>
 							<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS 6">
 								<Link VarA="_00_Main.io_C.PlcToNc" TypeA="MC.PLCTONC_AXIS_REF" InOutA="1" GuidA="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" VarB="Inputs^FromPlc" RestoreInfo="ANotFound"/>
-							</OwnerB>
-						</OwnerA>
-					</UnrestoredVarLinks>
-					<UnrestoredVarLinks ImportTime="2024-07-28T16:53:19">
-						<OwnerA Name="InputDst" Prefix="TIPC^Main^Main Instance" Type="1">
-							<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 5">
-								<Link VarA="_00_Main.acs[5].NcToPlc" TypeA="MC.NCTOPLC_AXIS_REF" InOutA="0" GuidA="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" VarB="Outputs^ToPlc" RestoreInfo="ANotFound"/>
-							</OwnerB>
-							<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 6">
-								<Link VarA="_00_Main.acs[6].NcToPlc" TypeA="MC.NCTOPLC_AXIS_REF" InOutA="0" GuidA="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" VarB="Outputs^ToPlc" RestoreInfo="ANotFound"/>
-							</OwnerB>
-							<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS B">
-								<Link VarA="_00_Main.mcs[5].NcToPlc" TypeA="MC.NCTOPLC_AXIS_REF" InOutA="0" GuidA="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" VarB="Outputs^ToPlc" RestoreInfo="ANotFound"/>
-							</OwnerB>
-							<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS C">
-								<Link VarA="_00_Main.mcs[6].NcToPlc" TypeA="MC.NCTOPLC_AXIS_REF" InOutA="0" GuidA="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" VarB="Outputs^ToPlc" RestoreInfo="ANotFound"/>
-							</OwnerB>
-						</OwnerA>
-						<OwnerA Name="OutputSrc" Prefix="TIPC^Main^Main Instance" Type="2">
-							<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 5">
-								<Link VarA="_00_Main.acs[5].PlcToNc" TypeA="MC.PLCTONC_AXIS_REF" InOutA="1" GuidA="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" VarB="Inputs^FromPlc" RestoreInfo="ANotFound"/>
-							</OwnerB>
-							<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 6">
-								<Link VarA="_00_Main.acs[6].PlcToNc" TypeA="MC.PLCTONC_AXIS_REF" InOutA="1" GuidA="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" VarB="Inputs^FromPlc" RestoreInfo="ANotFound"/>
-							</OwnerB>
-							<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS B">
-								<Link VarA="_00_Main.mcs[5].PlcToNc" TypeA="MC.PLCTONC_AXIS_REF" InOutA="1" GuidA="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" VarB="Inputs^FromPlc" RestoreInfo="ANotFound"/>
-							</OwnerB>
-							<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS C">
-								<Link VarA="_00_Main.mcs[6].PlcToNc" TypeA="MC.PLCTONC_AXIS_REF" InOutA="1" GuidA="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" VarB="Inputs^FromPlc" RestoreInfo="ANotFound"/>
 							</OwnerB>
 						</OwnerA>
 					</UnrestoredVarLinks>
@@ -5630,9 +5938,25 @@ and will return to Group State Standby when the situation permits.
 				<Link VarA="PlcTask Inputs^_00_Main.acs[4].NcToPlc" VarB="Outputs^ToPlc"/>
 				<Link VarA="PlcTask Outputs^_00_Main.acs[4].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
-			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS C">
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 5">
+				<Link VarA="PlcTask Inputs^_00_Main.acs[5].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.acs[5].PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 6">
+				<Link VarA="PlcTask Inputs^_00_Main.acs[6].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.acs[6].PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS A">
 				<Link VarA="PlcTask Inputs^_00_Main.mcs[4].NcToPlc" VarB="Outputs^ToPlc"/>
 				<Link VarA="PlcTask Outputs^_00_Main.mcs[4].PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS B">
+				<Link VarA="PlcTask Inputs^_00_Main.mcs[5].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.mcs[5].PlcToNc" VarB="Inputs^FromPlc"/>
+			</OwnerB>
+			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS C">
+				<Link VarA="PlcTask Inputs^_00_Main.mcs[6].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.mcs[6].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS X">
 				<Link VarA="PlcTask Inputs^_00_Main.mcs[1].NcToPlc" VarB="Outputs^ToPlc"/>

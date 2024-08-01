@@ -3,7 +3,7 @@
   <POU Name="_00_Main" Id="{f495872a-eb99-4e62-a111-ca71535b5152}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM _00_Main
 VAR CONSTANT
-	NumberOfAxes: UINT:=4;
+	NumberOfAxes: UINT:=6;
 END_VAR
 VAR
 	
@@ -42,8 +42,8 @@ VAR
     stKinCalcMultiIn      : ST_KinCalcMultiTrafoIn; 
     stKinCalcMultiOut     : ST_KinCalcMultiTrafoOut; 
 	
-	mcPower: ARRAY[1..NumberOfAxes] OF MC_Power;
-    mcAddAxisToGroup: ARRAY[1..12] OF MC_AddAxisToGroup;
+	mcPower: ARRAY[1..NumberOfAxes*2] OF MC_Power; // 6 ACS and 6 MCS
+    mcAddAxisToGroup: ARRAY[1..NumberOfAxes] OF MC_AddAxisToGroup;
     AddAxesToGroup: BOOL;
 	fbGroupEnable: MC_GroupEnable;
 	fbGroupReadStatus: MC_GroupReadStatus;
@@ -95,6 +95,11 @@ VAR
 	CheckKinStatus: BOOL;
 	CalculateTrafo: BOOL;
 	CalculateMultiTrafo: BOOL;
+	Sequence: INT:=-2;
+	SequenceStart: BOOL;
+	AllAxesEnabled: BOOL;
+	AllAxesAdded: BOOL;
+	bCartesianMode: BOOL;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[
@@ -120,6 +125,65 @@ IF FirstScan THEN
 	END_FOR
 
 END_IF
+
+CASE Sequence OF
+	-2: // reset
+		Sequence := Sequence + 1;
+		
+	-1: // initialize
+		bEnable := FALSE;
+		AddAxesToGroup := FALSE;
+		EnableGroup := FALSE;
+		bCartesianMode := FALSE;
+		ConfigKinGroup := FALSE;
+		Sequence := Sequence + 1;
+		
+	0: // enable all axes
+		IF SequenceStart THEN
+			bEnable := TRUE;
+			Sequence := Sequence + 1;
+		END_IF
+		
+	1: // wait for all axes enabled then add to group
+		AllAxesEnabled := TRUE;
+		FOR _i:=1 TO NumberOfAxes BY 1 DO
+			IF NOT mcPower[_i].Status 
+				OR NOT mcPower[_i + NumberOfAxes].Status THEN
+					AllAxesEnabled := FALSE;
+			END_IF
+		END_FOR
+		IF AllAxesEnabled THEN
+			AddAxesToGroup := TRUE;
+			Sequence := Sequence + 1;
+		END_IF
+		
+	2: // wait for axes to be added to group then enable group
+		AllAxesAdded := TRUE;
+		FOR _i:=1 TO NumberOfAxes BY 1 DO
+			IF NOT mcAddAxisToGroup[_i].Done THEN
+				AllAxesAdded := FALSE;
+			END_IF
+		END_FOR
+		IF AllAxesAdded THEN
+			EnableGroup := TRUE;
+			Sequence := Sequence + 1;
+		END_IF
+		
+	3: // wait for group to be enabled the config kinematics
+		IF fbGroupEnable.Done THEN
+			bCartesianMode := TRUE;
+			ConfigKinGroup := TRUE;
+			Sequence := Sequence + 1;
+		END_IF
+		
+	4: // wait for kinematics to be done
+		IF fbKinConfigGroup.bDone THEN
+			Sequence := Sequence + 1;
+		END_IF
+		
+	5: // done
+	
+END_CASE
 
 //
 fbGroupReadStatus(
@@ -149,20 +213,6 @@ fbGroupSetOvr(
 	ErrorId=> , 
 	ActualVelFactor=> );
 
-(*
-IF F_KinGetChnOperationState (in_stKinToPlc)<> KinStatus_InvalidItfVersion THEN 
-    eKinOperationState := F_KinGetChnOperationState (in_stKinToPlc); 
-ELSE 
-    eKinOperationState := F_KinGetChnOperationState (in_stKinToPlc); 
-END_IF 
-
-// https://infosys.beckhoff.com/content/1033/tf5110-tf5113_tc3_kinematic_transformation/1955942667.html?id=285201448759597051
-nErrId := F_KinGetAcsMcsAxisIds (stAxesConfig, in_stKinToPlc);
-IF nErrId=0 THEN
-    ;(*Axes List is valid*)
-END_IF
-*)
-
 // power
 FOR _i:=1 TO NumberOfAxes BY 1 DO
 	mcPower[_i](
@@ -177,7 +227,7 @@ FOR _i:=1 TO NumberOfAxes BY 1 DO
 		Busy=> , 
 		Error=> , 
 		ErrorID=> );
-	mcPower[_i](
+	mcPower[_i + NumberOfAxes](
 		Axis:= mcs[_i], 
 		Enable:= bEnable, 
 		Enable_Positive:= bEnable, 
@@ -192,39 +242,14 @@ FOR _i:=1 TO NumberOfAxes BY 1 DO
 END_FOR
 
 // add
-(*
-mcAddAxisToGroup[1].IdentInGroup := ACS1;
-mcAddAxisToGroup[2].IdentInGroup := ACS2;
-mcAddAxisToGroup[3].IdentInGroup := ACS3;
-mcAddAxisToGroup[4].IdentInGroup := ACS4;
-mcAddAxisToGroup[5].IdentInGroup := ACS5;
-mcAddAxisToGroup[6].IdentInGroup := ACS6;
-mcAddAxisToGroup[7].IdentInGroup := MCS_X;
-mcAddAxisToGroup[8].IdentInGroup := MCS_Y;
-mcAddAxisToGroup[9].IdentInGroup := MCS_Z;
-mcAddAxisToGroup[10].IdentInGroup := MCS_A1;
-mcAddAxisToGroup[11].IdentInGroup := MCS_B1;
-mcAddAxisToGroup[12].IdentInGroup := MCS_C1;
-*)
-mcAddAxisToGroup[1].IdentInGroup := ACS1;
-mcAddAxisToGroup[2].IdentInGroup := ACS2;
-mcAddAxisToGroup[3].IdentInGroup := ACS3;
-mcAddAxisToGroup[4].IdentInGroup := ACS4;
-mcAddAxisToGroup[5].IdentInGroup := MCS_X;
-mcAddAxisToGroup[6].IdentInGroup := MCS_Y;
-mcAddAxisToGroup[7].IdentInGroup := MCS_Z;
-mcAddAxisToGroup[8].IdentInGroup := MCS_C1;
+mcAddAxisToGroup[1].IdentInGroup := MCS_X;
+mcAddAxisToGroup[2].IdentInGroup := MCS_Y;
+mcAddAxisToGroup[3].IdentInGroup := MCS_Z;
+mcAddAxisToGroup[4].IdentInGroup := ADDAX1;
+mcAddAxisToGroup[5].IdentInGroup := ADDAX2;
+mcAddAxisToGroup[6].IdentInGroup := ADDAX3;
 FOR _i:=1 TO NumberOfAxes BY 1 DO
-    (*mcAddAxisToGroup[_i](
-        AxesGroup:= stGroupRef, 
-        Axis:= acs[_i], 
-        Execute:= AddAxesToGroup, 
-        IdentInGroup:= , 
-        Done=> , 
-        Busy=> , 
-        Error=> , 
-        ErrorId=> );*)
-    mcAddAxisToGroup[_i + 4](
+    mcAddAxisToGroup[_i](
         AxesGroup:= stGroupRef, 
         Axis:= mcs[_i], 
         Execute:= AddAxesToGroup, 
@@ -305,7 +330,7 @@ END_IF
 //
 fbKinConfigGroup(
 	bExecute:= ConfigKinGroup, 
-	bCartesianMode:= , // false acs can be moved directly | true movement happens in cartesian space
+	bCartesianMode:= bCartesianMode, // false acs can be moved directly | true movement happens in cartesian space
 	stAxesList:= stAxesConfig, 
 	stKinRefIn:= in_stKinToPlc, 
 	bBusy=> , 

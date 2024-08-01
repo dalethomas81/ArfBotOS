@@ -11,6 +11,7 @@
 #include <array>
 
 #define M_PI 3.14159265358979323846
+#define DEG_TO_RAD(deg) ((deg) * M_PI / 180.0)
 
 ///////////////////////////////////////////////////////////////////////////////
 // Collection of interfaces implemented by module CSixAxisArticulatedTrafo
@@ -138,80 +139,166 @@ HRESULT CSixAxisArticulatedTrafo::SetObjStateSP()
 
 
 
-///////////// sudo kinematics code written by copilot /////////
-// Define the DH parameters for the robot
-struct DHParameter {
-	double theta; // Joint angle
-	double d;     // Link offset
-	double a;     // Link length
-	double alpha; // Link twist
-};
-// Function to create a transformation matrix from DH parameters
-std::array<std::array<double, 4>, 4> dhToTransformationMatrix(const DHParameter& dh) {
-	double ct = cos(dh.theta);
-	double st = sin(dh.theta);
-	double ca = cos(dh.alpha);
-	double sa = sin(dh.alpha);
 
-	return { {
-		{ct, -st * ca, st * sa, dh.a * ct},
-		{st, ct * ca, -ct * sa, dh.a * st},
-		{0, sa, ca, dh.d},
-		{0, 0, 0, 1}
-	} };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Define a 4x4 matrix
+typedef std::vector<std::vector<double>> Matrix4x4;
+
+// Function to create a transformation matrix using DH parameters
+Matrix4x4 createDHMatrix(double theta, double d, double a, double alpha) {
+	Matrix4x4 T(4, std::vector<double>(4, 0.0));
+
+	T[0][0] = cos(theta);
+	T[0][1] = -sin(theta) * cos(alpha);
+	T[0][2] = sin(theta) * sin(alpha);
+	T[0][3] = a * cos(theta);
+
+	T[1][0] = sin(theta);
+	T[1][1] = cos(theta) * cos(alpha);
+	T[1][2] = -cos(theta) * sin(alpha);
+	T[1][3] = a * sin(theta);
+
+	T[2][0] = 0;
+	T[2][1] = sin(alpha);
+	T[2][2] = cos(alpha);
+	T[2][3] = d;
+
+	T[3][0] = 0;
+	T[3][1] = 0;
+	T[3][2] = 0;
+	T[3][3] = 1;
+
+	return T;
 }
+
 // Function to multiply two 4x4 matrices
-std::array<std::array<double, 4>, 4> multiplyMatrices(const std::array<std::array<double, 4>, 4>& A, const std::array<std::array<double, 4>, 4>& B) {
-	std::array<std::array<double, 4>, 4> result = { 0 };
+Matrix4x4 multiplyMatrices(const Matrix4x4& A, const Matrix4x4& B) {
+	Matrix4x4 C(4, std::vector<double>(4, 0.0));
 
 	for (int i = 0; i < 4; ++i) {
 		for (int j = 0; j < 4; ++j) {
 			for (int k = 0; k < 4; ++k) {
-				result[i][j] += A[i][k] * B[k][j];
+				C[i][j] += A[i][k] * B[k][j];
 			}
 		}
 	}
 
-	return result;
+	return C;
 }
-// Function to compute the forward kinematics
-std::array<double, 3> forwardKinematics(const std::vector<DHParameter>& dhParams) {
-	std::array<std::array<double, 4>, 4> T = { {
-		{1, 0, 0, 0},
-		{0, 1, 0, 0},
-		{0, 0, 1, 0},
-		{0, 0, 0, 1}
-	} };
 
-	for (const auto& dh : dhParams) {
-		T = multiplyMatrices(T, dhToTransformationMatrix(dh));
+// Function to compute forward kinematics
+Matrix4x4 forwardKinematics(const std::vector<double>& jointAngles, const std::vector<std::vector<double>>& dhParameters) {
+	Matrix4x4 T = createDHMatrix(jointAngles[0], dhParameters[0][1], dhParameters[0][2], dhParameters[0][3]);
+
+	for (size_t i = 1; i < jointAngles.size(); ++i) {
+		Matrix4x4 Ti = createDHMatrix(jointAngles[i], dhParameters[i][1], dhParameters[i][2], dhParameters[i][3]);
+		T = multiplyMatrices(T, Ti);
 	}
 
-	return { T[0][3], T[1][3], T[2][3] };
+	return T;
 }
-// Function to compute the inverse kinematics
-std::vector<double> inverseKinematics(const std::array<double, 3>& cartesianCoords, const std::vector<DHParameter>& dhParams) {
+
+// Function to compute inverse kinematics
+std::vector<double> inverseKinematics(const Matrix4x4& desiredPose, const std::vector<std::vector<double>>& dhParameters) {
 	std::vector<double> jointAngles(6, 0.0);
 
-	// Example calculation for the first joint angle (theta1)
-	jointAngles[0] = atan2(cartesianCoords[1], cartesianCoords[0]);
+	// Extract the desired position and orientation from the desiredPose matrix
+	double px = desiredPose[0][3];
+	double py = desiredPose[1][3];
+	double pz = desiredPose[2][3];
 
-	// Additional calculations for other joint angles
-	// This is a simplified example and may not cover all cases
+	// Calculate the wrist center position
+	double d6 = dhParameters[5][1];
+	double wx = px - d6 * desiredPose[0][2];
+	double wy = py - d6 * desiredPose[1][2];
+	double wz = pz - d6 * desiredPose[2][2];
 
-	// Calculate theta2 to theta6
-	// These calculations are highly dependent on the specific robot configuration
-	// and require solving the inverse kinematics equations for each joint
+	// Solve for joint angles 1, 2, and 3
+	jointAngles[0] = atan2(wy, wx);
 
-	// Placeholder calculations for demonstration purposes
-	jointAngles[1] = atan2(cartesianCoords[2], sqrt(cartesianCoords[0] * cartesianCoords[0] + cartesianCoords[1] * cartesianCoords[1]));
-	jointAngles[2] = atan2(cartesianCoords[1], cartesianCoords[0]);
-	jointAngles[3] = atan2(cartesianCoords[2], sqrt(cartesianCoords[0] * cartesianCoords[0] + cartesianCoords[1] * cartesianCoords[1]));
-	jointAngles[4] = atan2(cartesianCoords[1], cartesianCoords[0]);
-	jointAngles[5] = atan2(cartesianCoords[2], sqrt(cartesianCoords[0] * cartesianCoords[0] + cartesianCoords[1] * cartesianCoords[1]));
+	double d1 = dhParameters[0][1];
+	double a2 = dhParameters[1][2];
+	double a3 = dhParameters[2][2];
+	double r = sqrt(wx * wx + wy * wy);
+	double s = wz - d1;
+	double D = (r * r + s * s - a2 * a2 - a3 * a3) / (2 * a2 * a3);
+	jointAngles[2] = atan2(sqrt(1 - D * D), D);
+	jointAngles[1] = atan2(s, r) - atan2(a3 * sin(jointAngles[2]), a2 + a3 * cos(jointAngles[2]));
+
+	// Extract the rotation matrix R06 from the desiredPose matrix
+	Matrix4x4 R06(3, std::vector<double>(3, 0.0));
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			R06[i][j] = desiredPose[i][j];
+		}
+	}
+
+	// Calculate the rotation matrix R03
+	Matrix4x4 T01 = createDHMatrix(jointAngles[0], dhParameters[0][1], dhParameters[0][2], dhParameters[0][3]);
+	Matrix4x4 T12 = createDHMatrix(jointAngles[1], dhParameters[1][1], dhParameters[1][2], dhParameters[1][3]);
+	Matrix4x4 T23 = createDHMatrix(jointAngles[2], dhParameters[2][1], dhParameters[2][2], dhParameters[2][3]);
+	Matrix4x4 T03 = multiplyMatrices(multiplyMatrices(T01, T12), T23);
+
+	Matrix4x4 R03(3, std::vector<double>(3, 0.0));
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			R03[i][j] = T03[i][j];
+		}
+	}
+
+	// Calculate the rotation matrix R36
+	Matrix4x4 R36(3, std::vector<double>(3, 0.0));
+	for (int i = 0; i < 3; ++i) {
+		for (int j = 0; j < 3; ++j) {
+			R36[i][j] = 0.0;
+			for (int k = 0; k < 3; ++k) {
+				R36[i][j] += R03[i][k] * R06[k][j];
+			}
+		}
+	}
+
+	// Calculate joint angles 4, 5, and 6
+	jointAngles[3] = atan2(R36[1][2], R36[0][2]);
+	jointAngles[4] = atan2(sqrt(R36[0][2] * R36[0][2] + R36[1][2] * R36[1][2]), R36[2][2]);
+	jointAngles[5] = atan2(R36[2][1], -R36[2][0]);
 
 	return jointAngles;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -223,7 +310,7 @@ HRESULT CSixAxisArticulatedTrafo::Forward(TcNcTrafoParameter* p)
 	double ACS[6];
 	double MCS[6];
 
-	std::memcpy(ACS, p->i, 5 * sizeof(double));
+	std::memcpy(ACS, p->i, 6 * sizeof(double));
 
 	switch (p->type) {
 	case EcNcTrafoParameter_Invalid:
@@ -235,26 +322,6 @@ HRESULT CSixAxisArticulatedTrafo::Forward(TcNcTrafoParameter* p)
 	case EcNcTrafoParameter_ExtCnc:
 		break;
 	}
-	/*
-		EcNcTrafoParameter	type;
-		ULONG						dim_i;		// dim of input vectors (i, d_i, dd_i)
-		ULONG						dim_o;		// dim of output vectors (o, d_o, dd_o, torque)
-		ULONG						dim_para;	// dim of additional parameter (para)
-
-		const double*			i;				// input values parameter (dim_i)
-		const double*			d_i;		
-		const double*			dd_i;
-
-		double*					o;				// output values parameter (dim_i)
-		double*					d_o;
-		double*					dd_o;
-
-		double*					torque;
-		const double*			para;			// additional parameter (dim_p)
-
-		double					payload;		// weight in kg
-		double					tool_len;	// actual tool length in [mm]
-	*/
 
 
 
@@ -268,22 +335,61 @@ HRESULT CSixAxisArticulatedTrafo::Forward(TcNcTrafoParameter* p)
 		double m_ArmOffsetD2;
 		double m_ArmOffsetD3;
 	*/
-	std::vector<DHParameter> dhParams = {
-		{0, 0.5, 0.25, M_PI / 2},
-		{M_PI / 4, 0, 0.5, 0},
-		{M_PI / 6, 0, 0.3, -M_PI / 2},
-		{M_PI / 3, 0.2, 0, M_PI / 2},
-		{M_PI / 4, 0, 0, -M_PI / 2},
-		{M_PI / 6, 0.1, 0, 0}
+
+
+	/*
+	* Annin Robotics AR4
+	* theta1=0		d1=169.77	a1=64.2		alpha1=90
+	* theta1=90		d2=0		a2=305		alpha2=0
+	* theta1=0		d3=0		a3=0		alpha3=90
+	* theta1=0		d4=222.63	a4=0		alpha4=90
+	* theta1=0		d5=0		a5=0		alpha5=-90
+	* theta1=0		d6=36.25	a6=0		alpha6=0
+	* 
+	DH Parameters 
+		( \theta ): Rotation angle around the z-axis (in radians).
+		( d ): Offset along the previous z-axis (in millimeters).
+		( a ): Length of the common normal (in millimeters).
+		( \alpha ): Angle around the common normal (in radians).
+
+		{"theta1", "d1", "a1", "alpha1"},
+		{"theta2", "d2", "a2", "alpha2"},
+		{"theta3", "d3", "a3", "alpha3"},
+		{"theta4", "d4", "a4", "alpha4"},
+		{"theta5", "d5", "a5", "alpha5"},
+		{"theta6", "d6", "a6", "alpha6"}
+	*/
+
+	// Example DH parameters for a 6-axis robot
+	std::vector<std::vector<double>> dhParameters = {
+		{0,		169.77,		64.2,	M_PI / 2},
+		{0,		0,			305,	0},
+		{0,		0,			0,		M_PI / 2},
+		{0,		222.63,		0,		-M_PI / 2},
+		{0,		0,			0,		M_PI / 2},
+		{0,		36.25,		0,		0}
 	};
 
-	auto cartesianCoords = forwardKinematics(dhParams);
-	/*    
-	std::cout << "Cartesian Coordinates: (" 
-              << cartesianCoords[0] << ", " 
-              << cartesianCoords[1] << ", " 
-              << cartesianCoords[2] << ")" << std::endl;
-	*/
+	// Example joint angles in degrees
+	std::vector<double> jointAnglesDegrees = { ACS[0], ACS[1], ACS[2], ACS[3], ACS[4], ACS[5] };
+
+	// Convert joint angles to radians
+	std::vector<double> jointAnglesRadians;
+	for (double angle : jointAnglesDegrees) {
+		jointAnglesRadians.push_back(DEG_TO_RAD(angle));
+	}
+
+	// Compute forward kinematics
+	Matrix4x4 T = forwardKinematics(jointAnglesRadians, dhParameters);
+
+
+
+
+
+
+
+
+
 
 	MCS[0] = 7.0;
 	MCS[1] = 8.0;
@@ -291,7 +397,7 @@ HRESULT CSixAxisArticulatedTrafo::Forward(TcNcTrafoParameter* p)
 	MCS[3] = 10.0;
 	MCS[4] = 11.0;
 	MCS[5] = 12.0;
-	std::memcpy(p->o, MCS, 5 * sizeof(double));
+	std::memcpy(p->o, MCS, 6 * sizeof(double));
 
 	HRESULT hr = S_OK;
 	return hr;
@@ -302,7 +408,7 @@ HRESULT CSixAxisArticulatedTrafo::Backward(TcNcTrafoParameter* p)
 	double MCS[6];
 	double ACS[6];
 
-	std::memcpy(MCS, p->i, 5 * sizeof(double));
+	std::memcpy(MCS, p->i, 6 * sizeof(double));
 
 	// Example DH parameters for a 6-axis robot
 	/*
@@ -313,27 +419,52 @@ HRESULT CSixAxisArticulatedTrafo::Backward(TcNcTrafoParameter* p)
 		double m_ArmOffsetD2;
 		double m_ArmOffsetD3;
 	*/
-	std::vector<DHParameter> dhParams = {
-		{0, 0.5, 0.25, M_PI / 2},
-		{M_PI / 4, 0, 0.5, 0},
-		{M_PI / 6, 0, 0.3, -M_PI / 2},
-		{M_PI / 3, 0.2, 0, M_PI / 2},
-		{M_PI / 4, 0, 0, -M_PI / 2},
-		{M_PI / 6, 0.1, 0, 0}
+	/*
+		* Annin Robotics AR4
+		* theta1=0		d1=169.77	a1=64.2		alpha1=90
+		* theta1=90		d2=0		a2=305		alpha2=0
+		* theta1=0		d3=0		a3=0		alpha3=90
+		* theta1=0		d4=222.63	a4=0		alpha4=90
+		* theta1=0		d5=0		a5=0		alpha5=-90
+		* theta1=0		d6=36.25	a6=0		alpha6=0
+		*
+	DH Parameters
+		( \theta ): Rotation angle around the z-axis (in radians).
+		( d ): Offset along the previous z-axis (in millimeters).
+		( a ): Length of the common normal (in millimeters).
+		( \alpha ): Angle around the common normal (in radians).
+
+		{"theta1", "d1", "a1", "alpha1"},
+		{"theta2", "d2", "a2", "alpha2"},
+		{"theta3", "d3", "a3", "alpha3"},
+		{"theta4", "d4", "a4", "alpha4"},
+		{"theta5", "d5", "a5", "alpha5"},
+		{"theta6", "d6", "a6", "alpha6"}
+	*/
+	// Example DH parameters for a 6-axis robot
+	std::vector<std::vector<double>> dhParameters = {
+		{0,		169.77,		64.2,	M_PI / 2},
+		{0,		0,			305,	0},
+		{0,		0,			0,		M_PI / 2},
+		{0,		222.63,		0,		-M_PI / 2},
+		{0,		0,			0,		M_PI / 2},
+		{0,		36.25,		0,		0}
 	};
 
-	std::array<double, 3> cartesianCoords;
-	cartesianCoords[0] = 123.45;
-	cartesianCoords[1] = 123.45;
-	cartesianCoords[2] = 123.45;
-	auto jointAngles = inverseKinematics(cartesianCoords, dhParams);
-	/*
-	std::cout << "Joint Angles: ";
-	for (const auto& angle : jointAngles) {
-		std::cout << angle << " ";
-	}
-	std::cout << std::endl;
-	*/
+	// Desired end-effector pose (example values)
+	Matrix4x4 desiredPose = {
+		{DEG_TO_RAD(MCS[3]), 0, 0, MCS[0]},  // Rotation part and x position
+		{0, DEG_TO_RAD(MCS[4]), 0, MCS[1]},  // Rotation part and y position
+		{0, 0, DEG_TO_RAD(MCS[5]), MCS[2]},  // Rotation part and z position
+		{0, 0, 0, 1}     // Homogeneous coordinate
+	};
+
+	// Compute inverse kinematics
+	std::vector<double> jointAngles = inverseKinematics(desiredPose, dhParameters);
+
+
+
+
 
 	ACS[0] = 1.0;
 	ACS[1] = 2.0;
@@ -341,7 +472,7 @@ HRESULT CSixAxisArticulatedTrafo::Backward(TcNcTrafoParameter* p)
 	ACS[3] = 4.0;
 	ACS[4] = 5.0;
 	ACS[5] = 6.0;
-	std::memcpy(p->o, ACS, 5 * sizeof(double));
+	std::memcpy(p->o, ACS, 6 * sizeof(double));
 
 	HRESULT hr = S_OK;
 	return hr;
@@ -355,8 +486,8 @@ HRESULT CSixAxisArticulatedTrafo::TrafoSupported(TcNcTrafoParameter* p, bool fwd
 
 HRESULT CSixAxisArticulatedTrafo::GetDimensions(ULONG* pFwdInput, ULONG* pFwdOutput)
 {
-	*pFwdInput = 4;
-	*pFwdOutput = 4;
+	*pFwdInput = 6;
+	*pFwdOutput = 6;
 
 	HRESULT hr = S_OK;
 	return hr;
