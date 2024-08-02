@@ -3550,6 +3550,7 @@ and will return to Group State Standby when the situation permits.
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -3703,6 +3704,7 @@ and will return to Group State Standby when the situation permits.
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -3856,6 +3858,7 @@ and will return to Group State Standby when the situation permits.
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -4009,6 +4012,7 @@ and will return to Group State Standby when the situation permits.
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -4162,6 +4166,7 @@ and will return to Group State Standby when the situation permits.
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -4315,6 +4320,7 @@ and will return to Group State Standby when the situation permits.
 					<Drive Name="Drive" DrvType="5">
 						<DrvPara>
 							<Analog TorqueSetpointScale="10" ScaleFactorActTorque="0.1"/>
+							<TimeComp TaskDelayCycles="1"/>
 						</DrvPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -5243,7 +5249,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{D28C3181-021D-47F9-05ED-01C56BBACC26}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{26CFEADE-8210-5581-D428-1B918450C1B1}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">

@@ -84,6 +84,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|TwinCAT RT (x64)'">
     <TcSignWindowsSha1>false</TcSignWindowsSha1>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|TwinCAT RT (x64)'">
+    <TcIntrinEnable>false</TcIntrinEnable>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|TwinCAT RT (x86)'">
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|TwinCAT RT (x86)'">
@@ -96,6 +99,7 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Kinematics.cpp" />
     <ClCompile Include="SixAxisArticulatedTrafo.cpp" />
     <ClCompile Include="TcPch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|TwinCAT RT (x86)'">Create</PrecompiledHeader>
@@ -118,6 +122,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Kinematics.h" />
+    <ClInclude Include="Matrix.h" />
     <ClInclude Include="SixAxisArticulatedTrafo.h" />
     <ClInclude Include="TcNcKinematicsInterfaces.h" />
     <ClInclude Include="TcNcKinematicsServices.h" />

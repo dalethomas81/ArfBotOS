@@ -140,6 +140,7 @@ CASE Sequence OF
 		
 	0: // enable all axes
 		IF SequenceStart THEN
+			SequenceStart := FALSE;
 			bEnable := TRUE;
 			Sequence := Sequence + 1;
 		END_IF

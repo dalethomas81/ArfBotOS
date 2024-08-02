@@ -42,6 +42,12 @@
     <ClInclude Include="TcNcKinematicsServices.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Kinematics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TcPch.cpp">
@@ -57,6 +63,9 @@
       <Filter>TwinCAT OS Files</Filter>
     </ClCompile>
     <ClCompile Include="SixAxisArticulatedTrafo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Kinematics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
