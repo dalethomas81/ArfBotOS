@@ -160,8 +160,8 @@ HRESULT CSixAxisArticulatedTrafo::Forward(TcNcTrafoParameter* p)
 
 	// Setup manipulator parameters
 	Manipulator_t<6> man;
-	man.alfa = { M_PI_2, 0, M_PI_2, M_PI_2, -M_PI_2, 0 };
-	man.theta = { 0, DEG_TO_RAD(90), 0, 0, 0, 0 };
+	man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
+	man.theta = { 0, -M_PI_2, M_PI, -M_PI, 0, M_PI };
 	man.r = { m_ArmLengthA1, m_ArmLengthA2, m_ArmLengthA3, 0, 0, 0 };
 	man.d = { m_ArmOffsetD1, 0, m_ArmOffsetD3, m_ArmOffsetD4, 0, m_ArmOffsetD6 };
 
@@ -187,8 +187,8 @@ HRESULT CSixAxisArticulatedTrafo::Backward(TcNcTrafoParameter* p)
 {
 	// Setup manipulator parameters
 	Manipulator_t<6> man;
-	man.alfa = { M_PI_2, 0, M_PI_2, M_PI_2, -M_PI_2, 0 };
-	man.theta = { 0, DEG_TO_RAD(90), 0, 0, 0, 0 };
+	man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
+	man.theta = { 0, -M_PI_2, M_PI, -M_PI, 0, M_PI };
 	man.r = { m_ArmLengthA1, m_ArmLengthA2, m_ArmLengthA3, 0, 0, 0 };
 	man.d = { m_ArmOffsetD1, 0, m_ArmOffsetD3, m_ArmOffsetD4, 0, m_ArmOffsetD6 };
 
