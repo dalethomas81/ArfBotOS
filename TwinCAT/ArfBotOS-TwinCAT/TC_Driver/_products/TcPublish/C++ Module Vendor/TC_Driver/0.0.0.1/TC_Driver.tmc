@@ -98,67 +98,80 @@
       </Interfaces>
       <Parameters>
         <Parameter>
-          <Name>ArmLengthL1</Name>
-          <Comment TxtId=""><![CDATA[Arm length of 1st arm component.]]></Comment>
+          <Name>ArmLengthA1</Name>
+          <Comment TxtId=""><![CDATA[dh parameter a1]]></Comment>
           <BaseType GUID="{18071995-0000-0000-0000-00000000000e}">LREAL</BaseType>
           <Unit><![CDATA[mm]]></Unit>
           <Default>
-            <Value>10</Value>
+            <Value>0</Value>
           </Default>
           <PTCID>#x00000001</PTCID>
           <ContextId>1</ContextId>
         </Parameter>
         <Parameter>
-          <Name>ArmLengthL2</Name>
-          <Comment TxtId=""><![CDATA[Arm length of 2nd arm component.]]></Comment>
+          <Name>ArmLengthA2</Name>
+          <Comment TxtId=""><![CDATA[dh parameter a2]]></Comment>
           <BaseType GUID="{18071995-0000-0000-0000-00000000000e}">LREAL</BaseType>
           <Unit><![CDATA[mm]]></Unit>
           <Default>
-            <Value>10</Value>
+            <Value>0</Value>
           </Default>
           <PTCID>#x00000002</PTCID>
           <ContextId>1</ContextId>
         </Parameter>
         <Parameter>
-          <Name>ArmLengthL3</Name>
-          <Comment TxtId=""><![CDATA[Arm length of 3rd arm component]]></Comment>
+          <Name>ArmLengthA3</Name>
+          <Comment TxtId=""><![CDATA[dh parameter a3]]></Comment>
           <BaseType GUID="{18071995-0000-0000-0000-00000000000e}">LREAL</BaseType>
           <Unit><![CDATA[mm]]></Unit>
           <Default>
-            <Value>10</Value>
+            <Value>0</Value>
           </Default>
           <PTCID>#x00000003</PTCID>
           <ContextId>1</ContextId>
         </Parameter>
         <Parameter>
           <Name>ArmOffsetD1</Name>
-          <Comment TxtId=""><![CDATA[x-offset between 1st and 2nd joint]]></Comment>
+          <Comment TxtId=""><![CDATA[dh parameter d1]]></Comment>
           <BaseType GUID="{18071995-0000-0000-0000-00000000000e}">LREAL</BaseType>
           <Unit><![CDATA[mm]]></Unit>
           <Default>
-            <Value>10</Value>
+            <Value>0</Value>
           </Default>
           <PTCID>#x00000004</PTCID>
           <ContextId>1</ContextId>
         </Parameter>
         <Parameter>
-          <Name>ArmOfffsetD2</Name>
+          <Name>ArmOffsetD3</Name>
+          <Comment TxtId=""><![CDATA[dh parameter d3]]></Comment>
           <BaseType GUID="{18071995-0000-0000-0000-00000000000e}">LREAL</BaseType>
           <Unit><![CDATA[mm]]></Unit>
           <Default>
-            <Value>10</Value>
+            <Value>0</Value>
+          </Default>
+          <PTCID>#x00000006</PTCID>
+          <ContextId>1</ContextId>
+        </Parameter>
+        <Parameter>
+          <Name>ArmOffsetD4</Name>
+          <Comment TxtId=""><![CDATA[dh parameter d4]]></Comment>
+          <BaseType GUID="{18071995-0000-0000-0000-00000000000e}">LREAL</BaseType>
+          <Unit><![CDATA[mm]]></Unit>
+          <Default>
+            <Value>0</Value>
           </Default>
           <PTCID>#x00000005</PTCID>
           <ContextId>1</ContextId>
         </Parameter>
         <Parameter>
-          <Name>ArmOffsetD3</Name>
+          <Name>ArmOffsetD6</Name>
+          <Comment TxtId=""><![CDATA[dh parameter d6]]></Comment>
           <BaseType GUID="{18071995-0000-0000-0000-00000000000e}">LREAL</BaseType>
           <Unit><![CDATA[mm]]></Unit>
           <Default>
-            <Value>10</Value>
+            <Value>0</Value>
           </Default>
-          <PTCID>#x00000006</PTCID>
+          <PTCID>#x00000007</PTCID>
           <ContextId>1</ContextId>
         </Parameter>
       </Parameters>

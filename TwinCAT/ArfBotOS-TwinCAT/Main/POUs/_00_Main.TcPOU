@@ -100,6 +100,10 @@ VAR
 	AllAxesEnabled: BOOL;
 	AllAxesAdded: BOOL;
 	bCartesianMode: BOOL;
+	
+	mcMoveRelative: MC_MoveRelative;
+	MoveDistance: LREAL:=10;
+	
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[
@@ -403,6 +407,24 @@ fbKinCalcMultiTrafo(
 	bDone=> , 
 	bError=> , 
 	nErrorId=> );*)
+
+
+mcMoveRelative(
+	Axis:= mcs[1], 
+	Execute:= , 
+	Distance:= MoveDistance, 
+	Velocity:= 10, 
+	Acceleration:= 100, 
+	Deceleration:= 100, 
+	Jerk:= 100, 
+	BufferMode:= , 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );
 
 {region "utility"}
 	(*GVL.ResetRtrig(CLK:=GVL.Reset);
@@ -843,30 +865,36 @@ fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
 fbMoveLinPrep.Jerk							:= MC_DEFAULT;
 
 //1st node
-aTargetPos[1]				:= 0;
+aTargetPos[1]				:= 300;
 aTargetPos[2]				:= 0;
-aTargetPos[3]				:= 300;
+aTargetPos[3]				:= 415;
 aTargetPos[4]				:= 0;
+aTargetPos[5]				:= 0;
+aTargetPos[6]				:= 0;
 aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
 aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
-fbMoveLinPrep(PathData:= path , Velocity:= 3000, InvokeId:= 10);
+fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 10);
 bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
 
-aTargetPos[1]				:= 700;
-aTargetPos[2]				:= 100;
-aTargetPos[3]				:= 300;
-aTargetPos[4]				:= 90;
-aTransitionParam[1]			:= 200; //blending distance on previous segment (InvokeId=10), defines when to leave line
-aTransitionParam[2]			:= 400; //blending distance on this segment, defines latest positionn to be back  on line of InovkeId=20 
+aTargetPos[1]				:= 310;
+aTargetPos[2]				:= 10;
+aTargetPos[3]				:= 400;
+aTargetPos[4]				:= 0;
+aTargetPos[5]				:= 0;
+aTargetPos[6]				:= 0;
+aTransitionParam[1]			:= 0;//200; //blending distance on previous segment (InvokeId=10), defines when to leave line
+aTransitionParam[2]			:= 0;//2400; //blending distance on this segment, defines latest positionn to be back  on line of InovkeId=20 
 fbMoveLinPrep(PathData:= path , Velocity:= 3000, InvokeId:= 20); 
 bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
 
-aTargetPos[1]				:= 750;
-aTargetPos[2]				:= 150;
-aTargetPos[3]				:= 0;
-aTargetPos[4]				:= 90;
-aTransitionParam[1]			:= 250; 
-aTransitionParam[2]			:= 250;
+aTargetPos[1]				:= 300;
+aTargetPos[2]				:= 0;
+aTargetPos[3]				:= 415;
+aTargetPos[4]				:= 10;
+aTargetPos[5]				:= 10;
+aTargetPos[6]				:= 10;
+aTransitionParam[1]			:= 0;//2250; 
+aTransitionParam[2]			:= 0;//2250;
 fbMoveLinPrep(PathData:= path , Velocity:= 3000, InvokeId:= 30);
 bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;]]></ST>
       </Implementation>
