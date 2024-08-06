@@ -2,33 +2,18 @@
 <TcLicenseInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2011/11/TcLicenseInfo">
 	<LicenseInfo>
 		<SystemId>{872FD770-CEDF-6CB0-9B02-ED904705F248}</SystemId>
-		<IssueTime>2024-07-28T21:41:00</IssueTime>
-		<ExpireTime>2024-08-05T00:00:00</ExpireTime>
-		<LicenseKey>cef0a930082e9cf7163f8fd8d8708efbecb6653c9d8a53f6bac19581e3fb9af8a862e0885e7db6e75e6fef408420279208bc250bc36c47efecd6cd2de14667903f726f68c07155adaa2e0cb4e06596dd82f721cb7f5f405b60070f17c16346c8781ec5c2e4adf6eeba1fe177b311740ec052cf741a1ceff78fe0be349fe59a99357b95a9e242a8e388a30206eccf7fc0dc706c2d4fae27e667ebbf0879233fda020b852747f8a03081136623cb67cd3d7fcbab070ede43b3ef4f2a0093581e6feceaee11810016d96882d6e2568593fc8c642eb845544c2cd49d7340ade7c91de80df6c199b0b3c26083ee20f3be43e48c296814958a4edc3d42ddba37531078</LicenseKey>
-		<License>
-			<LicenseId>{BF78CFC7-2E63-42C3-8C07-BB6C346BFB8B}</LicenseId>
-			<Name>TC3 NC PTP Axes Pack 25</Name>
-			<OrderNo>TF5010</OrderNo>
-		</License>
-		<License>
-			<LicenseId>{1C844D20-6568-4164-87F8-B6791D563CA7}</LicenseId>
-			<Name>TC3 Kinematic Transformation L4</Name>
-			<OrderNo>TF5113</OrderNo>
-		</License>
-		<License>
-			<LicenseId>{C0BF0BC1-CBED-4D55-86DC-0706BF289DCE}</LicenseId>
-			<Name>TC3 Kinematic Transformation L1</Name>
-			<OrderNo>TF5110</OrderNo>
-		</License>
+		<IssueTime>2024-08-05T06:24:00</IssueTime>
+		<ExpireTime>2024-08-13T00:00:00</ExpireTime>
+		<LicenseKey>4e2101155467a6972836afaff3f42cfd4aabdea8c3618f242d1d8f4ba1193cb032ab9f89b21fb7354dcd2aab285ca0db65555b16a65daf919ae18feb3ee5dd1a224b2e359ee12d49935e7693fbd784bc7348a5fd6d8332e1e1b08d9dd4f04e46c836dbb9194dc7b84ca812038eaf8a044043156c49bbdea155d46c6e5f722db57a6ac2954b6fed4a907995e1fb2b7b94c1d8fbe24e3d0d543ff4f1d5ca07a64d59a64c0da566901179af3476e4371c7101bdb08bade31b7d689c2ad2d97280f98fdeac0eeaf6be51c2b260424e84de9fd615a2bcbeea5b08d551bfee7130fc19a1546dba00b3c0c00f4ce8f3b33816dd6b52b4fa7583682284dce882121def91</LicenseKey>
 		<License>
 			<LicenseId>{4C256767-E6E6-4AF5-BD68-9F7ABAD0C200}</LicenseId>
 			<Name>TC3 ADS</Name>
 			<OrderNo>TC1000</OrderNo>
 		</License>
 		<License>
-			<LicenseId>{A19036CF-A53B-4E3A-99FF-023EF5C4798B}</LicenseId>
-			<Name>TC3 NC PTP Axis</Name>
-			<Instances>25</Instances>
+			<LicenseId>{3FF18E97-7754-401B-93FB-70544DE28A13}</LicenseId>
+			<Name>TC3 IO</Name>
+			<OrderNo>TC1100</OrderNo>
 		</License>
 		<License>
 			<LicenseId>{66689887-CCBD-452C-AC9A-039D997C6E66}</LicenseId>
@@ -36,19 +21,14 @@
 			<OrderNo>TC1200</OrderNo>
 		</License>
 		<License>
-			<LicenseId>{A15FA260-08A3-4DCD-93E9-5F22F7D234ED}</LicenseId>
-			<Name>TC3 Motion Pick-and-Place</Name>
-			<OrderNo>TF5420</OrderNo>
-		</License>
-		<License>
 			<LicenseId>{304D006A-8299-4560-AB79-438534B50288}</LicenseId>
 			<Name>TC3 C++</Name>
 			<OrderNo>TC1300</OrderNo>
 		</License>
 		<License>
-			<LicenseId>{C13CAEC7-1F41-4491-935E-FF6254005C74}</LicenseId>
-			<Name>TC3 Physics Base</Name>
-			<OrderNo>TF5440</OrderNo>
+			<LicenseId>{A19036CF-A53B-4E3A-99FF-023EF5C4798B}</LicenseId>
+			<Name>TC3 NC PTP Axis</Name>
+			<Instances>25</Instances>
 		</License>
 		<License>
 			<LicenseId>{520DE751-9DB6-47CB-8240-BD5C466E7E64}</LicenseId>
@@ -61,19 +41,24 @@
 			<OrderNo>TF5100</OrderNo>
 		</License>
 		<License>
-			<LicenseId>{EDABAF2B-31BD-44EA-812D-3BEA277A1355}</LicenseId>
-			<Name>TC3 Kinematic Transformation L3</Name>
-			<OrderNo>TF5112</OrderNo>
+			<LicenseId>{C13CAEC7-1F41-4491-935E-FF6254005C74}</LicenseId>
+			<Name>TC3 Physics Base</Name>
+			<OrderNo>TF5440</OrderNo>
 		</License>
 		<License>
-			<LicenseId>{B56E7280-5DD4-4AB8-8075-075DD69C1C3D}</LicenseId>
-			<Name>TC3 Kinematic Transformation L2</Name>
-			<OrderNo>TF5111</OrderNo>
+			<LicenseId>{A15FA260-08A3-4DCD-93E9-5F22F7D234ED}</LicenseId>
+			<Name>TC3 Motion Pick-and-Place</Name>
+			<OrderNo>TF5420</OrderNo>
 		</License>
 		<License>
-			<LicenseId>{3FF18E97-7754-401B-93FB-70544DE28A13}</LicenseId>
-			<Name>TC3 IO</Name>
-			<OrderNo>TC1100</OrderNo>
+			<LicenseId>{C0BF0BC1-CBED-4D55-86DC-0706BF289DCE}</LicenseId>
+			<Name>TC3 Kinematic Transformation L1</Name>
+			<OrderNo>TF5110</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{BF78CFC7-2E63-42C3-8C07-BB6C346BFB8B}</LicenseId>
+			<Name>TC3 NC PTP Axes Pack 25</Name>
+			<OrderNo>TF5010</OrderNo>
 		</License>
 	</LicenseInfo>
 </TcLicenseInfo>

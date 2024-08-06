@@ -95,7 +95,7 @@ VAR
 	CheckKinStatus: BOOL;
 	CalculateTrafo: BOOL;
 	CalculateMultiTrafo: BOOL;
-	Sequence: INT:=-2;
+	Sequence: INT:=0;
 	SequenceStart: BOOL;
 	AllAxesEnabled: BOOL;
 	AllAxesAdded: BOOL;
@@ -104,6 +104,9 @@ VAR
 	mcMoveRelative: MC_MoveRelative;
 	MoveDistance: LREAL:=10;
 	
+	fbKinPresetRotation: FB_KinPresetRotation;
+	PresetRotation: BOOL;
+	Rotation: ARRAY[1..3] OF LREAL;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[
@@ -131,25 +134,41 @@ IF FirstScan THEN
 END_IF
 
 CASE Sequence OF
-	-2: // reset
+	-4: // reset group
+		ResetGroup := TRUE;
 		Sequence := Sequence + 1;
+	
+	-3: // wait for group to be reset then remove axes from group
+		IF fbGroupReset.Done THEN
+			UngroupAxes := TRUE;
+			Sequence := Sequence + 1;
+		END_IF
+		
+	-2: // wait for axes to be removed then init
+		IF fbUngroupAxes.Done THEN
+			Sequence := Sequence + 1;
+		END_IF
 		
 	-1: // initialize
+		ResetGroup := FALSE;
+		UngroupAxes := FALSE;
 		bEnable := FALSE;
-		AddAxesToGroup := FALSE;
-		EnableGroup := FALSE;
 		bCartesianMode := FALSE;
 		ConfigKinGroup := FALSE;
+		AddAxesToGroup := FALSE;
+		EnableGroup := FALSE;
+		AddPath := FALSE;
+		MoveGroup := FALSE;
 		Sequence := Sequence + 1;
 		
-	0: // enable all axes
+	0: // idle
 		IF SequenceStart THEN
 			SequenceStart := FALSE;
 			bEnable := TRUE;
 			Sequence := Sequence + 1;
 		END_IF
 		
-	1: // wait for all axes enabled then add to group
+	1: // wait for all axes enabled then config kinematics
 		AllAxesEnabled := TRUE;
 		FOR _i:=1 TO NumberOfAxes BY 1 DO
 			IF NOT mcPower[_i].Status 
@@ -158,11 +177,17 @@ CASE Sequence OF
 			END_IF
 		END_FOR
 		IF AllAxesEnabled THEN
-			AddAxesToGroup := TRUE;
+			bCartesianMode := TRUE;
+			ConfigKinGroup := TRUE;
 			Sequence := Sequence + 1;
 		END_IF
 		
-	2: // wait for axes to be added to group then enable group
+	2: // wait for kinematics to be done then add axes to group
+		IF fbKinConfigGroup.bDone THEN
+			AddAxesToGroup := TRUE;
+			Sequence := Sequence + 1;
+		END_IF
+	3: // wait for all axes to be added to group then enable group
 		AllAxesAdded := TRUE;
 		FOR _i:=1 TO NumberOfAxes BY 1 DO
 			IF NOT mcAddAxisToGroup[_i].Done THEN
@@ -174,19 +199,22 @@ CASE Sequence OF
 			Sequence := Sequence + 1;
 		END_IF
 		
-	3: // wait for group to be enabled the config kinematics
+	4: // wait for group to be enabled then add paths
 		IF fbGroupEnable.Done THEN
-			bCartesianMode := TRUE;
-			ConfigKinGroup := TRUE;
+			AddPath := TRUE;
 			Sequence := Sequence + 1;
 		END_IF
 		
-	4: // wait for kinematics to be done
-		IF fbKinConfigGroup.bDone THEN
+	5: // wait for group to be in standby then move group
+		IF fbGroupReadStatus.GroupStandby THEN
+			MoveGroup := TRUE;
 			Sequence := Sequence + 1;
 		END_IF
 		
-	5: // done
+	6: // wait for group to be done moving then go to init
+		IF fbMovePath.Done THEN
+			Sequence := -1;
+		END_IF
 	
 END_CASE
 
@@ -330,9 +358,15 @@ ELSE
     //nNextState := 0;
 END_IF
 
-
-
 //
+fbKinPresetRotation(
+	bExecute:= PresetRotation, 
+	oidTrafo:= 16#01010040, 
+	stRotation:= Rotation, 
+	bBusy=> , 
+	bDone=> , 
+	bError=> , 
+	nErrorId=> );
 fbKinConfigGroup(
 	bExecute:= ConfigKinGroup, 
 	bCartesianMode:= bCartesianMode, // false acs can be moved directly | true movement happens in cartesian space
@@ -854,48 +888,48 @@ MoveRelative[5](
         <ST><![CDATA[path.ClearPath();  //Clear nodes that were in path
 
 fbMoveLinPrep.Position						:= ADR(aTargetPos); //pointer to position array
-fbMoveLinPrep.PositionCount 				:= 6; //number of axes in group
+fbMoveLinPrep.PositionCount 				:= NumberOfAxes; //number of axes in group
 fbMoveLinPrep.TransitionParameter			:= ADR (aTransitionParam); //pointer to transition parameter array
 fbMoveLinPrep.TransitionParameterCount		:= 2; //number of transition parameters, has to be set always 2
 fbMoveLinPrep.BufferMode					:= mcBlendingPrevious;
 fbMoveLinPrep.TransitionMode				:= mcTransModeCornerDistanceAdvanced;
 //Set dynamics to default values of the axes
-fbMoveLinPrep.Acceleration					:= MC_DEFAULT;
-fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
-fbMoveLinPrep.Jerk							:= MC_DEFAULT;
+fbMoveLinPrep.Acceleration					:= 200;//MC_DEFAULT;
+fbMoveLinPrep.Deceleration					:= 200;//MC_DEFAULT;
+fbMoveLinPrep.Jerk							:= 100;//MC_DEFAULT;
 
 //1st node
 aTargetPos[1]				:= 300;
 aTargetPos[2]				:= 0;
 aTargetPos[3]				:= 415;
 aTargetPos[4]				:= 0;
-aTargetPos[5]				:= 0;
+aTargetPos[5]				:= 55;
 aTargetPos[6]				:= 0;
 aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
 aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
-fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 10);
+fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 10);
 bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
 
 aTargetPos[1]				:= 310;
 aTargetPos[2]				:= 10;
 aTargetPos[3]				:= 400;
 aTargetPos[4]				:= 0;
-aTargetPos[5]				:= 0;
+aTargetPos[5]				:= 45;
 aTargetPos[6]				:= 0;
 aTransitionParam[1]			:= 0;//200; //blending distance on previous segment (InvokeId=10), defines when to leave line
 aTransitionParam[2]			:= 0;//2400; //blending distance on this segment, defines latest positionn to be back  on line of InovkeId=20 
-fbMoveLinPrep(PathData:= path , Velocity:= 3000, InvokeId:= 20); 
+fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 20); 
 bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
 
 aTargetPos[1]				:= 300;
 aTargetPos[2]				:= 0;
 aTargetPos[3]				:= 415;
-aTargetPos[4]				:= 10;
-aTargetPos[5]				:= 10;
-aTargetPos[6]				:= 10;
+aTargetPos[4]				:= 0;
+aTargetPos[5]				:= 65;
+aTargetPos[6]				:= 0;
 aTransitionParam[1]			:= 0;//2250; 
 aTransitionParam[2]			:= 0;//2250;
-fbMoveLinPrep(PathData:= path , Velocity:= 3000, InvokeId:= 30);
+fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 30);
 bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;]]></ST>
       </Implementation>
     </Action>

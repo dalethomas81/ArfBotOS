@@ -2309,7 +2309,8 @@ and will return to Group State Standby when the situation permits.
 					<Name>ACS 1</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="10" Maximum="90"/>
+						<Dynamic Acceleration="115.385" Deceleration="115.385" Jerk="332.841"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="10" Maximum="40"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
@@ -2448,6 +2449,7 @@ and will return to Group State Standby when the situation permits.
 					</Drive>
 					<Controller Name="Ctrl" CtrType="1">
 						<CtrPara PriorControlFactor="1">
+							<PID PosKp="8"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -2470,7 +2472,8 @@ and will return to Group State Standby when the situation permits.
 					<Name>ACS 2</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="5" Maximum="90"/>
+						<Dynamic Acceleration="112.369" Deceleration="112.369" Jerk="140.299"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="5" Maximum="25"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
@@ -2609,6 +2612,7 @@ and will return to Group State Standby when the situation permits.
 					</Drive>
 					<Controller Name="Ctrl" CtrType="1">
 						<CtrPara PriorControlFactor="1">
+							<PID PosKp="5"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -2770,6 +2774,7 @@ and will return to Group State Standby when the situation permits.
 					</Drive>
 					<Controller Name="Ctrl" CtrType="1">
 						<CtrPara PriorControlFactor="1">
+							<PID PosKp="10"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -2931,6 +2936,7 @@ and will return to Group State Standby when the situation permits.
 					</Drive>
 					<Controller Name="Ctrl" CtrType="1">
 						<CtrPara PriorControlFactor="1">
+							<PID PosKp="10"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -2953,6 +2959,7 @@ and will return to Group State Standby when the situation permits.
 					<Name>ACS 5</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
+						<Dynamic Acceleration="185.78" Deceleration="185.78" Jerk="766.979"/>
 						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="10" Maximum="90"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
@@ -3092,6 +3099,7 @@ and will return to Group State Standby when the situation permits.
 					</Drive>
 					<Controller Name="Ctrl" CtrType="1">
 						<CtrPara PriorControlFactor="1">
+							<PID PosKp="10"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -3253,6 +3261,7 @@ and will return to Group State Standby when the situation permits.
 					</Drive>
 					<Controller Name="Ctrl" CtrType="1">
 						<CtrPara PriorControlFactor="1">
+							<PID PosKp="5"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -3428,7 +3437,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="8" CreateSymbols="true" AxisType="1" GroupId="9">
 					<Name>MCS Y</Name>
 					<AxisPara>
-						<OtherSettings AllowMotionCmdToSlave="true"/>
+						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="1">
 						<Vars VarGrpType="1">
@@ -3582,7 +3591,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="9" CreateSymbols="true" AxisType="1" GroupId="10">
 					<Name>MCS Z</Name>
 					<AxisPara>
-						<OtherSettings AllowMotionCmdToSlave="true"/>
+						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="1">
 						<Vars VarGrpType="1">
@@ -3736,7 +3745,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="10" CreateSymbols="true" AxisType="1" GroupId="11">
 					<Name>MCS A</Name>
 					<AxisPara>
-						<OtherSettings AllowMotionCmdToSlave="true"/>
+						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="1">
 						<Vars VarGrpType="1">
@@ -3890,7 +3899,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="11" CreateSymbols="true" AxisType="1" GroupId="12">
 					<Name>MCS B</Name>
 					<AxisPara>
-						<OtherSettings AllowMotionCmdToSlave="true"/>
+						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="1">
 						<Vars VarGrpType="1">
@@ -4044,7 +4053,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="12" CreateSymbols="true" AxisType="1" GroupId="13">
 					<Name>MCS C</Name>
 					<AxisPara>
-						<OtherSettings AllowMotionCmdToSlave="true"/>
+						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="1">
 						<Vars VarGrpType="1">
@@ -4219,7 +4228,7 @@ and will return to Group State Standby when the situation permits.
 							<Fifo FifoDimension="1" FifoLength="1000" FifoOverrideType="2" FifoOverrideChangeTime="1" TimeUnitFifo="0.01"/>
 							<Kinematic OidKinematicTrafo="#x01010040"/>
 						</Parameter>
-						<Module Id="#x01010040" KeepUnrestoredLinks="2" AutoReloadTmc="true" ClassFactoryId="C++ Module Vendor|TC_Driver|0.0.0.1">
+						<Module Id="#x01010040" KeepUnrestoredLinks="2" ClassFactoryId="C++ Module Vendor|TC_Driver|0.0.0.1">
 							<Name>Group 14_Obj1 (SixAxisArticulatedTrafo)</Name>
 							<TmcDesc GUID="{F0A059DE-A7FB-41E4-ADBB-F976E6E17E7B}" ClassFactoryId="C++ Module Vendor|TC_Driver|0.0.0.1">
 								<Name>SixAxisArticulatedTrafo</Name>
@@ -4597,7 +4606,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{E739B901-1FA9-771D-E46A-5E79B2F6B1F9}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{BBAABB8D-C779-C609-99AB-CD9F532A5EB3}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
