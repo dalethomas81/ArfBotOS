@@ -165,8 +165,23 @@ HRESULT CSixAxisArticulatedTrafo::Forward(TcNcTrafoParameter* p)
 		{
 			// Setup manipulator parameters
 			Manipulator_t<6> man;
-			man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
-			man.theta = { 0, -M_PI_2, M_PI, -M_PI, 0, M_PI };
+
+			// https://docs.duet3d.com/User_manual/Machine_configuration/Configuring_Robot_DH_parameters
+			man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
+			man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
+
+			// Codesys
+			//man.alfa = { M_PI_2, 0, M_PI_2, M_PI_2, -M_PI_2, 0 };
+			//man.theta = { 0, M_PI_2, 0, 0, 0, 0 };
+
+			// AR4
+			//man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
+			//man.theta = { 0, -M_PI_2, M_PI, 0, 0, 0 };
+
+			// TwinCAT "straight up" (not confirmed working correctly)
+			//man.alfa = { 0, -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2 };
+			//man.theta = { 0, 0, 0, 0, 0, 0 };
+
 			man.r = { m_ArmLengthA1, m_ArmLengthA2, m_ArmLengthA3, 0, 0, 0 };
 			man.d = { m_ArmOffsetD1, 0, m_ArmOffsetD3, m_ArmOffsetD4, 0, m_ArmOffsetD6 };
 
@@ -178,9 +193,14 @@ HRESULT CSixAxisArticulatedTrafo::Forward(TcNcTrafoParameter* p)
 			//  output: out - pos value for the calculation of the forward kinematics
 			double ACS[6];
 			std::memcpy(ACS, p->i, 6 * sizeof(double));
-			kin.forwardKinematicsOptimized({ DEG_TO_RAD(ACS[0]), DEG_TO_RAD(ACS[1]), DEG_TO_RAD(ACS[2]),
+			kin.forwardKinematicsOptimized({	DEG_TO_RAD(ACS[0]), DEG_TO_RAD(ACS[1]), DEG_TO_RAD(ACS[2]),
 												DEG_TO_RAD(ACS[3]), DEG_TO_RAD(ACS[4]), DEG_TO_RAD(ACS[5]) },
-				pos);
+												pos);
+
+			//
+			pos.wx = RAD_TO_DEG(pos.wx);
+			pos.wy = RAD_TO_DEG(pos.wy);
+			pos.wz = RAD_TO_DEG(pos.wz);
 
 			std::memcpy(p->o, &pos, 6 * sizeof(double));
 		}
@@ -209,8 +229,23 @@ HRESULT CSixAxisArticulatedTrafo::Backward(TcNcTrafoParameter* p)
 		{
 			// Setup manipulator parameters
 			Manipulator_t<6> man;
-			man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
-			man.theta = { 0, -M_PI_2, M_PI, -M_PI, 0, M_PI };
+
+			// https://docs.duet3d.com/User_manual/Machine_configuration/Configuring_Robot_DH_parameters
+			man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
+			man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
+
+			// Codesys
+			//man.alfa = { M_PI_2, 0, M_PI_2, M_PI_2, -M_PI_2, 0 };
+			//man.theta = { 0, M_PI_2, 0, 0, 0, 0 };
+
+			// AR4
+			//man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
+			//man.theta = { 0, -M_PI_2, M_PI, 0, 0, 0 };
+
+			// TwinCAT "straight up" (not confirmed working correctly)
+			//man.alfa = { 0, -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2 };
+			//man.theta = { 0, 0, 0, 0, 0, 0 };
+
 			man.r = { m_ArmLengthA1, m_ArmLengthA2, m_ArmLengthA3, 0, 0, 0 };
 			man.d = { m_ArmOffsetD1, 0, m_ArmOffsetD3, m_ArmOffsetD4, 0, m_ArmOffsetD6 };
 
@@ -220,6 +255,11 @@ HRESULT CSixAxisArticulatedTrafo::Backward(TcNcTrafoParameter* p)
 
 			std::vector<double> out(6);
 			std::memcpy(&pos, p->i, 6 * sizeof(double));
+
+			pos.wx = DEG_TO_RAD(pos.wx);
+			pos.wy = DEG_TO_RAD(pos.wy);
+			pos.wz = DEG_TO_RAD(pos.wz);
+
 			kin.inverseKinematicsOptimized(pos, out);
 
 			double ACS[6];

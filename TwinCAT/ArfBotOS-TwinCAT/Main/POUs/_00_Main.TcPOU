@@ -239,7 +239,7 @@ fbGroupReadStatus(
 fbGroupSetOvr(
 	AxesGroup:= stGroupRef, 
 	Enable:= TRUE, 
-	VelFactor:= 1.0 , 
+	VelFactor:= 0.1 , 
 	Enabled=> , 
 	Busy=> , 
 	Error=> , 
