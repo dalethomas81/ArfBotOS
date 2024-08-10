@@ -166,21 +166,37 @@ HRESULT CSixAxisArticulatedTrafo::Forward(TcNcTrafoParameter* p)
 			// Setup manipulator parameters
 			Manipulator_t<6> man;
 
+			// original
+			//man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
+			//man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
+
 			// https://docs.duet3d.com/User_manual/Machine_configuration/Configuring_Robot_DH_parameters
-			man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
-			man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
+			//man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
+			//man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
+
+			// https://automaticaddison.com/homogeneous-transformation-matrices-using-denavit-hartenberg/
+			//man.alfa = { -M_PI_2, M_PI, M_PI_2, -M_PI_2, M_PI_2, M_PI };
+			//man.theta = { 0, -M_PI_2, M_PI, 0, 0, M_PI };
 
 			// Codesys
 			//man.alfa = { M_PI_2, 0, M_PI_2, M_PI_2, -M_PI_2, 0 };
 			//man.theta = { 0, M_PI_2, 0, 0, 0, 0 };
 
 			// AR4
-			//man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
-			//man.theta = { 0, -M_PI_2, M_PI, 0, 0, 0 };
+			man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
+			man.theta = { 0, -M_PI_2, M_PI, 0, 0, 0 };
 
-			// TwinCAT "straight up" (not confirmed working correctly)
-			//man.alfa = { 0, -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2 };
+			// TwinCAT "straight up"
+			//man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
 			//man.theta = { 0, 0, 0, 0, 0, 0 };
+
+			// TwincCAT "right angle"
+			//man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
+			//man.theta = { 0, M_PI_2, 0, 0, 0, 0 };
+
+			// trial and error
+			//man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
+			//man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
 
 			man.r = { m_ArmLengthA1, m_ArmLengthA2, m_ArmLengthA3, 0, 0, 0 };
 			man.d = { m_ArmOffsetD1, 0, m_ArmOffsetD3, m_ArmOffsetD4, 0, m_ArmOffsetD6 };
@@ -230,21 +246,37 @@ HRESULT CSixAxisArticulatedTrafo::Backward(TcNcTrafoParameter* p)
 			// Setup manipulator parameters
 			Manipulator_t<6> man;
 
+			// original
+			//man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
+			//man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
+
 			// https://docs.duet3d.com/User_manual/Machine_configuration/Configuring_Robot_DH_parameters
-			man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
-			man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
+			//man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
+			//man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
+
+			// https://automaticaddison.com/homogeneous-transformation-matrices-using-denavit-hartenberg/
+			//man.alfa = { -M_PI_2, M_PI, M_PI_2, -M_PI_2, M_PI_2, M_PI };
+			//man.theta = { 0, -M_PI_2, M_PI, 0, 0, M_PI };
 
 			// Codesys
 			//man.alfa = { M_PI_2, 0, M_PI_2, M_PI_2, -M_PI_2, 0 };
 			//man.theta = { 0, M_PI_2, 0, 0, 0, 0 };
 
 			// AR4
-			//man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
-			//man.theta = { 0, -M_PI_2, M_PI, 0, 0, 0 };
+			man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
+			man.theta = { 0, -M_PI_2, M_PI, 0, 0, 0 };
 
-			// TwinCAT "straight up" (not confirmed working correctly)
-			//man.alfa = { 0, -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2 };
+			// TwinCAT "straight up"
+			//man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
 			//man.theta = { 0, 0, 0, 0, 0, 0 };
+
+			// TwincCAT "right angle"
+			//man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
+			//man.theta = { 0, M_PI_2, 0, 0, 0, 0 };
+
+			// trial and error
+			//man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
+			//man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
 
 			man.r = { m_ArmLengthA1, m_ArmLengthA2, m_ArmLengthA3, 0, 0, 0 };
 			man.d = { m_ArmOffsetD1, 0, m_ArmOffsetD3, m_ArmOffsetD4, 0, m_ArmOffsetD6 };
