@@ -53,15 +53,14 @@ public:
 
     // Calculation the effector position by angles - 6DOF
     CalculationResult_t forwardKinematics(const std::vector<calc_t>& t, Position_t& out);
-    CalculationResult_t forwardKinematicsOptimized(const std::vector<calc_t>& t, Position_t& out);
 
     // Calculation the joints angles by effector position
     CalculationResult_t inverseKinematics(const Position_t&, std::vector<calc_t>&);
-    CalculationResult_t inverseKinematicsOptimized(const Position_t&, std::vector<calc_t>&);
 
 private:
     void inverseTransformMatrix(Matrix<calc_t> &m, Matrix<calc_t> &out);
     void transformMatrixToPosition(Matrix<calc_t> &m, Position_t &out);
     void positionToTransformMatrix(const Position_t &pos, Matrix<calc_t> &out);
     void createDHFrameMatrix(calc_t theta, calc_t alfa, calc_t r, calc_t d, Matrix<calc_t> &out);
+    void orthogonalize(Matrix<calc_t>& m);
 };

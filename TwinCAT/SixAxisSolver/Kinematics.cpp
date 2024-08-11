@@ -25,74 +25,6 @@ CalculationResult_t KinematicsCalc::inverseKinematics(const Position_t &Xik, std
 {
     //DEBUG_STR("Inverse kinematics start")
 
-    Position_t Xwf; // work frame
-    Position_t Xft; // tool frame
-
-    Matrix<calc_t> Twf(4, 4); // work frame matrix;
-    positionToTransformMatrix(Xwf, Twf);
-
-    Matrix<calc_t> Ttf(4, 4); // tool frame transf matrix;
-    positionToTransformMatrix(Xft, Ttf);
-
-    Matrix<calc_t> Twt(4, 4); // total transf matrix
-    positionToTransformMatrix(Xik, Twt);
-
-    //DEBUG_STR("Total transform  matrix")
-    //DEBUG_MATRIX(Twt)
-
-    // find T06
-    Matrix<calc_t> inTwf(4, 4), inTtf(4, 4), Tw6(4, 4), T06(4, 4);
-    inverseTransformMatrix(Twf, inTwf);
-    inverseTransformMatrix(Ttf, inTtf);
-    Tw6 = Twt * inTtf;
-    T06 = inTwf * Tw6;
-
-    //DEBUG_STR("T06 matrix")
-    //DEBUG_MATRIX(T06)
-
-    calc_t Xsw[3];
-    Xsw[0] = T06.at(0, 3) - _man.d[5] * T06.at(0, 2);
-    Xsw[1] = T06.at(1, 3) - _man.d[5] * T06.at(1, 2);
-    Xsw[2] = T06.at(2, 3) - _man.d[5] * T06.at(2, 2);
-
-    // joints variable
-
-    // First joint
-    Jik[0] = atan2(Xsw[1], Xsw[0]) - atan2(_man.d[2], sqrt(Xsw[0] * Xsw[0] + Xsw[1] * Xsw[1] - _man.d[2] * _man.d[2]));
-
-    // Second joint
-    Jik[1] = M_PI / 2.0 - acos((_man.r[1] * _man.r[1] + (Xsw[2] - _man.d[0]) * (Xsw[2] - _man.d[0]) /*1*/ + (sqrt(Xsw[0] * Xsw[0] + Xsw[1] * Xsw[1] - _man.d[2] * _man.d[2]) - _man.r[0]) /*2*/ * (sqrt(Xsw[0] * Xsw[0] + Xsw[1] * Xsw[1] - _man.d[2] * _man.d[2]) - _man.r[0]) /*3*/ - (_man.r[2] * _man.r[2] + _man.d[3] * _man.d[3])) / (2.0 * _man.r[1] * sqrt((Xsw[2] - _man.d[0]) * (Xsw[2] - _man.d[0]) /*4*/ + (sqrt(Xsw[0] * Xsw[0] + Xsw[1] * Xsw[1] - _man.d[2] * _man.d[2]) - _man.r[0]) * (sqrt(Xsw[0] * Xsw[0] + Xsw[1] * Xsw[1] - _man.d[2] * _man.d[2]) - _man.r[0])))) - atan((Xsw[2] - _man.d[0]) / (sqrt(Xsw[0] * Xsw[0] + Xsw[1] * Xsw[1] - _man.d[2] * _man.d[2]) - _man.r[0])); // Jik(2)=pi/2-acos((_man.r(2)^2+(Xsw(3)-d(1))^2+(sqrt(Xsw(1)^2+Xsw(2)^2-d(3)^2)-r(1))^2-(r(3)^2+d(4)^2))/(2*r(2)*sqrt((Xsw(3)-d(1))^2+(sqrt(Xsw(1)^2+Xsw(2)^2-d(3)^2)-r(1))^2)))-atan((Xsw(3)-d(1))/(sqrt(Xsw(1)^2+Xsw(2)^2-d(3)^2)-r(1)));
-
-    // third joint
-    Jik[2] = M_PI - acos((_man.r[1] * _man.r[1] + _man.r[2] * _man.r[2] + _man.d[3] * _man.d[3] - (Xsw[2] - _man.d[0]) * (Xsw[2] - _man.d[0]) - (sqrt(Xsw[0] * Xsw[0] + Xsw[1] * Xsw[1] - _man.d[2] * _man.d[2]) - _man.r[0]) * (sqrt(Xsw[0] * Xsw[0] + Xsw[1] * Xsw[1] - _man.d[2] * _man.d[2]) - _man.r[0])) / (2 * _man.r[1] * sqrt(_man.r[2] * _man.r[2] + _man.d[3] * _man.d[3]))) - atan2(_man.d[3], _man.r[2]); // Jik(3)=pi-acos((r(2)^2+r(3)^2+d(4)^2-(Xsw(3)-d(1))^2-(sqrt(Xsw(1)^2+Xsw(2)^2-d(3)^2)-r(1))^2)/(2*r(2)*sqrt(r(3)^2+d(4)^2)))-atan(d(4)/r(3));
-
-    Matrix<calc_t> T01(4, 4), T12(4, 4), T23(4, 4), T02(4, 4), T03(4, 4), inT03(4, 4), T36(4, 4);
-    createDHFrameMatrix(_man.theta[0] + Jik[0], _man.alfa[0], _man.r[0], _man.d[0], T01);
-    createDHFrameMatrix(_man.theta[1] + Jik[1], _man.alfa[1], _man.r[1], _man.d[1], T12);
-    createDHFrameMatrix(_man.theta[2] + Jik[2], _man.alfa[2], _man.r[2], _man.d[2], T23);
-    T02 = T01 * T12;
-    T03 = T02 * T23;
-    //DEBUG_STR("T03 matrix")
-    //DEBUG_MATRIX(T03)
-
-    inverseTransformMatrix(T03, inT03);
-    T36 = inT03 * T06;
-    //DEBUG_STR("T36 matrix")
-    //DEBUG_MATRIX(T36)
-
-    Jik[3] = atan2(-T36.at(1, 2), -T36.at(0, 2));
-    Jik[4] = atan2(sqrt(T36.at(0, 2) * T36.at(0, 2) + T36.at(1, 2) * T36.at(1, 2)), T36.at(2, 2));
-    Jik[5] = atan2(-T36.at(2, 1), T36.at(2, 0));
-
-    //DEBUG_STR("Inverse kinematics end")
-
-    return CalculationResult_t::RESULT_SUCCESSFULL;
-}
-
-CalculationResult_t KinematicsCalc::inverseKinematicsOptimized(const Position_t &Xik, std::vector<calc_t> &Jik)
-{
-    //DEBUG_STR("Inverse kinematics start")
-
     Matrix<calc_t> Twf(4, 4); // work frame matrix;
     positionToTransformMatrix(Position_t(), Twf);
     Matrix<calc_t> Ttf(Twf); // tool frame transform matrix;
@@ -122,14 +54,13 @@ CalculationResult_t KinematicsCalc::inverseKinematicsOptimized(const Position_t 
     // third joint
     Jik[2] = M_PI - acos((_man.r[1] * _man.r[1] + _man.r[2] * _man.r[2] + _man.d[3] * _man.d[3] - (tempPos[2] - _man.d[0]) * (tempPos[2] - _man.d[0]) - (sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _man.d[2] * _man.d[2]) - _man.r[0]) * (sqrt(tempPos[0] * tempPos[0] + tempPos[1] * tempPos[1] - _man.d[2] * _man.d[2]) - _man.r[0])) / (2 * _man.r[1] * sqrt(_man.r[2] * _man.r[2] + _man.d[3] * _man.d[3]))) - atan2(_man.d[3], _man.r[2]); // Jik(3)=pi-acos((r(2)^2+r(3)^2+d(4)^2-(tempPos(3)-d(1))^2-(sqrt(tempPos(1)^2+tempPos(2)^2-d(3)^2)-r(1))^2)/(2*r(2)*sqrt(r(3)^2+d(4)^2)))-atan(d(4)/r(3));
 
-    // Calculate T36 transoform matrix
-    Matrix<calc_t> t_n_to_n1(4, 4), t_n1_to_n2(4, 4), invT03(4, 4);
+    // Calculate T36 transform matrix
+    Matrix<calc_t> t_n_to_n1(4, 4), t_n1_to_n2(4, 4), t_n2_to_n3(4, 4), invT03(4, 4);
     // T03 = T01 * T12 * T23, there t_n_to_n1 = T01, t_n1_to_n2 = T12 and T23(overwriting)
     createDHFrameMatrix(_man.theta[0] + Jik[0], _man.alfa[0], _man.r[0], _man.d[0], t_n_to_n1);
     createDHFrameMatrix(_man.theta[1] + Jik[1], _man.alfa[1], _man.r[1], _man.d[1], t_n1_to_n2);
-    Matrix<calc_t> t03 = t_n_to_n1 * t_n1_to_n2;
-    createDHFrameMatrix(_man.theta[2] + Jik[2], _man.alfa[2], _man.r[2], _man.d[2], t_n1_to_n2);
-    t03 = t03 * t_n1_to_n2;
+    createDHFrameMatrix(_man.theta[2] + Jik[2], _man.alfa[2], _man.r[2], _man.d[2], t_n2_to_n3);
+    Matrix<calc_t> t03 = t_n_to_n1 * t_n1_to_n2 * t_n2_to_n3;
     //DEBUG_STR("T03 matrix")
     //DEBUG_MATRIX(t03)
     inverseTransformMatrix(t03, invT03);
@@ -141,50 +72,20 @@ CalculationResult_t KinematicsCalc::inverseKinematicsOptimized(const Position_t 
     Jik[4] = atan2(sqrt(t36.at(0, 2) * t36.at(0, 2) + t36.at(1, 2) * t36.at(1, 2)), t36.at(2, 2));
     Jik[5] = atan2(-t36.at(2, 1), t36.at(2, 0));
 
+    //
+    double Zero = 0.0001;
+    for (int _i = 0; _i <= 5; _i++) {
+        if (Jik[_i] < Zero && Jik[_i] > -Zero || isnan(Jik[_i])) {
+            Jik[_i] = 0.0;
+        }
+    }
+
     //DEBUG_STR("Inverse kinematics end")
 
     return CalculationResult_t::RESULT_SUCCESSFULL;
 }
 
 CalculationResult_t KinematicsCalc::forwardKinematics(const std::vector<calc_t> &t, Position_t &out)
-{
-    // forward kenematics
-    //  input: t - joints value for the calculation of the forward kinematics
-    //  output: out - pos value for the calculation of the forward kinematics
-
-    Position_t workFrame;
-    Position_t toolFrame;
-
-    Matrix<calc_t> workFrameTransformM(4, 4);
-    Matrix<calc_t> toolFrameTransformM(4, 4);
-
-    positionToTransformMatrix(workFrame, workFrameTransformM);
-    positionToTransformMatrix(toolFrame, toolFrameTransformM);
-
-    // Calculation the transformation matrix - T06 = T01 * T12 * T23 * T34 * T45 * T56
-    Matrix<calc_t> t01(4, 4), t12(4, 4), t23(4, 4), t34(4, 4), t45(4, 4), t56(4, 4);
-    createDHFrameMatrix(_man.theta[0] + t[0], _man.alfa[0], _man.r[0], _man.d[0], t01);
-    createDHFrameMatrix(_man.theta[1] + t[1], _man.alfa[1], _man.r[1], _man.d[1], t12);
-    createDHFrameMatrix(_man.theta[2] + t[2], _man.alfa[2], _man.r[2], _man.d[2], t23);
-    createDHFrameMatrix(_man.theta[3] + t[3], _man.alfa[3], _man.r[3], _man.d[3], t34);
-    createDHFrameMatrix(_man.theta[4] + t[4], _man.alfa[4], _man.r[4], _man.d[4], t45);
-    createDHFrameMatrix(_man.theta[5] + t[5], _man.alfa[5], _man.r[5], _man.d[5], t56);
-
-    Matrix<calc_t> Tw1(4, 4), Tw2(4, 4), Tw3(4, 4), Tw4(4, 4), Tw5(4, 4), Tw6(4, 4), Twt(4, 4);
-    Tw1 = workFrameTransformM * t01;
-    Tw2 = Tw1 * t12;
-    Tw3 = Tw2 * t23;
-    Tw4 = Tw3 * t34;
-    Tw5 = Tw4 * t45;
-    Tw6 = Tw5 * t56;
-    Twt = Tw6 * toolFrameTransformM;
-
-    transformMatrixToPosition(Twt, out);
-
-    return CalculationResult_t::RESULT_SUCCESSFULL;
-}
-
-CalculationResult_t KinematicsCalc::forwardKinematicsOptimized(const std::vector<calc_t> &t, Position_t &out)
 {
     Matrix<calc_t> baseT(4, 4);  // Zero position of the base frame
     Matrix<calc_t> workT(4, 4);  // The resulting homogeneous transformation matrix
@@ -205,31 +106,108 @@ CalculationResult_t KinematicsCalc::forwardKinematicsOptimized(const std::vector
 
     // Get position by calculated matrix
     transformMatrixToPosition(baseT, out);
+
+    //
+    //double Zero = 0.0001;
+    //if (out.x < Zero && out.x > -Zero || isnan(out.x)) {
+    //    out.x = 0.0;
+    //}
+    //if (out.y < Zero && out.y > -Zero || isnan(out.y)) {
+    //    out.y = 0.0;
+    //}
+    //if (out.z < Zero && out.z > -Zero || isnan(out.z)) {
+    //    out.z = 0.0;
+    //}
+    //if (out.wx < Zero && out.wx > -Zero || isnan(out.wx)) {
+    //    out.wx = 0.0;
+    //}
+    //if (out.wy < Zero && out.wy > -Zero || isnan(out.wy)) {
+    //    out.wy = 0.0;
+    //}
+    //if (out.wz < Zero && out.wz > -Zero || isnan(out.wz)) {
+    //    out.wz = 0.0;
+    //}
+
     return CalculationResult_t::RESULT_SUCCESSFULL;
+}
+
+void KinematicsCalc::orthogonalize(Matrix<calc_t> &m) {
+    // Gram-Schmidt process to orthogonalize the rotation part
+    for (int i = 0; i < 3; ++i) {
+        // Normalize the i-th column
+        double norm = 0.0;
+        for (int j = 0; j < 3; ++j) {
+            norm += m.at(j, i) * m.at(j, i);
+        }
+        norm = sqrt(norm);
+        for (int j = 0; j < 3; ++j) {
+            m.at(j, i) /= norm;
+        }
+
+        // Orthogonalize the remaining columns
+        for (int k = i + 1; k < 3; ++k) {
+            double dot_product = 0.0;
+            for (int j = 0; j < 3; ++j) {
+                dot_product += m.at(j, i) * m.at(j, k);
+            }
+            for (int j = 0; j < 3; ++j) {
+                m.at(j, k) -= dot_product * m.at(j, i);
+            }
+        }
+    }
 }
 
 void KinematicsCalc::inverseTransformMatrix(Matrix<calc_t> &m, Matrix<calc_t> &out)
 {
+    // Orthogonalize the rotation part
+    orthogonalize(m);
+
+    // Transpose the rotation part
     out.at(0, 0) = m.at(0, 0);
     out.at(0, 1) = m.at(1, 0);
     out.at(0, 2) = m.at(2, 0);
-    out.at(0, 3) = -m.at(0, 0) * m.at(0, 3) - m.at(1, 0) * m.at(1, 3) - m.at(2, 0) * m.at(2, 3);
-
     out.at(1, 0) = m.at(0, 1);
     out.at(1, 1) = m.at(1, 1);
     out.at(1, 2) = m.at(2, 1);
-    out.at(1, 3) = -m.at(0, 1) * m.at(0, 3) - m.at(1, 1) * m.at(1, 3) - m.at(2, 1) * m.at(2, 3);
-
     out.at(2, 0) = m.at(0, 2);
     out.at(2, 1) = m.at(1, 2);
     out.at(2, 2) = m.at(2, 2);
+
+    // Negate the translation part
+    out.at(0, 3) = -m.at(0, 0) * m.at(0, 3) - m.at(1, 0) * m.at(1, 3) - m.at(2, 0) * m.at(2, 3);
+    out.at(1, 3) = -m.at(0, 1) * m.at(0, 3) - m.at(1, 1) * m.at(1, 3) - m.at(2, 1) * m.at(2, 3);
     out.at(2, 3) = -m.at(0, 2) * m.at(0, 3) - m.at(1, 2) * m.at(1, 3) - m.at(2, 2) * m.at(2, 3);
 
+    // Set the homogeneous coordinate
     out.at(3, 0) = 0.0;
     out.at(3, 1) = 0.0;
     out.at(3, 2) = 0.0;
     out.at(3, 3) = 1.0;
 
+
+    // original
+    //out.at(0, 0) = m.at(0, 0);
+    //out.at(0, 1) = m.at(1, 0);
+    //out.at(0, 2) = m.at(2, 0);
+    //out.at(0, 3) = -m.at(0, 0) * m.at(0, 3) - m.at(1, 0) * m.at(1, 3) - m.at(2, 0) * m.at(2, 3);
+
+    //out.at(1, 0) = m.at(0, 1);
+    //out.at(1, 1) = m.at(1, 1);
+    //out.at(1, 2) = m.at(2, 1);
+    //out.at(1, 3) = -m.at(0, 1) * m.at(0, 3) - m.at(1, 1) * m.at(1, 3) - m.at(2, 1) * m.at(2, 3);
+
+    //out.at(2, 0) = m.at(0, 2);
+    //out.at(2, 1) = m.at(1, 2);
+    //out.at(2, 2) = m.at(2, 2);
+    //out.at(2, 3) = -m.at(0, 2) * m.at(0, 3) - m.at(1, 2) * m.at(1, 3) - m.at(2, 2) * m.at(2, 3);
+
+    //out.at(3, 0) = 0.0;
+    //out.at(3, 1) = 0.0;
+    //out.at(3, 2) = 0.0;
+    //out.at(3, 3) = 1.0;
+
+
+    // copiloyt
     //// Calculate the determinant of the 3x3 rotation part
     //float det = m.at(0, 0) * (m.at(1, 1) * m.at(2, 2) - m.at(2, 1) * m.at(1, 2)) -
     //    m.at(0, 1) * (m.at(1, 0) * m.at(2, 2) - m.at(2, 0) * m.at(1, 2)) +
@@ -311,19 +289,40 @@ void KinematicsCalc::transformMatrixToPosition(Matrix<calc_t> &m, Position_t &ou
 
 void KinematicsCalc::positionToTransformMatrix(const Position_t &pos, Matrix<calc_t> &out)
 {
-    out.at(0, 0) = cos(pos.wx) * cos(pos.wy) * cos(pos.wz) - sin(pos.wx) * sin(pos.wz);
-    out.at(0, 1) = -cos(pos.wx) * cos(pos.wy) * sin(pos.wz) - sin(pos.wx) * cos(pos.wz);
-    out.at(0, 2) = cos(pos.wx) * sin(pos.wy);
+    // original
+    //out.at(0, 0) = cos(pos.wx) * cos(pos.wy) * cos(pos.wz) - sin(pos.wx) * sin(pos.wz);
+    //out.at(0, 1) = -cos(pos.wx) * cos(pos.wy) * sin(pos.wz) - sin(pos.wx) * cos(pos.wz);
+    //out.at(0, 2) = cos(pos.wx) * sin(pos.wy);
+    //out.at(0, 3) = pos.x;
+
+    //out.at(1, 0) = sin(pos.wx) * cos(pos.wy) * cos(pos.wz) + cos(pos.wx) * sin(pos.wz);
+    //out.at(1, 1) = -sin(pos.wx) * cos(pos.wy) * sin(pos.wz) + cos(pos.wx) * cos(pos.wz);
+    //out.at(1, 2) = sin(pos.wx) * sin(pos.wy);
+    //out.at(1, 3) = pos.y;
+
+    //out.at(2, 0) = -sin(pos.wy) * cos(pos.wz);
+    //out.at(2, 1) = sin(pos.wy) * sin(pos.wz);
+    //out.at(2, 2) = cos(pos.wy);
+    //out.at(2, 3) = pos.z;
+
+    //out.at(3, 0) = 0.0;
+    //out.at(3, 1) = 0.0;
+    //out.at(3, 2) = 0.0;
+    //out.at(3, 3) = 1.0;
+
+    out.at(0, 0) = cos(pos.wy) * cos(pos.wz);
+    out.at(0, 1) = -cos(pos.wx) * sin(pos.wz) + sin(pos.wx) * sin(pos.wy) * cos(pos.wz);
+    out.at(0, 2) = sin(pos.wx) * sin(pos.wz) + cos(pos.wx) * sin(pos.wy) * cos(pos.wz);
     out.at(0, 3) = pos.x;
 
-    out.at(1, 0) = sin(pos.wx) * cos(pos.wy) * cos(pos.wz) + cos(pos.wx) * sin(pos.wz);
-    out.at(1, 1) = -sin(pos.wx) * cos(pos.wy) * sin(pos.wz) + cos(pos.wx) * cos(pos.wz);
-    out.at(1, 2) = sin(pos.wx) * sin(pos.wy);
+    out.at(1, 0) = cos(pos.wy) * sin(pos.wz);
+    out.at(1, 1) = cos(pos.wx) * cos(pos.wz) + sin(pos.wx) * sin(pos.wy) * sin(pos.wz);
+    out.at(1, 2) = -sin(pos.wx) * cos(pos.wz) + cos(pos.wx) * sin(pos.wy) * sin(pos.wz);
     out.at(1, 3) = pos.y;
 
-    out.at(2, 0) = -sin(pos.wy) * cos(pos.wz);
-    out.at(2, 1) = sin(pos.wy) * sin(pos.wz);
-    out.at(2, 2) = cos(pos.wy);
+    out.at(2, 0) = -sin(pos.wy);
+    out.at(2, 1) = sin(pos.wx) * cos(pos.wy);
+    out.at(2, 2) = cos(pos.wx) * cos(pos.wy);
     out.at(2, 3) = pos.z;
 
     out.at(3, 0) = 0.0;
