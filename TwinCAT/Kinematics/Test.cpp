@@ -17,19 +17,42 @@ int main()
     Kinematics kin(N);
     MatrixUtils mat_utils;
 
-    kin.add_joint_axis(0, 0, 1, 4, 0, 0);
-    kin.add_joint_axis(0, 0, 0, 0, 1, 0);
-    kin.add_joint_axis(0, 0, -1, -6, 0, -0.1);
-    kin.add_joint_axis(0, 0, -1, -6, 0, -0.1);
-    kin.add_joint_axis(0, 0, -1, -6, 0, -0.1);
-    kin.add_joint_axis(0, 0, -1, -6, 0, -0.1);
+    double L1 = 64.2;
+    double L2 = 169.77;
+    double L3 = 305;
+    double L4 = 222.63;
+    double L5 = 36.25;
 
-    kin.add_initial_end_effector_pose( -1,  0,  0,  0,
-                                        0,  1,  0,  6,
-                                        0,  0, -1,  2,
+    // calculated
+    //kin.add_joint_axis(0, 0, 1,  0, 0, 0); // axis 1
+    //kin.add_joint_axis(0, 1, 0, L1, 0, L2); // axis 2
+    //kin.add_joint_axis(0, 1, 0, L1, 0, L2+L3); // axis 3
+    //kin.add_joint_axis(0, 0, 1, L1, 0, L2+L3); // axis 4
+    //kin.add_joint_axis(0, 1, 0, L1, 0, L2+L3+L4); // axis 5
+    //kin.add_joint_axis(0, 0, 1, L1, 0, L2+L3+L4); // axis 6
+
+    // trial and error but returned values are inverse
+    //kin.add_joint_axis(0, 0, 1, 0, 0, 0); // axis 1
+    //kin.add_joint_axis(0, 1, 0, 0, 0, -L5-L4-L3); // axis 2
+    //kin.add_joint_axis(0, 1, 0, 0, 0, -L5-L4); // axis 3
+    //kin.add_joint_axis(0, 0, 1, -L1, 0, 0); // axis 4
+    //kin.add_joint_axis(0, 1, 0, 0, 0, -L5); // axis 5
+    //kin.add_joint_axis(0, 0, 1, -L1, 0, 0); // axis 6
+
+    kin.add_joint_axis(0, 0, 1, 0, 0, 0); // axis 1
+    kin.add_joint_axis(0, 1, 0, 0, 0, -L5 - L4 - L3); // axis 2
+    kin.add_joint_axis(0, 1, 0, 0, 0, -L5 - L4); // axis 3
+    kin.add_joint_axis(0, 0, 1, -L1, 0, 0); // axis 4
+    kin.add_joint_axis(0, 1, 0, 0, 0, -L5); // axis 5
+    kin.add_joint_axis(0, 0, 1, -L1, 0, 0); // axis 6
+
+    kin.add_initial_end_effector_pose(  1,  0,  0,  L1,
+                                        0,  1,  0,  0,
+                                        0,  0,  1,  L2+L3+L4+L5,
                                         0,  0,  0,  1);
 
-    double joint_angles_in[N] = { M_PI / 2.0, 3, M_PI };
+    double joint_angles_in[N] = {   DEG_TO_RAD(0.0), DEG_TO_RAD(90.0), DEG_TO_RAD(0.0), 
+                                    DEG_TO_RAD(0.0), DEG_TO_RAD(0.0), DEG_TO_RAD(0.0) };
     double transform[4][4];
 
     kin.forward(joint_angles_in, (double*)transform);
@@ -68,9 +91,10 @@ int main()
     (double*) placeholder for joint angles output
     */
     kin.inverse((double*)transform, (double*)jac, (double*)pinv, (double*)jac_t, 
-                (double*)AA_t, (double*)A_tA, joint_angles_in, 0.01, 0.001, 20, joint_angles_out);
-    mat_utils.print_matrix(joint_angles_in, 1, N/*, "Joint angles"*/);
-    mat_utils.print_matrix(joint_angles_out, 1, N/*, "Joint angles"*/);
+                (double*)AA_t, (double*)A_tA, joint_angles_in, 0.01, 0.001, 20, 
+                joint_angles_out);
+    //mat_utils.print_matrix(joint_angles_in, 1, N/*, "Joint angles"*/);
+    //mat_utils.print_matrix(joint_angles_out, 1, N/*, "Joint angles"*/);
 }
 
 /*
