@@ -101,12 +101,16 @@ VAR
 	AllAxesAdded: BOOL;
 	bCartesianMode: BOOL;
 	
-	mcMoveRelative: MC_MoveRelative;
-	MoveDistance: LREAL:=10;
+	mcMoveRelative: ARRAY[1..NumberOfAxes] OF MC_MoveRelative;
+	MoveDistance: ARRAY[1..NumberOfAxes] OF LREAL:=[0,0,0,0,0,0];
 	
 	fbKinPresetRotation: FB_KinPresetRotation;
 	PresetRotation: BOOL;
 	Rotation: ARRAY[1..3] OF LREAL;
+	SetVelocity: BOOL := TRUE;
+	Velocity: LREAL:=100.0;
+	KinMove: BOOL;
+	ResetSeq: BOOL;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[
@@ -134,31 +138,20 @@ IF FirstScan THEN
 END_IF
 
 CASE Sequence OF
-	-4: // reset group
-		ResetGroup := TRUE;
+	-3: // reset group
+		ResetKinGroup := TRUE;
 		Sequence := Sequence + 1;
 	
-	-3: // wait for group to be reset then remove axes from group
-		IF fbGroupReset.Done THEN
-			UngroupAxes := TRUE;
-			Sequence := Sequence + 1;
-		END_IF
-		
-	-2: // wait for axes to be removed then init
-		IF fbUngroupAxes.Done THEN
+	-2: // wait for group to be reset then init
+		IF fbKinResetGroup.bDone THEN
 			Sequence := Sequence + 1;
 		END_IF
 		
 	-1: // initialize
-		ResetGroup := FALSE;
-		UngroupAxes := FALSE;
+		ResetKinGroup := FALSE;
 		//bEnable := FALSE;
 		bCartesianMode := FALSE;
 		ConfigKinGroup := FALSE;
-		AddAxesToGroup := FALSE;
-		EnableGroup := FALSE;
-		AddPath := FALSE;
-		MoveGroup := FALSE;
 		Sequence := Sequence + 1;
 		
 	0: // idle
@@ -184,67 +177,37 @@ CASE Sequence OF
 		
 	2: // wait for kinematics to be done then add axes to group
 		IF fbKinConfigGroup.bDone THEN
-			AddAxesToGroup := TRUE;
 			Sequence := Sequence + 1;
 		END_IF
-	3: // wait for all axes to be added to group then enable group
-		AllAxesAdded := TRUE;
-		FOR _i:=1 TO NumberOfAxes BY 1 DO
-			IF NOT mcAddAxisToGroup[_i].Done THEN
-				AllAxesAdded := FALSE;
-			END_IF
-		END_FOR
-		IF AllAxesAdded THEN
-			EnableGroup := TRUE;
-			Sequence := Sequence + 1;
-		END_IF
-		
-	4: // wait for group to be enabled then add paths
-		IF fbGroupEnable.Done THEN
-			AddPath := TRUE;
-			Sequence := Sequence + 1;
-		END_IF
-		
-	5: // wait for group to be in standby then move group
-		IF fbGroupReadStatus.GroupStandby THEN
-			MoveGroup := TRUE;
-			Sequence := Sequence + 1;
-		END_IF
-		
-	6: // wait for group to be done moving then go to init
-		IF fbMovePath.Done THEN
-			Sequence := -1;
-		END_IF
+	3: // 
 	
 END_CASE
 
 //
-fbGroupReadStatus(
-	AxesGroup:= stGroupRef, 
-	Enable:= TRUE, 
-	Valid=> , 
-	Busy=> , 
-	GroupMoving=> , 
-	GroupHoming=> , 
-	GroupErrorStop=> , 
-	GroupNotReady=> , 
-	GroupStandby=> , 
-	GroupStopping=> , 
-	GroupDisabled=> , 
-	AllAxesStanding=> , 
-	InPosition=> , 
-	Error=> , 
-	ErrorId=> );
-	
-fbGroupSetOvr(
-	AxesGroup:= stGroupRef, 
-	Enable:= TRUE, 
-	VelFactor:= 0.1 , 
-	Enabled=> , 
-	Busy=> , 
-	Error=> , 
-	ErrorId=> , 
-	ActualVelFactor=> );
+IF ResetSeq THEN
+	ResetSeq := FALSE;
+	Sequence := -3;
+END_IF
+
+// move relative
+FOR _k:= 1 TO NumberOfAxes DO
+	mcMoveRelative[_k](
+		Axis:= mcs[_k], 
+		Execute:= KinMove, 
+		Distance:= MoveDistance[_k], 
+		Velocity:= 20, 
+		Acceleration:= 1000, 
+		Deceleration:= 1000, 
+		Jerk:= 100, 
+		BufferMode:= , 
+		Options:= , 
+		Done=> , 
+		Busy=> , 
+		Active=> , 
+		CommandAborted=> , 
+		Error=> , 
+		ErrorID=> );
+END_FOR
 
 // power
 FOR _i:=1 TO NumberOfAxes BY 1 DO
@@ -274,91 +237,7 @@ FOR _i:=1 TO NumberOfAxes BY 1 DO
 		ErrorID=> );
 END_FOR
 
-// add
-mcAddAxisToGroup[1].IdentInGroup := MCS_X;
-mcAddAxisToGroup[2].IdentInGroup := MCS_Y;
-mcAddAxisToGroup[3].IdentInGroup := MCS_Z;
-mcAddAxisToGroup[4].IdentInGroup := ADDAX1;
-mcAddAxisToGroup[5].IdentInGroup := ADDAX2;
-mcAddAxisToGroup[6].IdentInGroup := ADDAX3;
-FOR _i:=1 TO NumberOfAxes BY 1 DO
-    mcAddAxisToGroup[_i](
-        AxesGroup:= stGroupRef, 
-        Axis:= mcs[_i], 
-        Execute:= AddAxesToGroup, 
-        IdentInGroup:= , 
-        Done=> , 
-        Busy=> , 
-        Error=> , 
-        ErrorId=> );
-END_FOR
-
-// enable
-fbGroupEnable(
-	AxesGroup:= stGroupRef, 
-	Execute:= EnableGroup, 
-	Done=> , 
-	Busy=> , 
-	Error=> , 
-	ErrorId=> );
-    
-//
-IF AddPath THEN
-    AddPath := FALSE;
-    A_AddPaths();
-END_IF
-
-// move
-fbMovePath(
-	AxesGroup:= stGroupRef, 
-	PathData:= path, 
-	Execute:= MoveGroup, 
-	Done=> , 
-	Busy=> , 
-	Active=> , 
-	CommandAborted=> , 
-	Error=> , 
-	ErrorId=> );
-    
-// stop
-fbStop(
-	AxesGroup:= stGroupRef, 
-	Execute:= StopGroup, 
-	Deceleration:= , 
-	Jerk:= MC_IGNORE, 
-	Done=> , 
-	Busy=> , 
-	Active=> , 
-	CommandAborted=> , 
-	Error=> , 
-	ErrorId=> );
-    
-// ungroup
-fbUngroupAxes(
-	AxesGroup:= stGroupRef, 
-	Execute:= UngroupAxes, 
-	Done=> , 
-	Busy=> , 
-	Error=> , 
-	ErrorId=> );
-    
-// reset
-fbGroupReset(
-	AxesGroup:= stGroupRef, 
-	Execute:= ResetGroup, 
-	Done=> , 
-	Busy=> , 
-	Error=> , 
-	ErrorId=> );
-
-// done?
-IF fbGroupReadStatus.GroupDisabled THEN
-    //nNextState := -4;
-ELSE
-    //nNextState := 0;
-END_IF
-
-//
+// kinematics
 fbKinPresetRotation(
 	bExecute:= PresetRotation, 
 	oidTrafo:= 16#01010040, 
@@ -397,9 +276,18 @@ fbKinCheckActualStatus(
 	bError=> , 
 	nErrorId=> );
 
+// reverse motion
+IF KinMove THEN
+	KinMove := FALSE;
+	FOR _k:= 1 TO NumberOfAxes DO
+		MoveDistance[_k] := -MoveDistance[_k];
+	END_FOR
+END_IF
+
 // https://infosys.beckhoff.com/content/1033/tf5110-tf5113_tc3_kinematic_transformation/5737129739.html?id=6958083974342297833
 // apparently we cannot use this for user specific transformations. dammit.
-(*fbKinCalcTrafo(
+(*
+fbKinCalcTrafo(
 	bExecute:= CalculateTrafo, 
 	bForward:= , 
 	oidTrafo:= 16#01010040, // find object id in the General tab of the kinematic group
@@ -411,54 +299,11 @@ fbKinCheckActualStatus(
 	bDone=> , 
 	bError=> , 
 	nErrorId=> );
+*)
+
+
+
 	
-stKinCalcMultiIn.hdr.nColumnsIn := 4;
-stKinCalcMultiIn.hdr.nColumnsOut := 4;
-stKinCalcMultiIn.hdr.nLines := 2;
-stKinCalcMultiIn.hdr.uMetaInfo.eScara := E_KinMetaInfoScara.scaraLeftArm;
-stKinCalcMultiIn.hdr.bGetMetaInfo := TRUE;
-
-// Positions
-stKinCalcMultiIn.fPos[1][1]:=0;
-stKinCalcMultiIn.fPos[1][2]:=90;
-stKinCalcMultiIn.fPos[1][3]:=0;
-stKinCalcMultiIn.fPos[1][4]:=0;
-
-stKinCalcMultiIn.fPos[2][1]:=0;
-stKinCalcMultiIn.fPos[2][2]:=-90;
-stKinCalcMultiIn.fPos[2][3]:=0;
-stKinCalcMultiIn.fPos[2][4]:=0;
-	
-fbKinCalcMultiTrafo(
-	bExecute:= CalculateMultiTrafo, 
-	bForward:= , 
-	oidTrafo:= 16#01010040, // find object id in the General tab of the kinematic group 
- 	pDataIn  := ADR(stKinCalcMultiIn), 
- 	nSizeIn  := SIZEOF(stKinCalcMultiIn), 
- 	pDataOut := ADR(stKinCalcMultiOut), 
- 	nSizeOut := SIZEOF(stKinCalcMultiOut),
-	bBusy=> , 
-	bDone=> , 
-	bError=> , 
-	nErrorId=> );*)
-
-
-mcMoveRelative(
-	Axis:= mcs[1], 
-	Execute:= , 
-	Distance:= MoveDistance, 
-	Velocity:= 10, 
-	Acceleration:= 100, 
-	Deceleration:= 100, 
-	Jerk:= 100, 
-	BufferMode:= , 
-	Options:= , 
-	Done=> , 
-	Busy=> , 
-	Active=> , 
-	CommandAborted=> , 
-	Error=> , 
-	ErrorID=> );
 
 {region "utility"}
 	(*GVL.ResetRtrig(CLK:=GVL.Reset);
