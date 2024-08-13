@@ -45,7 +45,7 @@
     <ClInclude Include="Kinematics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Matrix.h">
+    <ClInclude Include="MatrixUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -66,6 +66,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Kinematics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MatrixUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

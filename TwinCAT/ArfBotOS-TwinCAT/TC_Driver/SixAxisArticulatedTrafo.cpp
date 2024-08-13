@@ -6,14 +6,89 @@
 #include "SixAxisArticulatedTrafo.h"
 #include "TC_DriverVersion.h"
 
-// https://github.com/AndrewPst/6DOF_inverse_kinematics
-// https://github.com/ModySaggaf/Forward-Kinematics-for-6-DoF-Robotic-Arm
-#include "Matrix.h"
-#include "Kinematics.h"
+//#include <cmath>
+//#include <vector>
+//#include <array>
 
-#include <cmath>
-#include <vector>
-#include <array>
+#include "Kinematics.h"
+#include "MatrixUtils.h"
+
+#define N 6
+
+#define DEG_TO_RAD(deg) ((deg) * M_PI / 180.0)
+#define RAD_TO_DEG(radians) ((radians) * (180.0 / M_PI))
+
+#define M_PI       3.14159265358979323846   // pi
+#define M_PI_2     1.57079632679489661923   // pi/2
+
+static double ACS_Old[6];
+
+struct Pose {
+	double position[3];
+	double orientation[3]; // Roll, Pitch, Yaw
+};
+
+Pose extractPose(const double transform[4][4]) {
+	Pose pose;
+
+	// Extract position
+	pose.position[0] = transform[0][3];
+	pose.position[1] = transform[1][3];
+	pose.position[2] = transform[2][3];
+
+	// Extract orientation (roll, pitch, yaw)
+	double sy = sqrt(transform[0][0] * transform[0][0] + transform[1][0] * transform[1][0]);
+
+	bool singular = sy < 1e-6; // If sy is close to zero, singularity is detected
+
+	if (!singular) {
+		pose.orientation[0] = atan2(transform[2][1], transform[2][2]); // Roll
+		pose.orientation[1] = atan2(-transform[2][0], sy);              // Pitch
+		pose.orientation[2] = atan2(transform[1][0], transform[0][0]);  // Yaw
+	}
+	else {
+		pose.orientation[0] = atan2(-transform[1][2], transform[1][1]); // Roll
+		pose.orientation[1] = atan2(-transform[2][0], sy);              // Pitch
+		pose.orientation[2] = 0;                                        // Yaw
+	}
+
+	return pose;
+}
+
+void createTransformMatrix(const Pose& pose, double transform[4][4]) {
+	double roll = pose.orientation[0];
+	double pitch = pose.orientation[1];
+	double yaw = pose.orientation[2];
+
+	// Calculate rotation matrix components
+	double cr = cos(roll);
+	double sr = sin(roll);
+	double cp = cos(pitch);
+	double sp = sin(pitch);
+	double cy = cos(yaw);
+	double sy = sin(yaw);
+
+	transform[0][0] = cy * cp;
+	transform[0][1] = cy * sp * sr - sy * cr;
+	transform[0][2] = cy * sp * cr + sy * sr;
+	transform[0][3] = pose.position[0];
+
+	transform[1][0] = sy * cp;
+	transform[1][1] = sy * sp * sr + cy * cr;
+	transform[1][2] = sy * sp * cr - cy * sr;
+	transform[1][3] = pose.position[1];
+
+	transform[2][0] = -sp;
+	transform[2][1] = cp * sr;
+	transform[2][2] = cp * cr;
+	transform[2][3] = pose.position[2];
+
+	transform[3][0] = 0;
+	transform[3][1] = 0;
+	transform[3][2] = 0;
+	transform[3][3] = 1;
+}
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -163,62 +238,57 @@ HRESULT CSixAxisArticulatedTrafo::Forward(TcNcTrafoParameter* p)
 	{
 		if (p->i && p->o)
 		{
-			// Setup manipulator parameters
-			Manipulator_t<6> man;
 
-			// original
-			//man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
-			//man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
+			Kinematics kin(6);
+			//MatrixUtils mat_utils;
 
-			// https://docs.duet3d.com/User_manual/Machine_configuration/Configuring_Robot_DH_parameters
-			//man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
-			//man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
+			/*
+			{ m_ArmLengthA1, m_ArmLengthA2, m_ArmLengthA3, 0, 0, 0 };
+			{ m_ArmOffsetD1, 0, m_ArmOffsetD3, m_ArmOffsetD4, 0, m_ArmOffsetD6 };
+			*/
+			double L1 = 64.2;
+			double L2 = 169.77;
+			double L3 = 305;
+			double L4 = 222.63;
+			double L5 = 36.25;
 
-			// https://automaticaddison.com/homogeneous-transformation-matrices-using-denavit-hartenberg/
-			//man.alfa = { -M_PI_2, M_PI, M_PI_2, -M_PI_2, M_PI_2, M_PI };
-			//man.theta = { 0, -M_PI_2, M_PI, 0, 0, M_PI };
+			//// screw axis expressed in "s-frame" 
+			kin.add_joint_axis(0, 0, 1, 0, 0, 0); // axis 1
+			kin.add_joint_axis(0, 1, 0, -L2, 0, L1); // axis 2
+			kin.add_joint_axis(0, 1, 0, -L2 - L3, 0, L1); // axis 3
+			kin.add_joint_axis(0, 0, 1, 0, -L1, 0); // axis 4
+			kin.add_joint_axis(0, 1, 0, -L2 - L3 - L4, 0, L1); // axis 5
+			kin.add_joint_axis(0, 0, 1, 0, -L1, 0); // axis 6
 
-			// Codesys
-			//man.alfa = { M_PI_2, 0, M_PI_2, M_PI_2, -M_PI_2, 0 };
-			//man.theta = { 0, M_PI_2, 0, 0, 0, 0 };
-
-			// AR4
-			man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
-			man.theta = { 0, -M_PI_2, M_PI, 0, 0, 0 };
-
-			// TwinCAT "straight up"
-			//man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
-			//man.theta = { 0, 0, 0, 0, 0, 0 };
-
-			// TwincCAT "right angle"
-			//man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
-			//man.theta = { 0, M_PI_2, 0, 0, 0, 0 };
-
-			// trial and error
-			//man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
-			//man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
-
-			man.r = { m_ArmLengthA1, m_ArmLengthA2, m_ArmLengthA3, 0, 0, 0 };
-			man.d = { m_ArmOffsetD1, 0, m_ArmOffsetD3, m_ArmOffsetD4, 0, m_ArmOffsetD6 };
-
-			// init kinematics calculator
-			KinematicsCalc kin(std::move(man));
-			Position_t pos;
-
-			//  input: t - joints value for the calculation of the forward kinematics
-			//  output: out - pos value for the calculation of the forward kinematics
-			double ACS[6];
-			std::memcpy(ACS, p->i, 6 * sizeof(double));
-			kin.forwardKinematicsOptimized({	DEG_TO_RAD(ACS[0]), DEG_TO_RAD(ACS[1]), DEG_TO_RAD(ACS[2]),
-												DEG_TO_RAD(ACS[3]), DEG_TO_RAD(ACS[4]), DEG_TO_RAD(ACS[5]) },
-												pos);
+			kin.add_initial_end_effector_pose(1, 0, 0, L1,
+				0, 1, 0, 0,
+				0, 0, 1, L2 + L3 + L4 + L5,
+				0, 0, 0, 1);
 
 			//
-			pos.wx = RAD_TO_DEG(pos.wx);
-			pos.wy = RAD_TO_DEG(pos.wy);
-			pos.wz = RAD_TO_DEG(pos.wz);
+			double ACS[6];
+			std::memcpy(ACS, p->i, 6 * sizeof(double));
 
-			std::memcpy(p->o, &pos, 6 * sizeof(double));
+			// convert
+			for (int _i = 0; _i <= 5; _i++) {
+				ACS[_i] = DEG_TO_RAD(ACS[_i]);
+			}
+			std::memcpy(ACS_Old, ACS, 6 * sizeof(double));
+
+			double transform[4][4];
+			kin.forward(ACS, (double*)transform);
+			Pose pose = extractPose(transform);
+
+			// convert
+			double MCS[6];
+			for (int _i = 0; _i <= 2; _i++) {
+				MCS[_i] = pose.position[_i];
+			}
+			for (int _i = 3; _i <= 5; _i++) {
+				MCS[_i] = RAD_TO_DEG(pose.orientation[_i-3]);
+			}
+
+			std::memcpy(p->o, &MCS, 6 * sizeof(double));
 		}
 
 		if (p->d_i && p->d_o)
@@ -243,62 +313,65 @@ HRESULT CSixAxisArticulatedTrafo::Backward(TcNcTrafoParameter* p)
 	{
 		if (p->i && p->o)
 		{
-			// Setup manipulator parameters
-			Manipulator_t<6> man;
 
-			// original
-			//man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
-			//man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
+			Kinematics kin(6);
+			//MatrixUtils mat_utils;
 
-			// https://docs.duet3d.com/User_manual/Machine_configuration/Configuring_Robot_DH_parameters
-			//man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
-			//man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
+			/*
+			{ m_ArmLengthA1, m_ArmLengthA2, m_ArmLengthA3, 0, 0, 0 };
+			{ m_ArmOffsetD1, 0, m_ArmOffsetD3, m_ArmOffsetD4, 0, m_ArmOffsetD6 };
+			*/
+			double L1 = 64.2;
+			double L2 = 169.77;
+			double L3 = 305;
+			double L4 = 222.63;
+			double L5 = 36.25;
 
-			// https://automaticaddison.com/homogeneous-transformation-matrices-using-denavit-hartenberg/
-			//man.alfa = { -M_PI_2, M_PI, M_PI_2, -M_PI_2, M_PI_2, M_PI };
-			//man.theta = { 0, -M_PI_2, M_PI, 0, 0, M_PI };
+			//// screw axis expressed in "s-frame" 
+			kin.add_joint_axis(0, 0, 1, 0, 0, 0); // axis 1
+			kin.add_joint_axis(0, 1, 0, -L2, 0, L1); // axis 2
+			kin.add_joint_axis(0, 1, 0, -L2 - L3, 0, L1); // axis 3
+			kin.add_joint_axis(0, 0, 1, 0, -L1, 0); // axis 4
+			kin.add_joint_axis(0, 1, 0, -L2 - L3 - L4, 0, L1); // axis 5
+			kin.add_joint_axis(0, 0, 1, 0, -L1, 0); // axis 6
 
-			// Codesys
-			//man.alfa = { M_PI_2, 0, M_PI_2, M_PI_2, -M_PI_2, 0 };
-			//man.theta = { 0, M_PI_2, 0, 0, 0, 0 };
+			kin.add_initial_end_effector_pose(1, 0, 0, L1,
+				0, 1, 0, 0,
+				0, 0, 1, L2 + L3 + L4 + L5,
+				0, 0, 0, 1);
 
-			// AR4
-			man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
-			man.theta = { 0, -M_PI_2, M_PI, 0, 0, 0 };
+			Pose pose;
+			double transform[4][4];
+			double MCS[6];
+			std::memcpy(&MCS, p->i, 6 * sizeof(double));
 
-			// TwinCAT "straight up"
-			//man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
-			//man.theta = { 0, 0, 0, 0, 0, 0 };
+			// convert
+			for (int _i = 0; _i <= 2; _i++) {
+				pose.position[_i] = MCS[_i];
+			}
+			for (int _i = 3; _i <= 5; _i++) {
+				pose.orientation[_i-3] = DEG_TO_RAD(MCS[_i]);
+			}
+			createTransformMatrix(pose, transform);
 
-			// TwincCAT "right angle"
-			//man.alfa = { -M_PI_2, 0, M_PI_2, -M_PI_2, M_PI_2, 0 };
-			//man.theta = { 0, M_PI_2, 0, 0, 0, 0 };
-
-			// trial and error
-			//man.alfa = { -M_PI_2, 0, -M_PI_2, M_PI_2, -M_PI_2, 0 };
-			//man.theta = { 0, -M_PI_2, 0, 0, 0, 0 };
-
-			man.r = { m_ArmLengthA1, m_ArmLengthA2, m_ArmLengthA3, 0, 0, 0 };
-			man.d = { m_ArmOffsetD1, 0, m_ArmOffsetD3, m_ArmOffsetD4, 0, m_ArmOffsetD6 };
-
-			// init kinematics calculator
-			KinematicsCalc kin(std::move(man));
-			Position_t pos;
-
-			std::vector<double> out(6);
-			std::memcpy(&pos, p->i, 6 * sizeof(double));
-
-			pos.wx = DEG_TO_RAD(pos.wx);
-			pos.wy = DEG_TO_RAD(pos.wy);
-			pos.wz = DEG_TO_RAD(pos.wz);
-
-			kin.inverseKinematicsOptimized(pos, out);
+			double jac[6][N];
+			double jac_t[6][N];
+			double AA_t[6][6];
+			double A_tA[N][N];
+			double pinv[N][6];
 
 			double ACS[6];
+			kin.inverse((double*)transform, (double*)jac, (double*)pinv, (double*)jac_t,
+				(double*)AA_t, (double*)A_tA, ACS_Old, 0.01, 0.001, 20,
+				ACS);
+			std::memcpy(ACS_Old, ACS, 6 * sizeof(double));
+
+			// convert
 			for (int i = 0; i <= 5; i++) {
-				ACS[i] = RAD_TO_DEG(out[i]);
+				ACS[i] = RAD_TO_DEG(ACS[i]);
 			}
 			std::memcpy(p->o, ACS, 6 * sizeof(double));
+
 		}
 
 		if (p->d_i && p->d_o)

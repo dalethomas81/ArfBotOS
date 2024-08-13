@@ -152,7 +152,7 @@ CASE Sequence OF
 	-1: // initialize
 		ResetGroup := FALSE;
 		UngroupAxes := FALSE;
-		bEnable := FALSE;
+		//bEnable := FALSE;
 		bCartesianMode := FALSE;
 		ConfigKinGroup := FALSE;
 		AddAxesToGroup := FALSE;
@@ -894,42 +894,42 @@ fbMoveLinPrep.TransitionParameterCount		:= 2; //number of transition parameters,
 fbMoveLinPrep.BufferMode					:= mcBlendingPrevious;
 fbMoveLinPrep.TransitionMode				:= mcTransModeCornerDistanceAdvanced;
 //Set dynamics to default values of the axes
-fbMoveLinPrep.Acceleration					:= 200;//MC_DEFAULT;
-fbMoveLinPrep.Deceleration					:= 200;//MC_DEFAULT;
-fbMoveLinPrep.Jerk							:= 100;//MC_DEFAULT;
+fbMoveLinPrep.Acceleration					:= MC_DEFAULT;
+fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
+fbMoveLinPrep.Jerk							:= MC_DEFAULT;
 
 //1st node
 aTargetPos[1]				:= 300;
 aTargetPos[2]				:= 0;
 aTargetPos[3]				:= 415;
-aTargetPos[4]				:= 0;
+aTargetPos[4]				:= -180;
 aTargetPos[5]				:= 55;
-aTargetPos[6]				:= 0;
+aTargetPos[6]				:= -180;
 aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
 aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
-fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 10);
+fbMoveLinPrep(PathData:= path , Velocity:= 100, InvokeId:= 10);
 bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
 
 aTargetPos[1]				:= 310;
 aTargetPos[2]				:= 10;
 aTargetPos[3]				:= 400;
-aTargetPos[4]				:= 0;
+aTargetPos[4]				:= -180;
 aTargetPos[5]				:= 45;
-aTargetPos[6]				:= 0;
+aTargetPos[6]				:= -180;
 aTransitionParam[1]			:= 0;//200; //blending distance on previous segment (InvokeId=10), defines when to leave line
 aTransitionParam[2]			:= 0;//2400; //blending distance on this segment, defines latest positionn to be back  on line of InovkeId=20 
-fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 20); 
+fbMoveLinPrep(PathData:= path , Velocity:= 100, InvokeId:= 20); 
 bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
 
 aTargetPos[1]				:= 300;
 aTargetPos[2]				:= 0;
 aTargetPos[3]				:= 415;
-aTargetPos[4]				:= 0;
-aTargetPos[5]				:= 65;
-aTargetPos[6]				:= 0;
+aTargetPos[4]				:= -180;
+aTargetPos[5]				:= 35;
+aTargetPos[6]				:= -180;
 aTransitionParam[1]			:= 0;//2250; 
 aTransitionParam[2]			:= 0;//2250;
-fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 30);
+fbMoveLinPrep(PathData:= path , Velocity:= 100, InvokeId:= 30);
 bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;]]></ST>
       </Implementation>
     </Action>

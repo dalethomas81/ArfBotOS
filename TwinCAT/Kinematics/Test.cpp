@@ -111,8 +111,8 @@ int main()
         // 0,0,0,90,0,0 | x64.2, y0, z733.65, a0, b0, c90
         // 0,0,0,0,90,0 | x100.45, 0, z697.4
         // 0,0,0,0,0,90 | x64.2, y0, z733.65, a0, b0, c90
-        double joint_angles_in[N] = {   DEG_TO_RAD(90.0), DEG_TO_RAD(-10.0), DEG_TO_RAD(100.0),
-                                        DEG_TO_RAD(80.0), DEG_TO_RAD(10.0), DEG_TO_RAD(20.0) };
+        double joint_angles_in[N] = {   DEG_TO_RAD(0.0), DEG_TO_RAD(0.0), DEG_TO_RAD(90.0),
+                                        DEG_TO_RAD(0.0), DEG_TO_RAD(45.0), DEG_TO_RAD(0.0) };
         double transform[4][4];
 
         kin.forward(joint_angles_in, (double*)transform);
@@ -121,12 +121,14 @@ int main()
 
         Pose pose = extractPose(transform);
 
-        //std::cout << "Position: (" << pose.position[0] << ", " << pose.position[1] << ", " << pose.position[2] << ")\n";
-        //std::cout << "Orientation: (Roll: " << RAD_TO_DEG(pose.orientation[0]) 
-        //                        << ", Pitch: " << RAD_TO_DEG(pose.orientation[1]) 
-        //                        << ", Yaw: " << RAD_TO_DEG(pose.orientation[2]) << ")\n";
+        std::cout << "Position: (" << pose.position[0] << ", " << pose.position[1] << ", " << pose.position[2] << ")\n";
+        std::cout << "Orientation: (Roll: " << RAD_TO_DEG(pose.orientation[0]) 
+                                << ", Pitch: " << RAD_TO_DEG(pose.orientation[1]) 
+                                << ", Yaw: " << RAD_TO_DEG(pose.orientation[2]) << ")\n";
 
-
+        //////
+        ////////////////////////
+        //////
 
         createTransformMatrix(pose, transform);
 
@@ -159,8 +161,13 @@ int main()
         (double) maximum iterations for Newton Raphson method
         (double*) placeholder for joint angles output
         */
+        double joint_angles_old[N];;
+        for (int _l = 0; _l <= N; _l++) {
+            joint_angles_old[_l] = joint_angles_in[_l];
+        }
+
         kin.inverse((double*)transform, (double*)jac, (double*)pinv, (double*)jac_t,
-            (double*)AA_t, (double*)A_tA, joint_angles_in, 0.01, 0.001, 20,
+            (double*)AA_t, (double*)A_tA, joint_angles_old, 0.01, 0.001, 20,
             joint_angles_out);
         mat_utils.print_matrix(joint_angles_in, 1, N/*, "Joint angles"*/);
         mat_utils.print_matrix(joint_angles_out, 1, N/*, "Joint angles"*/);

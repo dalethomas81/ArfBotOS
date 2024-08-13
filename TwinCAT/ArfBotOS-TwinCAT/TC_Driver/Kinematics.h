@@ -1,86 +1,27 @@
 #pragma once
 
-//#define __DEBUG__KIN //Output to console the debug data
+#ifndef KINEMATICS_h
+#define KINEMATICS_h
 
-#include "Matrix.h"
+#include "MatrixUtils.h"
 
-//#include <iostream>
-#include <vector>
-//#define _USE_MATH_DEFINES
-#include <math.h>
-
-// need to include these for twincat sdk
-#define M_E        2.71828182845904523536   // e
-#define M_LOG2E    1.44269504088896340736   // log2(e)
-#define M_LOG10E   0.434294481903251827651  // log10(e)
-#define M_LN2      0.693147180559945309417  // ln(2)
-#define M_LN10     2.30258509299404568402   // ln(10)
-#define M_PI       3.14159265358979323846   // pi
-#define M_PI_2     1.57079632679489661923   // pi/2
-#define M_PI_4     0.785398163397448309616  // pi/4
-#define M_1_PI     0.318309886183790671538  // 1/pi
-#define M_2_PI     0.636619772367581343076  // 2/pi
-#define M_2_SQRTPI 1.12837916709551257390   // 2/sqrt(pi)
-#define M_SQRT2    1.41421356237309504880   // sqrt(2)
-#define M_SQRT1_2  0.707106781186547524401  // 1/sqrt(2)
-
-// somthing extra handy
-#define DEG_TO_RAD(deg) ((deg) * M_PI / 180.0)
-#define RAD_TO_DEG(radians) ((radians) * (180.0 / M_PI))
-
-template <int _Dof = 6>
-struct Manipulator_t
-{
-    std::array<double, _Dof> d;
-    std::array<double, _Dof> alfa;
-    std::array<double, _Dof> r;
-    std::array<double, _Dof> theta;
-};
-
-struct Position_t
-{
-    double x {0}, y{0}, z{0};
-    double wx{0}, wy{0}, wz{0};
-};
-
-enum class CalculationResult_t
-{
-    RESULT_ERROR = 0,
-    RESULT_SUCCESSFULL,
-};
-
-#ifdef __DEBUG__KIN
-#define DEBUG_MATRIX(m) m.printMatrix(std::cout);
-#define DEBUG_STR(s) std::cout << s << std::endl;
-#define DEBUG_DH 
-#else
-#define DEBUG_MATRIX(m)
-#define DEBUG_STR(s)
-#endif
-
-class KinematicsCalc
-{
-    using calc_t = double;
+class Kinematics {
 private:
-    static const int DEFAULT_DOF = 6;
-
-    const Manipulator_t<DEFAULT_DOF> &_man;
+    int num_of_joints;
+    int num_of_joints_declared;
+    double joint_screw_axes[6][6];
+    double initial_end_effector_pose[4][4];
+    MatrixUtils mat_utils;
 
 public:
-    explicit KinematicsCalc(const Manipulator_t<> &);
-    explicit KinematicsCalc(Manipulator_t<> &&);
+    Kinematics(int num_of_joints_);
 
-    // Calculation the effector position by angles - 6DOF
-    CalculationResult_t forwardKinematics(const std::vector<calc_t>& t, Position_t& out);
-    CalculationResult_t forwardKinematicsOptimized(const std::vector<calc_t>& t, Position_t& out);
+    void add_joint_axis(double s1, double s2, double s3, double s4, double s5, double s6);
+    void add_initial_end_effector_pose(double m11, double m12, double m13, double m14, double m21, double m22, double m23, double m24, double m31, double m32, double m33, double m34, double m41, double m42, double m43, double m44);
 
-    // Calculation the joints angles by effector position
-    CalculationResult_t inverseKinematics(const Position_t&, std::vector<calc_t>&);
-    CalculationResult_t inverseKinematicsOptimized(const Position_t&, std::vector<calc_t>&);
-
-private:
-    void inverseTransformMatrix(Matrix<calc_t> &m, Matrix<calc_t> &out);
-    void transformMatrixToPosition(Matrix<calc_t> &m, Position_t &out);
-    void positionToTransformMatrix(const Position_t &pos, Matrix<calc_t> &out);
-    void createDHFrameMatrix(calc_t theta, calc_t alfa, calc_t r, calc_t d, Matrix<calc_t> &out);
+    void forward(double* joint_angles, double* transform);
+    void inverse(double* transform, double* jac, double* pinv, double* A_t, double* AA_t, double* A_tA, double* initial_joint_angles, double ew, double ev, double max_iterations, double* joint_angles);
+    void jacobian(double* joint_angles, double* jacobian);
 };
+
+#endif
