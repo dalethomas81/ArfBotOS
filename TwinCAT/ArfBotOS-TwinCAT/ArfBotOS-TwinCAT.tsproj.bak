@@ -4690,7 +4690,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{CD5B692F-159B-9667-B93E-C3189DCA9781}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{28EC433B-17F7-D813-5B80-E6D55AEE9533}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
@@ -4838,6 +4838,7 @@ and will return to Group State Standby when the situation permits.
 		</Plc>
 		<Cpp>
 			<Project GUID="{A2A4C246-A13E-4FCE-B3CA-780D84C150AD}" Name="TC_Driver" PrjFilePath="TC_Driver\TC_Driver.vcxproj" TmcFilePath="TC_Driver\TC_Driver.tmc"/>
+			<Project GUID="{D6FF2494-23F7-45C5-B85B-DEBE3A47BCB4}" Name="Kinematics" PrjFilePath="Kinematics\Kinematics.vcxproj" TmcFilePath="Kinematics\Kinematics.tmc"/>
 		</Cpp>
 		<Io>
 			<Device Id="1" DevType="111" DevFlags="#x0003" AmsPort="28673" AmsNetId="169.254.221.73.2.1" RemoteName="Device 1 (EtherCAT)" InfoImageId="2">

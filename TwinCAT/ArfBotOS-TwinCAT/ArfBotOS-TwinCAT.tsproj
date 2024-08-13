@@ -4838,6 +4838,7 @@ and will return to Group State Standby when the situation permits.
 		</Plc>
 		<Cpp>
 			<Project GUID="{A2A4C246-A13E-4FCE-B3CA-780D84C150AD}" Name="TC_Driver" PrjFilePath="TC_Driver\TC_Driver.vcxproj" TmcFilePath="TC_Driver\TC_Driver.tmc"/>
+			<Project GUID="{CB134D3E-B66B-4BA9-82B1-EE8FF477240D}" Name="SixAxisSolver" PrjFilePath="SixAxisSolver\SixAxisSolver.vcxproj" TmcFilePath="SixAxisSolver\SixAxisSolver.tmc"/>
 		</Cpp>
 		<Io>
 			<Device Id="1" DevType="111" DevFlags="#x0003" AmsPort="28673" AmsNetId="169.254.221.73.2.1" RemoteName="Device 1 (EtherCAT)" InfoImageId="2">

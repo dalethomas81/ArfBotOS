@@ -1,0 +1,48 @@
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+#include "SixAxisSolverVersion.h"
+
+#define RC_MAKE_STR(m) #m
+#define RC_MACRO_AS_STR(m) RC_MAKE_STR(m)
+
+#define RC_FILE_DESCRIPTION "TwinCAT C++ Executable for '" RC_MACRO_AS_STR(TC_CFG_PLTF) "'"
+
+
+
+1 VERSIONINFO
+ FILEVERSION SixAxisSolver_FileVersionMajor, SixAxisSolver_FileVersionMinor, SixAxisSolver_FileVersionBuild, SixAxisSolver_FileVersionRevision
+ PRODUCTVERSION SixAxisSolver_ProductMajor, SixAxisSolver_ProductMinor, SixAxisSolver_ProductBuild, SixAxisSolver_ProductRevision
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", SixAxisSolver_CompanyNameStr
+            VALUE "FileDescription", RC_FILE_DESCRIPTION
+            VALUE "FileVersion", SixAxisSolver_FileVersionRcStr
+            VALUE "InternalName", SixAxisSolver_InternalNameStr
+            VALUE "LegalCopyright", "TODO: Add legal copyright"
+            VALUE "OriginalFilename", SixAxisSolver_InternalNameStr ".sys"
+            VALUE "ProductName", "TODO: Add product name"
+            VALUE "ProductVersion", SixAxisSolver_ProductVersionRcStr
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+/////////////////////////////////////////////////////////////////////////////
