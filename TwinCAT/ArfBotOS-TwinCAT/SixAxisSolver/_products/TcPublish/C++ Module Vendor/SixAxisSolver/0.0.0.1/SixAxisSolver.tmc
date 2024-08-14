@@ -1,0 +1,335 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcModuleClass xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2009/05/TcModuleClass">
+  <Vendor>
+    <Name>C++ Module Vendor</Name>
+  </Vendor>
+  <DataTypes>
+    <DataType>
+      <Name GUID="{05010001-0000-0000-E000-000000000064}" TcBaseType="true">ITcNcTrafo</Name>
+      <BitSize X64="64">32</BitSize>
+      <BaseType GUID="{00000001-0000-0000-E000-000000000064}">ITcUnknown</BaseType>
+      <Method>
+        <Name>Forward</Name>
+        <ReturnType GUID="{18071995-0000-0000-0000-000000000019}">HRESULT</ReturnType>
+        <ReturnBitSize>32</ReturnBitSize>
+        <Parameter>
+          <Name>p</Name>
+          <Type GUID="{082AF37D-C470-42C2-A856-80CD5C30114A}" PointerTo="1">TcNcTrafoParameter</Type>
+          <BitSize X64="64">32</BitSize>
+        </Parameter>
+      </Method>
+      <Method>
+        <Name>Backward</Name>
+        <ReturnType GUID="{18071995-0000-0000-0000-000000000019}">HRESULT</ReturnType>
+        <ReturnBitSize>32</ReturnBitSize>
+        <Parameter>
+          <Name>p</Name>
+          <Type GUID="{082AF37D-C470-42C2-A856-80CD5C30114A}" PointerTo="1">TcNcTrafoParameter</Type>
+          <BitSize X64="64">32</BitSize>
+        </Parameter>
+      </Method>
+      <Method>
+        <Name>TrafoSupported</Name>
+        <ReturnType GUID="{18071995-0000-0000-0000-000000000019}">HRESULT</ReturnType>
+        <ReturnBitSize>32</ReturnBitSize>
+        <Parameter>
+          <Name>p</Name>
+          <Type GUID="{082AF37D-C470-42C2-A856-80CD5C30114A}" PointerTo="1">TcNcTrafoParameter</Type>
+          <BitSize X64="64">32</BitSize>
+        </Parameter>
+        <Parameter>
+          <Name>fwd</Name>
+          <Type GUID="{18071995-0000-0000-0000-000000000030}">BOOL</Type>
+          <BitSize>8</BitSize>
+        </Parameter>
+      </Method>
+      <Method>
+        <Name>GetDimensions</Name>
+        <ReturnType GUID="{18071995-0000-0000-0000-000000000019}">HRESULT</ReturnType>
+        <ReturnBitSize>32</ReturnBitSize>
+        <Parameter>
+          <Name>pFwdInput</Name>
+          <Type GUID="{18071995-0000-0000-0000-000000000008}" PointerTo="1">UDINT</Type>
+          <BitSize X64="64">32</BitSize>
+        </Parameter>
+        <Parameter>
+          <Name>pFwdOutput</Name>
+          <Type GUID="{18071995-0000-0000-0000-000000000008}" PointerTo="1">UDINT</Type>
+          <BitSize X64="64">32</BitSize>
+        </Parameter>
+      </Method>
+    </DataType>
+    <DataType>
+      <Name GUID="{83f23191-1ef8-4889-8012-2e4fde1a687c}">AxisParameter</Name>
+      <SubItem>
+        <Name>XAlignment</Name>
+        <Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+        <Comment TxtId=""><![CDATA[Indicates the alignment of the Z axis of the current axis with that of the X axis of the S Frame. A value of 1 indicates positive aligment. A value of -1 is negative alignment. A value of 0 indicates no alignment.]]></Comment>
+        <Default>
+          <Min>-1</Min>
+          <Max>1</Max>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>YAlignment</Name>
+        <Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+        <Comment TxtId=""><![CDATA[Indicates the alignment of the Z axis of the current axis with that of the Y axis of the S Frame. A value of 1 indicates positive aligment. A value of -1 is negative alignment. A value of 0 indicates no alignment.]]></Comment>
+        <Default>
+          <Min>-1</Min>
+          <Max>1</Max>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>ZAlignment</Name>
+        <Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+        <Comment TxtId=""><![CDATA[Indicates the alignment of the Z axis of the current axis with that of the Z axis of the S Frame. A value of 1 indicates positive aligment. A value of -1 is negative alignment. A value of 0 indicates no alignment.]]></Comment>
+        <Default>
+          <Min>-1</Min>
+          <Max>1</Max>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>XDisplacement</Name>
+        <Type GUID="{18071995-0000-0000-0000-00000000000e}">LREAL</Type>
+        <Comment TxtId=""><![CDATA[Represents the linear displacement caused in the X direction of the S frame by a postive unit rotation of the current axis. This is typically calculated by adding up all the link distances from the current link to the S frame then determining the sign -/+.]]></Comment>
+        <Default>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>YDisplacement</Name>
+        <Type GUID="{18071995-0000-0000-0000-00000000000e}">LREAL</Type>
+        <Comment TxtId=""><![CDATA[Represents the linear displacement caused in the Y direction of the S frame by a postive unit rotation of the current axis. This is typically calculated by adding up all the link distances from the current link to the S frame then determining the sign -/+.]]></Comment>
+        <Default>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>ZDisplacement</Name>
+        <Type GUID="{18071995-0000-0000-0000-00000000000e}">LREAL</Type>
+        <Comment TxtId=""><![CDATA[Represents the linear displacement caused in the Z direction of the S frame by a postive unit rotation of the current axis. This is typically calculated by adding up all the link distances from the current link to the S frame then determining the sign -/+.]]></Comment>
+        <Default>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <Hides>
+        <Hide GUID="{a531993d-59d5-4df5-9ada-cb33edf3c4e3}" />
+        <Hide GUID="{495b2f25-b899-4207-a61a-07865708d776}" />
+      </Hides>
+    </DataType>
+    <DataType>
+      <Name GUID="{3fc08080-b9d8-46d9-a03f-dce5e791704a}">EndEffectorPose</Name>
+      <Comment TxtId=""><![CDATA[Represents a pose of the end effector]]></Comment>
+      <SubItem>
+        <Name>XXAlignment</Name>
+        <Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+        <Comment TxtId=""><![CDATA[Indicates the alignment of the X axis of the current axis with the X axis of the S frame. A value of 1 indicates a positive alignment. A value of -1 indicates a negative alignment. A value of 0 indicates no alignment.]]></Comment>
+        <Default>
+          <Min>-1</Min>
+          <Max>1</Max>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>XYAlignment</Name>
+        <Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+        <Comment TxtId=""><![CDATA[Indicates the alignment of the X axis of the current axis with the Y axis of the S frame. A value of 1 indicates a positive alignment. A value of -1 indicates a negative alignment. A value of 0 indicates no alignment.]]></Comment>
+        <Default>
+          <Min>-1</Min>
+          <Max>1</Max>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>XZAlignment</Name>
+        <Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+        <Comment TxtId=""><![CDATA[Indicates the alignment of the X axis of the current axis with the Z axis of the S frame. A value of 1 indicates a positive alignment. A value of -1 indicates a negative alignment. A value of 0 indicates no alignment.]]></Comment>
+        <Default>
+          <Min>-1</Min>
+          <Max>1</Max>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>YXAlignment</Name>
+        <Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+        <Comment TxtId=""><![CDATA[Indicates the alignment of the Y axis of the current axis with the X axis of the S frame. A value of 1 indicates a positive alignment. A value of -1 indicates a negative alignment. A value of 0 indicates no alignment.]]></Comment>
+        <Default>
+          <Min>-1</Min>
+          <Max>1</Max>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>YYAlignment</Name>
+        <Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+        <Comment TxtId=""><![CDATA[Indicates the alignment of the Y axis of the current axis with the Y axis of the S frame. A value of 1 indicates a positive alignment. A value of -1 indicates a negative alignment. A value of 0 indicates no alignment.]]></Comment>
+        <Default>
+          <Min>-1</Min>
+          <Max>1</Max>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>YZAlignment</Name>
+        <Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+        <Comment TxtId=""><![CDATA[Indicates the alignment of the Y axis of the current axis with the Z axis of the S frame. A value of 1 indicates a positive alignment. A value of -1 indicates a negative alignment. A value of 0 indicates no alignment.]]></Comment>
+        <Default>
+          <Min>-1</Min>
+          <Max>1</Max>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>ZXAlignment</Name>
+        <Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+        <Comment TxtId=""><![CDATA[Indicates the alignment of the Z axis of the current axis with the X axis of the S frame. A value of 1 indicates a positive alignment. A value of -1 indicates a negative alignment. A value of 0 indicates no alignment.]]></Comment>
+        <Default>
+          <Min>-1</Min>
+          <Max>1</Max>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>ZYAlignment</Name>
+        <Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+        <Comment TxtId=""><![CDATA[Indicates the alignment of the Z axis of the current axis with the Y axis of the S frame. A value of 1 indicates a positive alignment. A value of -1 indicates a negative alignment. A value of 0 indicates no alignment.]]></Comment>
+        <Default>
+          <Min>-1</Min>
+          <Max>1</Max>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>ZZAlignment</Name>
+        <Type GUID="{18071995-0000-0000-0000-000000000006}">INT</Type>
+        <Comment TxtId=""><![CDATA[Indicates the alignment of the Z axis of the current axis with the Z axis of the S frame. A value of 1 indicates a positive alignment. A value of -1 indicates a negative alignment. A value of 0 indicates no alignment.]]></Comment>
+        <Default>
+          <Min>-1</Min>
+          <Max>1</Max>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>XDisplacement</Name>
+        <Type GUID="{18071995-0000-0000-0000-00000000000e}">LREAL</Type>
+        <Comment TxtId=""><![CDATA[Represents the displacement of the end effector in the X direction of the S frame.]]></Comment>
+        <Default>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>YDisplacement</Name>
+        <Type GUID="{18071995-0000-0000-0000-00000000000e}">LREAL</Type>
+        <Comment TxtId=""><![CDATA[Represents the displacement of the end effector in the Y direction of the S frame.]]></Comment>
+        <Default>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <SubItem>
+        <Name>ZDisplacement</Name>
+        <Type GUID="{18071995-0000-0000-0000-00000000000e}">LREAL</Type>
+        <Comment TxtId=""><![CDATA[Represents the displacement of the end effector in the Z direction of the S frame.]]></Comment>
+        <Default>
+          <Value>0</Value>
+        </Default>
+      </SubItem>
+      <Hides>
+        <Hide GUID="{5f6ad5ea-cd4a-4d6f-8146-1864cbcfcad0}" />
+      </Hides>
+    </DataType>
+  </DataTypes>
+  <Groups>
+    <Group SortOrder="701">
+      <Name>C++</Name>
+      <DisplayName>C++ Modules</DisplayName>
+    </Group>
+  </Groups>
+  <Modules>
+    <Module GUID="{5a7dd872-2463-41ed-ac69-f66a784f7d99}" Group="C++">
+      <Name>SixAxisSolver</Name>
+      <CLSID ClassFactory="SixAxisSolver">{5a7dd872-2463-41ed-ac69-f66a784f7d99}</CLSID>
+      <Licenses>
+        <License>
+          <LicenseId>{304D006A-8299-4560-AB79-438534B50288}</LicenseId>
+          <Comment>TC3 C++</Comment>
+        </License>
+      </Licenses>
+      <InitSequence>PSO</InitSequence>
+      <Contexts>
+        <Context>
+          <Id>1</Id>
+        </Context>
+      </Contexts>
+      <Interfaces>
+        <Interface DisableCodeGeneration="true">
+          <Type GUID="{00000012-0000-0000-E000-000000000064}">ITComObject</Type>
+        </Interface>
+        <Interface DisableCodeGeneration="true">
+          <Type GUID="{03000012-0000-0000-E000-000000000064}">ITcADI</Type>
+        </Interface>
+        <Interface DisableCodeGeneration="true">
+          <Type GUID="{03000018-0000-0000-E000-000000000064}">ITcWatchSource</Type>
+        </Interface>
+        <Interface>
+          <Type GUID="{05010001-0000-0000-e000-000000000064}">ITcNcTrafo</Type>
+        </Interface>
+      </Interfaces>
+      <Parameters>
+        <Parameter>
+          <Name>Axis1Screw</Name>
+          <BaseType GUID="{83f23191-1ef8-4889-8012-2e4fde1a687c}">AxisParameter</BaseType>
+          <PTCID>#x00000002</PTCID>
+          <ContextId>1</ContextId>
+        </Parameter>
+        <Parameter>
+          <Name>Axis2Screw</Name>
+          <BaseType GUID="{83f23191-1ef8-4889-8012-2e4fde1a687c}">AxisParameter</BaseType>
+          <PTCID>#x00000003</PTCID>
+          <ContextId>1</ContextId>
+        </Parameter>
+        <Parameter>
+          <Name>Axis3Screw</Name>
+          <BaseType GUID="{83f23191-1ef8-4889-8012-2e4fde1a687c}">AxisParameter</BaseType>
+          <PTCID>#x00000004</PTCID>
+          <ContextId>1</ContextId>
+        </Parameter>
+        <Parameter>
+          <Name>Axis4Screw</Name>
+          <BaseType GUID="{83f23191-1ef8-4889-8012-2e4fde1a687c}">AxisParameter</BaseType>
+          <PTCID>#x00000005</PTCID>
+          <ContextId>1</ContextId>
+        </Parameter>
+        <Parameter>
+          <Name>Axis5Screw</Name>
+          <BaseType GUID="{83f23191-1ef8-4889-8012-2e4fde1a687c}">AxisParameter</BaseType>
+          <PTCID>#x00000006</PTCID>
+          <ContextId>1</ContextId>
+        </Parameter>
+        <Parameter>
+          <Name>Axis6Screw</Name>
+          <BaseType GUID="{83f23191-1ef8-4889-8012-2e4fde1a687c}">AxisParameter</BaseType>
+          <PTCID>#x00000007</PTCID>
+          <ContextId>1</ContextId>
+        </Parameter>
+        <Parameter>
+          <Name>EndEffectorHome</Name>
+          <BaseType GUID="{3fc08080-b9d8-46d9-a03f-dce5e791704a}">EndEffectorPose</BaseType>
+          <PTCID>#x00000001</PTCID>
+          <ContextId>1</ContextId>
+        </Parameter>
+      </Parameters>
+      <DataAreas />
+      <InterfacePointers />
+      <DataPointers />
+      <Deployment />
+    </Module>
+  </Modules>
+  <Library>
+    <Name>SixAxisSolver</Name>
+    <Version>0.0.0.1</Version>
+  </Library>
+</TcModuleClass>
