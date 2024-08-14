@@ -33,6 +33,10 @@
     <Keyword>Win32Proj</Keyword>
     <AutomaticRetargetPlatformVersion>true</AutomaticRetargetPlatformVersion>
     <TcGeneralUseTmx>true</TcGeneralUseTmx>
+    <TcSignWindowsSha1CertName>
+    </TcSignWindowsSha1CertName>
+    <TcSignTwinCatCertName>ArfBotOS.tccert</TcSignTwinCatCertName>
+    <TcSignTwinCatCertPW>1</TcSignTwinCatCertPW>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|TwinCAT RT (x86)'" Label="Configuration">
@@ -77,6 +81,9 @@
     <Import Project="SixAxisSolver.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|TwinCAT RT (x64)'">
+    <TcSignTwinCat>true</TcSignTwinCat>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|TwinCAT RT (x86)'">
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|TwinCAT RT (x86)'">

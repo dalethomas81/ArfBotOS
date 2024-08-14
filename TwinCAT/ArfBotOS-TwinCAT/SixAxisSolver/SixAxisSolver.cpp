@@ -9,7 +9,7 @@
 #include "Kinematics.h"
 #include "MatrixUtils.h"
 
-#define N 6
+#define NumberOfAxes 6
 
 #define DEG_TO_RAD(deg) ((deg) * M_PI / 180.0)
 #define RAD_TO_DEG(radians) ((radians) * (180.0 / M_PI))
@@ -17,7 +17,7 @@
 #define M_PI       3.14159265358979323846   // pi
 #define M_PI_2     1.57079632679489661923   // pi/2
 
-static double ACS_Old[N];
+static double ACS_Old[NumberOfAxes];
 
 struct Pose {
 	double position[3];
@@ -233,7 +233,7 @@ HRESULT CSixAxisSolver::Forward(TcNcTrafoParameter* p)
 		if (p->i && p->o)
 		{
 
-			Kinematics kin(6);
+			Kinematics kin(NumberOfAxes);
 
 			kin.add_joint_axis(m_Axis1Screw.XAlignment, m_Axis1Screw.YAlignment, m_Axis1Screw.ZAlignment, 
 				m_Axis1Screw.XDisplacement, m_Axis1Screw.YDisplacement, m_Axis1Screw.ZDisplacement); // axis 1
@@ -255,29 +255,29 @@ HRESULT CSixAxisSolver::Forward(TcNcTrafoParameter* p)
 				0, 0, 0, 1);
 
 			//
-			double ACS[6];
-			std::memcpy(ACS, p->i, 6 * sizeof(double));
+			double ACS[NumberOfAxes];
+			std::memcpy(ACS, p->i, NumberOfAxes * sizeof(double));
 
 			// convert
-			for (int _i = 0; _i <= 5; _i++) {
+			for (int _i = 0; _i <= NumberOfAxes-1; _i++) {
 				ACS[_i] = DEG_TO_RAD(ACS[_i]);
 			}
-			std::memcpy(ACS_Old, ACS, 6 * sizeof(double));
+			std::memcpy(ACS_Old, ACS, NumberOfAxes * sizeof(double));
 
 			double transform[4][4];
 			kin.forward(ACS, (double*)transform);
 			Pose pose = extractPose(transform);
 
 			// convert
-			double MCS[6];
+			double MCS[NumberOfAxes];
 			for (int _i = 0; _i <= 2; _i++) {
 				MCS[_i] = pose.position[_i];
 			}
-			for (int _i = 3; _i <= 5; _i++) {
+			for (int _i = 3; _i <= NumberOfAxes-1; _i++) {
 				MCS[_i] = RAD_TO_DEG(pose.orientation[_i - 3]);
 			}
 
-			std::memcpy(p->o, &MCS, 6 * sizeof(double));
+			std::memcpy(p->o, &MCS, NumberOfAxes * sizeof(double));
 		}
 
 		if (p->d_i && p->d_o)
@@ -301,7 +301,7 @@ HRESULT CSixAxisSolver::Backward(TcNcTrafoParameter* p)
 		if (p->i && p->o)
 		{
 
-			Kinematics kin(6);
+			Kinematics kin(NumberOfAxes);
 
 			kin.add_joint_axis(m_Axis1Screw.XAlignment, m_Axis1Screw.YAlignment, m_Axis1Screw.ZAlignment,
 				m_Axis1Screw.XDisplacement, m_Axis1Screw.YDisplacement, m_Axis1Screw.ZDisplacement); // axis 1
@@ -324,35 +324,35 @@ HRESULT CSixAxisSolver::Backward(TcNcTrafoParameter* p)
 
 			Pose pose;
 			double transform[4][4];
-			double MCS[6];
-			std::memcpy(&MCS, p->i, 6 * sizeof(double));
+			double MCS[NumberOfAxes];
+			std::memcpy(&MCS, p->i, NumberOfAxes * sizeof(double));
 
 			// convert
 			for (int _i = 0; _i <= 2; _i++) {
 				pose.position[_i] = MCS[_i];
 			}
-			for (int _i = 3; _i <= 5; _i++) {
+			for (int _i = 3; _i <= NumberOfAxes-1; _i++) {
 				pose.orientation[_i - 3] = DEG_TO_RAD(MCS[_i]);
 			}
 			createTransformMatrix(pose, transform);
 
-			double jac[6][N];
-			double jac_t[6][N];
+			double jac[6][NumberOfAxes];
+			double jac_t[6][NumberOfAxes];
 			double AA_t[6][6];
-			double A_tA[N][N];
-			double pinv[N][6];
+			double A_tA[NumberOfAxes][NumberOfAxes];
+			double pinv[NumberOfAxes][6];
 
-			double ACS[6];
+			double ACS[NumberOfAxes];
 			kin.inverse((double*)transform, (double*)jac, (double*)pinv, (double*)jac_t,
 				(double*)AA_t, (double*)A_tA, ACS_Old, 0.01, 0.001, 20,
 				ACS);
-			std::memcpy(ACS_Old, ACS, 6 * sizeof(double));
+			std::memcpy(ACS_Old, ACS, NumberOfAxes * sizeof(double));
 
 			// convert
-			for (int i = 0; i <= 5; i++) {
+			for (int i = 0; i <= NumberOfAxes-1; i++) {
 				ACS[i] = RAD_TO_DEG(ACS[i]);
 			}
-			std::memcpy(p->o, ACS, 6 * sizeof(double));
+			std::memcpy(p->o, ACS, NumberOfAxes * sizeof(double));
 
 		}
 
@@ -384,14 +384,14 @@ HRESULT CSixAxisSolver::TrafoSupported(TcNcTrafoParameter* p, bool fwd)
 	{
 		if (fwd)
 		{
-			if (p->dim_i != 6 || p->dim_o != 6)
+			if (p->dim_i != NumberOfAxes || p->dim_o != NumberOfAxes)
 			{
 				hr = MAKE_ADS_HRESULT(NCERR_KINTRAFO_INVALIDDIM); // kinematics transformation error: invalid dimension
 			}
 		}
 		else
 		{
-			if (p->dim_i != 6 || p->dim_o != 6)
+			if (p->dim_i != NumberOfAxes || p->dim_o != NumberOfAxes)
 			{
 				hr = MAKE_ADS_HRESULT(NCERR_KINTRAFO_INVALIDDIM);
 
@@ -411,8 +411,8 @@ HRESULT CSixAxisSolver::GetDimensions(ULONG* pFwdInput, ULONG* pFwdOutput)
 
 	if (pFwdInput && pFwdOutput)
 	{
-		*pFwdInput = 6;
-		*pFwdOutput = 6;
+		*pFwdInput = NumberOfAxes;
+		*pFwdOutput = NumberOfAxes;
 	}
 	else
 	{

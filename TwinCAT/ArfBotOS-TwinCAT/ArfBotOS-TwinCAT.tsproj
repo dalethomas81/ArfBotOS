@@ -2855,8 +2855,8 @@ and will return to Group State Standby when the situation permits.
 					<Name>ACS 3</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Dynamic Acceleration="187.018" Deceleration="187.018" Jerk="762.001"/>
-						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="10" Fast="10" Maximum="90"/>
+						<Dynamic Acceleration="181.19" Deceleration="181.19" Jerk="770.657"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="10" Fast="10" Maximum="60"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
@@ -3181,8 +3181,8 @@ and will return to Group State Standby when the situation permits.
 					<Name>ACS 5</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Dynamic Acceleration="185.78" Deceleration="185.78" Jerk="766.98"/>
-						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="10" Fast="10" Maximum="90"/>
+						<Dynamic Acceleration="124.679" Deceleration="124.679" Jerk="508"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="10" Fast="10" Maximum="60"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
@@ -3344,8 +3344,8 @@ and will return to Group State Standby when the situation permits.
 					<Name>ACS 6</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Dynamic Acceleration="185.78" Deceleration="185.78" Jerk="766.98"/>
-						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="10" Fast="10" Maximum="90"/>
+						<Dynamic Acceleration="124.679" Deceleration="124.679" Jerk="508"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="10" Fast="10" Maximum="60"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
@@ -4966,7 +4966,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{28EC433B-17F7-D813-5B80-E6D55AEE9533}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{29C4D830-FC05-DFCA-133E-F50003EA8AAC}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
@@ -5113,7 +5113,6 @@ and will return to Group State Standby when the situation permits.
 			</Project>
 		</Plc>
 		<Cpp>
-			<Project GUID="{A2A4C246-A13E-4FCE-B3CA-780D84C150AD}" Name="TC_Driver" PrjFilePath="TC_Driver\TC_Driver.vcxproj" TmcFilePath="TC_Driver\TC_Driver.tmc"/>
 			<Project GUID="{CB134D3E-B66B-4BA9-82B1-EE8FF477240D}" Name="SixAxisSolver" PrjFilePath="SixAxisSolver\SixAxisSolver.vcxproj" TmcFilePath="SixAxisSolver\SixAxisSolver.tmc"/>
 		</Cpp>
 		<Io>
