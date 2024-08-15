@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_PowerAll" Id="{d3e6d2d4-b215-4a84-8022-bf06b4a82234}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_PowerAll
+VAR_INPUT
+	Enable 		: BOOL;
+END_VAR
+VAR_IN_OUT
+	acs: ARRAY[1..6] OF AXIS_REF;
+	mcs: ARRAY[1..6] OF AXIS_REF;
+END_VAR
+VAR_OUTPUT
+	Status		: BOOL;
+	Error		: BOOL;
+END_VAR
+VAR
+	fbPower 	: ARRAY [1..12] OF MC_Power;
+	i			: UINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Status := TRUE;
+Error := FALSE;
+
+FOR i:=1 TO 6 DO
+	fbPower[i](Axis:=acs[i],
+		Enable			:= Enable,
+		Enable_Positive	:= Enable,
+		Enable_Negative	:= Enable
+	);
+	fbPower[i+6](Axis:=mcs[i],
+		Enable			:= Enable,
+		Enable_Positive	:= Enable,
+		Enable_Negative	:= Enable
+	);
+	
+	Status := Status AND fbPower[i].Status AND fbPower[i+6].Status; 
+	Error := Error OR fbPower[i].Error OR fbPower[i+6].Error;
+END_FOR
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

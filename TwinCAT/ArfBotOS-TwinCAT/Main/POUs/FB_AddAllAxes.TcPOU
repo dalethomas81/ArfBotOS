@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_AddAllAxes" Id="{82897557-630f-42f2-9dc0-c94f0234539c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_AddAllAxes
+VAR_INPUT
+	Execute				: BOOL;
+END_VAR
+VAR_IN_OUT
+	stGroupRef : AXES_GROUP_REF;
+	mcs: ARRAY[1..6] OF AXIS_REF;
+END_VAR
+VAR_OUTPUT
+	Done				: BOOL;
+	Busy				: BOOL;
+	Error				: BOOL;
+END_VAR
+VAR
+	fbAddAxis			: ARRAY[1..6] OF MC_AddAxisToGroup;
+	i					: UINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Done := TRUE;
+Busy := FALSE;
+Error := FALSE;
+
+fbAddAxis[1].IdentInGroup := MCS_X; //X-Axis
+fbAddAxis[2].IdentInGroup := MCS_Y; //Y-Axis
+fbAddAxis[3].IdentInGroup := MCS_Z; //Z-Axis
+// fbAddAxis[4].IdentInGroup := MCS_A1;//1st rotation is A-rotation (around X-Axis)
+// fbAddAxis[5].IdentInGroup := MCS_B2;//2nd rotation is B-rotation (around Y-Axis)
+// fbAddAxis[6].IdentInGroup := MCS_C3;//3rd rotation is C-rotation (around Z-Axis)
+fbAddAxis[4].IdentInGroup := ADDAX1;
+fbAddAxis[5].IdentInGroup := ADDAX2;
+fbAddAxis[6].IdentInGroup := ADDAX3;
+
+FOR i:=1 TO 6 DO
+	fbAddAxis[i](AxesGroup:=stGroupRef, Axis := mcs[i], Execute := Execute);
+
+	IF (NOT fbAddAxis[i].Done) THEN
+		Done := FALSE;
+	END_IF
+	IF (fbAddAxis[i].Busy) THEN
+		Busy := TRUE;
+	END_IF
+	IF (fbAddAxis[i].Error) THEN
+		Error := TRUE;
+	END_IF
+END_FOR]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

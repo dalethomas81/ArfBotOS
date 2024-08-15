@@ -59,6 +59,7 @@ VAR
     fbUngroupAxes: MC_UngroupAllAxes;
     fbGroupReset: MC_GroupReset;
 	fbGroupSetOvr: MC_GroupSetOverride;
+	fVelocityFactor: LREAL:=1.0;
     
 	bEnable: BOOL;
 	
@@ -79,6 +80,9 @@ VAR
     
     // https://infosys.beckhoff.com/content/1033/tf5420_tc3_advanced_pick_and_place/8893733771.html?id=5942709046194342427
     stGroupRef : AXES_GROUP_REF;
+	
+	fbAddAllAxes: FB_AddAllAxes;
+	fbPower: FB_PowerAll;
 	
 	//
 	_i, _j, _k: UINT;
@@ -137,6 +141,40 @@ IF FirstScan THEN
 
 END_IF
 
+fbGroupReadStatus(
+	AxesGroup:= stGroupRef , 
+	Enable:= TRUE , 
+	Valid=> , 
+	Busy=> , 
+	GroupMoving=> , 
+	GroupHoming=> , 
+	GroupErrorStop=> , 
+	GroupNotReady=> , 
+	GroupStandby=> , 
+	GroupStopping=> , 
+	GroupDisabled=> , 
+	Error=> , 
+	ErrorId=> );
+IF fbGroupReadStatus.Error THEN
+	//
+ELSIF NOT fbGroupReadStatus.Valid THEN
+	//	
+END_IF
+
+fbGroupSetOvr(
+	AxesGroup:= stGroupRef, 
+	Enable:= TRUE, 
+	VelFactor:= fVelocityFactor , 
+	Enabled=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorId=> , 
+	ActualVelFactor=> );
+
+IF fbGroupSetOvr.Error THEN
+	//
+END_IF
+
 CASE Sequence OF
 	-3: // reset group
 		ResetKinGroup := TRUE;
@@ -152,6 +190,12 @@ CASE Sequence OF
 		//bEnable := FALSE;
 		bCartesianMode := FALSE;
 		ConfigKinGroup := FALSE;
+		fbUngroupAxes(AxesGroup:= stGroupRef, Execute:= FALSE);
+		fbGroupReset(AxesGroup:= stGroupRef , Execute:= FALSE);
+		fbAddAllAxes(Execute:= FALSE, stGroupRef:=stGroupRef, mcs:=mcs);
+		fbStop(AxesGroup:=stGroupRef, Execute:= FALSE);
+		fbGroupEnable(AxesGroup:=stGroupRef , Execute:=FALSE);
+		fbMovePath(AxesGroup:=stGroupRef ,PathData:=path ,Execute:= FALSE);
 		Sequence := Sequence + 1;
 		
 	0: // idle
@@ -161,25 +205,111 @@ CASE Sequence OF
 			Sequence := Sequence + 1;
 		END_IF
 		
-	1: // wait for all axes enabled then config kinematics
-		AllAxesEnabled := TRUE;
-		FOR _i:=1 TO NumberOfAxes BY 1 DO
-			IF NOT mcPower[_i].Status 
-				OR NOT mcPower[_i + NumberOfAxes].Status THEN
-					AllAxesEnabled := FALSE;
-			END_IF
-		END_FOR
-		IF AllAxesEnabled THEN
-			bCartesianMode := TRUE;
-			ConfigKinGroup := TRUE;
+	1: // enable all axes
+		fbPower.Enable := TRUE;
+		IF fbPower.Status THEN
+			Sequence := Sequence + 1;
+		ELSIF fbPower.Error THEN
+			//
+		END_IF
+		
+	2: // configure kinematics
+		bCartesianMode := TRUE;
+		ConfigKinGroup := TRUE;
+		IF fbKinConfigGroup.bDone THEN
+			bCartesianMode := FALSE;
+			ConfigKinGroup := FALSE;
 			Sequence := Sequence + 1;
 		END_IF
 		
-	2: // wait for kinematics to be done then add axes to group
-		IF fbKinConfigGroup.bDone THEN
+	3: // add axes to group
+		fbAddAllAxes(Execute:= TRUE, stGroupRef:=stGroupRef, mcs:=mcs);
+		IF fbAddAllAxes.Done THEN
+			fbAddAllAxes(Execute:= FALSE, stGroupRef:=stGroupRef, mcs:=mcs);
+			Sequence := Sequence + 1;
+		ELSIF fbAddAllAxes.Error THEN
+			//
+		END_IF
+		
+	4:
+		// enable group
+		fbGroupEnable(AxesGroup:=stGroupRef , Execute:=TRUE);
+		 
+		IF fbGroupEnable.Done THEN
+			fbGroupEnable(AxesGroup:=stGroupRef , Execute:=FALSE);
+			Sequence := Sequence + 1;
+		ELSIF fbGroupEnable.Error THEN
+			//
+		END_IF
+		
+	5: // add paths
+		AddPath := TRUE;
+		IF NOT bMovePrepError THEN
+			fbMovePath(AxesGroup:= stGroupRef, PathData:= path, Execute:= FALSE);
 			Sequence := Sequence + 1;
 		END_IF
-	3: // 
+		
+	6: // move
+		fbMovePath(
+			AxesGroup:= stGroupRef , 
+			PathData:= path , 
+			Execute:= TRUE
+		);
+		
+		IF fbMovePath.Done THEN
+			fbMovePath(AxesGroup:= stGroupRef, PathData:= path, Execute:= FALSE);
+			Sequence := Sequence + 1;
+		ELSIF fbMovePath.Error THEN
+			//	
+		END_IF
+		
+	7: //
+		fbStop(AxesGroup:=stGroupRef, Execute:= FALSE);
+		fbStop(AxesGroup:=stGroupRef, Execute:= TRUE, Jerk:= MC_IGNORE);
+		Sequence := Sequence + 1;
+	
+	8: // stop the group
+		fbStop(AxesGroup:=stGroupRef, Execute:= TRUE);
+		IF fbStop.Done THEN
+			fbStop(AxesGroup:=stGroupRef, Execute:= FALSE);	
+			Sequence := Sequence + 1;
+		ELSIF fbStop.Error THEN
+			//
+		END_IF
+		
+	9: // disable group and remove all axes 
+		fbUngroupAxes(AxesGroup:= stGroupRef, Execute:= FALSE);
+		//Check that axes are not moving else we will get a position jump
+		IF fbGroupReadStatus.GroupStandby OR fbGroupReadStatus.GroupErrorStop OR fbGroupReadStatus.GroupNotReady THEN
+			fbUngroupAxes(AxesGroup:= stGroupRef, Execute:= TRUE);
+			Sequence := Sequence + 1;
+		END_IF	
+		
+	10: //
+		fbUngroupAxes(AxesGroup:= stGroupRef, Execute:= TRUE);
+		IF fbUngroupAxes.Done THEN
+			Sequence := Sequence + 1;
+		ELSIF fbUngroupAxes.Error THEN
+			//
+		END_IF
+		
+	11: //
+		fbGroupReset(AxesGroup:= stGroupRef , Execute:= FALSE);
+		fbGroupReset(AxesGroup:= stGroupRef , Execute:= TRUE);
+		Sequence := Sequence + 1;
+		
+	12: //
+		fbGroupReset(AxesGroup:= stGroupRef , Execute:= TRUE);
+		IF fbGroupReset.Done THEN
+			IF fbGroupReadStatus.GroupDisabled THEN
+				Sequence := 0;
+			ELSE
+				//
+			END_IF	
+		END_IF
+		
+	1000..9999:
+		;//Error	
 	
 END_CASE
 
@@ -187,6 +317,15 @@ END_CASE
 IF ResetSeq THEN
 	ResetSeq := FALSE;
 	Sequence := -3;
+END_IF
+
+//
+fbPower(acs:=acs ,mcs:=mcs);
+
+//
+IF AddPath THEN
+	AddPath := FALSE;
+	A_AddPaths();
 END_IF
 
 // move relative
@@ -209,34 +348,6 @@ FOR _k:= 1 TO NumberOfAxes DO
 		ErrorID=> );
 END_FOR
 
-// power
-FOR _i:=1 TO NumberOfAxes BY 1 DO
-	mcPower[_i](
-		Axis:= acs[_i], 
-		Enable:= bEnable, 
-		Enable_Positive:= bEnable, 
-		Enable_Negative:= bEnable, 
-		Override:= , 
-		BufferMode:= , 
-		Options:= , 
-		Status=> , 
-		Busy=> , 
-		Error=> , 
-		ErrorID=> );
-	mcPower[_i + NumberOfAxes](
-		Axis:= mcs[_i], 
-		Enable:= bEnable, 
-		Enable_Positive:= bEnable, 
-		Enable_Negative:= bEnable, 
-		Override:= , 
-		BufferMode:= , 
-		Options:= , 
-		Status=> , 
-		Busy=> , 
-		Error=> , 
-		ErrorID=> );
-END_FOR
-
 // kinematics
 fbKinPresetRotation(
 	bExecute:= PresetRotation, 
@@ -246,6 +357,7 @@ fbKinPresetRotation(
 	bDone=> , 
 	bError=> , 
 	nErrorId=> );
+	
 fbKinConfigGroup(
 	bExecute:= ConfigKinGroup, 
 	bCartesianMode:= bCartesianMode, // false acs can be moved directly | true movement happens in cartesian space
@@ -283,6 +395,9 @@ IF KinMove THEN
 		MoveDistance[_k] := -MoveDistance[_k];
 	END_FOR
 END_IF
+
+
+
 
 // https://infosys.beckhoff.com/content/1033/tf5110-tf5113_tc3_kinematic_transformation/5737129739.html?id=6958083974342297833
 // apparently we cannot use this for user specific transformations. dammit.
@@ -752,7 +867,7 @@ aTargetPos[5]				:= 55;
 aTargetPos[6]				:= -180;
 aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
 aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
-fbMoveLinPrep(PathData:= path , Velocity:= 100, InvokeId:= 10);
+fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 10);
 bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
 
 aTargetPos[1]				:= 310;
@@ -763,7 +878,7 @@ aTargetPos[5]				:= 45;
 aTargetPos[6]				:= -180;
 aTransitionParam[1]			:= 0;//200; //blending distance on previous segment (InvokeId=10), defines when to leave line
 aTransitionParam[2]			:= 0;//2400; //blending distance on this segment, defines latest positionn to be back  on line of InovkeId=20 
-fbMoveLinPrep(PathData:= path , Velocity:= 100, InvokeId:= 20); 
+fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 20); 
 bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
 
 aTargetPos[1]				:= 300;
@@ -774,7 +889,7 @@ aTargetPos[5]				:= 35;
 aTargetPos[6]				:= -180;
 aTransitionParam[1]			:= 0;//2250; 
 aTransitionParam[2]			:= 0;//2250;
-fbMoveLinPrep(PathData:= path , Velocity:= 100, InvokeId:= 30);
+fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 30);
 bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;]]></ST>
       </Implementation>
     </Action>
