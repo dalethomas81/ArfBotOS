@@ -115,6 +115,16 @@ VAR
 	Velocity: LREAL:=100.0;
 	KinMove: BOOL;
 	ResetSeq: BOOL;
+	
+	fbTcBaseModule: TcBaseModule;
+	ActualTcpOffset: DUT_Coord_Ref;
+	DesiredTcpOffset: DUT_Coord_Ref:=(X:=10.0, Y:=11.0, Z:=12.0, A:=13.0, B:=14.0, C:=15.0);
+	GetTcpOffset: BOOL;
+	SetTcpOffset: BOOL;
+	result: HRESULT;
+	
+	//fbSixAxisSolver: FB_SixAxisSolver;
+	
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[
@@ -139,6 +149,25 @@ IF FirstScan THEN
     	stAxesConfig.nAxisIdsMcs[_i] := mcs[_i].NcToPlc.AxisId;
 	END_FOR
 
+END_IF
+
+IF GetTcpOffset THEN
+	GetTcpOffset:= FALSE;
+// 	result := fbTcBaseModule.TcGetObjPara(pid:=16#05010110, nData:=SIZEOF(ActualTcpOffset.X), pData:=ADR(ActualTcpOffset.X), pgp:=0);
+// 	result := fbTcBaseModule.TcGetObjPara(pid:=16#05010111, nData:=SIZEOF(ActualTcpOffset.Y), pData:=ADR(ActualTcpOffset.Y), pgp:=0);
+// 	result := fbTcBaseModule.TcGetObjPara(pid:=16#05010112, nData:=SIZEOF(ActualTcpOffset.Z), pData:=ADR(ActualTcpOffset.Z), pgp:=0);
+// 	result := fbTcBaseModule.TcGetObjPara(pid:=16#05010113, nData:=SIZEOF(ActualTcpOffset.A), pData:=ADR(ActualTcpOffset.A), pgp:=0);
+// 	result := fbTcBaseModule.TcGetObjPara(pid:=16#05010114, nData:=SIZEOF(ActualTcpOffset.B), pData:=ADR(ActualTcpOffset.B), pgp:=0);
+// 	result := fbTcBaseModule.TcGetObjPara(pid:=16#05010115, nData:=SIZEOF(ActualTcpOffset.C), pData:=ADR(ActualTcpOffset.C), pgp:=0);
+END_IF
+IF SetTcpOffset THEN
+	SetTcpOffset:= FALSE;
+	result := fbTcBaseModule.TcSetObjPara(pid:=16#05010110, nData:=SIZEOF(DesiredTcpOffset.X), pData:=ADR(DesiredTcpOffset.X), pgp:=0);
+	result := fbTcBaseModule.TcSetObjPara(pid:=16#05010111, nData:=SIZEOF(DesiredTcpOffset.Y), pData:=ADR(DesiredTcpOffset.Y), pgp:=0);
+	result := fbTcBaseModule.TcSetObjPara(pid:=16#05010112, nData:=SIZEOF(DesiredTcpOffset.Z), pData:=ADR(DesiredTcpOffset.Z), pgp:=0);
+	result := fbTcBaseModule.TcSetObjPara(pid:=16#05010113, nData:=SIZEOF(DesiredTcpOffset.A), pData:=ADR(DesiredTcpOffset.A), pgp:=0);
+	result := fbTcBaseModule.TcSetObjPara(pid:=16#05010114, nData:=SIZEOF(DesiredTcpOffset.B), pData:=ADR(DesiredTcpOffset.B), pgp:=0);
+	result := fbTcBaseModule.TcSetObjPara(pid:=16#05010115, nData:=SIZEOF(DesiredTcpOffset.C), pData:=ADR(DesiredTcpOffset.C), pgp:=0);
 END_IF
 
 fbGroupReadStatus(
@@ -863,7 +892,7 @@ aTargetPos[1]				:= 300;
 aTargetPos[2]				:= 0;
 aTargetPos[3]				:= 415;
 aTargetPos[4]				:= -180;
-aTargetPos[5]				:= 55;
+aTargetPos[5]				:= 35;
 aTargetPos[6]				:= -180;
 aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
 aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
