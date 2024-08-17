@@ -3,7 +3,11 @@
   <POU Name="FB_CoordinateFrame" Id="{06fc1aa1-c0e2-4833-a6e2-014df8199a9a}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_CoordinateFrame
 VAR_INPUT
-    oidTrafo: UDINT := 16#00000000; (*Trafo object id*)
+	Execute: BOOL:=FALSE;
+    oidTrafo: UDINT := 16#00000000; (*Trafo object id*)	
+	OffsetFrame: DUT_CoordFrame:=(	X:=0,Y:=0,Z:=0,A:=0,B:=0,C:=0,
+									Interpretation:=MC.CoordInterpretation_SO3.Rotation_Z3Y2X1_DIN9300,
+									Direction:=MC.ReferenceDefDir.fromReference);
 END_VAR
 VAR_OUTPUT
 	Done: BOOL;
@@ -11,7 +15,7 @@ VAR_OUTPUT
 	Error: BOOL;
 END_VAR
 VAR
-	_OffsetFrame: DUT_CoordFrame;
+	_ExecuteRtrig: R_TRIG;
 	_DesiredOffset: ARRAY [1..6] OF LREAL;
 	_fbKinUnlockTrafoParam: FB_KinUnlockTrafoParam;
 	_fbKinLockTrafoParam: FB_KinLockTrafoParam;
@@ -29,12 +33,18 @@ END_VAR
       <ST><![CDATA[
 // https://infosys.beckhoff.com/content/1033/tf5110-tf5113_tc3_kinematic_transformation/1955902347.html?id=3846917459939213436
 
+_ExecuteRtrig(CLK:=Execute);
+
 Busy := _Sequence <> 0;
 
 CASE _Sequence OF
 	0: // idle
+		IF _ExecuteRtrig.Q THEN
+			_Sequence := _Sequence + 1;
+		END_IF
 		
 	1: // init
+		Error := FALSE;
 		Done := FALSE;
 		_UnlockParam := FALSE;
 		_LockParam := FALSE;
@@ -52,12 +62,12 @@ CASE _Sequence OF
 		FOR _i := 1 TO 8 BY 1 DO
 			_fbADSWRITE[_i](WRITE:=FALSE);
 		END_FOR
-		_DesiredOffset[1] := _OffsetFrame.X;
-		_DesiredOffset[2] := _OffsetFrame.Y;
-		_DesiredOffset[3] := _OffsetFrame.Z;
-		_DesiredOffset[4] := _OffsetFrame.A;
-		_DesiredOffset[5] := _OffsetFrame.B;
-		_DesiredOffset[6] := _OffsetFrame.C;
+		_DesiredOffset[1] := OffsetFrame.X;
+		_DesiredOffset[2] := OffsetFrame.Y;
+		_DesiredOffset[3] := OffsetFrame.Z;
+		_DesiredOffset[4] := OffsetFrame.A;
+		_DesiredOffset[5] := OffsetFrame.B;
+		_DesiredOffset[6] := OffsetFrame.C;
 		_Sequence := _Sequence + 1;
 	
 	4: // write parameters
@@ -80,7 +90,7 @@ CASE _Sequence OF
 		_i := 7;
 		_fbADSWRITE[_i](PORT:=AMSPORT_R0_NCSAF, 
 						IDXGRP:=oidTrafo, IDXOFFS:=_pidTrafo[_i], 
-						LEN:=SIZEOF(_OffsetFrame.Interpretation), SRCADDR:=ADR(_OffsetFrame.Interpretation), 
+						LEN:=SIZEOF(OffsetFrame.Interpretation), SRCADDR:=ADR(OffsetFrame.Interpretation), 
 						WRITE:=TRUE);
 		IF _fbADSWRITE[_i].BUSY THEN
 			_WriteDone := FALSE;
@@ -91,7 +101,7 @@ CASE _Sequence OF
 		_i := 8;
 		_fbADSWRITE[_i](PORT:=AMSPORT_R0_NCSAF, 
 						IDXGRP:=oidTrafo, IDXOFFS:=_pidTrafo[_i], 
-						LEN:=SIZEOF(_OffsetFrame.Direction), SRCADDR:=ADR(_OffsetFrame.Direction), 
+						LEN:=SIZEOF(OffsetFrame.Direction), SRCADDR:=ADR(OffsetFrame.Direction), 
 						WRITE:=TRUE);
 		IF _fbADSWRITE[_i].BUSY THEN
 			_WriteDone := FALSE;
@@ -138,37 +148,5 @@ _fbKinLockTrafoParam(
 	bError=> , 
 	nErrorId=> );]]></ST>
     </Implementation>
-    <Method Name="M_Reset" Id="{f855a1bc-df78-4f8a-bc6c-9d6ecc8d2ccd}">
-      <Declaration><![CDATA[METHOD PUBLIC M_Reset : BOOL
-VAR_INPUT
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[_Sequence := 0;
-Error := FALSE;
-Done := FALSE;]]></ST>
-      </Implementation>
-    </Method>
-    <Method Name="M_SetOffset" Id="{a3533a22-11a9-4228-a6c6-3b0f69c8a8a5}">
-      <Declaration><![CDATA[METHOD PUBLIC M_SetOffset : BOOL
-VAR_INPUT
-	OffsetFrame: DUT_CoordFrame:=(	X:=0,Y:=0,Z:=0,A:=0,B:=0,C:=0,
-									Interpretation:=MC.CoordInterpretation_SO3.Rotation_Z3Y2X1_DIN9300,
-									Direction:=MC.ReferenceDefDir.fromReference);
-END_VAR
-]]></Declaration>
-      <Implementation>
-        <ST><![CDATA[IF NOT Busy THEN
-	IF Error THEN
-		M_RESET();
-	END_IF
-	_Sequence := 1;
-	_OffsetFrame := OffsetFrame;
-	M_SetOffset := TRUE;
-ELSE
-	M_SetOffset := FALSE;
-END_IF]]></ST>
-      </Implementation>
-    </Method>
   </POU>
 </TcPlcObject>

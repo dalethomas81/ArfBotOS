@@ -4972,6 +4972,163 @@ and will return to Group State Standby when the situation permits.
 								</ParameterValues>
 							</TmcDesc>
 						</Module>
+						<Module Id="#x01010010" KeepUnrestoredLinks="2">
+							<Name>MCS</Name>
+							<ImageId>1000</ImageId>
+							<TmcDesc GUID="{D2858F83-8230-43B5-89F9-76806794012A}">
+								<Name>Coordinate Frame</Name>
+								<CLSID ClassFactory="TcNcKin">{0501007E-0000-0000-F000-000000000064}</CLSID>
+								<Info>
+									<ImageData>424d360500000000000036040000280000001000000010000000010008000000000000000000c40e0000c40e00000001000000010000000000ff000080ff008000ff008080ff800000ff800080ff808000ffc0c0c0ffc0dcc0fff0caa6ff002040ff002060ff002080ff0020a0ff0020c0ff0020e0ff004000ff004020ff004040ff004060ff004080ff0040a0ff0040c0ff0040e0ff006000ff006020ff006040ff006060ff006080ff0060a0ff0060c0ff0060e0ff008000ff008020ff008040ff008060ff008080ff0080a0ff0080c0ff0080e0ff00a000ff00a020ff00a040ff00a060ff00a080ff00a0a0ff00a0c0ff00a0e0ff00c000ff00c020ff00c040ff00c060ff00c080ff00c0a0ff00c0c0ff00c0e0ff00e000ff00e020ff00e040ff00e060ff00e080ff00e0a0ff00e0c0ff00e0e0ff400000ff400020ff400040ff400060ff400080ff4000a0ff4000c0ff4000e0ff402000ff402020ff402040ff402060ff402080ff4020a0ff4020c0ff4020e0ff404000ff404020ff404040ff404060ff404080ff4040a0ff4040c0ff4040e0ff406000ff406020ff406040ff406060ff406080ff4060a0ff4060c0ff4060e0ff408000ff408020ff408040ff408060ff408080ff4080a0ff4080c0ff4080e0ff40a000ff40a020ff40a040ff40a060ff40a080ff40a0a0ff40a0c0ff40a0e0ff40c000ff40c020ff40c040ff40c060ff40c080ff40c0a0ff40c0c0ff40c0e0ff40e000ff40e020ff40e040ff40e060ff40e080ff40e0a0ff40e0c0ff40e0e0ff800000ff800020ff800040ff800060ff800080ff8000a0ff8000c0ff8000e0ff802000ff802020ff802040ff802060ff802080ff8020a0ff8020c0ff8020e0ff804000ff804020ff804040ff804060ff804080ff8040a0ff8040c0ff8040e0ff806000ff806020ff806040ff806060ff806080ff8060a0ff8060c0ff8060e0ff808000ff808020ff808040ff808060ff808080ff8080a0ff8080c0ff8080e0ff80a000ff80a020ff80a040ff80a060ff80a080ff80a0a0ff80a0c0ff80a0e0ff80c000ff80c020ff80c040ff80c060ff80c080ff80c0a0ff80c0c0ff80c0e0ff80e000ff80e020ff80e040ff80e060ff80e080ff80e0a0ff80e0c0ff80e0e0ffc00000ffc00020ffc00040ffc00060ffc00080ffc000a0ffc000c0ffc000e0ffc02000ffc02020ffc02040ffc02060ffc02080ffc020a0ffc020c0ffc020e0ffc04000ffc04020ffc04040ffc04060ffc04080ffc040a0ffc040c0ffc040e0ffc06000ffc06020ffc06040ffc06060ffc06080ffc060a0ffc060c0ffc060e0ffc08000ffc08020ffc08040ffc08060ffc08080ffc080a0ffc080c0ffc080e0ffc0a000ffc0a020ffc0a040ffc0a060ffc0a080ffc0a0a0ffc0a0c0ffc0a0e0ffc0c000ffc0c020ffc0c040ffc0c060ffc0c080ffc0c0a0fff0fbffffa4a0a0ff808080ff0000ffff00ff00ff00ffffffff0000ffff00ffffffff00ffffffffffafefffffffffffffffffffffffffffff075556aff6ffffffffffffffffffffffff565556efffffffffffffffffffffffff0756f957f6ffffffffffffffffffffffffef9ff957f6ffffffffeddbf6ffffffffffff5ff954fcfcfcfcfc04049b07ffffffffff2532fcfcfcfcc90404db09ffffffffff79faffffffffede4f6ffffffffffffff79faffffffffffffffffffffffffffff79faffffffffffffffffffffffffffff79faffffffffffffffffffffffffff08793908ffffffffffffffffffffffffbd6a6abdfffffffffffffffffffffffff67272f6ffffffffffffffffffffffffffb4b4ffffffffffffffffffffffffffff0808ffffffffffffffffff</ImageData>
+								</Info>
+								<InitSequence>SO</InitSequence>
+								<Contexts>
+									<Context>
+										<Id>1</Id>
+										<Name>Default</Name>
+										<ManualConfig>
+											<OTCID>#x05000010</OTCID>
+										</ManualConfig>
+										<Priority>4</Priority>
+										<CycleTime>2000000</CycleTime>
+										<DependOn>ParentObject</DependOn>
+									</Context>
+								</Contexts>
+								<Parameters>
+									<Group><![CDATA[Configuration]]></Group>
+									<Group><![CDATA[Kinematic]]></Group>
+									<Group><![CDATA[Dynamic]]></Group>
+									<Group><![CDATA[Drive Torques]]></Group>
+									<Parameter Group="Configuration">
+										<Name>Rotation convention</Name>
+										<Comment><![CDATA[Set the interpretation of the rotation angles.]]></Comment>
+										<BitSize>32</BitSize>
+										<BaseType GUID="{51331DA4-5C7F-468D-9414-F84151973968}" Namespace="MC">CoordInterpretation_SO3</BaseType>
+										<Default>
+											<Value>#x605</Value>
+										</Default>
+										<PTCID>#x05010116</PTCID>
+									</Parameter>
+									<Parameter Group="Configuration">
+										<Name>Definition direction</Name>
+										<Comment><![CDATA[Set the definition direction.]]></Comment>
+										<BitSize>32</BitSize>
+										<BaseType GUID="{173BACEF-49A7-4284-8B3C-5DF99756AD53}" Namespace="MC">ReferenceDefDir</BaseType>
+										<Default>
+											<Value>0</Value>
+										</Default>
+										<PTCID>#x05010117</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Translation X</Name>
+										<Comment><![CDATA[Translation in x-direction]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010110</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Translation Y</Name>
+										<Comment><![CDATA[Translation in y-direction]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010111</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Translation Z</Name>
+										<Comment><![CDATA[Translation in z-direction]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010112</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Rotation 1</Name>
+										<Comment><![CDATA[Rotation angle 1, interpretation set by rotation convention]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[°]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010113</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Rotation 2</Name>
+										<Comment><![CDATA[Rotation angle 2, interpretation set by rotation convention]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[°]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010114</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Rotation 3</Name>
+										<Comment><![CDATA[Rotation angle 3, interpretation set by rotation convention]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[°]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010115</PTCID>
+									</Parameter>
+								</Parameters>
+								<Properties>
+									<Property>
+										<Name>Category</Name>
+										<Value>MC Object</Value>
+									</Property>
+								</Properties>
+								<ParentOTCID>#x050700e0</ParentOTCID>
+								<ParameterValues>
+									<Value>
+										<Name>Rotation convention</Name>
+										<EnumText>Rotation_Z3Y2X1_DIN9300</EnumText>
+									</Value>
+									<Value>
+										<Name>Definition direction</Name>
+										<EnumText>toReference</EnumText>
+									</Value>
+									<Value>
+										<Name>Translation X</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Translation Y</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Translation Z</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Rotation 1</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Rotation 2</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Rotation 3</Name>
+										<Value>0</Value>
+									</Value>
+								</ParameterValues>
+							</TmcDesc>
+						</Module>
 					</Group>
 				</Channel>
 				<Modules>
@@ -5196,7 +5353,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{F59F1F85-F737-C3EB-6D6A-40AA7C06FA3B}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{CA4AAAAD-1614-F3E7-2E60-F32EAAF62D0A}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
