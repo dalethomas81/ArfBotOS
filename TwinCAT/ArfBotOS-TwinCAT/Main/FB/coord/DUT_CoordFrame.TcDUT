@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="DUT_CoordFrame" Id="{3ead019c-a82b-4b11-8106-a8694dda9b2e}">
+    <Declaration><![CDATA[TYPE DUT_CoordFrame :
+STRUCT
+	X, Y, Z, A, B, C: LREAL;
+	Interpretation: MC.CoordInterpretation_SO3;
+	Direction: MC.ReferenceDefDir;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -5196,7 +5196,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{206358D2-285D-166D-5D31-B6940DA5E140}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{3763AC2B-5C53-2212-06CF-0A10BA9A4CA3}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
@@ -5336,20 +5336,6 @@ and will return to Group State Standby when the situation permits.
 							<CycleTime>10000000</CycleTime>
 						</Context>
 					</Contexts>
-					<InitSymbols>
-						<InitSymbol>
-							<Name>_00_Main.fbCoordinateSystem.nObjId</Name>
-							<Type GUID="{18071995-0000-0000-0000-00000000000F}">OTCID</Type>
-							<AreaNo>#x00000003</AreaNo>
-							<Data>00000000</Data>
-							<Properties>
-								<Property>
-									<Name>displaymode</Name>
-									<Value>hex</Value>
-								</Property>
-							</Properties>
-						</InitSymbol>
-					</InitSymbols>
 					<TaskPouOids>
 						<TaskPouOid Prio="20" OTCID="#x08502001"/>
 					</TaskPouOids>

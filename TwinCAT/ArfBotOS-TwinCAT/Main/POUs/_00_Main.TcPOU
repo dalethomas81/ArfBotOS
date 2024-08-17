@@ -118,18 +118,11 @@ VAR
 	
 	
 	//fbSixAxisSolver: FB_SixAxisSolver
-	//fbCoordinateSystem: FB_CoordinateFrame;
-	fbKinUnlockTrafoParam: FB_KinUnlockTrafoParam;
-	fbKinLockTrafoParam: FB_KinLockTrafoParam;
-	bUserExecuteLock,bUserExecuteUnlock     : BOOL;
-    fbFB_UnlockTrafoParam  : FB_KinUnlockTrafoParam;
-    bUserExecuteWriteParam,bUserExecuteReadParam : BOOL;
-    fbADSWRITE             : ADSWRITE;
-    fbADSREAD              : ADSREAD;
-    oidTrafo               : UDINT := 16#01010030; (*Trafo object id*)
-    pidTrafo               : UDINT := 16#05010110; (*parameter id*)
-    fParamValueWrite       : LREAL:=22.0;
-    fParamValueRead        : LREAL:=0.0;
+	Tcp: FB_CoordinateFrame;
+	offsetFrame: DUT_CoordFrame;
+	SetTcpOffset: BOOL;
+	
+
 	
 	
 
@@ -163,48 +156,23 @@ IF FirstScan THEN
 END_IF
 
 //
-//fbCoordinateSystem();
+Tcp(oidTrafo:=16#01010030);
+IF SetTcpOffset THEN
+	SetTcpOffset := FALSE;
+	offsetFrame.X:=11.0;
+	offsetFrame.Y:=12.0;
+	offsetFrame.Z:=13.0;
+	offsetFrame.A:=14.0;
+	offsetFrame.B:=15.0;
+	offsetFrame.C:=16.0;
+	offsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_X1Z3Y2;
+	offsetFrame.Direction := MC.ReferenceDefDir.toReference;
+	Tcp.M_SetOffset(offsetFrame);
+// 	Tcp.M_SetOffset(oidTrafo:=16#01010030, 	
+// 					X:=MCS[1].NcToPlc.ActPos, Y:=MCS[2].NcToPlc.ActPos, Z:=MCS[3].NcToPlc.ActPos, 
+// 					A:=MCS[4].NcToPlc.ActPos, B:=MCS[5].NcToPlc.ActPos, C:=MCS[6].NcToPlc.ActPos);
+END_IF
 
-// https://infosys.beckhoff.com/content/1033/tf5110-tf5113_tc3_kinematic_transformation/1955902347.html?id=3846917459939213436
-fbKinUnlockTrafoParam(
-	bExecute:= bUserExecuteUnlock, 
-	oidTrafo:= oidTrafo, 
-	bBusy=> , 
-	bDone=> , 
-	bError=> , 
-	nErrorId=> );	
-fbKinLockTrafoParam(
-	bExecute:= bUserExecuteLock, 
-	oidTrafo:= oidTrafo, 
-	bBusy=> , 
-	bDone=> , 
-	bError=> , 
-	nErrorId=> );
-(*After unlocking new parameter value can be written*)
-fbADSWRITE(
-    NETID:='' ,
-    PORT:= AMSPORT_R0_NCSAF,
-    IDXGRP:=oidTrafo ,
-    IDXOFFS:= pidTrafo,
-    LEN:=SIZEOF(fParamValueWrite) ,
-    SRCADDR:= ADR(fParamValueWrite),
-    WRITE:=bUserExecuteWriteParam ,
-    TMOUT:= ,
-    BUSY=> , 
-    ERR=> , 
-    ERRID=> );
-fbADSREAD(
-	NETID:= , 
-	PORT:= AMSPORT_R0_NCSAF, 
-	IDXGRP:= oidTrafo, 
-	IDXOFFS:= pidTrafo, 
-	LEN:= SIZEOF(fParamValueRead), 
-	DESTADDR:= ADR(fParamValueRead), 
-	READ:= bUserExecuteReadParam, 
-	TMOUT:= , 
-	BUSY=> , 
-	ERR=> , 
-	ERRID=> );
 
 
 fbGroupReadStatus(

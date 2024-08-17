@@ -111,6 +111,12 @@
     <Compile Include="FB\controller\ST_Triggers.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FB\coord\DUT_CoordFrame.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\coord\FB_CoordinateFrame.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="FB\FB_CommandProcessor.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -315,9 +321,6 @@
     <Compile Include="POUs\FB_SixAxisSolver.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\FB_CoordinateFrame.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="POUs\MAIN.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -345,6 +348,7 @@
     <Folder Include="FB\jog" />
     <Folder Include="FB\logic" />
     <Folder Include="FB\move" />
+    <Folder Include="FB\coord" />
     <Folder Include="FB\vision" />
     <Folder Include="FB\varset" />
     <Folder Include="FB\template" />
