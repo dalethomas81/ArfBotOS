@@ -4815,7 +4815,7 @@ and will return to Group State Standby when the situation permits.
 								</ParameterValues>
 							</TmcDesc>
 						</Module>
-						<Module Id="#x01010010" KeepUnrestoredLinks="2">
+						<Module Id="#x01010030" KeepUnrestoredLinks="2">
 							<Name>TCP</Name>
 							<ImageId>1000</ImageId>
 							<TmcDesc GUID="{D2858F83-8230-43B5-89F9-76806794012A}">
@@ -4834,6 +4834,7 @@ and will return to Group State Standby when the situation permits.
 										</ManualConfig>
 										<Priority>4</Priority>
 										<CycleTime>2000000</CycleTime>
+										<DependOn>ParentObject</DependOn>
 									</Context>
 								</Contexts>
 								<Parameters>
@@ -4942,31 +4943,31 @@ and will return to Group State Standby when the situation permits.
 									</Value>
 									<Value>
 										<Name>Definition direction</Name>
-										<EnumText>toReference</EnumText>
+										<EnumText>fromReference</EnumText>
 									</Value>
 									<Value>
 										<Name>Translation X</Name>
-										<Value>1</Value>
+										<Value>0</Value>
 									</Value>
 									<Value>
 										<Name>Translation Y</Name>
-										<Value>2</Value>
+										<Value>0</Value>
 									</Value>
 									<Value>
 										<Name>Translation Z</Name>
-										<Value>3</Value>
+										<Value>0</Value>
 									</Value>
 									<Value>
 										<Name>Rotation 1</Name>
-										<Value>4</Value>
+										<Value>0</Value>
 									</Value>
 									<Value>
 										<Name>Rotation 2</Name>
-										<Value>5</Value>
+										<Value>0</Value>
 									</Value>
 									<Value>
 										<Name>Rotation 3</Name>
-										<Value>6</Value>
+										<Value>0</Value>
 									</Value>
 								</ParameterValues>
 							</TmcDesc>
@@ -5195,7 +5196,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{A99A6CC7-845D-08A7-0434-37BB58C5BF6C}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{517C123E-1C3E-78CF-0529-54A80E57F60C}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
@@ -5335,20 +5336,6 @@ and will return to Group State Standby when the situation permits.
 							<CycleTime>10000000</CycleTime>
 						</Context>
 					</Contexts>
-					<InitSymbols>
-						<InitSymbol>
-							<Name>_00_Main.Tcp.nObjId</Name>
-							<Type GUID="{18071995-0000-0000-0000-00000000000F}">OTCID</Type>
-							<AreaNo>#x00000003</AreaNo>
-							<Data>20000101</Data>
-							<Properties>
-								<Property>
-									<Name>displaymode</Name>
-									<Value>hex</Value>
-								</Property>
-							</Properties>
-						</InitSymbol>
-					</InitSymbols>
 					<TaskPouOids>
 						<TaskPouOid Prio="20" OTCID="#x08502001"/>
 					</TaskPouOids>
