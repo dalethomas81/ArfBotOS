@@ -947,7 +947,7 @@ aTargetPos[1]				:= 310;
 aTargetPos[2]				:= 10;
 aTargetPos[3]				:= 400;
 aTargetPos[4]				:= 0;
-aTargetPos[5]				:= 90;
+aTargetPos[5]				:= 70;
 aTargetPos[6]				:= 0;
 aTransitionParam[1]			:= 0;//200; //blending distance on previous segment (InvokeId=10), defines when to leave line
 aTransitionParam[2]			:= 0;//2400; //blending distance on this segment, defines latest positionn to be back  on line of InovkeId=20 
@@ -958,7 +958,7 @@ aTargetPos[1]				:= 300;
 aTargetPos[2]				:= 0;
 aTargetPos[3]				:= 415;
 aTargetPos[4]				:= 0;
-aTargetPos[5]				:= 90;
+aTargetPos[5]				:= 80;
 aTargetPos[6]				:= 0;
 aTransitionParam[1]			:= 0;//2250; 
 aTransitionParam[2]			:= 0;//2250;

@@ -3261,7 +3261,7 @@ and will return to Group State Standby when the situation permits.
 					<Encoder Name="Enc" EncType="16">
 						<EncPara ScaleFactorNumerator="0.00917197452229299" Inverse="true" EncMode="1" MaxCount="#xffffffff">
 							<SoftEndMinControl Enable="true" Range="-75"/>
-							<SoftEndMaxControl Enable="true" Range="130"/>
+							<SoftEndMaxControl Enable="true" Range="100"/>
 							<Inc RefSearchInverse="true" RefSyncInverse="false" RefPosition="-77" HomingSensorSource="9"/>
 						</EncPara>
 						<Vars VarGrpType="1">
@@ -5353,7 +5353,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{9C6C396A-01D9-F76C-8D09-8F7BE9CE1EED}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{A1C5E3CE-E3E0-0C21-3F63-98626FC66225}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="2" AreaNo="1">
