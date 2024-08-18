@@ -268,17 +268,19 @@ CASE Sequence OF
 		END_IF
 		
 	5: //
-		offsetFrame.X:=MCS[1].NcToPlc.ActPos; offsetFrame.Y:=MCS[2].NcToPlc.ActPos; offsetFrame.Z:=MCS[3].NcToPlc.ActPos;
-		offsetFrame.A:=-MCS[4].NcToPlc.ActPos; offsetFrame.B:=MCS[5].NcToPlc.ActPos; offsetFrame.C:=-MCS[6].NcToPlc.ActPos;
+// 		offsetFrame.X:=MCS[1].NcToPlc.ActPos; offsetFrame.Y:=MCS[2].NcToPlc.ActPos; offsetFrame.Z:=MCS[3].NcToPlc.ActPos;
+// 		offsetFrame.A:=-MCS[4].NcToPlc.ActPos; offsetFrame.B:=MCS[5].NcToPlc.ActPos; offsetFrame.C:=-MCS[6].NcToPlc.ActPos;
+		offsetFrame.X:=0; offsetFrame.Y:=0; offsetFrame.Z:=0;
+		offsetFrame.A:=0; offsetFrame.B:=0; offsetFrame.C:=0;
 		offsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_X1Y2Z3;
-		offsetFrame.Direction := MC.ReferenceDefDir.fromReference;
+		offsetFrame.Direction := MC.ReferenceDefDir.toReference;
 		TcpCoordinateFrame(Execute:=FALSE);
 		Sequence := Sequence + 1;
 		
 	6: // set coordinate frame offset
 		TcpCoordinateFrame(
 			Execute:= TRUE, 
-			oidTrafo:= 16#01010030, 
+			oidTrafo:= 16#01010010, 
 			OffsetFrame:= offsetFrame, 
 			Done=> , 
 			Busy=> , 
@@ -290,25 +292,25 @@ CASE Sequence OF
 		END_IF
 		
 	7: //
-		//mcSetCoordinateTransform(AxesGroup:= stGroupRef, Execute:= FALSE);
+		mcSetCoordinateTransform(AxesGroup:= stGroupRef, Execute:= FALSE);
 		Sequence := Sequence + 1;
 		
 	8: //
-// 		mcSetCoordinateTransform(
-// 			AxesGroup:= stGroupRef, 
-// 			Execute:= TRUE, 
-// 			CoordTransform:= 16#01010030, 
-// 			Done=> , 
-// 			Busy=> , 
-// 			Active=> , 
-// 			CommandAborted=> , 
-// 			Error=> , 
-// 			ErrorId=> );
-// 		IF mcSetCoordinateTransform.Done THEN
+		mcSetCoordinateTransform(
+			AxesGroup:= stGroupRef, 
+			Execute:= TRUE, 
+			CoordTransform:= 16#01010010, 
+			Done=> , 
+			Busy=> , 
+			Active=> , 
+			CommandAborted=> , 
+			Error=> , 
+			ErrorId=> );
+		IF mcSetCoordinateTransform.Done THEN
  			Sequence := Sequence + 1;
-// 		ELSIF mcSetCoordinateTransform.Error THEN
-// 			//
-// 		END_IF
+		ELSIF mcSetCoordinateTransform.Error THEN
+			//
+		END_IF
 		
 	9: // add paths
 		IF TcpMode THEN
@@ -933,9 +935,9 @@ bMovePrepError := bMovePrepError OR fbSetCoordTransPrep.Error;
 aTargetPos[1]				:= 300;
 aTargetPos[2]				:= 0;
 aTargetPos[3]				:= 415;
-aTargetPos[4]				:= -180;
-aTargetPos[5]				:= 35;
-aTargetPos[6]				:= -180;
+aTargetPos[4]				:= 0;
+aTargetPos[5]				:= 90;
+aTargetPos[6]				:= 0;
 aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
 aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
 fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 10);
@@ -944,9 +946,9 @@ bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
 aTargetPos[1]				:= 310;
 aTargetPos[2]				:= 10;
 aTargetPos[3]				:= 400;
-aTargetPos[4]				:= -180;
-aTargetPos[5]				:= 45;
-aTargetPos[6]				:= -180;
+aTargetPos[4]				:= 0;
+aTargetPos[5]				:= 90;
+aTargetPos[6]				:= 0;
 aTransitionParam[1]			:= 0;//200; //blending distance on previous segment (InvokeId=10), defines when to leave line
 aTransitionParam[2]			:= 0;//2400; //blending distance on this segment, defines latest positionn to be back  on line of InovkeId=20 
 fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 20); 
@@ -955,9 +957,9 @@ bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
 aTargetPos[1]				:= 300;
 aTargetPos[2]				:= 0;
 aTargetPos[3]				:= 415;
-aTargetPos[4]				:= -180;
-aTargetPos[5]				:= 35;
-aTargetPos[6]				:= -180;
+aTargetPos[4]				:= 0;
+aTargetPos[5]				:= 90;
+aTargetPos[6]				:= 0;
 aTransitionParam[1]			:= 0;//2250; 
 aTransitionParam[2]			:= 0;//2250;
 fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 30);
