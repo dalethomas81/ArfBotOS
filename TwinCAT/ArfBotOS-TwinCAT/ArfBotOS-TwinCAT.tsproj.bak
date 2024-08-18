@@ -3100,7 +3100,6 @@ and will return to Group State Standby when the situation permits.
 							<SoftEndMinControl Enable="true" Range="-160"/>
 							<SoftEndMaxControl Enable="true" Range="120"/>
 							<Inc RefSearchInverse="true" RefSyncInverse="false" RefPosition="-166" HomingSensorSource="9"/>
-							<ParameterChanged>35</ParameterChanged>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>

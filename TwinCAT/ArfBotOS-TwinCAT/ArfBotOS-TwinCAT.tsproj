@@ -3261,7 +3261,7 @@ and will return to Group State Standby when the situation permits.
 					<Encoder Name="Enc" EncType="16">
 						<EncPara ScaleFactorNumerator="0.00917197452229299" Inverse="true" EncMode="1" MaxCount="#xffffffff">
 							<SoftEndMinControl Enable="true" Range="-75"/>
-							<SoftEndMaxControl Enable="true" Range="130"/>
+							<SoftEndMaxControl Enable="true" Range="100"/>
 							<Inc RefSearchInverse="true" RefSyncInverse="false" RefPosition="-77" HomingSensorSource="9"/>
 						</EncPara>
 						<Vars VarGrpType="1">
