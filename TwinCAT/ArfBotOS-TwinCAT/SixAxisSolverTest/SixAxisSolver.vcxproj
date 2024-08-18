@@ -128,11 +128,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Kinematics.cpp" />
+    <ClCompile Include="MatrixUtils.cpp" />
     <ClCompile Include="SixAxisSolver.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Kinematics.h" />
-    <ClInclude Include="Matrix.h" />
+    <ClInclude Include="MatrixUtils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

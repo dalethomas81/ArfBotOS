@@ -1,66 +1,32 @@
 #pragma once
 
-#define __DEBUG__KIN //Output to console the debug data
+#ifndef KINEMATICS_h
+#define KINEMATICS_h
 
-#include "Matrix.h"
+#include "MatrixUtils.h"
 
 #include <iostream>
 #include <vector>
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-template <int _Dof = 6>
-struct Manipulator_t
-{
-    std::array<double, _Dof> d;
-    std::array<double, _Dof> alfa;
-    std::array<double, _Dof> r;
-    std::array<double, _Dof> theta;
+class Kinematics {
+    private:
+        int num_of_joints;
+        int num_of_joints_declared;
+        double joint_screw_axes[6][6];
+        double initial_end_effector_pose[4][4];
+        MatrixUtils mat_utils;
+
+    public:
+        Kinematics(int num_of_joints_);
+
+        void add_joint_axis(double s1, double s2, double s3, double s4, double s5, double s6);
+        void add_initial_end_effector_pose(double m11, double m12, double m13, double m14, double m21, double m22, double m23, double m24, double m31, double m32, double m33, double m34, double m41, double m42, double m43, double m44);
+        
+        void forward(double* joint_angles, double* transform);
+        void inverse(double* transform, double* jac, double* pinv, double* A_t, double* AA_t, double* A_tA, double* initial_joint_angles, double ew, double ev, double max_iterations, double* joint_angles);
+        void jacobian(double* joint_angles, double* jacobian);
 };
 
-struct Position_t
-{
-    double x {0}, y{0}, z{0};
-    double wx{0}, wy{0}, wz{0};
-};
-
-enum class CalculationResult_t
-{
-    RESULT_ERROR = 0,
-    RESULT_SUCCESSFULL,
-};
-
-#ifdef __DEBUG__KIN
-#define DEBUG_MATRIX(m) m.printMatrix(std::cout);
-#define DEBUG_STR(s) std::cout << s << std::endl;
-#define DEBUG_DH 
-#else
-#define DEBUG_MATRIX(m)
-#define DEBUG_STR(s)
 #endif
-
-class KinematicsCalc
-{
-    using calc_t = double;
-private:
-    static const int DEFAULT_DOF = 6;
-
-    const Manipulator_t<DEFAULT_DOF> &_man;
-
-public:
-    explicit KinematicsCalc(const Manipulator_t<> &);
-    explicit KinematicsCalc(Manipulator_t<> &&);
-
-    // Calculation the effector position by angles - 6DOF
-    CalculationResult_t forwardKinematics(const std::vector<calc_t>& t, Position_t& out);
-
-    // Calculation the joints angles by effector position
-    CalculationResult_t inverseKinematics(const Position_t&, std::vector<calc_t>&);
-
-private:
-    void inverseTransformMatrix(Matrix<calc_t> &m, Matrix<calc_t> &out);
-    void transformMatrixToPosition(Matrix<calc_t> &m, Position_t &out);
-    void positionToTransformMatrix(const Position_t &pos, Matrix<calc_t> &out);
-    void createDHFrameMatrix(calc_t theta, calc_t alfa, calc_t r, calc_t d, Matrix<calc_t> &out);
-    void orthogonalize(Matrix<calc_t>& m);
-};

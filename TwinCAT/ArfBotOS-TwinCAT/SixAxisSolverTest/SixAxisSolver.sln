@@ -5,10 +5,6 @@ VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SixAxisSolver", "SixAxisSolver.vcxproj", "{62B03E75-4679-4EBF-A99C-D1EF3C0B06B3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kinematics", "..\Kinematics\Kinematics.vcxproj", "{32B7CE8C-7DC0-473C-BDC2-CF4D8C0E1C13}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RobotManipulator", "..\RobotManipulator\RobotManipulator.vcxproj", "{6F8ED4D0-A988-43F9-9917-44EA44808DC4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -25,22 +21,6 @@ Global
 		{62B03E75-4679-4EBF-A99C-D1EF3C0B06B3}.Release|x64.Build.0 = Release|x64
 		{62B03E75-4679-4EBF-A99C-D1EF3C0B06B3}.Release|x86.ActiveCfg = Release|Win32
 		{62B03E75-4679-4EBF-A99C-D1EF3C0B06B3}.Release|x86.Build.0 = Release|Win32
-		{32B7CE8C-7DC0-473C-BDC2-CF4D8C0E1C13}.Debug|x64.ActiveCfg = Debug|x64
-		{32B7CE8C-7DC0-473C-BDC2-CF4D8C0E1C13}.Debug|x64.Build.0 = Debug|x64
-		{32B7CE8C-7DC0-473C-BDC2-CF4D8C0E1C13}.Debug|x86.ActiveCfg = Debug|Win32
-		{32B7CE8C-7DC0-473C-BDC2-CF4D8C0E1C13}.Debug|x86.Build.0 = Debug|Win32
-		{32B7CE8C-7DC0-473C-BDC2-CF4D8C0E1C13}.Release|x64.ActiveCfg = Release|x64
-		{32B7CE8C-7DC0-473C-BDC2-CF4D8C0E1C13}.Release|x64.Build.0 = Release|x64
-		{32B7CE8C-7DC0-473C-BDC2-CF4D8C0E1C13}.Release|x86.ActiveCfg = Release|Win32
-		{32B7CE8C-7DC0-473C-BDC2-CF4D8C0E1C13}.Release|x86.Build.0 = Release|Win32
-		{6F8ED4D0-A988-43F9-9917-44EA44808DC4}.Debug|x64.ActiveCfg = Debug|x64
-		{6F8ED4D0-A988-43F9-9917-44EA44808DC4}.Debug|x64.Build.0 = Debug|x64
-		{6F8ED4D0-A988-43F9-9917-44EA44808DC4}.Debug|x86.ActiveCfg = Debug|Win32
-		{6F8ED4D0-A988-43F9-9917-44EA44808DC4}.Debug|x86.Build.0 = Debug|Win32
-		{6F8ED4D0-A988-43F9-9917-44EA44808DC4}.Release|x64.ActiveCfg = Release|x64
-		{6F8ED4D0-A988-43F9-9917-44EA44808DC4}.Release|x64.Build.0 = Release|x64
-		{6F8ED4D0-A988-43F9-9917-44EA44808DC4}.Release|x86.ActiveCfg = Release|Win32
-		{6F8ED4D0-A988-43F9-9917-44EA44808DC4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
