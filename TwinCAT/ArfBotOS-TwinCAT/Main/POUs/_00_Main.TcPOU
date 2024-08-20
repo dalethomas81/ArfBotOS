@@ -60,7 +60,7 @@ VAR
     fbUngroupAxes: MC_UngroupAllAxes;
     fbGroupReset: MC_GroupReset;
 	fbGroupSetOvr: MC_GroupSetOverride;
-	fVelocityFactor: LREAL:=1.0;
+	fVelocityFactor: LREAL:=0.2;
     
 	bEnable: BOOL;
 	
@@ -119,6 +119,7 @@ VAR
 	
 	
 	//fbSixAxisSolver: FB_SixAxisSolver
+	McsCoordinateFrame: FB_CoordinateFrame;
 	TcpCoordinateFrame: FB_CoordinateFrame;
 	offsetFrame: DUT_CoordFrame;
 	SetTcpOffset: BOOL;
@@ -128,7 +129,12 @@ VAR
 	TcpMode: BOOL;
 	
 	
-
+	{attribute 'TcInitSymbol'}
+	oidEndNode_MCS: MC_COORD_REF;
+	{attribute 'TcInitSymbol'}
+	oidEndNode_TCP: MC_COORD_REF;
+	{attribute 'TcInitSymbol'}
+	oidEndNode_TCP1: MC_COORD_REF;
 	
 	
 	
@@ -159,12 +165,7 @@ FOR _i:=1 TO NumberOfAxes BY 1 DO
 	stAxesConfig.nAxisIdsMcs[_i] := mcs[_i].NcToPlc.AxisId;
 END_FOR
 
-
-
-
-
-
-
+//
 fbGroupReadStatus(
 	AxesGroup:= stGroupRef, 
 	Enable:= TRUE , 
@@ -185,6 +186,7 @@ ELSIF NOT fbGroupReadStatus.Valid THEN
 	//	
 END_IF
 
+//
 fbGroupSetOvr(
 	AxesGroup:= stGroupRef, 
 	Enable:= TRUE, 
@@ -194,11 +196,11 @@ fbGroupSetOvr(
 	Error=> , 
 	ErrorId=> , 
 	ActualVelFactor=> );
-
 IF fbGroupSetOvr.Error THEN
 	//
 END_IF
 
+//
 CASE Sequence OF
 	-3: // reset group
 		ResetKinGroup := TRUE;
@@ -215,6 +217,7 @@ CASE Sequence OF
 		bCartesianMode := FALSE;
 		ConfigKinGroup := FALSE;
 		mcSetCoordinateTransform(AxesGroup:= stGroupRef, Execute:= FALSE);
+		McsCoordinateFrame(Execute:=FALSE);
 		TcpCoordinateFrame(Execute:=FALSE);
 		fbUngroupAxes(AxesGroup:= stGroupRef, Execute:= FALSE);
 		fbGroupReset(AxesGroup:= stGroupRef , Execute:= FALSE);
@@ -259,7 +262,6 @@ CASE Sequence OF
 		
 	4: // enable group
 		fbGroupEnable(AxesGroup:=stGroupRef , Execute:=TRUE);
-		 
 		IF fbGroupEnable.Done THEN
 			fbGroupEnable(AxesGroup:=stGroupRef , Execute:=FALSE);
 			Sequence := Sequence + 1;
@@ -267,20 +269,40 @@ CASE Sequence OF
 			//
 		END_IF
 		
-	5: //
-// 		offsetFrame.X:=MCS[1].NcToPlc.ActPos; offsetFrame.Y:=MCS[2].NcToPlc.ActPos; offsetFrame.Z:=MCS[3].NcToPlc.ActPos;
-// 		offsetFrame.A:=-MCS[4].NcToPlc.ActPos; offsetFrame.B:=MCS[5].NcToPlc.ActPos; offsetFrame.C:=-MCS[6].NcToPlc.ActPos;
+	5: // set MCS
 		offsetFrame.X:=0; offsetFrame.Y:=0; offsetFrame.Z:=0;
 		offsetFrame.A:=0; offsetFrame.B:=0; offsetFrame.C:=0;
-		offsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_X1Y2Z3;
-		offsetFrame.Direction := MC.ReferenceDefDir.toReference;
-		TcpCoordinateFrame(Execute:=FALSE);
+		offsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_Z3Y2X1_DIN9300;
+		offsetFrame.Direction := MC.ReferenceDefDir.fromReference;
+		McsCoordinateFrame(Execute:=FALSE);
 		Sequence := Sequence + 1;
 		
 	6: // set coordinate frame offset
+		McsCoordinateFrame(
+			Execute:= TRUE, 
+			oidTrafo:= oidEndNode_MCS, 
+			OffsetFrame:= offsetFrame, 
+			Done=> , 
+			Busy=> , 
+			Error=> );
+		IF McsCoordinateFrame.Done THEN
+ 			Sequence := Sequence + 1;
+		ELSIF McsCoordinateFrame.Error THEN
+			//
+		END_IF
+		
+	7: // set TCP
+		offsetFrame.X:=MCS[1].NcToPlc.ActPos; offsetFrame.Y:=MCS[2].NcToPlc.ActPos; offsetFrame.Z:=MCS[3].NcToPlc.ActPos;
+		offsetFrame.A:=MCS[4].NcToPlc.ActPos; offsetFrame.B:=MCS[5].NcToPlc.ActPos; offsetFrame.C:=MCS[6].NcToPlc.ActPos;
+		offsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_Z3Y2X1_DIN9300;
+		offsetFrame.Direction := MC.ReferenceDefDir.fromReference;
+		TcpCoordinateFrame(Execute:=FALSE);
+		Sequence := Sequence + 1;
+		
+	8: // set coordinate frame offset
 		TcpCoordinateFrame(
 			Execute:= TRUE, 
-			oidTrafo:= 16#01010010, 
+			oidTrafo:= oidEndNode_TCP, 
 			OffsetFrame:= offsetFrame, 
 			Done=> , 
 			Busy=> , 
@@ -291,15 +313,15 @@ CASE Sequence OF
 			//
 		END_IF
 		
-	7: //
+	9: // set the active coordinate frame (not really needed here for testing since we do it for each add path node)
 		mcSetCoordinateTransform(AxesGroup:= stGroupRef, Execute:= FALSE);
 		Sequence := Sequence + 1;
 		
-	8: //
+	10: //
 		mcSetCoordinateTransform(
 			AxesGroup:= stGroupRef, 
 			Execute:= TRUE, 
-			CoordTransform:= 16#01010010, 
+			CoordTransform:= SEL(TcpMode, oidEndNode_MCS, oidEndNode_TCP), 
 			Done=> , 
 			Busy=> , 
 			Active=> , 
@@ -312,7 +334,7 @@ CASE Sequence OF
 			//
 		END_IF
 		
-	9: // add paths
+	11: // add paths
 		IF TcpMode THEN
 			A_AddPaths_Tcp();
 		ELSE
@@ -324,7 +346,7 @@ CASE Sequence OF
 			Sequence := Sequence + 1;
 		END_IF
 		
-	10: // move
+	12: // move
 		fbMovePath(
 			AxesGroup:= stGroupRef , 
 			PathData:= path , 
@@ -338,12 +360,12 @@ CASE Sequence OF
 			//	
 		END_IF
 		
-	11: //
+	13: //
 		fbStop(AxesGroup:=stGroupRef, Execute:= FALSE);
 		fbStop(AxesGroup:=stGroupRef, Execute:= TRUE, Jerk:= MC_IGNORE);
 		Sequence := Sequence + 1;
 	
-	12: // stop the group
+	14: // stop the group
 		fbStop(AxesGroup:=stGroupRef, Execute:= TRUE);
 		IF fbStop.Done THEN
 			fbStop(AxesGroup:=stGroupRef, Execute:= FALSE);	
@@ -352,7 +374,7 @@ CASE Sequence OF
 			//
 		END_IF
 		
-	13: // disable group and remove all axes 
+	15: // disable group and remove all axes 
 		fbUngroupAxes(AxesGroup:= stGroupRef, Execute:= FALSE);
 		//Check that axes are not moving else we will get a position jump
 		IF fbGroupReadStatus.GroupStandby OR fbGroupReadStatus.GroupErrorStop OR fbGroupReadStatus.GroupNotReady THEN
@@ -360,7 +382,7 @@ CASE Sequence OF
 			Sequence := Sequence + 1;
 		END_IF	
 		
-	14: //
+	16: //
 		fbUngroupAxes(AxesGroup:= stGroupRef, Execute:= TRUE);
 		IF fbUngroupAxes.Done THEN
 			Sequence := Sequence + 1;
@@ -368,12 +390,12 @@ CASE Sequence OF
 			//
 		END_IF
 		
-	15: //
+	17: //
 		fbGroupReset(AxesGroup:= stGroupRef , Execute:= FALSE);
 		fbGroupReset(AxesGroup:= stGroupRef , Execute:= TRUE);
 		Sequence := Sequence + 1;
 		
-	16: //
+	18: //
 		fbGroupReset(AxesGroup:= stGroupRef , Execute:= TRUE);
 		IF fbGroupReset.Done THEN
 			IF fbGroupReadStatus.GroupDisabled THEN
@@ -982,16 +1004,16 @@ fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
 fbMoveLinPrep.Jerk							:= MC_DEFAULT;
 
 //
-fbSetCoordTransPrep(PathData:=path, CoordTransform:=16#01010030);
+fbSetCoordTransPrep(PathData:=path, CoordTransform:=oidEndNode_TCP);
 bMovePrepError := bMovePrepError OR fbSetCoordTransPrep.Error;
 
 //1st node
 aTargetPos[1]				:= 0;
 aTargetPos[2]				:= 0;
-aTargetPos[3]				:= 10;
-aTargetPos[4]				:= 0;
-aTargetPos[5]				:= 0;
-aTargetPos[6]				:= 0;
+aTargetPos[3]				:= 0;
+aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + -10.0;
+aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0;
+aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0;
 aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
 aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
 fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 10);

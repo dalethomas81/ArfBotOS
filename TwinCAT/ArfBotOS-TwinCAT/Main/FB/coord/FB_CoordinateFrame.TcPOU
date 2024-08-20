@@ -16,6 +16,7 @@ VAR_OUTPUT
 END_VAR
 VAR
 	_ExecuteRtrig: R_TRIG;
+	_ExecuteFtrig: F_TRIG;
 	_DesiredOffset: ARRAY [1..6] OF LREAL;
 	_fbKinUnlockTrafoParam: FB_KinUnlockTrafoParam;
 	_fbKinLockTrafoParam: FB_KinLockTrafoParam;
@@ -34,6 +35,15 @@ END_VAR
 // https://infosys.beckhoff.com/content/1033/tf5110-tf5113_tc3_kinematic_transformation/1955902347.html?id=3846917459939213436
 
 _ExecuteRtrig(CLK:=Execute);
+_ExecuteFtrig(CLK:=Execute);
+
+IF _ExecuteFtrig.Q THEN
+	_Sequence := 0;
+	Error := FALSE;
+	Done := FALSE;
+	_UnlockParam := FALSE;
+	_LockParam := FALSE;
+END_IF
 
 Busy := _Sequence <> 0;
 
