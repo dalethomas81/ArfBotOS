@@ -6,7 +6,7 @@ VAR_INPUT
 	Execute				: BOOL;
 END_VAR
 VAR_IN_OUT
-	stGroupRef : AXES_GROUP_REF;
+	stGroupRef: AXES_GROUP_REF;
 	mcs: ARRAY[1..6] OF AXIS_REF;
 END_VAR
 VAR_OUTPUT
@@ -27,9 +27,6 @@ Error := FALSE;
 fbAddAxis[1].IdentInGroup := MCS_X; //X-Axis
 fbAddAxis[2].IdentInGroup := MCS_Y; //Y-Axis
 fbAddAxis[3].IdentInGroup := MCS_Z; //Z-Axis
-// fbAddAxis[4].IdentInGroup := MCS_A1;//1st rotation is A-rotation (around X-Axis)
-// fbAddAxis[5].IdentInGroup := MCS_B2;//2nd rotation is B-rotation (around Y-Axis)
-// fbAddAxis[6].IdentInGroup := MCS_C3;//3rd rotation is C-rotation (around Z-Axis)
 fbAddAxis[4].IdentInGroup := ADDAX1;
 fbAddAxis[5].IdentInGroup := ADDAX2;
 fbAddAxis[6].IdentInGroup := ADDAX3;

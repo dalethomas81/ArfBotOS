@@ -2558,14 +2558,307 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
+			<Name GUID="{6C6A0556-EBC5-D04D-5EEB-F615F91F008D}" AutoDeleteType="true">DUT_PositionController</Name>
+			<BitSize>512</BitSize>
+			<SubItem>
+				<Name>fKp</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>fPartVelPilotControl</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>64</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>fDeadTime</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>128</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>fMaxPositionDiff</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>192</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>fSWMaxVelocity</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>256</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>fSWMaxAcceleration</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>320</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>fSWMaxDeceleration</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>384</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>fSWMaxJerk</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>448</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name IecBaseType="true">ARRAY [0..5] OF DUT_PositionController</Name>
+			<BitSize>3072</BitSize>
+			<BaseType GUID="{6C6A0556-EBC5-D04D-5EEB-F615F91F008D}">DUT_PositionController</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>6</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{61B091ED-6D9A-F576-02D0-C0070A566086}" AutoDeleteType="true">DUT_CommandType</Name>
+			<BitSize>16</BitSize>
+			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
+			<EnumInfo>
+				<Text><![CDATA[Disabled]]></Text>
+				<Enum>0</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[MoveCommand]]></Text>
+				<Enum>1</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[PauseCommand]]></Text>
+				<Enum>2</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[InputCommand]]></Text>
+				<Enum>3</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[OutputCommand]]></Text>
+				<Enum>4</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[VisionCommand]]></Text>
+				<Enum>5</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[CncCommand]]></Text>
+				<Enum>6</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[VarSetCommand]]></Text>
+				<Enum>7</Enum>
+			</EnumInfo>
+			<EnumInfo>
+				<Text><![CDATA[LogicCommand]]></Text>
+				<Enum>8</Enum>
+			</EnumInfo>
+			<Properties>
+				<Property>
+					<Name>textlistenumeration</Name>
+				</Property>
+				<Property>
+					<Name>qualified_only</Name>
+				</Property>
+				<Property>
+					<Name>strict</Name>
+				</Property>
+				<Property>
+					<Name>to_string</Name>
+				</Property>
+				<Property>
+					<Name>to_string_function</Name>
+					<Value>__TO_STRING__1569</Value>
+				</Property>
+				<Property>
+					<Name>to_wstring_function</Name>
+					<Value>__TO_WSTRING__1569</Value>
+				</Property>
+				<Property>
+					<Name>generate_implicit_init_function</Name>
+				</Property>
+			</Properties>
+		</DataType>
+		<DataType>
+			<Name GUID="{BC96C198-E917-B665-916C-CE7CBA9E63DC}" AutoDeleteType="true">DUT_Command</Name>
+			<BitSize>2720</BitSize>
+			<SubItem>
+				<Name>CommandType</Name>
+				<Type GUID="{61B091ED-6D9A-F576-02D0-C0070A566086}">DUT_CommandType</Type>
+				<BitSize>16</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>CommandString</Name>
+				<Type GUID="{18071995-0000-0000-0000-0001000000FF}">STRING(255)</Type>
+				<BitSize>2048</BitSize>
+				<BitOffs>16</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>CommandComment</Name>
+				<Type GUID="{18071995-0000-0000-0000-000100000050}">STRING(80)</Type>
+				<BitSize>648</BitSize>
+				<BitOffs>2064</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name GUID="{CACA7BE5-290A-1C62-B145-A4976448CCC6}" AutoDeleteType="true">DUT_Program</Name>
+			<BitSize>136656</BitSize>
+			<SubItem>
+				<Name>ProgramName</Name>
+				<Type GUID="{18071995-0000-0000-0000-000100000050}">STRING(80)</Type>
+				<BitSize>648</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Commands</Name>
+				<Type GUID="{BC96C198-E917-B665-916C-CE7CBA9E63DC}">DUT_Command</Type>
+				<ArrayInfo>
+					<LBound>0</LBound>
+					<Elements>50</Elements>
+				</ArrayInfo>
+				<BitSize>136000</BitSize>
+				<BitOffs>656</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name IecBaseType="true">ARRAY [0..19] OF DUT_Program</Name>
+			<BitSize>2733120</BitSize>
+			<BaseType GUID="{CACA7BE5-290A-1C62-B145-A4976448CCC6}">DUT_Program</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>20</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{714BCD3F-8FEA-87F2-6DC3-E09D7A5E2846}" AutoDeleteType="true">DUT_COORD_REF</Name>
+			<BitSize>384</BitSize>
+			<SubItem>
+				<Name>X</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Y</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>64</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Z</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>128</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>A</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>192</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>B</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>256</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>C</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</Type>
+				<BitSize>64</BitSize>
+				<BitOffs>320</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name GUID="{253AA491-293D-EE01-B5C3-A5A2ED8D1CE8}" AutoDeleteType="true">DUT_StoredPosition</Name>
+			<BitSize>1088</BitSize>
+			<SubItem>
+				<Name>Comment</Name>
+				<Type GUID="{18071995-0000-0000-0000-000100000050}">STRING(80)</Type>
+				<BitSize>648</BitSize>
+				<BitOffs>0</BitOffs>
+			</SubItem>
+			<SubItem>
+				<Name>Position</Name>
+				<Type GUID="{714BCD3F-8FEA-87F2-6DC3-E09D7A5E2846}">DUT_COORD_REF</Type>
+				<BitSize>384</BitSize>
+				<BitOffs>704</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name IecBaseType="true">ARRAY [0..49] OF DUT_StoredPosition</Name>
+			<BitSize>54400</BitSize>
+			<BaseType GUID="{253AA491-293D-EE01-B5C3-A5A2ED8D1CE8}">DUT_StoredPosition</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>50</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{D6E996A8-2171-D6D1-2A17-2DD547FFF9FE}" AutoDeleteType="true">DUT_VisionRegister</Name>
+			<BitSize>1152</BitSize>
+			<ExtendsType GUID="{253AA491-293D-EE01-B5C3-A5A2ED8D1CE8}">DUT_StoredPosition</ExtendsType>
+			<SubItem>
+				<Name>Scaling</Name>
+				<Type GUID="{18071995-0000-0000-0000-00000000000D}">REAL</Type>
+				<BitSize>32</BitSize>
+				<BitOffs>1088</BitOffs>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name IecBaseType="true">ARRAY [0..49] OF DUT_VisionRegister</Name>
+			<BitSize>57600</BitSize>
+			<BaseType GUID="{D6E996A8-2171-D6D1-2A17-2DD547FFF9FE}">DUT_VisionRegister</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>50</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
+			<Name GUID="{1DECCFBC-CD73-8A3F-E208-31DEE8033F84}" AutoDeleteType="true">DUT_Flags</Name>
+			<BitSize>656</BitSize>
+			<SubItem>
+				<Name>Comment</Name>
+				<Type GUID="{18071995-0000-0000-0000-000100000050}">STRING(80)</Type>
+				<BitSize>648</BitSize>
+				<BitOffs>0</BitOffs>
+				<Default>
+					<String><![CDATA[]]></String>
+				</Default>
+			</SubItem>
+			<SubItem>
+				<Name>Value</Name>
+				<Type GUID="{18071995-0000-0000-0000-000000000030}">BOOL</Type>
+				<BitSize>8</BitSize>
+				<BitOffs>648</BitOffs>
+				<Default>
+					<Bool>false</Bool>
+				</Default>
+			</SubItem>
+		</DataType>
+		<DataType>
+			<Name IecBaseType="true">ARRAY [0..49] OF DUT_Flags</Name>
+			<BitSize>32800</BitSize>
+			<BaseType GUID="{1DECCFBC-CD73-8A3F-E208-31DEE8033F84}">DUT_Flags</BaseType>
+			<ArrayInfo>
+				<LBound>0</LBound>
+				<Elements>50</Elements>
+			</ArrayInfo>
+		</DataType>
+		<DataType>
 			<Name GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion" AutoDeleteType="true">MC_COORD_REF</Name>
 			<BitSize>32</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-00000000000F}">OTCID</BaseType>
 		</DataType>
 	</DataTypes>
 	<ImageDatas>
-		<ImageData Id="1000">424d360300000000000036000000280000001000000010000000010018000000000000000000c40e0000c40e00000000000000000000fffffffffffffffffffffffffffffffffffffffffffdfcfdfffefdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff4e34ce2212e1f9f0edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffceceff0000ff0f07f0f8b785ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff6a6aff0000ff6b3394ff8415fffaf6fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff6f6ff0f0fff0000ffd07a5dff7900ffc896ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa1a1ff0000ff3535ffffd4adff7900fd871cfffdfcfffffffffffffffffffffffffffffffffffffffffffffffff9f9f91313be0000ff9a9afffffefdde6f0cff7900fb9232ffeedffffffffffffffffffffffffffffffffffffff1f1f143434300003a040489fafaffffffffcb9d73ea6f00ff7900ff7f0cffc794fffefeffffffffffffffffffe6e6e6303030050505393939222222fffffffffffff3f3f3170c03d37b2bff7900ff7900ff9a3ffff0e2ffffffd8d8d81f1f1f0c0c0cb8b8b8484848353535ffffffffffffffffff303030434343ffd4adff8517ff7900ffac61f7f7f7131313171717ccccccffffff353535484848ffffffffffffffffff6a6a6a0d0d0dfcfcfcfff6edffbc80ffe4ccfcfcfc8d8d8ddededeffffffffffff2222225c5c5cffffffffffffffffffa3a3a3000000d0d0d0ffffffffffffffffffffffffffffffffffffffffffffffff0e0e0e6f6f6fffffffffffffffffffdddddd000000979797fffffffffffffffffffffffffffffffffffffffffffdfdfd010101858585ffffffffffffffffffffffff1616165e5e5effffffffffffffffffffffffffffffffffffffffffffffffb4b4b4e9e9e9ffffffffffffffffffffffff8989899a9a9affffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff</ImageData>
-		<ImageData Id="1001">424d360500000000000036040000280000001000000010000000010008000000000000000000c40e0000c40e00000001000000010000000000ff000080ff008000ff008080ff800000ff800080ff808000ffc0c0c0ffc0dcc0fff0caa6ff002040ff002060ff002080ff0020a0ff0020c0ff0020e0ff004000ff004020ff004040ff004060ff004080ff0040a0ff0040c0ff0040e0ff006000ff006020ff006040ff006060ff006080ff0060a0ff0060c0ff0060e0ff008000ff008020ff008040ff008060ff008080ff0080a0ff0080c0ff0080e0ff00a000ff00a020ff00a040ff00a060ff00a080ff00a0a0ff00a0c0ff00a0e0ff00c000ff00c020ff00c040ff00c060ff00c080ff00c0a0ff00c0c0ff00c0e0ff00e000ff00e020ff00e040ff00e060ff00e080ff00e0a0ff00e0c0ff00e0e0ff400000ff400020ff400040ff400060ff400080ff4000a0ff4000c0ff4000e0ff402000ff402020ff402040ff402060ff402080ff4020a0ff4020c0ff4020e0ff404000ff404020ff404040ff404060ff404080ff4040a0ff4040c0ff4040e0ff406000ff406020ff406040ff406060ff406080ff4060a0ff4060c0ff4060e0ff408000ff408020ff408040ff408060ff408080ff4080a0ff4080c0ff4080e0ff40a000ff40a020ff40a040ff40a060ff40a080ff40a0a0ff40a0c0ff40a0e0ff40c000ff40c020ff40c040ff40c060ff40c080ff40c0a0ff40c0c0ff40c0e0ff40e000ff40e020ff40e040ff40e060ff40e080ff40e0a0ff40e0c0ff40e0e0ff800000ff800020ff800040ff800060ff800080ff8000a0ff8000c0ff8000e0ff802000ff802020ff802040ff802060ff802080ff8020a0ff8020c0ff8020e0ff804000ff804020ff804040ff804060ff804080ff8040a0ff8040c0ff8040e0ff806000ff806020ff806040ff806060ff806080ff8060a0ff8060c0ff8060e0ff808000ff808020ff808040ff808060ff808080ff8080a0ff8080c0ff8080e0ff80a000ff80a020ff80a040ff80a060ff80a080ff80a0a0ff80a0c0ff80a0e0ff80c000ff80c020ff80c040ff80c060ff80c080ff80c0a0ff80c0c0ff80c0e0ff80e000ff80e020ff80e040ff80e060ff80e080ff80e0a0ff80e0c0ff80e0e0ffc00000ffc00020ffc00040ffc00060ffc00080ffc000a0ffc000c0ffc000e0ffc02000ffc02020ffc02040ffc02060ffc02080ffc020a0ffc020c0ffc020e0ffc04000ffc04020ffc04040ffc04060ffc04080ffc040a0ffc040c0ffc040e0ffc06000ffc06020ffc06040ffc06060ffc06080ffc060a0ffc060c0ffc060e0ffc08000ffc08020ffc08040ffc08060ffc08080ffc080a0ffc080c0ffc080e0ffc0a000ffc0a020ffc0a040ffc0a060ffc0a080ffc0a0a0ffc0a0c0ffc0a0e0ffc0c000ffc0c020ffc0c040ffc0c060ffc0c080ffc0c0a0fff0fbffffa4a0a0ff808080ff0000ffff00ff00ff00ffffffff0000ffff00ffffffff00ffffffffffafefffffffffffffffffffffffffffff075556aff6ffffffffffffffffffffffff565556efffffffffffffffffffffffff0756f957f6ffffffffffffffffffffffffef9ff957f6ffffffffeddbf6ffffffffffff5ff954fcfcfcfcfc04049b07ffffffffff2532fcfcfcfcc90404db09ffffffffff79faffffffffede4f6ffffffffffffff79faffffffffffffffffffffffffffff79faffffffffffffffffffffffffffff79faffffffffffffffffffffffffff08793908ffffffffffffffffffffffffbd6a6abdfffffffffffffffffffffffff67272f6ffffffffffffffffffffffffffb4b4ffffffffffffffffffffffffffff0808ffffffffffffffffff</ImageData>
+		<ImageData Id="1000">424d360500000000000036040000280000001000000010000000010008000000000000000000c40e0000c40e00000001000000010000000000ff000080ff008000ff008080ff800000ff800080ff808000ffc0c0c0ffc0dcc0fff0caa6ff002040ff002060ff002080ff0020a0ff0020c0ff0020e0ff004000ff004020ff004040ff004060ff004080ff0040a0ff0040c0ff0040e0ff006000ff006020ff006040ff006060ff006080ff0060a0ff0060c0ff0060e0ff008000ff008020ff008040ff008060ff008080ff0080a0ff0080c0ff0080e0ff00a000ff00a020ff00a040ff00a060ff00a080ff00a0a0ff00a0c0ff00a0e0ff00c000ff00c020ff00c040ff00c060ff00c080ff00c0a0ff00c0c0ff00c0e0ff00e000ff00e020ff00e040ff00e060ff00e080ff00e0a0ff00e0c0ff00e0e0ff400000ff400020ff400040ff400060ff400080ff4000a0ff4000c0ff4000e0ff402000ff402020ff402040ff402060ff402080ff4020a0ff4020c0ff4020e0ff404000ff404020ff404040ff404060ff404080ff4040a0ff4040c0ff4040e0ff406000ff406020ff406040ff406060ff406080ff4060a0ff4060c0ff4060e0ff408000ff408020ff408040ff408060ff408080ff4080a0ff4080c0ff4080e0ff40a000ff40a020ff40a040ff40a060ff40a080ff40a0a0ff40a0c0ff40a0e0ff40c000ff40c020ff40c040ff40c060ff40c080ff40c0a0ff40c0c0ff40c0e0ff40e000ff40e020ff40e040ff40e060ff40e080ff40e0a0ff40e0c0ff40e0e0ff800000ff800020ff800040ff800060ff800080ff8000a0ff8000c0ff8000e0ff802000ff802020ff802040ff802060ff802080ff8020a0ff8020c0ff8020e0ff804000ff804020ff804040ff804060ff804080ff8040a0ff8040c0ff8040e0ff806000ff806020ff806040ff806060ff806080ff8060a0ff8060c0ff8060e0ff808000ff808020ff808040ff808060ff808080ff8080a0ff8080c0ff8080e0ff80a000ff80a020ff80a040ff80a060ff80a080ff80a0a0ff80a0c0ff80a0e0ff80c000ff80c020ff80c040ff80c060ff80c080ff80c0a0ff80c0c0ff80c0e0ff80e000ff80e020ff80e040ff80e060ff80e080ff80e0a0ff80e0c0ff80e0e0ffc00000ffc00020ffc00040ffc00060ffc00080ffc000a0ffc000c0ffc000e0ffc02000ffc02020ffc02040ffc02060ffc02080ffc020a0ffc020c0ffc020e0ffc04000ffc04020ffc04040ffc04060ffc04080ffc040a0ffc040c0ffc040e0ffc06000ffc06020ffc06040ffc06060ffc06080ffc060a0ffc060c0ffc060e0ffc08000ffc08020ffc08040ffc08060ffc08080ffc080a0ffc080c0ffc080e0ffc0a000ffc0a020ffc0a040ffc0a060ffc0a080ffc0a0a0ffc0a0c0ffc0a0e0ffc0c000ffc0c020ffc0c040ffc0c060ffc0c080ffc0c0a0fff0fbffffa4a0a0ff808080ff0000ffff00ff00ff00ffffffff0000ffff00ffffffff00ffffffffffafefffffffffffffffffffffffffffff075556aff6ffffffffffffffffffffffff565556efffffffffffffffffffffffff0756f957f6ffffffffffffffffffffffffef9ff957f6ffffffffeddbf6ffffffffffff5ff954fcfcfcfcfc04049b07ffffffffff2532fcfcfcfcc90404db09ffffffffff79faffffffffede4f6ffffffffffffff79faffffffffffffffffffffffffffff79faffffffffffffffffffffffffffff79faffffffffffffffffffffffffff08793908ffffffffffffffffffffffffbd6a6abdfffffffffffffffffffffffff67272f6ffffffffffffffffffffffffffb4b4ffffffffffffffffffffffffffff0808ffffffffffffffffff</ImageData>
 	</ImageDatas>
 	<Project ProjectGUID="{CA42EB36-CB6B-418A-B554-7163163680CE}" Target64Bit="true" ShowHideConfigurations="#x6">
 		<System>
@@ -4825,7 +5118,7 @@ and will return to Group State Standby when the situation permits.
 				</Channel>
 				<Modules>
 					<Module Id="#x05120010" KeepUnrestoredLinks="2">
-						<Name>Group1 (MC Group Coordinated Motion)</Name>
+						<Name>MC Group Coordinated Motion</Name>
 						<ImageId>468</ImageId>
 						<TmcDesc GUID="{8FAC954E-515F-490B-95E8-C4A8C88230A1}" TcSmClass="TComMcGroupObj">
 							<Name>MC Group Coordinated Motion</Name>
@@ -5033,75 +5326,9 @@ and will return to Group State Standby when the situation permits.
 								</Value>
 							</ParameterValues>
 						</TmcDesc>
-						<Module Id="#x01010040" KeepUnrestoredLinks="2">
-							<Name>Node Connector</Name>
-							<ImageId>1000</ImageId>
-							<TmcDesc GUID="{42D04AB9-D485-4D42-9BBA-B9092D89BC0B}">
-								<Name>Node Connector</Name>
-								<CLSID ClassFactory="TcNcKin">{0501011B-0000-0000-F000-000000000064}</CLSID>
-								<Info>
-									<ImageData>424d360300000000000036000000280000001000000010000000010018000000000000000000c40e0000c40e00000000000000000000fffffffffffffffffffffffffffffffffffffffffffdfcfdfffefdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff4e34ce2212e1f9f0edffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffceceff0000ff0f07f0f8b785ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff6a6aff0000ff6b3394ff8415fffaf6fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff6f6ff0f0fff0000ffd07a5dff7900ffc896ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffa1a1ff0000ff3535ffffd4adff7900fd871cfffdfcfffffffffffffffffffffffffffffffffffffffffffffffff9f9f91313be0000ff9a9afffffefdde6f0cff7900fb9232ffeedffffffffffffffffffffffffffffffffffffff1f1f143434300003a040489fafaffffffffcb9d73ea6f00ff7900ff7f0cffc794fffefeffffffffffffffffffe6e6e6303030050505393939222222fffffffffffff3f3f3170c03d37b2bff7900ff7900ff9a3ffff0e2ffffffd8d8d81f1f1f0c0c0cb8b8b8484848353535ffffffffffffffffff303030434343ffd4adff8517ff7900ffac61f7f7f7131313171717ccccccffffff353535484848ffffffffffffffffff6a6a6a0d0d0dfcfcfcfff6edffbc80ffe4ccfcfcfc8d8d8ddededeffffffffffff2222225c5c5cffffffffffffffffffa3a3a3000000d0d0d0ffffffffffffffffffffffffffffffffffffffffffffffff0e0e0e6f6f6fffffffffffffffffffdddddd000000979797fffffffffffffffffffffffffffffffffffffffffffdfdfd010101858585ffffffffffffffffffffffff1616165e5e5effffffffffffffffffffffffffffffffffffffffffffffffb4b4b4e9e9e9ffffffffffffffffffffffff8989899a9a9affffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff</ImageData>
-								</Info>
-								<InitSequence>PSO</InitSequence>
-								<Contexts>
-									<Context>
-										<Id>1</Id>
-										<Name>Default</Name>
-									</Context>
-								</Contexts>
-								<Interfaces>
-									<Interface>
-										<Type GUID="{0500000F-0000-0000-E000-000000000064}">ITcNcBaseTrafo</Type>
-									</Interface>
-								</Interfaces>
-								<Parameters>
-									<Group><![CDATA[Configuration]]></Group>
-									<Group><![CDATA[Kinematic]]></Group>
-									<Group><![CDATA[Dynamic]]></Group>
-									<Group><![CDATA[Drive Torques]]></Group>
-									<Parameter Group="Configuration">
-										<Name>Start node</Name>
-										<Comment><![CDATA[First spatial node. Coordinates are interpreted in respect to this reference node. 0x0 represents the world coordinate system (WCS).]]></Comment>
-										<BitSize>32</BitSize>
-										<BaseType GUID="{18071995-0000-0000-0000-00000000000F}">OTCID</BaseType>
-										<Default>
-											<Value>0x0</Value>
-										</Default>
-										<PTCID>#x05010108</PTCID>
-									</Parameter>
-									<Parameter Group="Configuration">
-										<Name>End node</Name>
-										<Comment><![CDATA[Last spatial node. This node is moved in respect to the start node. 0x0 represents the world coordinate system (WCS).]]></Comment>
-										<BitSize>32</BitSize>
-										<BaseType GUID="{18071995-0000-0000-0000-00000000000F}">OTCID</BaseType>
-										<Default>
-											<Value>0x0</Value>
-										</Default>
-										<PTCID>#x05010107</PTCID>
-									</Parameter>
-								</Parameters>
-								<Properties>
-									<Property>
-										<Name>Category</Name>
-										<Value>MC Object</Value>
-									</Property>
-								</Properties>
-								<ParentOTCID>#x05120010</ParentOTCID>
-								<ParameterValues>
-									<Value>
-										<Name>Start node</Name>
-										<Value>0</Value>
-									</Value>
-									<Value>
-										<Name>End node</Name>
-										<Value>16842800</Value>
-									</Value>
-								</ParameterValues>
-							</TmcDesc>
-						</Module>
 						<Module Id="#x01010030" KeepUnrestoredLinks="2">
 							<Name>TCP</Name>
-							<ImageId>1001</ImageId>
+							<ImageId>1000</ImageId>
 							<TmcDesc GUID="{D2858F83-8230-43B5-89F9-76806794012A}">
 								<Name>Coordinate Frame</Name>
 								<CLSID ClassFactory="TcNcKin">{0501007E-0000-0000-F000-000000000064}</CLSID>
@@ -5252,7 +5479,7 @@ and will return to Group State Standby when the situation permits.
 						</Module>
 						<Module Id="#x01010010" KeepUnrestoredLinks="2">
 							<Name>MCS</Name>
-							<ImageId>1001</ImageId>
+							<ImageId>1000</ImageId>
 							<TmcDesc GUID="{D2858F83-8230-43B5-89F9-76806794012A}">
 								<Name>Coordinate Frame</Name>
 								<CLSID ClassFactory="TcNcKin">{0501007E-0000-0000-F000-000000000064}</CLSID>
@@ -5406,6 +5633,308 @@ and will return to Group State Standby when the situation permits.
 								</ParameterValues>
 							</TmcDesc>
 						</Module>
+						<Module Id="#x01010050" KeepUnrestoredLinks="2">
+							<Name>UCS1</Name>
+							<ImageId>1000</ImageId>
+							<TmcDesc GUID="{D2858F83-8230-43B5-89F9-76806794012A}">
+								<Name>Coordinate Frame</Name>
+								<CLSID ClassFactory="TcNcKin">{0501007E-0000-0000-F000-000000000064}</CLSID>
+								<Info>
+									<ImageData>424d360500000000000036040000280000001000000010000000010008000000000000000000c40e0000c40e00000001000000010000000000ff000080ff008000ff008080ff800000ff800080ff808000ffc0c0c0ffc0dcc0fff0caa6ff002040ff002060ff002080ff0020a0ff0020c0ff0020e0ff004000ff004020ff004040ff004060ff004080ff0040a0ff0040c0ff0040e0ff006000ff006020ff006040ff006060ff006080ff0060a0ff0060c0ff0060e0ff008000ff008020ff008040ff008060ff008080ff0080a0ff0080c0ff0080e0ff00a000ff00a020ff00a040ff00a060ff00a080ff00a0a0ff00a0c0ff00a0e0ff00c000ff00c020ff00c040ff00c060ff00c080ff00c0a0ff00c0c0ff00c0e0ff00e000ff00e020ff00e040ff00e060ff00e080ff00e0a0ff00e0c0ff00e0e0ff400000ff400020ff400040ff400060ff400080ff4000a0ff4000c0ff4000e0ff402000ff402020ff402040ff402060ff402080ff4020a0ff4020c0ff4020e0ff404000ff404020ff404040ff404060ff404080ff4040a0ff4040c0ff4040e0ff406000ff406020ff406040ff406060ff406080ff4060a0ff4060c0ff4060e0ff408000ff408020ff408040ff408060ff408080ff4080a0ff4080c0ff4080e0ff40a000ff40a020ff40a040ff40a060ff40a080ff40a0a0ff40a0c0ff40a0e0ff40c000ff40c020ff40c040ff40c060ff40c080ff40c0a0ff40c0c0ff40c0e0ff40e000ff40e020ff40e040ff40e060ff40e080ff40e0a0ff40e0c0ff40e0e0ff800000ff800020ff800040ff800060ff800080ff8000a0ff8000c0ff8000e0ff802000ff802020ff802040ff802060ff802080ff8020a0ff8020c0ff8020e0ff804000ff804020ff804040ff804060ff804080ff8040a0ff8040c0ff8040e0ff806000ff806020ff806040ff806060ff806080ff8060a0ff8060c0ff8060e0ff808000ff808020ff808040ff808060ff808080ff8080a0ff8080c0ff8080e0ff80a000ff80a020ff80a040ff80a060ff80a080ff80a0a0ff80a0c0ff80a0e0ff80c000ff80c020ff80c040ff80c060ff80c080ff80c0a0ff80c0c0ff80c0e0ff80e000ff80e020ff80e040ff80e060ff80e080ff80e0a0ff80e0c0ff80e0e0ffc00000ffc00020ffc00040ffc00060ffc00080ffc000a0ffc000c0ffc000e0ffc02000ffc02020ffc02040ffc02060ffc02080ffc020a0ffc020c0ffc020e0ffc04000ffc04020ffc04040ffc04060ffc04080ffc040a0ffc040c0ffc040e0ffc06000ffc06020ffc06040ffc06060ffc06080ffc060a0ffc060c0ffc060e0ffc08000ffc08020ffc08040ffc08060ffc08080ffc080a0ffc080c0ffc080e0ffc0a000ffc0a020ffc0a040ffc0a060ffc0a080ffc0a0a0ffc0a0c0ffc0a0e0ffc0c000ffc0c020ffc0c040ffc0c060ffc0c080ffc0c0a0fff0fbffffa4a0a0ff808080ff0000ffff00ff00ff00ffffffff0000ffff00ffffffff00ffffffffffafefffffffffffffffffffffffffffff075556aff6ffffffffffffffffffffffff565556efffffffffffffffffffffffff0756f957f6ffffffffffffffffffffffffef9ff957f6ffffffffeddbf6ffffffffffff5ff954fcfcfcfcfc04049b07ffffffffff2532fcfcfcfcc90404db09ffffffffff79faffffffffede4f6ffffffffffffff79faffffffffffffffffffffffffffff79faffffffffffffffffffffffffffff79faffffffffffffffffffffffffff08793908ffffffffffffffffffffffffbd6a6abdfffffffffffffffffffffffff67272f6ffffffffffffffffffffffffffb4b4ffffffffffffffffffffffffffff0808ffffffffffffffffff</ImageData>
+								</Info>
+								<InitSequence>SO</InitSequence>
+								<Contexts>
+									<Context>
+										<Id>1</Id>
+										<Name>Default</Name>
+									</Context>
+								</Contexts>
+								<Parameters>
+									<Group><![CDATA[Configuration]]></Group>
+									<Group><![CDATA[Kinematic]]></Group>
+									<Group><![CDATA[Dynamic]]></Group>
+									<Group><![CDATA[Drive Torques]]></Group>
+									<Parameter Group="Configuration">
+										<Name>Rotation convention</Name>
+										<Comment><![CDATA[Set the interpretation of the rotation angles.]]></Comment>
+										<BitSize>32</BitSize>
+										<BaseType GUID="{51331DA4-5C7F-468D-9414-F84151973968}" Namespace="MC">CoordInterpretation_SO3</BaseType>
+										<Default>
+											<Value>#x605</Value>
+										</Default>
+										<PTCID>#x05010116</PTCID>
+									</Parameter>
+									<Parameter Group="Configuration">
+										<Name>Definition direction</Name>
+										<Comment><![CDATA[Set the definition direction.]]></Comment>
+										<BitSize>32</BitSize>
+										<BaseType GUID="{173BACEF-49A7-4284-8B3C-5DF99756AD53}" Namespace="MC">ReferenceDefDir</BaseType>
+										<Default>
+											<Value>0</Value>
+										</Default>
+										<PTCID>#x05010117</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Translation X</Name>
+										<Comment><![CDATA[Translation in x-direction]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010110</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Translation Y</Name>
+										<Comment><![CDATA[Translation in y-direction]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010111</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Translation Z</Name>
+										<Comment><![CDATA[Translation in z-direction]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010112</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Rotation 1</Name>
+										<Comment><![CDATA[Rotation angle 1, interpretation set by rotation convention]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[°]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010113</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Rotation 2</Name>
+										<Comment><![CDATA[Rotation angle 2, interpretation set by rotation convention]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[°]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010114</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Rotation 3</Name>
+										<Comment><![CDATA[Rotation angle 3, interpretation set by rotation convention]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[°]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010115</PTCID>
+									</Parameter>
+								</Parameters>
+								<Properties>
+									<Property>
+										<Name>Category</Name>
+										<Value>MC Object</Value>
+									</Property>
+								</Properties>
+								<ParentOTCID>#x05120010</ParentOTCID>
+								<ParameterValues>
+									<Value>
+										<Name>Rotation convention</Name>
+										<EnumText>Rotation_Z3Y2X1_DIN9300</EnumText>
+									</Value>
+									<Value>
+										<Name>Definition direction</Name>
+										<EnumText>toReference</EnumText>
+									</Value>
+									<Value>
+										<Name>Translation X</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Translation Y</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Translation Z</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Rotation 1</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Rotation 2</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Rotation 3</Name>
+										<Value>0</Value>
+									</Value>
+								</ParameterValues>
+							</TmcDesc>
+						</Module>
+						<Module Id="#x01010060" KeepUnrestoredLinks="2">
+							<Name>UCS2</Name>
+							<ImageId>1000</ImageId>
+							<TmcDesc GUID="{D2858F83-8230-43B5-89F9-76806794012A}">
+								<Name>Coordinate Frame</Name>
+								<CLSID ClassFactory="TcNcKin">{0501007E-0000-0000-F000-000000000064}</CLSID>
+								<Info>
+									<ImageData>424d360500000000000036040000280000001000000010000000010008000000000000000000c40e0000c40e00000001000000010000000000ff000080ff008000ff008080ff800000ff800080ff808000ffc0c0c0ffc0dcc0fff0caa6ff002040ff002060ff002080ff0020a0ff0020c0ff0020e0ff004000ff004020ff004040ff004060ff004080ff0040a0ff0040c0ff0040e0ff006000ff006020ff006040ff006060ff006080ff0060a0ff0060c0ff0060e0ff008000ff008020ff008040ff008060ff008080ff0080a0ff0080c0ff0080e0ff00a000ff00a020ff00a040ff00a060ff00a080ff00a0a0ff00a0c0ff00a0e0ff00c000ff00c020ff00c040ff00c060ff00c080ff00c0a0ff00c0c0ff00c0e0ff00e000ff00e020ff00e040ff00e060ff00e080ff00e0a0ff00e0c0ff00e0e0ff400000ff400020ff400040ff400060ff400080ff4000a0ff4000c0ff4000e0ff402000ff402020ff402040ff402060ff402080ff4020a0ff4020c0ff4020e0ff404000ff404020ff404040ff404060ff404080ff4040a0ff4040c0ff4040e0ff406000ff406020ff406040ff406060ff406080ff4060a0ff4060c0ff4060e0ff408000ff408020ff408040ff408060ff408080ff4080a0ff4080c0ff4080e0ff40a000ff40a020ff40a040ff40a060ff40a080ff40a0a0ff40a0c0ff40a0e0ff40c000ff40c020ff40c040ff40c060ff40c080ff40c0a0ff40c0c0ff40c0e0ff40e000ff40e020ff40e040ff40e060ff40e080ff40e0a0ff40e0c0ff40e0e0ff800000ff800020ff800040ff800060ff800080ff8000a0ff8000c0ff8000e0ff802000ff802020ff802040ff802060ff802080ff8020a0ff8020c0ff8020e0ff804000ff804020ff804040ff804060ff804080ff8040a0ff8040c0ff8040e0ff806000ff806020ff806040ff806060ff806080ff8060a0ff8060c0ff8060e0ff808000ff808020ff808040ff808060ff808080ff8080a0ff8080c0ff8080e0ff80a000ff80a020ff80a040ff80a060ff80a080ff80a0a0ff80a0c0ff80a0e0ff80c000ff80c020ff80c040ff80c060ff80c080ff80c0a0ff80c0c0ff80c0e0ff80e000ff80e020ff80e040ff80e060ff80e080ff80e0a0ff80e0c0ff80e0e0ffc00000ffc00020ffc00040ffc00060ffc00080ffc000a0ffc000c0ffc000e0ffc02000ffc02020ffc02040ffc02060ffc02080ffc020a0ffc020c0ffc020e0ffc04000ffc04020ffc04040ffc04060ffc04080ffc040a0ffc040c0ffc040e0ffc06000ffc06020ffc06040ffc06060ffc06080ffc060a0ffc060c0ffc060e0ffc08000ffc08020ffc08040ffc08060ffc08080ffc080a0ffc080c0ffc080e0ffc0a000ffc0a020ffc0a040ffc0a060ffc0a080ffc0a0a0ffc0a0c0ffc0a0e0ffc0c000ffc0c020ffc0c040ffc0c060ffc0c080ffc0c0a0fff0fbffffa4a0a0ff808080ff0000ffff00ff00ff00ffffffff0000ffff00ffffffff00ffffffffffafefffffffffffffffffffffffffffff075556aff6ffffffffffffffffffffffff565556efffffffffffffffffffffffff0756f957f6ffffffffffffffffffffffffef9ff957f6ffffffffeddbf6ffffffffffff5ff954fcfcfcfcfc04049b07ffffffffff2532fcfcfcfcc90404db09ffffffffff79faffffffffede4f6ffffffffffffff79faffffffffffffffffffffffffffff79faffffffffffffffffffffffffffff79faffffffffffffffffffffffffff08793908ffffffffffffffffffffffffbd6a6abdfffffffffffffffffffffffff67272f6ffffffffffffffffffffffffffb4b4ffffffffffffffffffffffffffff0808ffffffffffffffffff</ImageData>
+								</Info>
+								<InitSequence>SO</InitSequence>
+								<Contexts>
+									<Context>
+										<Id>1</Id>
+										<Name>Default</Name>
+									</Context>
+								</Contexts>
+								<Parameters>
+									<Group><![CDATA[Configuration]]></Group>
+									<Group><![CDATA[Kinematic]]></Group>
+									<Group><![CDATA[Dynamic]]></Group>
+									<Group><![CDATA[Drive Torques]]></Group>
+									<Parameter Group="Configuration">
+										<Name>Rotation convention</Name>
+										<Comment><![CDATA[Set the interpretation of the rotation angles.]]></Comment>
+										<BitSize>32</BitSize>
+										<BaseType GUID="{51331DA4-5C7F-468D-9414-F84151973968}" Namespace="MC">CoordInterpretation_SO3</BaseType>
+										<Default>
+											<Value>#x605</Value>
+										</Default>
+										<PTCID>#x05010116</PTCID>
+									</Parameter>
+									<Parameter Group="Configuration">
+										<Name>Definition direction</Name>
+										<Comment><![CDATA[Set the definition direction.]]></Comment>
+										<BitSize>32</BitSize>
+										<BaseType GUID="{173BACEF-49A7-4284-8B3C-5DF99756AD53}" Namespace="MC">ReferenceDefDir</BaseType>
+										<Default>
+											<Value>0</Value>
+										</Default>
+										<PTCID>#x05010117</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Translation X</Name>
+										<Comment><![CDATA[Translation in x-direction]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010110</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Translation Y</Name>
+										<Comment><![CDATA[Translation in y-direction]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010111</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Translation Z</Name>
+										<Comment><![CDATA[Translation in z-direction]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[mm]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010112</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Rotation 1</Name>
+										<Comment><![CDATA[Rotation angle 1, interpretation set by rotation convention]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[°]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010113</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Rotation 2</Name>
+										<Comment><![CDATA[Rotation angle 2, interpretation set by rotation convention]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[°]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010114</PTCID>
+									</Parameter>
+									<Parameter Group="Kinematic">
+										<Name>Rotation 3</Name>
+										<Comment><![CDATA[Rotation angle 3, interpretation set by rotation convention]]></Comment>
+										<BitSize>64</BitSize>
+										<BaseType GUID="{18071995-0000-0000-0000-00000000000E}">LREAL</BaseType>
+										<Unit><![CDATA[°]]></Unit>
+										<Default>
+											<Value>0.0</Value>
+										</Default>
+										<PTCID>#x05010115</PTCID>
+									</Parameter>
+								</Parameters>
+								<Properties>
+									<Property>
+										<Name>Category</Name>
+										<Value>MC Object</Value>
+									</Property>
+								</Properties>
+								<ParentOTCID>#x05120010</ParentOTCID>
+								<ParameterValues>
+									<Value>
+										<Name>Rotation convention</Name>
+										<EnumText>Rotation_Z3Y2X1_DIN9300</EnumText>
+									</Value>
+									<Value>
+										<Name>Definition direction</Name>
+										<EnumText>toReference</EnumText>
+									</Value>
+									<Value>
+										<Name>Translation X</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Translation Y</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Translation Z</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Rotation 1</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Rotation 2</Name>
+										<Value>0</Value>
+									</Value>
+									<Value>
+										<Name>Rotation 3</Name>
+										<Value>0</Value>
+									</Value>
+								</ParameterValues>
+							</TmcDesc>
+						</Module>
 					</Module>
 					<Parameters>
 						<Parameter>
@@ -5418,9 +5947,48 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{E58F5E1F-1D5A-9EE9-56EC-32C601DC3B7E}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{6D75288D-D297-2A31-668F-8ABDE7F2F7C7}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
+					<Vars VarGrpType="8" AreaNo="4">
+						<Name>PlcTask Retains</Name>
+						<Var>
+							<Name>PersistentVars.VisionSystemPort</Name>
+							<Type>UINT</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>PersistentVars.PositionControllers</Name>
+							<Type GUID="{873E62D6-2103-62DF-E991-2F5352C4AE8B}">ARRAY [0..5] OF DUT_PositionController</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>PersistentVars.VisionSystemIpAddress</Name>
+							<Comment><![CDATA[ vision]]></Comment>
+							<Type>STRING(19)</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>PersistentVars.Programs</Name>
+							<Type GUID="{80C48D82-04A6-F17D-2AF3-A38CA6B34498}">ARRAY [0..19] OF DUT_Program</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>PersistentVars.StoredPositions</Name>
+							<Type GUID="{E9C0A808-4113-37DD-A541-FFCB7E910137}">ARRAY [0..49] OF DUT_StoredPosition</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>PersistentVars.VisionRegisters</Name>
+							<Type GUID="{CCCB94DE-C276-DA60-DFD9-24564C06399F}">ARRAY [0..49] OF DUT_VisionRegister</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>PersistentVars.Flags</Name>
+							<Type GUID="{3E17E049-7235-3828-4255-C95966CFE06E}">ARRAY [0..49] OF DUT_Flags</Type>
+							<InOut>7</InOut>
+						</Var>
+					</Vars>
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
 						<Var>
@@ -5482,6 +6050,10 @@ and will return to Group State Standby when the situation permits.
 						<Var>
 							<Name>_00_Main.stGroupRef.PlcToNc</Name>
 							<Type GUID="{0E2E3852-A98C-4AF3-81E2-209EE128940C}" Namespace="MC">CDT_PLCTOMC_GROUP</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.fbGroupHandler._stPlcToKin</Name>
+							<Type GUID="{48415C2A-E750-483B-A619-8655B2BEA4B8}" Namespace="MC">PLCTONC_NCICHANNEL_REF</Type>
 						</Var>
 					</Vars>
 					<Vars VarGrpType="1">
@@ -5546,6 +6118,10 @@ and will return to Group State Standby when the situation permits.
 							<Name>_00_Main.stGroupRef.NcToPlc</Name>
 							<Type GUID="{467F4325-10DF-4BC1-88DD-E8240EB4F8E3}" Namespace="MC">CDT_MCTOPLC_GROUP</Type>
 						</Var>
+						<Var>
+							<Name>_00_Main.fbGroupHandler._stKinToPlc</Name>
+							<Type GUID="{56354211-98EF-4057-9322-975DEAD0E29D}" Namespace="MC">NCTOPLC_NCICHANNEL_REF</Type>
+						</Var>
 					</Vars>
 					<Contexts>
 						<Context>
@@ -5573,6 +6149,30 @@ and will return to Group State Standby when the situation permits.
 							<Name>_00_Main.oidEndNode_TCP1</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
 							<Data>40000101</Data>
+						</InitSymbol>
+						<InitSymbol>
+							<Name>_00_Main.fbGroupHandler._OidEndNode_MCS</Name>
+							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
+							<AreaNo>#x00000003</AreaNo>
+							<Data>00000000</Data>
+						</InitSymbol>
+						<InitSymbol>
+							<Name>_00_Main.fbGroupHandler._OidEndNode_UCS1</Name>
+							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
+							<AreaNo>#x00000003</AreaNo>
+							<Data>00000000</Data>
+						</InitSymbol>
+						<InitSymbol>
+							<Name>_00_Main.fbGroupHandler._OidEndNode_UCS2</Name>
+							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
+							<AreaNo>#x00000003</AreaNo>
+							<Data>00000000</Data>
+						</InitSymbol>
+						<InitSymbol>
+							<Name>_00_Main.fbGroupHandler._OidEndNode_TCP</Name>
+							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
+							<AreaNo>#x00000003</AreaNo>
+							<Data>00000000</Data>
 						</InitSymbol>
 					</InitSymbols>
 					<TaskPouOids>
@@ -5944,7 +6544,7 @@ and will return to Group State Standby when the situation permits.
 				<Link VarA="PlcTask Inputs^_00_Main.in_stKinToPlc" VarB="Outputs^ToPlc"/>
 				<Link VarA="PlcTask Outputs^_00_Main.out_stPlcToKin" VarB="Inputs^FromPlc"/>
 			</OwnerB>
-			<OwnerB Name="TINC^NC-Task 1 SAF^Objects^Group1 (MC Group Coordinated Motion)">
+			<OwnerB Name="TINC^NC-Task 1 SAF^Objects^MC Group Coordinated Motion">
 				<Link VarA="PlcTask Inputs^_00_Main.stGroupRef.NcToPlc" VarB="Group Outputs^ToPLC"/>
 				<Link VarA="PlcTask Outputs^_00_Main.stGroupRef.PlcToNc" VarB="Group Inputs^FromPLC"/>
 			</OwnerB>

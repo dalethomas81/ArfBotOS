@@ -51,8 +51,8 @@ VAR_GLOBAL CONSTANT
 	HOM_POS_IDX: INT:=44; // homing offsets
 	DEC_START_POS: INT:=45; // start position for the nc decoder
 	TCP_POS_IDX: INT:=46; // tool center point offset
-	PC2_POS_IDX: INT:=47; // part 2 coordinate system offset
-	PC1_POS_IDX: INT:=48; // part 1 coordinate system offset
+	UC2_POS_IDX: INT:=47; // user 2 coordinate system offset
+	UC1_POS_IDX: INT:=48; // user 1 coordinate system offset
 	MCS_POS_IDX: INT:=49; // machine (robot) coordinate system offset
 	
 	// vision registers

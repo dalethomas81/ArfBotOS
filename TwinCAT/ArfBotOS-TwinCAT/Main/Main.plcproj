@@ -111,6 +111,9 @@
     <Compile Include="FB\controller\ST_Triggers.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FB\coord\DUT_CoordSystem.TcTLEO">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="FB\coord\DUT_CoordFrame.TcDUT">
       <SubType>Code</SubType>
     </Compile>

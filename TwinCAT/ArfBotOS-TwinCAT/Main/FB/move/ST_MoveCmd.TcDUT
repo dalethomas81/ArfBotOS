@@ -6,7 +6,7 @@ STRUCT
 	/// common
 	MoveType: DUT_Command_MoveType := DUT_Command_MoveType.DirectMove;
 	Speed: LREAL := 0.0;
-	//CoordSystem: SMC_COORD_SYSTEM := SMC_COORD_SYSTEM.ACS;
+	CoordSystem: DUT_CoordSystem := DUT_CoordSystem.ACS;
 	/// direct/linear moves
 	PositionType: DUT_Command_PositionType := DUT_Command_PositionType.AbsolutePosition;
 	CoordinateType: DUT_Command_CoordinateType := DUT_Command_CoordinateType.Literal;

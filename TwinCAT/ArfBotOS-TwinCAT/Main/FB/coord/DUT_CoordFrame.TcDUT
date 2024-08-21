@@ -3,7 +3,7 @@
   <DUT Name="DUT_CoordFrame" Id="{3ead019c-a82b-4b11-8106-a8694dda9b2e}">
     <Declaration><![CDATA[TYPE DUT_CoordFrame :
 STRUCT
-	X, Y, Z, A, B, C: LREAL;
+	Position: DUT_COORD_REF;
 	Interpretation: MC.CoordInterpretation_SO3;
 	Direction: MC.ReferenceDefDir;
 END_STRUCT

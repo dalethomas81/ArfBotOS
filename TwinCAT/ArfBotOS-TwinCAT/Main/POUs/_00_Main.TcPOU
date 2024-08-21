@@ -136,7 +136,7 @@ VAR
 	{attribute 'TcInitSymbol'}
 	oidEndNode_TCP1: MC_COORD_REF;
 	
-	
+	fbGroupHandler: FB_GroupHandler;
 	
 END_VAR]]></Declaration>
     <Implementation>
@@ -158,33 +158,35 @@ IF FirstScan THEN
 	//
 END_IF
 
+
+
 // https://infosys.beckhoff.com/content/1033/tf5240_kinematic_transformation/292852107.html?id=2424647827091372088
 (* read the IDs from the cyclic axis interface so the axes can mapped later to the kinematic group *)
-FOR _i:=1 TO NumberOfAxes BY 1 DO
-	stAxesConfig.nAxisIdsAcs[_i] := acs[_i].NcToPlc.AxisId;
-	stAxesConfig.nAxisIdsMcs[_i] := mcs[_i].NcToPlc.AxisId;
-END_FOR
+// FOR _i:=1 TO NumberOfAxes BY 1 DO
+// 	stAxesConfig.nAxisIdsAcs[_i] := acs[_i].NcToPlc.AxisId;
+// 	stAxesConfig.nAxisIdsMcs[_i] := mcs[_i].NcToPlc.AxisId;
+// END_FOR
 
 //
-fbGroupReadStatus(
-	AxesGroup:= stGroupRef, 
-	Enable:= TRUE , 
-	Valid=> , 
-	Busy=> , 
-	GroupMoving=> , 
-	GroupHoming=> , 
-	GroupErrorStop=> , 
-	GroupNotReady=> , 
-	GroupStandby=> , 
-	GroupStopping=> , 
-	GroupDisabled=> , 
-	Error=> , 
-	ErrorId=> );
-IF fbGroupReadStatus.Error THEN
-	//
-ELSIF NOT fbGroupReadStatus.Valid THEN
-	//	
-END_IF
+// fbGroupReadStatus(
+// 	AxesGroup:= stGroupRef, 
+// 	Enable:= TRUE , 
+// 	Valid=> , 
+// 	Busy=> , 
+// 	GroupMoving=> , 
+// 	GroupHoming=> , 
+// 	GroupErrorStop=> , 
+// 	GroupNotReady=> , 
+// 	GroupStandby=> , 
+// 	GroupStopping=> , 
+// 	GroupDisabled=> , 
+// 	Error=> , 
+// 	ErrorId=> );
+// IF fbGroupReadStatus.Error THEN
+// 	//
+// ELSIF NOT fbGroupReadStatus.Valid THEN
+// 	//	
+// END_IF
 
 //
 fbGroupSetOvr(
@@ -203,136 +205,136 @@ END_IF
 //
 CASE Sequence OF
 	-3: // reset group
-		ResetKinGroup := TRUE;
+		//ResetKinGroup := TRUE;
 		Sequence := Sequence + 1;
 	
 	-2: // wait for group to be reset then init
-		IF fbKinResetGroup.bDone THEN
-			Sequence := Sequence + 1;
-		END_IF
+// 		IF fbKinResetGroup.bDone THEN
+ 			Sequence := Sequence + 1;
+// 		END_IF
 		
 	-1: // initialize
-		ResetKinGroup := FALSE;
-		//bEnable := FALSE;
-		bCartesianMode := FALSE;
-		ConfigKinGroup := FALSE;
-		mcSetCoordinateTransform(AxesGroup:= stGroupRef, Execute:= FALSE);
-		McsCoordinateFrame(Execute:=FALSE);
-		TcpCoordinateFrame(Execute:=FALSE);
-		fbUngroupAxes(AxesGroup:= stGroupRef, Execute:= FALSE);
-		fbGroupReset(AxesGroup:= stGroupRef , Execute:= FALSE);
-		fbAddAllAxes(Execute:= FALSE, stGroupRef:=stGroupRef, mcs:=mcs);
-		fbStop(AxesGroup:=stGroupRef, Execute:= FALSE);
-		fbGroupEnable(AxesGroup:=stGroupRef , Execute:=FALSE);
+// 		ResetKinGroup := FALSE;
+// 		bCartesianMode := FALSE;
+// 		ConfigKinGroup := FALSE;
+// 		mcSetCoordinateTransform(AxesGroup:= stGroupRef, Execute:= FALSE);
+// 		McsCoordinateFrame(Execute:=FALSE);
+// 		TcpCoordinateFrame(Execute:=FALSE);
+// 		fbUngroupAxes(AxesGroup:= stGroupRef, Execute:= FALSE);
+// 		fbGroupReset(AxesGroup:= stGroupRef , Execute:= FALSE);
+// 		fbAddAllAxes(Execute:= FALSE, stGroupRef:=stGroupRef, mcs:=mcs);
+// 		fbStop(AxesGroup:=stGroupRef, Execute:= FALSE);
+// 		fbGroupEnable(AxesGroup:=stGroupRef , Execute:=FALSE);
 		fbMovePath(AxesGroup:=stGroupRef ,PathData:=path ,Execute:= FALSE);
 		Sequence := Sequence + 1;
 		
 	0: // idle
 		IF SequenceStart THEN
 			SequenceStart := FALSE;
-			bEnable := TRUE;
 			Sequence := Sequence + 1;
 		END_IF
 		
 	1: // enable all axes
-		fbPower.Enable := TRUE;
-		IF fbPower.Status THEN
-			Sequence := Sequence + 1;
-		ELSIF fbPower.Error THEN
-			//
-		END_IF
+// 		fbPower.Enable := TRUE;
+// 		IF fbPower.Status THEN
+ 			Sequence := Sequence + 1;
+// 		ELSIF fbPower.Error THEN
+// 			//
+// 		END_IF
 		
 	2: // configure kinematics
-		bCartesianMode := TRUE;
-		ConfigKinGroup := TRUE;
-		IF fbKinConfigGroup.bDone THEN
-			bCartesianMode := FALSE;
-			ConfigKinGroup := FALSE;
-			Sequence := Sequence + 1;
-		END_IF
+// 		bCartesianMode := TRUE;
+// 		ConfigKinGroup := TRUE;
+// 		IF fbKinConfigGroup.bDone THEN
+// 			bCartesianMode := FALSE;
+// 			ConfigKinGroup := FALSE;
+ 			Sequence := Sequence + 1;
+// 		END_IF
 		
 	3: // add axes to group
-		fbAddAllAxes(Execute:= TRUE, stGroupRef:=stGroupRef, mcs:=mcs);
-		IF fbAddAllAxes.Done THEN
-			fbAddAllAxes(Execute:= FALSE, stGroupRef:=stGroupRef, mcs:=mcs);
-			Sequence := Sequence + 1;
-		ELSIF fbAddAllAxes.Error THEN
-			//
-		END_IF
+// 		fbAddAllAxes(Execute:= TRUE, stGroupRef:=stGroupRef, mcs:=mcs);
+// 		IF fbAddAllAxes.Done THEN
+// 			fbAddAllAxes(Execute:= FALSE, stGroupRef:=stGroupRef, mcs:=mcs);
+ 			Sequence := Sequence + 1;
+// 		ELSIF fbAddAllAxes.Error THEN
+// 			//
+// 		END_IF
 		
 	4: // enable group
-		fbGroupEnable(AxesGroup:=stGroupRef , Execute:=TRUE);
-		IF fbGroupEnable.Done THEN
-			fbGroupEnable(AxesGroup:=stGroupRef , Execute:=FALSE);
-			Sequence := Sequence + 1;
-		ELSIF fbGroupEnable.Error THEN
-			//
-		END_IF
+// 		fbGroupEnable(AxesGroup:=stGroupRef , Execute:=TRUE);
+// 		IF fbGroupEnable.Done THEN
+// 			fbGroupEnable(AxesGroup:=stGroupRef , Execute:=FALSE);
+ 			Sequence := Sequence + 1;
+// 		ELSIF fbGroupEnable.Error THEN
+// 			//
+// 		END_IF
+		
+		
 		
 	5: // set MCS
-		offsetFrame.X:=0; offsetFrame.Y:=0; offsetFrame.Z:=0;
-		offsetFrame.A:=0; offsetFrame.B:=0; offsetFrame.C:=0;
-		offsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_Z3Y2X1_DIN9300;
-		offsetFrame.Direction := MC.ReferenceDefDir.fromReference;
-		McsCoordinateFrame(Execute:=FALSE);
+// 		offsetFrame.Position.X:=0; offsetFrame.Position.Y:=0; offsetFrame.Position.Z:=0;
+// 		offsetFrame.Position.A:=0; offsetFrame.Position.B:=0; offsetFrame.Position.C:=0;
+// 		offsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_Z3Y2X1_DIN9300;
+// 		offsetFrame.Direction := MC.ReferenceDefDir.fromReference;
+// 		McsCoordinateFrame(Execute:=FALSE);
 		Sequence := Sequence + 1;
 		
 	6: // set coordinate frame offset
-		McsCoordinateFrame(
-			Execute:= TRUE, 
-			oidTrafo:= oidEndNode_MCS, 
-			OffsetFrame:= offsetFrame, 
-			Done=> , 
-			Busy=> , 
-			Error=> );
-		IF McsCoordinateFrame.Done THEN
- 			Sequence := Sequence + 1;
-		ELSIF McsCoordinateFrame.Error THEN
-			//
-		END_IF
+// 		McsCoordinateFrame(
+// 			Execute:= TRUE, 
+// 			oidTrafo:= oidEndNode_MCS, 
+// 			OffsetFrame:= offsetFrame, 
+// 			Done=> , 
+// 			Busy=> , 
+// 			Error=> );
+// 		IF McsCoordinateFrame.Done THEN
+  			Sequence := Sequence + 1;
+// 		ELSIF McsCoordinateFrame.Error THEN
+// 			//
+// 		END_IF
 		
 	7: // set TCP
-		offsetFrame.X:=MCS[1].NcToPlc.ActPos; offsetFrame.Y:=MCS[2].NcToPlc.ActPos; offsetFrame.Z:=MCS[3].NcToPlc.ActPos;
-		offsetFrame.A:=MCS[4].NcToPlc.ActPos; offsetFrame.B:=MCS[5].NcToPlc.ActPos; offsetFrame.C:=MCS[6].NcToPlc.ActPos;
-		offsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_Z3Y2X1_DIN9300;
-		offsetFrame.Direction := MC.ReferenceDefDir.fromReference;
-		TcpCoordinateFrame(Execute:=FALSE);
+// 		offsetFrame.Position.X:=MCS[1].NcToPlc.ActPos; offsetFrame.Position.Y:=MCS[2].NcToPlc.ActPos; offsetFrame.Position.Z:=MCS[3].NcToPlc.ActPos;
+// 		offsetFrame.Position.A:=MCS[4].NcToPlc.ActPos; offsetFrame.Position.B:=MCS[5].NcToPlc.ActPos; offsetFrame.Position.C:=MCS[6].NcToPlc.ActPos;
+// 		offsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_Z3Y2X1_DIN9300;
+// 		offsetFrame.Direction := MC.ReferenceDefDir.fromReference;
+// 		TcpCoordinateFrame(Execute:=FALSE);
 		Sequence := Sequence + 1;
 		
 	8: // set coordinate frame offset
-		TcpCoordinateFrame(
-			Execute:= TRUE, 
-			oidTrafo:= oidEndNode_TCP, 
-			OffsetFrame:= offsetFrame, 
-			Done=> , 
-			Busy=> , 
-			Error=> );
-		IF TcpCoordinateFrame.Done THEN
-			Sequence := Sequence + 1;
-		ELSIF TcpCoordinateFrame.Error THEN
-			//
-		END_IF
+// 		TcpCoordinateFrame(
+// 			Execute:= TRUE, 
+// 			oidTrafo:= oidEndNode_TCP, 
+// 			OffsetFrame:= offsetFrame, 
+// 			Done=> , 
+// 			Busy=> , 
+// 			Error=> );
+// 		IF TcpCoordinateFrame.Done THEN
+ 			Sequence := Sequence + 1;
+// 		ELSIF TcpCoordinateFrame.Error THEN
+// 			//
+// 		END_IF
 		
 	9: // set the active coordinate frame (not really needed here for testing since we do it for each add path node)
-		mcSetCoordinateTransform(AxesGroup:= stGroupRef, Execute:= FALSE);
+// 		mcSetCoordinateTransform(AxesGroup:= stGroupRef, Execute:= FALSE);
 		Sequence := Sequence + 1;
 		
 	10: //
-		mcSetCoordinateTransform(
-			AxesGroup:= stGroupRef, 
-			Execute:= TRUE, 
-			CoordTransform:= SEL(TcpMode, oidEndNode_MCS, oidEndNode_TCP), 
-			Done=> , 
-			Busy=> , 
-			Active=> , 
-			CommandAborted=> , 
-			Error=> , 
-			ErrorId=> );
-		IF mcSetCoordinateTransform.Done THEN
- 			Sequence := Sequence + 1;
-		ELSIF mcSetCoordinateTransform.Error THEN
-			//
-		END_IF
+// 		mcSetCoordinateTransform(
+// 			AxesGroup:= stGroupRef, 
+// 			Execute:= TRUE, 
+// 			CoordTransform:= SEL(TcpMode, oidEndNode_MCS, oidEndNode_TCP), 
+// 			Done=> , 
+// 			Busy=> , 
+// 			Active=> , 
+// 			CommandAborted=> , 
+// 			Error=> , 
+// 			ErrorId=> );
+// 		IF mcSetCoordinateTransform.Done THEN
+  			Sequence := Sequence + 1;
+// 		ELSIF mcSetCoordinateTransform.Error THEN
+// 			//
+// 		END_IF
 		
 	11: // add paths
 		IF TcpMode THEN
@@ -360,50 +362,53 @@ CASE Sequence OF
 			//	
 		END_IF
 		
+		
+		///////////////////////////////////
+		
 	13: //
-		fbStop(AxesGroup:=stGroupRef, Execute:= FALSE);
-		fbStop(AxesGroup:=stGroupRef, Execute:= TRUE, Jerk:= MC_IGNORE);
+// 		fbStop(AxesGroup:=stGroupRef, Execute:= FALSE);
+// 		fbStop(AxesGroup:=stGroupRef, Execute:= TRUE, Jerk:= MC_IGNORE);
 		Sequence := Sequence + 1;
 	
 	14: // stop the group
-		fbStop(AxesGroup:=stGroupRef, Execute:= TRUE);
-		IF fbStop.Done THEN
-			fbStop(AxesGroup:=stGroupRef, Execute:= FALSE);	
-			Sequence := Sequence + 1;
-		ELSIF fbStop.Error THEN
-			//
-		END_IF
+// 		fbStop(AxesGroup:=stGroupRef, Execute:= TRUE);
+// 		IF fbStop.Done THEN
+// 			fbStop(AxesGroup:=stGroupRef, Execute:= FALSE);	
+ 			Sequence := Sequence + 1;
+// 		ELSIF fbStop.Error THEN
+// 			//
+// 		END_IF
 		
-	15: // disable group and remove all axes 
-		fbUngroupAxes(AxesGroup:= stGroupRef, Execute:= FALSE);
-		//Check that axes are not moving else we will get a position jump
-		IF fbGroupReadStatus.GroupStandby OR fbGroupReadStatus.GroupErrorStop OR fbGroupReadStatus.GroupNotReady THEN
-			fbUngroupAxes(AxesGroup:= stGroupRef, Execute:= TRUE);
-			Sequence := Sequence + 1;
-		END_IF	
+// 	15: // disable group and remove all axes 
+// 		fbUngroupAxes(AxesGroup:= stGroupRef, Execute:= FALSE);
+// 		//Check that axes are not moving else we will get a position jump
+// 		IF fbGroupReadStatus.GroupStandby OR fbGroupReadStatus.GroupErrorStop OR fbGroupReadStatus.GroupNotReady THEN
+// 			fbUngroupAxes(AxesGroup:= stGroupRef, Execute:= TRUE);
+ 			Sequence := Sequence + 1;
+// 		END_IF	
 		
 	16: //
-		fbUngroupAxes(AxesGroup:= stGroupRef, Execute:= TRUE);
-		IF fbUngroupAxes.Done THEN
-			Sequence := Sequence + 1;
-		ELSIF fbUngroupAxes.Error THEN
-			//
-		END_IF
+// 		fbUngroupAxes(AxesGroup:= stGroupRef, Execute:= TRUE);
+// 		IF fbUngroupAxes.Done THEN
+ 			Sequence := Sequence + 1;
+// 		ELSIF fbUngroupAxes.Error THEN
+// 			//
+// 		END_IF
 		
 	17: //
-		fbGroupReset(AxesGroup:= stGroupRef , Execute:= FALSE);
-		fbGroupReset(AxesGroup:= stGroupRef , Execute:= TRUE);
+// 		fbGroupReset(AxesGroup:= stGroupRef , Execute:= FALSE);
+// 		fbGroupReset(AxesGroup:= stGroupRef , Execute:= TRUE);
 		Sequence := Sequence + 1;
 		
 	18: //
-		fbGroupReset(AxesGroup:= stGroupRef , Execute:= TRUE);
-		IF fbGroupReset.Done THEN
-			IF fbGroupReadStatus.GroupDisabled THEN
-				Sequence := 0;
-			ELSE
-				//
-			END_IF	
-		END_IF
+// 		fbGroupReset(AxesGroup:= stGroupRef , Execute:= TRUE);
+// 		IF fbGroupReset.Done THEN
+// 			IF fbGroupReadStatus.GroupDisabled THEN
+ 				Sequence := 0;
+// 			ELSE
+// 				//
+// 			END_IF	
+// 		END_IF
 		
 	1000..9999:
 		;//Error	
@@ -411,13 +416,13 @@ CASE Sequence OF
 END_CASE
 
 //
-IF ResetSeq THEN
-	ResetSeq := FALSE;
-	Sequence := -3;
-END_IF
+// IF ResetSeq THEN
+// 	ResetSeq := FALSE;
+// 	Sequence := -3;
+// END_IF
 
 //
-fbPower(acs:=acs ,mcs:=mcs);
+//fbPower(acs:=acs, mcs:=mcs);
 
 // move relative
 FOR _k:= 1 TO NumberOfAxes DO
@@ -439,45 +444,45 @@ FOR _k:= 1 TO NumberOfAxes DO
 		ErrorID=> );
 END_FOR
 
-// kinematics
-fbKinPresetRotation(
-	bExecute:= PresetRotation, 
-	oidTrafo:= 16#01010040, 
-	stRotation:= Rotation, 
-	bBusy=> , 
-	bDone=> , 
-	bError=> , 
-	nErrorId=> );
-	
-fbKinConfigGroup(
-	bExecute:= ConfigKinGroup, 
-	bCartesianMode:= bCartesianMode, // false acs can be moved directly | true movement happens in cartesian space
-	stAxesList:= stAxesConfig, 
-	stKinRefIn:= in_stKinToPlc, 
-	bBusy=> , 
-	bDone=> , 
-	bError=> , 
-	nErrorId=> );
-	
-fbKinResetGroup(
-	bExecute:= ResetKinGroup, 
-	nItpChannelId:= , 
-	stKinRefIn:= in_stKinToPlc, 
-	stAxesList:= stAxesConfig, 
-	bBusy=> , 
-	bDone=> , 
-	bError=> , 
-	nErrorId=> );
-	
-fbKinCheckActualStatus(
-	bExecute:= CheckKinStatus, 
-	stAxesListReference:= stAxesConfig, 
-	stKinRefIn:= in_stKinToPlc, 
-	eKinStatus=> , 
-	bBusy=> , 
-	bDone=> , 
-	bError=> , 
-	nErrorId=> );
+// // kinematics
+// fbKinPresetRotation(
+// 	bExecute:= PresetRotation, 
+// 	oidTrafo:= 16#01010040, 
+// 	stRotation:= Rotation, 
+// 	bBusy=> , 
+// 	bDone=> , 
+// 	bError=> , 
+// 	nErrorId=> );
+// 	
+// fbKinConfigGroup(
+// 	bExecute:= ConfigKinGroup, 
+// 	bCartesianMode:= bCartesianMode, // false acs can be moved directly | true movement happens in cartesian space
+// 	stAxesList:= stAxesConfig, 
+// 	stKinRefIn:= in_stKinToPlc, 
+// 	bBusy=> , 
+// 	bDone=> , 
+// 	bError=> , 
+// 	nErrorId=> );
+// 	
+// fbKinResetGroup(
+// 	bExecute:= ResetKinGroup, 
+// 	nItpChannelId:= , 
+// 	stKinRefIn:= in_stKinToPlc, 
+// 	stAxesList:= stAxesConfig, 
+// 	bBusy=> , 
+// 	bDone=> , 
+// 	bError=> , 
+// 	nErrorId=> );
+// 	
+// fbKinCheckActualStatus(
+// 	bExecute:= CheckKinStatus, 
+// 	stAxesListReference:= stAxesConfig, 
+// 	stKinRefIn:= in_stKinToPlc, 
+// 	eKinStatus=> , 
+// 	bBusy=> , 
+// 	bDone=> , 
+// 	bError=> , 
+// 	nErrorId=> );
 
 // reverse motion
 // IF KinMove THEN
@@ -528,7 +533,7 @@ fbKinCalcTrafo(
 {endregion}
      
 {region "methods"}
-	//_M_GroupHandler();
+	_M_GroupHandler();
     //_M_Jogging();
     //_M_Homing();
     //_M_Processor();
@@ -610,15 +615,15 @@ END_IF
       <Declaration><![CDATA[METHOD PRIVATE _M_GroupHandler : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[(*
-GroupHandler(
-	AxisGroup:= ArfBotAxisGroup,
-	Enable:= GVL.PowerOn,
-	StoredPositions:= PersistentVars.StoredPositions,
+        <ST><![CDATA[fbGroupHandler(
+	AxisGroup:= stGroupRef, 
+	ACS:= acs, 
+	MCS:= mcs, 
+	Enable:= GVL.PowerOn, 
+	StoredPositions:= PersistentVars.StoredPositions, 
 	Busy=> , 
 	Error=> , 
-	ErrorID=> );
-    *)]]></ST>
+	ErrorID=> );]]></ST>
       </Implementation>
     </Method>
     <Method Name="_M_Homing" Id="{bf4b7640-1df3-46ff-b6ca-dc416adad7e8}">
@@ -1010,8 +1015,8 @@ bMovePrepError := bMovePrepError OR fbSetCoordTransPrep.Error;
 //1st node
 aTargetPos[1]				:= 0;
 aTargetPos[2]				:= 0;
-aTargetPos[3]				:= 0;
-aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + -10.0;
+aTargetPos[3]				:= 10;
+aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0;
 aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0;
 aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0;
 aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
