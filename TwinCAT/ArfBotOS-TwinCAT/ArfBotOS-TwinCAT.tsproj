@@ -6541,8 +6541,8 @@ and will return to Group State Standby when the situation permits.
 				<Link VarA="PlcTask Outputs^_00_Main.mcs[3].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Kinematics">
-				<Link VarA="PlcTask Inputs^_00_Main.in_stKinToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.out_stPlcToKin" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Inputs^_00_Main.fbGroupHandler._stKinToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.fbGroupHandler._stPlcToKin" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Objects^MC Group Coordinated Motion">
 				<Link VarA="PlcTask Inputs^_00_Main.stGroupRef.NcToPlc" VarB="Group Outputs^ToPLC"/>

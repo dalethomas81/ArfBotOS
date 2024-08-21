@@ -5947,7 +5947,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{6D75288D-D297-2A31-668F-8ABDE7F2F7C7}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{A45D54DF-F619-8AB0-3820-D3866040EFDF}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
@@ -6138,41 +6138,41 @@ and will return to Group State Standby when the situation permits.
 						<InitSymbol>
 							<Name>_00_Main.oidEndNode_MCS</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
-							<Data>10000101</Data>
+							<Data>00000000</Data>
 						</InitSymbol>
 						<InitSymbol>
 							<Name>_00_Main.oidEndNode_TCP</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
-							<Data>30000101</Data>
+							<Data>00000000</Data>
 						</InitSymbol>
 						<InitSymbol>
 							<Name>_00_Main.oidEndNode_TCP1</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
-							<Data>40000101</Data>
+							<Data>00000000</Data>
 						</InitSymbol>
 						<InitSymbol>
 							<Name>_00_Main.fbGroupHandler._OidEndNode_MCS</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
 							<AreaNo>#x00000003</AreaNo>
-							<Data>00000000</Data>
+							<Data>10000101</Data>
 						</InitSymbol>
 						<InitSymbol>
 							<Name>_00_Main.fbGroupHandler._OidEndNode_UCS1</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
 							<AreaNo>#x00000003</AreaNo>
-							<Data>00000000</Data>
+							<Data>50000101</Data>
 						</InitSymbol>
 						<InitSymbol>
 							<Name>_00_Main.fbGroupHandler._OidEndNode_UCS2</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
 							<AreaNo>#x00000003</AreaNo>
-							<Data>00000000</Data>
+							<Data>60000101</Data>
 						</InitSymbol>
 						<InitSymbol>
 							<Name>_00_Main.fbGroupHandler._OidEndNode_TCP</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
 							<AreaNo>#x00000003</AreaNo>
-							<Data>00000000</Data>
+							<Data>30000101</Data>
 						</InitSymbol>
 					</InitSymbols>
 					<TaskPouOids>
@@ -6541,8 +6541,8 @@ and will return to Group State Standby when the situation permits.
 				<Link VarA="PlcTask Outputs^_00_Main.mcs[3].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Kinematics">
-				<Link VarA="PlcTask Inputs^_00_Main.in_stKinToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.out_stPlcToKin" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Inputs^_00_Main.fbGroupHandler._stKinToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.fbGroupHandler._stPlcToKin" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Objects^MC Group Coordinated Motion">
 				<Link VarA="PlcTask Inputs^_00_Main.stGroupRef.NcToPlc" VarB="Group Outputs^ToPLC"/>

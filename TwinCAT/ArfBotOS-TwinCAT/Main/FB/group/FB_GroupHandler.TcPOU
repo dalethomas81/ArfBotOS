@@ -21,7 +21,7 @@ VAR_OUTPUT
 END_VAR
 VAR
 	
-	_stKinToPlc      AT %I*     : NCTOPLC_NCICHANNEL_REF;
+	_stKinToPlc     AT %I*     : NCTOPLC_NCICHANNEL_REF;
 	_stPlcToKin     AT %Q*     : PLCTONC_NCICHANNEL_REF;
 	
 	//
@@ -301,6 +301,7 @@ CASE _SeqDisableGroup OF
 	0: // IDLE
 		IF _DisableGroup THEN
 			_DisableGroup := FALSE;
+			_MC_UngroupAllAxes.Execute := FALSE;
 			_MC_GroupDisable.Execute := FALSE;
 			_MC_GroupEnable.Execute := FALSE;
 			_SeqDisableGroup := _SeqDisableGroup + 1;
@@ -312,12 +313,30 @@ CASE _SeqDisableGroup OF
 		
 	2:
 		// TODO add timeout timer here
-		IF _MC_GroupReadStatus.GroupDisabled THEN
-			_SeqDisableGroup := _SeqDisableGroup + 1;;
+		IF _MC_GroupDisable.Error THEN
+			Error := TRUE;
+			//ErrorID := ;
+			_SeqDisableGroup := 0;
+		ELSIF _MC_GroupDisable.Done THEN
+			_MC_GroupDisable.Execute := FALSE;
+			_SeqDisableGroup := _SeqDisableGroup + 1;
 		END_IF
 		
 	3:
-		_MC_GroupDisable.Execute := FALSE;
+		_MC_UngroupAllAxes.Execute := TRUE;
+		_SeqDisableGroup := _SeqDisableGroup + 1;
+	
+	4:
+		IF _MC_UngroupAllAxes.Error THEN
+			Error := TRUE;
+			//ErrorID := ;
+			_SeqDisableGroup := 0;
+		ELSIF _MC_UngroupAllAxes.Done THEN
+			_MC_UngroupAllAxes.Execute := FALSE;
+			_SeqDisableGroup := _SeqDisableGroup + 1;
+		END_IF
+	
+	5:
 		_GroupEnabled := FALSE;
 		_KinematicsSet := FALSE;
 		_GroupPower := FALSE;
@@ -337,6 +356,7 @@ CASE _SeqEnableGroup OF
 			_EnableGroup := FALSE;
 			_GroupEnabled := FALSE;
 			_MC_GroupEnable.Execute := FALSE;
+			_FB_AddAllAxes.Execute := FALSE;
 			_SeqEnableGroup := _SeqEnableGroup + 1;
 		END_IF
 		
@@ -351,19 +371,58 @@ CASE _SeqEnableGroup OF
 			//ErrorID := _FB_PowerAll.ErrorID; // TODO get error ID
 			_SeqEnableGroup := 0;
 		ELSIF _FB_PowerAll.Status THEN
+			_MC_GroupEnable.Execute := FALSE;
 			_SeqEnableGroup := _SeqEnableGroup + 1;
 		END_IF
 		
-	3:
+	3: 
+		IF M_SetKinematics(DUT_CoordSystem.TCP) THEN
+			_SeqEnableGroup := _SeqEnableGroup + 1;
+		ELSE
+			Error := TRUE;
+			//ErrorID := _FB_PowerAll.ErrorID; // TODO get error ID
+			_SeqEnableGroup := 0;
+		END_IF
+		
+	4:	// TODO add timeout timer here
+		IF Error THEN
+			Error := TRUE;
+			//ErrorID := _FB_PowerAll.ErrorID; // TODO get error ID
+			_SeqEnableGroup := 0;
+		ELSIF _KinematicsSet THEN 
+			_SeqEnableGroup := _SeqEnableGroup + 1;
+		END_IF
+		
+	5:
+		_FB_AddAllAxes.Execute := TRUE;
+		_SeqEnableGroup := _SeqEnableGroup + 1;
+		
+	6:
+		// TODO add timeout timer here
+		IF _FB_AddAllAxes.Error THEN
+			Error := TRUE;
+			//ErrorID := _FB_AddAllAxes.ErrorID; // TODO get error ID
+			_SeqEnableGroup := 0;
+		ELSIF _FB_AddAllAxes.Done THEN
+			_FB_AddAllAxes.Execute := FALSE;
+			_SeqEnableGroup := _SeqEnableGroup + 1;
+		END_IF
+		
+	7:
 		_MC_GroupEnable.Execute := TRUE;
 		_SeqEnableGroup := _SeqEnableGroup + 1;
 		
-	4:
+	8:
 		// TODO add timeout timer here
-		IF _MC_GroupEnable.Done THEN
+		IF _MC_GroupEnable.Error THEN
+			Error := TRUE;
+			//ErrorID := _MC_GroupEnable.ErrorID; // TODO get error ID
+			_SeqEnableGroup := 0;
+		ELSIF _MC_GroupEnable.Done THEN
 			_GroupEnabled := TRUE;
 			_SeqEnableGroup := 0;
 		END_IF;
+		
 END_CASE]]></ST>
       </Implementation>
     </Method>
@@ -429,14 +488,17 @@ CASE _SequenceSetKinematics OF
 			_SequenceSetKinematics := _SequenceSetKinematics + 1;
 		END_IF
 		
-	3: // wait for set coordinates
-		// TODO add timeout timer here
+	3: 
 		_SetCoordinates := TRUE;
+		_SequenceSetKinematics := _SequenceSetKinematics + 1;
+		
+	4:	// wait for set coordinates
+		// TODO add timeout timer here
 		IF _SequenceSetCoordTrans <= 0 THEN
 			_SequenceSetKinematics := _SequenceSetKinematics + 1;
 		END_IF
 		
-	4:
+	5:
 		_MC_SetCoordinateTransform.Execute := TRUE;
 		CASE _CoordinateSystem OF
 			DUT_CoordSystem.ACS:
@@ -450,8 +512,9 @@ CASE _SequenceSetKinematics OF
 			DUT_CoordSystem.TCP:
 				_MC_SetCoordinateTransform.CoordTransform := _OidEndNode_TCP;
 		END_CASE
+		_SequenceSetKinematics := _SequenceSetKinematics + 1;
 	
-	5: // wait for set coordinate transform
+	6: // wait for set coordinate transform
 		// TODO add timeout timer here
 		IF _MC_SetCoordinateTransform.Error THEN
 			Error := TRUE;
@@ -570,7 +633,7 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF _GroupEnabled AND NOT Error THEN
+        <ST><![CDATA[IF (_GroupEnabled OR _FB_PowerAll.Status) AND NOT Error THEN
 	M_SetKinematics := TRUE;
 	_CoordinateSystem := CoordinateSystem;
 	_SetKinematics := TRUE;
