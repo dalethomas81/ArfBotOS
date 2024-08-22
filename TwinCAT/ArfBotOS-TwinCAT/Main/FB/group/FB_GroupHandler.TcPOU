@@ -9,6 +9,10 @@ VAR_IN_OUT
 	AxisGroup: AXES_GROUP_REF;
 	ACS: ARRAY[1..NumberOfAxes] OF AXIS_REF;
 	MCS: ARRAY[1..NumberOfAxes] OF AXIS_REF;
+	McsCoordRef: MC_COORD_REF;
+	Ucs1CoordRef: MC_COORD_REF;
+	Ucs2CoordRef: MC_COORD_REF;
+	TcpCoordRef: MC_COORD_REF;
 END_VAR
 VAR_INPUT
 	Enable: BOOL;
@@ -33,7 +37,7 @@ VAR
 	_SeqEnableGroup: INT;
 	_SeqDisableGroup: INT;
 	_SequenceSetKinematics: INT;
-	_SequenceSetCoordTrans: INT;
+	_SequenceSetTrans: INT;
 	_SeqResetGroup: INT;
 	
 	//
@@ -57,14 +61,14 @@ VAR
 	_Ucs1OffsetFrame: DUT_CoordFrame;
 	_Ucs2OffsetFrame: DUT_CoordFrame;
 	_TcpOffsetFrame: DUT_CoordFrame;
-	{attribute 'TcInitSymbol'}
-	_OidEndNode_MCS: MC_COORD_REF;
-	{attribute 'TcInitSymbol'}
-	_OidEndNode_UCS1: MC_COORD_REF;
-	{attribute 'TcInitSymbol'}
-	_OidEndNode_UCS2: MC_COORD_REF;
-	{attribute 'TcInitSymbol'}
-	_OidEndNode_TCP: MC_COORD_REF;
+// 	{attribute 'TcInitSymbol'}
+// 	_OidEndNode_MCS: MC_COORD_REF;
+// 	{attribute 'TcInitSymbol'}
+// 	_OidEndNode_UCS1: MC_COORD_REF;
+// 	{attribute 'TcInitSymbol'}
+// 	_OidEndNode_UCS2: MC_COORD_REF;
+// 	{attribute 'TcInitSymbol'}
+// 	_OidEndNode_TCP: MC_COORD_REF;
 	
 	_MC_SetCoordinateTransform: MC_SetCoordinateTransform;
 	_CoordinateSystem: DUT_CoordSystem;
@@ -76,6 +80,9 @@ VAR
 	_SetKinematics: BOOL;
 	_SetCoordinates: BOOL;
 	_KinematicsSet: BOOL;
+	_CartesianMode: BOOL;
+	_SetTransform: BOOL;
+	_TransformSet: BOOL;
 	
 	_MC_GroupReadStatus: MC_GroupReadStatus;
 	_DUT_GroupStatus: DUT_GroupStatus;
@@ -107,7 +114,7 @@ END_VAR
 Busy := _SeqEnableGroup <> 0
 		OR _SeqDisableGroup <> 0
 		OR _SequenceSetKinematics <> 0
-		OR _SequenceSetCoordTrans <> 0
+		OR _SequenceSetTrans <> 0
 		OR _SeqResetGroup <> 0;
 		
 EnableFtrig(CLK:=Enable);
@@ -119,6 +126,7 @@ END_IF
 _M_EnableGroup();
 _M_DisableGroup();
 _M_SetKinematics();
+_M_SetTransform();
 _M_ResetGroup();
 
 // https://infosys.beckhoff.com/content/1033/tf5240_kinematic_transformation/292852107.html?id=2424647827091372088
@@ -251,7 +259,7 @@ _FB_KinResetGroup(
 	
 _McsCoordinateFrame(
 	Execute:= , 
-	oidTrafo:= _OidEndNode_MCS, 
+	oidTrafo:= McsCoordRef, 
 	OffsetFrame:= _McsOffsetFrame, 
 	Done=> , 
 	Busy=> , 
@@ -259,7 +267,7 @@ _McsCoordinateFrame(
 	
 _Ucs1CoordinateFrame(
 	Execute:= , 
-	oidTrafo:= _OidEndNode_UCS1, 
+	oidTrafo:= Ucs1CoordRef, 
 	OffsetFrame:= _Ucs1OffsetFrame, 
 	Done=> , 
 	Busy=> , 
@@ -267,7 +275,7 @@ _Ucs1CoordinateFrame(
 	
 _Ucs2CoordinateFrame(
 	Execute:= , 
-	oidTrafo:= _OidEndNode_UCS2, 
+	oidTrafo:= Ucs2CoordRef, 
 	OffsetFrame:= _Ucs2OffsetFrame, 
 	Done=> , 
 	Busy=> , 
@@ -275,7 +283,7 @@ _Ucs2CoordinateFrame(
 	
 _TcpCoordinateFrame(
 	Execute:= , 
-	oidTrafo:= _OidEndNode_TCP, 
+	oidTrafo:= TcpCoordRef, 
 	OffsetFrame:= _TcpOffsetFrame, 
 	Done=> , 
 	Busy=> , 
@@ -376,7 +384,7 @@ CASE _SeqEnableGroup OF
 		END_IF
 		
 	3: 
-		IF M_SetKinematics(DUT_CoordSystem.TCP) THEN
+		IF M_SetKinematics(NOT (_CoordinateSystem = DUT_CoordSystem.ACS)) THEN
 			_SeqEnableGroup := _SeqEnableGroup + 1;
 		ELSE
 			Error := TRUE;
@@ -419,9 +427,28 @@ CASE _SeqEnableGroup OF
 			//ErrorID := _MC_GroupEnable.ErrorID; // TODO get error ID
 			_SeqEnableGroup := 0;
 		ELSIF _MC_GroupEnable.Done THEN
+			_SeqEnableGroup := _SeqEnableGroup + 1;
+		END_IF;
+		
+	9:
+		IF M_SetTransform(_CoordinateSystem) THEN
+			_SeqEnableGroup := _SeqEnableGroup + 1;
+		ELSE
+			Error := TRUE;
+			//ErrorID := ; // TODO get error ID
+			_SeqEnableGroup := 0;
+		END_IF
+		
+	10: 
+		// TODO add timeout timer here
+		IF Error THEN
+			Error := TRUE;
+			//ErrorID := ; // TODO get error ID
+			_SeqEnableGroup := 0;
+		ELSIF _TransformSet THEN
 			_GroupEnabled := TRUE;
 			_SeqEnableGroup := 0;
-		END_IF;
+		END_IF
 		
 END_CASE]]></ST>
       </Implementation>
@@ -452,7 +479,7 @@ CASE _SeqResetGroup OF
 		_SeqEnableGroup := 0;
 		_SeqDisableGroup := 0;
 		_SequenceSetKinematics := 0;
-		_SequenceSetCoordTrans := 0;
+		_SequenceSetTrans := 0;
 		_SeqResetGroup := 0;
 	
 END_CASE]]></ST>
@@ -474,7 +501,7 @@ CASE _SequenceSetKinematics OF
 		
 	1: // set kinematics
 		_FB_KinConfigGroup.bExecute := TRUE;
-		_FB_KinConfigGroup.bCartesianMode := NOT (_CoordinateSystem = DUT_CoordSystem.ACS);
+		_FB_KinConfigGroup.bCartesianMode := _CartesianMode;
 		_SequenceSetKinematics := _SequenceSetKinematics + 1;
 		
 	2: // wait for set kinematics
@@ -485,60 +512,34 @@ CASE _SequenceSetKinematics OF
 			_SequenceSetKinematics := 0;
 		ELSIF _FB_KinConfigGroup.bDone THEN
 			_FB_KinConfigGroup.bExecute := FALSE;
-			_SequenceSetKinematics := _SequenceSetKinematics + 1;
-		END_IF
-		
-	3: 
-		_SetCoordinates := TRUE;
-		_SequenceSetKinematics := _SequenceSetKinematics + 1;
-		
-	4:	// wait for set coordinates
-		// TODO add timeout timer here
-		IF _SequenceSetCoordTrans <= 0 THEN
-			_SequenceSetKinematics := _SequenceSetKinematics + 1;
-		END_IF
-		
-	5:
-		_MC_SetCoordinateTransform.Execute := TRUE;
-		CASE _CoordinateSystem OF
-			DUT_CoordSystem.ACS:
-				_MC_SetCoordinateTransform.CoordTransform := _OidEndNode_MCS;
-			DUT_CoordSystem.MCS:
-				_MC_SetCoordinateTransform.CoordTransform := _OidEndNode_MCS;
-			DUT_CoordSystem.UCS1:
-				_MC_SetCoordinateTransform.CoordTransform := _OidEndNode_UCS1;
-			DUT_CoordSystem.UCS2:
-				_MC_SetCoordinateTransform.CoordTransform := _OidEndNode_UCS2;
-			DUT_CoordSystem.TCP:
-				_MC_SetCoordinateTransform.CoordTransform := _OidEndNode_TCP;
-		END_CASE
-		_SequenceSetKinematics := _SequenceSetKinematics + 1;
-	
-	6: // wait for set coordinate transform
-		// TODO add timeout timer here
-		IF _MC_SetCoordinateTransform.Error THEN
-			Error := TRUE;
-			ErrorID := _MC_SetCoordinateTransform.ErrorID;
-			_SequenceSetCoordTrans := 0;
-			_SequenceSetKinematics := 0;
-		ELSIF _SequenceSetCoordTrans <= 0 THEN
 			_KinematicsSet := TRUE;
 			_SequenceSetKinematics := 0;
 		END_IF
 		
-END_CASE
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_SetTransform" Id="{f384a18b-a131-42e5-946e-44fc3ee57817}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_SetTransform : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+CASE _SequenceSetTrans OF
 
-CASE _SequenceSetCoordTrans OF
 	0: //
-		IF _SetCoordinates THEN
-			_SetCoordinates := FALSE;
+		IF _SetTransform THEN
+			_SetTransform := FALSE;
+			_TransformSet := FALSE;
 			_McsCoordinateFrame.Execute := FALSE;
 			_Ucs1CoordinateFrame.Execute := FALSE;
 			_Ucs2CoordinateFrame.Execute := FALSE;
 			_TcpCoordinateFrame.Execute := FALSE;
-			_SequenceSetCoordTrans := _SequenceSetCoordTrans + 1;
+			_MC_SetCoordinateTransform.Execute := FALSE;
+			_SequenceSetTrans := _SequenceSetTrans + 1;
 		END_IF
-	
+		
 	1: //
 		_McsOffsetFrame.Position := StoredPositions[GVL.MCS_POS_IDX].Position;
 		_McsOffsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_Z3Y2X1_DIN9300; // TODO make configurable
@@ -565,7 +566,7 @@ CASE _SequenceSetCoordTrans OF
 		_TcpOffsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_Z3Y2X1_DIN9300; // TODO make configurable
 		_TcpOffsetFrame.Direction := MC.ReferenceDefDir.fromReference; // TODO make configurable
 		_TcpCoordinateFrame.Execute := TRUE;
-		_SequenceSetCoordTrans := _SequenceSetCoordTrans + 1;
+		_SequenceSetTrans := _SequenceSetTrans + 1;
 		
 	2: //
 		// TODO add timeout timer here
@@ -578,7 +579,7 @@ CASE _SequenceSetCoordTrans OF
 											CONCAT(' ', SMC_ErrorString(_MC_SetCoordinateTransform.ErrorID,
 														SMC_Language_Type.english)))));*)
 				//SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_SetCoordinateTransform.ErrorID)));
-				_SequenceSetCoordTrans := 10; // error step so we dont spam errors
+				_SequenceSetTrans := 10; // error step so we dont spam errors
 			
 		ELSIF _McsCoordinateFrame.Done 
 				AND _Ucs1CoordinateFrame.Done 
@@ -588,7 +589,34 @@ CASE _SequenceSetCoordTrans OF
 					_Ucs1CoordinateFrame.Execute := FALSE;
 					_Ucs2CoordinateFrame.Execute := FALSE;
 					_TcpCoordinateFrame.Execute := FALSE;
-					_SequenceSetCoordTrans := 0;
+					_SequenceSetTrans := _SequenceSetTrans + 1;
+		END_IF
+		
+	3:
+		CASE _CoordinateSystem OF
+			DUT_CoordSystem.ACS:
+				_MC_SetCoordinateTransform.CoordTransform := McsCoordRef;
+			DUT_CoordSystem.MCS:
+				_MC_SetCoordinateTransform.CoordTransform := McsCoordRef;
+			DUT_CoordSystem.UCS1:
+				_MC_SetCoordinateTransform.CoordTransform := Ucs1CoordRef;
+			DUT_CoordSystem.UCS2:
+				_MC_SetCoordinateTransform.CoordTransform := Ucs2CoordRef;
+			DUT_CoordSystem.TCP:
+				_MC_SetCoordinateTransform.CoordTransform := TcpCoordRef;
+		END_CASE
+		_MC_SetCoordinateTransform.Execute := TRUE;
+		_SequenceSetTrans := _SequenceSetTrans + 1;
+	
+	4: // wait for set coordinate transform
+		// TODO add timeout timer here
+		IF _MC_SetCoordinateTransform.Error THEN
+			Error := TRUE;
+			ErrorID := _MC_SetCoordinateTransform.ErrorID;
+			_SequenceSetTrans := 0;
+		ELSIF _MC_SetCoordinateTransform.Done THEN
+			_TransformSet := TRUE;
+			_SequenceSetTrans := 0;
 		END_IF
 
 END_CASE]]></ST>
@@ -608,10 +636,14 @@ END_CASE]]></ST>
     </Method>
     <Method Name="M_EnableGroup" Id="{42afec78-5201-449e-b1b2-e5ed96e5c8b5}">
       <Declaration><![CDATA[METHOD M_EnableGroup : BOOL
+VAR_INPUT
+	CoordinateSystem: DUT_CoordSystem;
+END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF Enable AND NOT Error THEN
+        <ST><![CDATA[IF Enable AND NOT _GroupEnabled AND NOT Error THEN
 	M_EnableGroup := TRUE;
+	_CoordinateSystem := CoordinateSystem;
 	_EnableGroup := TRUE;
 	_GroupEnabled := FALSE;
 ELSE
@@ -627,19 +659,36 @@ END_IF]]></ST>
       </Implementation>
     </Method>
     <Method Name="M_SetKinematics" Id="{c272ee22-b56a-4a21-938f-13e5df726fce}">
-      <Declaration><![CDATA[METHOD M_SetKinematics : BOOL
+      <Declaration><![CDATA[METHOD PRIVATE M_SetKinematics : BOOL
 VAR_INPUT
-	CoordinateSystem: DUT_CoordSystem;
+	CartesianMode: BOOL;
 END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[IF (_GroupEnabled OR _FB_PowerAll.Status) AND NOT Error THEN
 	M_SetKinematics := TRUE;
-	_CoordinateSystem := CoordinateSystem;
 	_SetKinematics := TRUE;
+	_CartesianMode := CartesianMode;
 	_KinematicsSet := FALSE;
 ELSE
 	M_SetKinematics := FALSE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="M_SetTransform" Id="{f471a02b-5882-495b-9ba3-b8ab983b083c}">
+      <Declaration><![CDATA[METHOD PRIVATE M_SetTransform : BOOL
+VAR_INPUT
+	CoordinateSystem: DUT_CoordSystem;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF (*_GroupEnabled AND*) NOT Error THEN
+	M_SetTransform := TRUE;
+	_CoordinateSystem := CoordinateSystem;
+	_SetTransform := TRUE;
+	_TransformSet := FALSE;
+ELSE
+	M_SetTransform := FALSE;
 END_IF]]></ST>
       </Implementation>
     </Method>
@@ -673,6 +722,17 @@ PROPERTY P_KinematicsSet : BOOL
         <Declaration><![CDATA[]]></Declaration>
         <Implementation>
           <ST><![CDATA[P_KinematicsSet := _KinematicsSet;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="P_TransformSet" Id="{d94c9e13-325e-4143-aff3-77444f9518da}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY P_TransformSet : BOOL
+]]></Declaration>
+      <Get Name="Get" Id="{97ef6362-c081-4ed6-b9b1-2d58c8db0a15}">
+        <Declaration><![CDATA[]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_TransformSet := _TransformSet;]]></ST>
         </Implementation>
       </Get>
     </Property>

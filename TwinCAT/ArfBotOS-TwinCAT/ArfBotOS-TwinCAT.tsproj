@@ -5947,7 +5947,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{6D75288D-D297-2A31-668F-8ABDE7F2F7C7}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{4CDABD5B-6D91-2D78-4CBE-F271D1CD685D}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
@@ -6136,42 +6136,23 @@ and will return to Group State Standby when the situation permits.
 					</Contexts>
 					<InitSymbols>
 						<InitSymbol>
-							<Name>_00_Main.oidEndNode_MCS</Name>
+							<Name>_00_Main._OidEndNode_MCS</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
-							<Data>00000000</Data>
-						</InitSymbol>
-						<InitSymbol>
-							<Name>_00_Main.oidEndNode_TCP</Name>
-							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
-							<Data>00000000</Data>
-						</InitSymbol>
-						<InitSymbol>
-							<Name>_00_Main.oidEndNode_TCP1</Name>
-							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
-							<Data>00000000</Data>
-						</InitSymbol>
-						<InitSymbol>
-							<Name>_00_Main.fbGroupHandler._OidEndNode_MCS</Name>
-							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
-							<AreaNo>#x00000003</AreaNo>
 							<Data>10000101</Data>
 						</InitSymbol>
 						<InitSymbol>
-							<Name>_00_Main.fbGroupHandler._OidEndNode_UCS1</Name>
+							<Name>_00_Main._OidEndNode_UCS1</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
-							<AreaNo>#x00000003</AreaNo>
 							<Data>50000101</Data>
 						</InitSymbol>
 						<InitSymbol>
-							<Name>_00_Main.fbGroupHandler._OidEndNode_UCS2</Name>
+							<Name>_00_Main._OidEndNode_UCS2</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
-							<AreaNo>#x00000003</AreaNo>
 							<Data>60000101</Data>
 						</InitSymbol>
 						<InitSymbol>
-							<Name>_00_Main.fbGroupHandler._OidEndNode_TCP</Name>
+							<Name>_00_Main._OidEndNode_TCP</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
-							<AreaNo>#x00000003</AreaNo>
 							<Data>30000101</Data>
 						</InitSymbol>
 					</InitSymbols>

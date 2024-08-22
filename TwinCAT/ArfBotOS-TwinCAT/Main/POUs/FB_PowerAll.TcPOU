@@ -23,19 +23,36 @@ END_VAR
 Error := FALSE;
 
 FOR i:=1 TO 6 DO
-	fbPower[i](Axis:=acs[i],
-		Enable			:= Enable,
-		Enable_Positive	:= Enable,
-		Enable_Negative	:= Enable
-	);
-	fbPower[i+6](Axis:=mcs[i],
-		Enable			:= Enable,
-		Enable_Positive	:= Enable,
-		Enable_Negative	:= Enable
-	);
+	
+	fbPower[i](
+		Axis:= acs[i], 
+		Enable:= Enable, 
+		Enable_Positive:= Enable, 
+		Enable_Negative:= Enable, 
+		Override:= , 
+		BufferMode:= MC_BufferMode.MC_Buffered, 
+		Options:= , 
+		Status=> , 
+		Busy=> , 
+		Error=> , 
+		ErrorID=> );
+		
+	fbPower[i+6](
+		Axis:= mcs[i], 
+		Enable:= Enable, 
+		Enable_Positive:= Enable, 
+		Enable_Negative:= Enable, 
+		Override:= , 
+		BufferMode:= MC_BufferMode.MC_Buffered, 
+		Options:= , 
+		Status=> , 
+		Busy=> , 
+		Error=> , 
+		ErrorID=> );
 	
 	Status := Status AND fbPower[i].Status AND fbPower[i+6].Status; 
 	Error := Error OR fbPower[i].Error OR fbPower[i+6].Error;
+	
 END_FOR
 ]]></ST>
     </Implementation>
