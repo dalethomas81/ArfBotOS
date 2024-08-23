@@ -17,7 +17,7 @@ STRUCT
 	CircularCoordinateType: DUT_Command_CoordinateType := DUT_Command_CoordinateType.Literal;
 	CircularArrayIndex: UINT := 0;
 	CircularArrayType: DUT_Command_ArrayType := DUT_Command_ArrayType.StoredPosition;
-	CircleMode: SMC_CIRC_MODE := SMC_CIRC_MODE.CENTER;
+	CircleMode: MC_CIRC_MODE := MC_CIRC_MODE.mcCircModeCenter;
 	PathChoice: MC_CIRC_PATHCHOICE := MC_CIRC_PATHCHOICE.mcCircPathChoiceClockwise;
 	CoordRef2: DUT_COORD_REF := (X := 0, Y := 0, Z := 0, A := 0, B := 0, C := 0);
 END_STRUCT

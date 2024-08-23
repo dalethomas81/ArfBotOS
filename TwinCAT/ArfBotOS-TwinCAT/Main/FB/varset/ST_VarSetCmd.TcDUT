@@ -5,7 +5,7 @@
 STRUCT
 	ArrayType: DUT_Command_ArrayType;
 	ArrayIndex: INT;
-	Coordinates: MC_COORD_REF;
+	Coordinates: DUT_COORD_REF;
 END_STRUCT
 END_TYPE
 ]]></Declaration>

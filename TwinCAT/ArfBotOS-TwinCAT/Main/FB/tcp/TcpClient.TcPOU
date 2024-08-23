@@ -114,12 +114,12 @@ END_VAR
 	IF _WriteRTRIG.Q THEN
 		_Write := FALSE;
 		IF bConnected AND _DataToWrite <> '' THEN
-			MemUtils.MemSet(	pbyBuffer:=ADR(_WriteData.bArray),
-								byValue:=0,
-								dwSize:=SIZEOF(_WriteData.bArray));
-			MemUtils.MemCpy(	pbyDest:=ADR(_WriteData.sString),
-								pbySrc:=ADR(_DataToWrite),
-								dwSize:=INT_TO_DWORD(LEN(_DataToWrite)));
+			MemSet(	destAddr:=ADR(_WriteData.bArray),
+					fillByte:=0,
+					n:=SIZEOF(_WriteData.bArray));
+			MemCpy(	destAddr:=ADR(_WriteData.sString),
+					srcAddr:=ADR(_DataToWrite),
+					n:=INT_TO_DWORD(LEN(_DataToWrite)));
 			_fbTcpWrite.xExecute := TRUE;
 		END_IF
 	END_IF
@@ -157,26 +157,26 @@ END_VAR
 			IF _fbTcpRead.xReady THEN
 				IF (_fbTcpRead.udiCount > 0) THEN
 					//
-					MemUtils.MemSet(
-						pbyBuffer:=ADR(strRead),
-						byValue:=0,
-						dwSize:=SIZEOF(strRead)); 
-					MemUtils.MemSet(
-						pbyBuffer:=ADR(byteArrayRead),
-						byValue:=0,
-						dwSize:=SIZEOF(byteArrayRead)); 
-					MemUtils.MemCpy(
-						pbyDest:=ADR(strRead),
-						pbySrc:=ADR(_ReadData.sString),
-						dwSize:=SEL(_fbTcpRead.udiCount > 255, _fbTcpRead.udiCount, 255));
-					MemUtils.MemCpy(
-						pbyDest:=ADR(byteArrayRead),
-						pbySrc:=ADR(_ReadData.bArray),
-						dwSize:=SEL(_fbTcpRead.udiCount > 255, _fbTcpRead.udiCount, 255));
-					MemUtils.MemSet(
-						pbyBuffer:=ADR(_ReadData.sString),
-						byValue:=0,
-						dwSize:=SIZEOF(_ReadData.sString)); 
+					MemSet(
+						destAddr:=ADR(strRead),
+						fillByte:=0,
+						n:=SIZEOF(strRead)); 
+					MemSet(
+						destAddr:=ADR(byteArrayRead),
+						fillByte:=0,
+						n:=SIZEOF(byteArrayRead)); 
+					MemCpy(
+						destAddr:=ADR(strRead),
+						srcAddr:=ADR(_ReadData.sString),
+						n:=SEL(_fbTcpRead.udiCount > 255, _fbTcpRead.udiCount, 255));
+					MemCpy(
+						destAddr:=ADR(byteArrayRead),
+						srcAddr:=ADR(_ReadData.bArray),
+						n:=SEL(_fbTcpRead.udiCount > 255, _fbTcpRead.udiCount, 255));
+					MemSet(
+						destAddr:=ADR(_ReadData.sString),
+						fillByte:=0,
+						n:=SIZEOF(_ReadData.sString)); 
 					//
 					dRecordRead := dRecordRead + 1;
 				END_IF

@@ -16,7 +16,7 @@ VAR_IN_OUT
 	GroupHandler: FB_GroupHandler;
 END_VAR
 VAR_OUTPUT
-	Position: SMC_POS_REF;
+	Position: DUT_COORD_REF;
 END_VAR
 VAR
 	_SequenceSetCoordTrans: INT;
@@ -28,20 +28,27 @@ VAR
 	_SequenceMoveLinearRelative: INT;
 	_MC_GroupHalt: MC_GroupHalt;
 	
-	_MC_MoveCircularAbsolute: MC_MoveCircularAbsolute;
-	_MC_MoveCircularRelative: MC_MoveCircularRelative;
-	_MC_MoveDirectAbsolute: MC_MoveDirectAbsolute;
-	_MC_MoveDirectRelative: MC_MoveDirectRelative;
-	_MC_MoveLinearAbsolute: MC_MoveLinearAbsolute;
-	_MC_MoveLinearRelative: MC_MoveLinearRelative;
+	_MC_SetCoordinateTransformPreparation: MC_SetCoordinateTransformPreparation;
+	_MC_MoveCircularAbsolutePreparation: MC_MoveCircularAbsolutePreparation;
+	_MC_MoveLinearAbsolutePreparation: MC_MoveLinearAbsolutePreparation;
+	
+	_CoordRef: MC_COORD_REF;
+	_buffer: ARRAY[1..4096] OF BYTE;
+	_path: MC_PATH_DATA_REF(ADR(_buffer), SIZEOF(_buffer));
+    _TargetPos: ARRAY[1.._NumberOfAxes] OF MC_LREAL;
+    _TargetPos2: ARRAY[1.._NumberOfAxes] OF MC_LREAL;
+    _TransitionParam: ARRAY[1..2] OF MC_LREAL;
+    _MovePrepError: BOOL;
+    _MC_MovePath: MC_MovePath;
 	
 	_UnitModeCurrentState: PACK_ML.State;
 	_MoveCommandParser: ParseMoveCmd;
-	_PosRef: SMC_POS_REF;
-	_PosRef2: SMC_POS_REF;
+	_PosRef: DUT_COORD_REF;
+	_PosRef2: DUT_COORD_REF;
 	
 END_VAR
 VAR CONSTANT
+	_NumberOfAxes:				UINT := GVL.NumberOfAxes;
 	_STEP_DONE: 				INT := 1000;
 	_STEP_IDLE: 				INT := 0000;
 	_STEP_COMMAND: 				INT := 0020;
@@ -83,7 +90,7 @@ CASE SUPER^._SeqMain OF
 		SUPER^._SeqMain := _STEP_GROUP_ENABLE;
 		
 	_STEP_GROUP_ENABLE:
-		IF GroupHandler.M_EnableGroup() THEN
+		IF GroupHandler.M_EnableGroup(_MoveCommandParser.stCommand.CoordSystem) THEN
 			SUPER^._SeqMain := _STEP_WAIT_ENABLE;
 		ELSE
 			(*SUPER^.M_Error(Description:=CONCAT('Group Handler Error: ',
@@ -97,30 +104,12 @@ CASE SUPER^._SeqMain OF
 	_STEP_WAIT_ENABLE:
 		// TODO add timeout timer here?
 		IF GroupHandler.P_GroupEnabled THEN
-			SUPER^._SeqMain := _STEP_SET_KINEMATICS;
+			SUPER^._SeqMain := _STEP_MOVE_TYPE;
 		END_IF;
 		
-	_STEP_SET_KINEMATICS: // set kinematics
-		_PosRef.c := _MoveCommandParser.stCommand.CoordRef;
-		_PosRef2.c := _MoveCommandParser.stCommand.CoordRef2;
-		IF GroupHandler.M_SetKinematics(_MoveCommandParser.stCommand.CoordSystem) THEN
-			SUPER^._SeqMain := _STEP_WAIT_KINEMATICS;
-		ELSE
-			(*SUPER^.M_Error(Description:=CONCAT('Group Handler Error: ',
-										CONCAT(TO_STRING(GroupHandler.ErrorID),
-										CONCAT(' ', SMC_ErrorString(GroupHandler.ErrorID,
-													SMC_Language_Type.english)))));*)
-			SUPER^.M_Error(Description:=CONCAT('Group Handler Error: ', TO_STRING(GroupHandler.ErrorID)));
-			SUPER^._SeqMain := _STEP_ERR; // error step so we dont spam errors
-		END_IF
-		
-	_STEP_WAIT_KINEMATICS: // wait for set kinematics
-		// TODO add timeout timer here?
-		IF GroupHandler.P_KinematicsSet THEN
-			SUPER^._SeqMain := _STEP_MOVE_TYPE;
-		END_IF
-		
 	_STEP_MOVE_TYPE: // parse move type
+		_PosRef := _MoveCommandParser.stCommand.CoordRef;
+		_PosRef2 := _MoveCommandParser.stCommand.CoordRef2; // the second position here is used for circular moves
 		IF _MoveCommandParser.stCommand.MoveType = DUT_Command_MoveType.CircularMove THEN
 			IF _MoveCommandParser.stCommand.PositionType = DUT_Command_PositionType.AbsolutePosition THEN
 				_SequenceMoveCircularAbsolute := 1;
@@ -180,311 +169,466 @@ CASE _SequenceMoveCircularAbsolute OF
 	0: //
 	
 	1: //
-		_MC_MoveCircularAbsolute.Execute := TRUE;
-		_SequenceMoveCircularAbsolute := 2;
+		_MC_MovePath.Execute := FALSE;
+		A_AddLinAbsCircPath();
+		_SequenceMoveCircularAbsolute := _SequenceMoveCircularAbsolute + 1;
 		
-	2: //
-		IF _MC_MoveCircularAbsolute.Error THEN
+	2: // 
+		// TODO add timeout timer here
+		IF _MovePrepError THEN
 			(*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
-										CONCAT(TO_STRING(_MC_MoveCircularAbsolute.ErrorID),
-										CONCAT(' ', SMC_ErrorString(_MC_MoveCircularAbsolute.ErrorID,
+										CONCAT(TO_STRING(_MC_MoveLinearAbsolute.ErrorID),
+										CONCAT(' ', SMC_ErrorString(_MC_MoveLinearAbsolute.ErrorID,
 													SMC_Language_Type.english)))));*)
-			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveCircularAbsolute.ErrorID)));
-			_SequenceMoveCircularAbsolute := 3; // error step so we dont spam errors
-		ELSIF  _MC_MoveCircularAbsolute.Done THEN
-			_MC_MoveCircularAbsolute.Execute := FALSE;
+			//SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveLinearAbsolute.ErrorID)));
+			_SequenceMoveCircularAbsolute := 99; // error step so we dont spam errors
+			
+		ELSE
+			_SequenceMoveCircularAbsolute := _SequenceMoveCircularAbsolute + 1;
+		END_IF
+		
+	3: //
+		_MC_MovePath.Execute := TRUE;
+		_SequenceMoveCircularAbsolute := _SequenceMoveCircularAbsolute + 1;
+		
+	4: //
+		// TODO add timeout timer here
+		IF _MC_MovePath.Error THEN
+			(*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
+										CONCAT(TO_STRING(_MC_MoveLinearAbsolute.ErrorID),
+										CONCAT(' ', SMC_ErrorString(_MC_MoveLinearAbsolute.ErrorID,
+													SMC_Language_Type.english)))));*)
+			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MovePath.ErrorID)));
+			_SequenceMoveCircularAbsolute := 99; // error step so we dont spam errors
+			
+		ELSE
 			_SequenceMoveCircularAbsolute := 0;
 		END_IF
 		
 END_CASE
 
-CASE _SequenceMoveCircularRelative OF
-	0: //
-	
-	1: //
-		_MC_MoveCircularRelative.Execute := TRUE;
-		_SequenceMoveCircularRelative := 2;
-		
-	2: //
-		IF _MC_MoveCircularRelative.Error THEN
-			(*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
-										CONCAT(TO_STRING(_MC_MoveCircularRelative.ErrorID),
-										CONCAT(' ', SMC_ErrorString(_MC_MoveCircularRelative.ErrorID,
-													SMC_Language_Type.english)))));*)
-			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveCircularRelative.ErrorID)));
-			_SequenceMoveCircularRelative := 3; // error step so we dont spam errors
-		ELSIF  _MC_MoveCircularRelative.Done THEN
-			_MC_MoveCircularRelative.Execute := FALSE;
-			_SequenceMoveCircularRelative := 0;
-		END_IF
-		
-END_CASE
+// CASE _SequenceMoveCircularRelative OF
+// 	0: //
+// 	
+// 	1: //
+// 		_MC_MoveCircularRelative.Execute := TRUE;
+// 		_SequenceMoveCircularRelative := 2;
+// 		
+// 	2: //
+// 		IF _MC_MoveCircularRelative.Error THEN
+// 			(*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
+// 										CONCAT(TO_STRING(_MC_MoveCircularRelative.ErrorID),
+// 										CONCAT(' ', SMC_ErrorString(_MC_MoveCircularRelative.ErrorID,
+// 													SMC_Language_Type.english)))));*)
+// 			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveCircularRelative.ErrorID)));
+// 			_SequenceMoveCircularRelative := 3; // error step so we dont spam errors
+// 		ELSIF  _MC_MoveCircularRelative.Done THEN
+// 			_MC_MoveCircularRelative.Execute := FALSE;
+// 			_SequenceMoveCircularRelative := 0;
+// 		END_IF
+// 		
+// END_CASE
 
-CASE _SequenceMoveDirectAbsolute OF
-	0: //
-	
-	1: //
-		_MC_MoveDirectAbsolute.Execute := TRUE;
-		_SequenceMoveDirectAbsolute := 2;
-		
-	2: //
-		IF _MC_MoveDirectAbsolute.Error THEN
-			(*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
-										CONCAT(TO_STRING(_MC_MoveDirectAbsolute.ErrorID),
-										CONCAT(' ', SMC_ErrorString(_MC_MoveDirectAbsolute.ErrorID,
-													SMC_Language_Type.english)))));*)
-			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveDirectAbsolute.ErrorID)));
-			_SequenceMoveDirectAbsolute := 3; // error step so we dont spam errors
-			
-		ELSIF _MC_MoveDirectAbsolute.Done THEN
-			_MC_MoveDirectAbsolute.Execute := FALSE;
-			_SequenceMoveDirectAbsolute := 0;
-		END_IF
-		
-END_CASE
+// CASE _SequenceMoveDirectAbsolute OF
+// 	0: //
+// 	
+// 	1: //
+// 		_MC_MoveDirectAbsolute.Execute := TRUE;
+// 		_SequenceMoveDirectAbsolute := 2;
+// 		
+// 	2: //
+// 		IF _MC_MoveDirectAbsolute.Error THEN
+// 			(*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
+// 										CONCAT(TO_STRING(_MC_MoveDirectAbsolute.ErrorID),
+// 										CONCAT(' ', SMC_ErrorString(_MC_MoveDirectAbsolute.ErrorID,
+// 													SMC_Language_Type.english)))));*)
+// 			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveDirectAbsolute.ErrorID)));
+// 			_SequenceMoveDirectAbsolute := 3; // error step so we dont spam errors
+// 			
+// 		ELSIF _MC_MoveDirectAbsolute.Done THEN
+// 			_MC_MoveDirectAbsolute.Execute := FALSE;
+// 			_SequenceMoveDirectAbsolute := 0;
+// 		END_IF
+// 		
+// END_CASE
 
-CASE _SequenceMoveDirectRelative OF
-	0: //
-	
-	1: //
-		_MC_MoveDirectRelative.Execute := TRUE;
-		_SequenceMoveDirectRelative := 2;
-		
-	2: //
-		IF _MC_MoveDirectRelative.Error THEN
-			(*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
-										CONCAT(TO_STRING(_MC_MoveDirectRelative.ErrorID),
-										CONCAT(' ', SMC_ErrorString(_MC_MoveDirectRelative.ErrorID,
-													SMC_Language_Type.english)))));*)
-			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveDirectRelative.ErrorID)));
-			_SequenceMoveDirectRelative := 3; // error step so we dont spam errors
-			
-		ELSIF _MC_MoveDirectRelative.Done THEN
-			_MC_MoveDirectRelative.Execute := FALSE;
-			_SequenceMoveDirectRelative := 0;
-		END_IF
-		
-END_CASE
+// CASE _SequenceMoveDirectRelative OF
+// 	0: //
+// 	
+// 	1: //
+// 		_MC_MoveDirectRelative.Execute := TRUE;
+// 		_SequenceMoveDirectRelative := 2;
+// 		
+// 	2: //
+// 		IF _MC_MoveDirectRelative.Error THEN
+// 			(*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
+// 										CONCAT(TO_STRING(_MC_MoveDirectRelative.ErrorID),
+// 										CONCAT(' ', SMC_ErrorString(_MC_MoveDirectRelative.ErrorID,
+// 													SMC_Language_Type.english)))));*)
+// 			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveDirectRelative.ErrorID)));
+// 			_SequenceMoveDirectRelative := 3; // error step so we dont spam errors
+// 			
+// 		ELSIF _MC_MoveDirectRelative.Done THEN
+// 			_MC_MoveDirectRelative.Execute := FALSE;
+// 			_SequenceMoveDirectRelative := 0;
+// 		END_IF
+// 		
+// END_CASE
 
 CASE _SequenceMoveLinearAbsolute OF
 	0: //
 	
-	1: //
-		_MC_MoveLinearAbsolute.Execute := TRUE;
-		_SequenceMoveLinearAbsolute := 2;
+	1: //		
+		_MC_MovePath.Execute := FALSE;
+		A_AddLinAbsPath();
+		_SequenceMoveLinearAbsolute := _SequenceMoveLinearAbsolute + 1;
 		
-	2: //
-		IF _MC_MoveLinearAbsolute.Error THEN
+	2: // 
+		// TODO add timeout timer here
+		IF _MovePrepError THEN
 			(*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
 										CONCAT(TO_STRING(_MC_MoveLinearAbsolute.ErrorID),
 										CONCAT(' ', SMC_ErrorString(_MC_MoveLinearAbsolute.ErrorID,
 													SMC_Language_Type.english)))));*)
-			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveLinearAbsolute.ErrorID)));
-			_SequenceMoveLinearAbsolute := 3; // error step so we dont spam errors
+			//SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveLinearAbsolute.ErrorID)));
+			_SequenceMoveLinearAbsolute := 99; // error step so we dont spam errors
 			
-		ELSIF _MC_MoveLinearAbsolute.Done THEN
-			_MC_MoveLinearAbsolute.Execute := FALSE;
+		ELSE
+			_SequenceMoveLinearAbsolute := _SequenceMoveLinearAbsolute + 1;
+		END_IF
+		
+	3: //
+		_MC_MovePath.Execute := TRUE;
+		_SequenceMoveLinearAbsolute := _SequenceMoveLinearAbsolute + 1;
+		
+	4: //
+		// TODO add timeout timer here
+		IF _MC_MovePath.Error THEN
+			(*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
+										CONCAT(TO_STRING(_MC_MoveLinearAbsolute.ErrorID),
+										CONCAT(' ', SMC_ErrorString(_MC_MoveLinearAbsolute.ErrorID,
+													SMC_Language_Type.english)))));*)
+			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MovePath.ErrorID)));
+			_SequenceMoveLinearAbsolute := 99; // error step so we dont spam errors
+			
+		ELSE
 			_SequenceMoveLinearAbsolute := 0;
 		END_IF
+		
 END_CASE
 
-CASE _SequenceMoveLinearRelative OF
-	0: //
-	
-	1: //
-		_MC_MoveLinearRelative.Execute := TRUE;
-		_SequenceMoveLinearRelative := 2;
-		
-	2: //
-		IF _MC_MoveLinearRelative.Error THEN
-		    (*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
-										CONCAT(TO_STRING(_MC_MoveLinearRelative.ErrorID),
-										CONCAT(' ', SMC_ErrorString(_MC_MoveLinearRelative.ErrorID,
-													SMC_Language_Type.english)))));*)
-			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveLinearRelative.ErrorID)));
-			_SequenceMoveLinearRelative := 3; // error step so we dont spam errors
-			
-		ELSIF _MC_MoveLinearRelative.Done THEN
-			_MC_MoveLinearRelative.Execute := FALSE;
-			_SequenceMoveLinearRelative := 0;
-		END_IF
-		
-END_CASE
+// CASE _SequenceMoveLinearRelative OF
+// 	0: //
+// 	
+// 	1: //
+// 		_MC_MoveLinearRelative.Execute := TRUE;
+// 		_SequenceMoveLinearRelative := 2;
+// 		
+// 	2: //
+// 		IF _MC_MoveLinearRelative.Error THEN
+// 		    (*SUPER^.M_Error(Description:=CONCAT('Move Command Error: ',
+// 										CONCAT(TO_STRING(_MC_MoveLinearRelative.ErrorID),
+// 										CONCAT(' ', SMC_ErrorString(_MC_MoveLinearRelative.ErrorID,
+// 													SMC_Language_Type.english)))));*)
+// 			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MoveLinearRelative.ErrorID)));
+// 			_SequenceMoveLinearRelative := 3; // error step so we dont spam errors
+// 			
+// 		ELSIF _MC_MoveLinearRelative.Done THEN
+// 			_MC_MoveLinearRelative.Execute := FALSE;
+// 			_SequenceMoveLinearRelative := 0;
+// 		END_IF
+// 		
+// END_CASE
 
 _MC_GroupHalt(
-	AxisGroup:= AxisGroup, 
+	AxesGroup:= AxisGroup, 
 	Execute:= , 
 	Deceleration:= Acceleration, 
-	Jerk:= Jerk, 
-	AccFactor:= AccFactor, 
-	JerkFactor:= JerkFactor, 
-	TorqueFactor:= , 
-	ClearMovements:= , 
+	Jerk:= JerkFactor, 
 	Done=> , 
 	Busy=> , 
 	Active=> , 
 	CommandAborted=> , 
-	CommandAccepted=> , 
 	Error=> , 
-	ErrorID=> , 
-	MovementId=> );
+	ErrorId=> );
+	
+_MC_MovePath(
+	AxesGroup:= AxisGroup, 
+	PathData:= _Path, 
+	Execute:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorId=> );
 
 // https://content.helpme-codesys.com/de/libs/SM3_Robotics/Current/SM3_Robotics/POUs/Movement/MC_MoveCircularAbsolute.html
 // https://content.helpme-codesys.com/de/libs/SM3_Robotics/Current/SM3_Robotics/Basic-types/SMC_CIRC_MODE.html#smc-circ-mode
-_MC_MoveCircularAbsolute(
-	AxisGroup:= AxisGroup, 
-	Execute:= , 
-	CircMode:= _MoveCommandParser.stCommand.CircleMode, 
-	AuxPoint:= _PosRef, 
-	EndPoint:= _PosRef2, 
-	PathChoice:= _MoveCommandParser.stCommand.PathChoice, 
-	Velocity:= Velocity, 
-	Acceleration:= Acceleration, 
-	Deceleration:= Acceleration, 
-	Jerk:= Jerk, 
-	CoordSystem:= _MoveCommandParser.stCommand.CoordSystem, 
-	BufferMode:= , 
-	TransitionMode:= , 
-	TransitionParameter:= , 
-	OrientationMode:= , 
-	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed > 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
-	AccFactor:= SEL(AccFactor > 1, AccFactor, 1), 
-	JerkFactor:= SEL(JerkFactor > 1, JerkFactor, 1), 
-	TorqueFactor:= 1, 
-	Done=> , 
-	Busy=> , 
-	Active=> , 
-	CommandAborted=> , 
-	CommandAccepted=> , 
-	Error=> , 
-	ErrorID=> , 
-	MovementId=> );
+// _MC_MoveCircularAbsolute(
+// 	AxisGroup:= AxisGroup, 
+// 	Execute:= , 
+// 	CircMode:= _MoveCommandParser.stCommand.CircleMode, 
+// 	AuxPoint:= _PosRef, 
+// 	EndPoint:= _PosRef2, 
+// 	PathChoice:= _MoveCommandParser.stCommand.PathChoice, 
+// 	Velocity:= Velocity, 
+// 	Acceleration:= Acceleration, 
+// 	Deceleration:= Acceleration, 
+// 	Jerk:= Jerk, 
+// 	CoordSystem:= _MoveCommandParser.stCommand.CoordSystem, 
+// 	BufferMode:= , 
+// 	TransitionMode:= , 
+// 	TransitionParameter:= , 
+// 	OrientationMode:= , 
+// 	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed > 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
+// 	AccFactor:= SEL(AccFactor > 1, AccFactor, 1), 
+// 	JerkFactor:= SEL(JerkFactor > 1, JerkFactor, 1), 
+// 	TorqueFactor:= 1, 
+// 	Done=> , 
+// 	Busy=> , 
+// 	Active=> , 
+// 	CommandAborted=> , 
+// 	CommandAccepted=> , 
+// 	Error=> , 
+// 	ErrorID=> , 
+// 	MovementId=> );
 
 // https://content.helpme-codesys.com/en/libs/SM3_Robotics/Current/SM3_Robotics/POUs/Movement/MC_MoveCircularRelative.html
 // https://content.helpme-codesys.com/de/libs/SM3_Robotics/Current/SM3_Robotics/Basic-types/SMC_CIRC_MODE.html#smc-circ-mode
-_MC_MoveCircularRelative(
-	AxisGroup:= AxisGroup, 
-	Execute:= , 
-	CircMode:= _MoveCommandParser.stCommand.CircleMode, 
-	AuxPoint:= _PosRef, 
-	EndPoint:= _PosRef2, 
-	PathChoice:= _MoveCommandParser.stCommand.PathChoice, 
-	Velocity:= Velocity, 
-	Acceleration:= Acceleration, 
-	Deceleration:= Acceleration, 
-	Jerk:= Jerk, 
-	CoordSystem:= _MoveCommandParser.stCommand.CoordSystem, 
-	BufferMode:= , 
-	TransitionMode:= , 
-	TransitionParameter:= , 
-	OrientationMode:= , 
-	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed > 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
-	AccFactor:= SEL(AccFactor > 1, AccFactor, 1), 
-	JerkFactor:= SEL(JerkFactor > 1, JerkFactor, 1), 
-	TorqueFactor:= 1, 
-	Done=> , 
-	Busy=> , 
-	Active=> , 
-	CommandAborted=> , 
-	CommandAccepted=> , 
-	Error=> , 
-	ErrorID=> , 
-	MovementId=> );
-_MC_MoveDirectAbsolute(
-	AxisGroup:=AxisGroup,
-	Execute:= ,
-	Position:= _PosRef,
-	MovementType:= ,
-	CoordSystem:= _MoveCommandParser.stCommand.CoordSystem,
-	BufferMode:= ,
-	TransitionMode:= ,
-	TransitionParameter:= ,
-	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed > 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
-	AccFactor:= SEL(AccFactor > 1, AccFactor, 1), 
-	JerkFactor:= SEL(JerkFactor > 1, JerkFactor, 1), 
-	TorqueFactor:= 1,
-	Done=> ,
-	Busy=> ,
-	Active=> ,
-	CommandAborted=> ,
-	CommandAccepted=> ,
-	Error=> ,
-	ErrorID=> ,
-	MovementId=> );
-_MC_MoveDirectRelative(
-	AxisGroup:= AxisGroup, 
-	Execute:= , 
-	Distance:= _PosRef, 
-	MovementType:= , 
-	CoordSystem:= _MoveCommandParser.stCommand.CoordSystem, 
-	BufferMode:= , 
-	TransitionMode:= , 
-	TransitionParameter:= , 
-	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed > 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
-	AccFactor:= SEL(AccFactor > 1, AccFactor, 1), 
-	JerkFactor:= SEL(JerkFactor > 1, JerkFactor, 1), 
-	TorqueFactor:= 1, 
-	Done=> , 
-	Busy=> , 
-	Active=> , 
-	CommandAborted=> , 
-	CommandAccepted=> , 
-	Error=> , 
-	ErrorID=> , 
-	MovementId=> );
+// _MC_MoveCircularRelative(
+// 	AxisGroup:= AxisGroup, 
+// 	Execute:= , 
+// 	CircMode:= _MoveCommandParser.stCommand.CircleMode, 
+// 	AuxPoint:= _PosRef, 
+// 	EndPoint:= _PosRef2, 
+// 	PathChoice:= _MoveCommandParser.stCommand.PathChoice, 
+// 	Velocity:= Velocity, 
+// 	Acceleration:= Acceleration, 
+// 	Deceleration:= Acceleration, 
+// 	Jerk:= Jerk, 
+// 	CoordSystem:= _MoveCommandParser.stCommand.CoordSystem, 
+// 	BufferMode:= , 
+// 	TransitionMode:= , 
+// 	TransitionParameter:= , 
+// 	OrientationMode:= , 
+// 	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed > 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
+// 	AccFactor:= SEL(AccFactor > 1, AccFactor, 1), 
+// 	JerkFactor:= SEL(JerkFactor > 1, JerkFactor, 1), 
+// 	TorqueFactor:= 1, 
+// 	Done=> , 
+// 	Busy=> , 
+// 	Active=> , 
+// 	CommandAborted=> , 
+// 	CommandAccepted=> , 
+// 	Error=> , 
+// 	ErrorID=> , 
+// 	MovementId=> );
+// _MC_MoveDirectAbsolute(
+// 	AxisGroup:=AxisGroup,
+// 	Execute:= ,
+// 	Position:= _PosRef,
+// 	MovementType:= ,
+// 	CoordSystem:= _MoveCommandParser.stCommand.CoordSystem,
+// 	BufferMode:= ,
+// 	TransitionMode:= ,
+// 	TransitionParameter:= ,
+// 	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed > 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
+// 	AccFactor:= SEL(AccFactor > 1, AccFactor, 1), 
+// 	JerkFactor:= SEL(JerkFactor > 1, JerkFactor, 1), 
+// 	TorqueFactor:= 1,
+// 	Done=> ,
+// 	Busy=> ,
+// 	Active=> ,
+// 	CommandAborted=> ,
+// 	CommandAccepted=> ,
+// 	Error=> ,
+// 	ErrorID=> ,
+// 	MovementId=> );
+// _MC_MoveDirectRelative(
+// 	AxisGroup:= AxisGroup, 
+// 	Execute:= , 
+// 	Distance:= _PosRef, 
+// 	MovementType:= , 
+// 	CoordSystem:= _MoveCommandParser.stCommand.CoordSystem, 
+// 	BufferMode:= , 
+// 	TransitionMode:= , 
+// 	TransitionParameter:= , 
+// 	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed > 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
+// 	AccFactor:= SEL(AccFactor > 1, AccFactor, 1), 
+// 	JerkFactor:= SEL(JerkFactor > 1, JerkFactor, 1), 
+// 	TorqueFactor:= 1, 
+// 	Done=> , 
+// 	Busy=> , 
+// 	Active=> , 
+// 	CommandAborted=> , 
+// 	CommandAccepted=> , 
+// 	Error=> , 
+// 	ErrorID=> , 
+// 	MovementId=> );
 	
-_MC_MoveLinearAbsolute(
-	AxisGroup:= AxisGroup, 
-	Execute:= , 
-	Position:= _PosRef,
-	Velocity:= 1000, 
-	Acceleration:= Acceleration, 
-	Deceleration:= Acceleration, 
-	Jerk:= Jerk, 
-	CoordSystem:= _MoveCommandParser.stCommand.CoordSystem, 
-	BufferMode:= , 
-	TransitionMode:= , 
-	TransitionParameter:= , 
-	OrientationMode:= , 
-	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed > 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
-	AccFactor:= SEL(AccFactor > 1, AccFactor, 1), 
-	JerkFactor:= SEL(JerkFactor > 1, JerkFactor, 1), 
-	TorqueFactor:= 1, 
-	Done=> , 
-	Busy=> , 
-	Active=> , 
-	CommandAborted=> , 
-	CommandAccepted=> , 
-	Error=> , 
-	ErrorID=> , 
-	MovementId=> );
+// _MC_MoveLinearAbsolute(
+// 	AxisGroup:= AxisGroup, 
+// 	Execute:= , 
+// 	Position:= _PosRef,
+// 	Velocity:= 1000, 
+// 	Acceleration:= Acceleration, 
+// 	Deceleration:= Acceleration, 
+// 	Jerk:= Jerk, 
+// 	CoordSystem:= _MoveCommandParser.stCommand.CoordSystem, 
+// 	BufferMode:= , 
+// 	TransitionMode:= , 
+// 	TransitionParameter:= , 
+// 	OrientationMode:= , 
+// 	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed > 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
+// 	AccFactor:= SEL(AccFactor > 1, AccFactor, 1), 
+// 	JerkFactor:= SEL(JerkFactor > 1, JerkFactor, 1), 
+// 	TorqueFactor:= 1, 
+// 	Done=> , 
+// 	Busy=> , 
+// 	Active=> , 
+// 	CommandAborted=> , 
+// 	CommandAccepted=> , 
+// 	Error=> , 
+// 	ErrorID=> , 
+// 	MovementId=> );
 	
-_MC_MoveLinearRelative(
-	AxisGroup:= AxisGroup, 
-	Execute:= , 
-	Distance:= _PosRef, 
-	Velocity:= 1000, 
-	Acceleration:= Acceleration, 
-	Deceleration:= Acceleration, 
-	Jerk:= Jerk, 
-	CoordSystem:= _MoveCommandParser.stCommand.CoordSystem, 
-	BufferMode:= , 
-	TransitionMode:= , 
-	TransitionParameter:= , 
-	OrientationMode:= , 
-	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed > 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
-	AccFactor:= SEL(AccFactor > 1, AccFactor, 1), 
-	JerkFactor:= SEL(JerkFactor > 1, JerkFactor, 1), 
-	TorqueFactor:= 1, 
-	Done=> , 
-	Busy=> , 
-	Active=> , 
-	CommandAborted=> , 
-	CommandAccepted=> , 
-	Error=> , 
-	ErrorID=> , 
-	MovementId=> );]]></ST>
+// _MC_MoveLinearRelative(
+// 	AxisGroup:= AxisGroup, 
+// 	Execute:= , 
+// 	Distance:= _PosRef, 
+// 	Velocity:= 1000, 
+// 	Acceleration:= Acceleration, 
+// 	Deceleration:= Acceleration, 
+// 	Jerk:= Jerk, 
+// 	CoordSystem:= _MoveCommandParser.stCommand.CoordSystem, 
+// 	BufferMode:= , 
+// 	TransitionMode:= , 
+// 	TransitionParameter:= , 
+// 	OrientationMode:= , 
+// 	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed > 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
+// 	AccFactor:= SEL(AccFactor > 1, AccFactor, 1), 
+// 	JerkFactor:= SEL(JerkFactor > 1, JerkFactor, 1), 
+// 	TorqueFactor:= 1, 
+// 	Done=> , 
+// 	Busy=> , 
+// 	Active=> , 
+// 	CommandAborted=> , 
+// 	CommandAccepted=> , 
+// 	Error=> , 
+// 	ErrorID=> , 
+// 	MovementId=> );]]></ST>
     </Implementation>
+    <Folder Name="PathPlanning" Id="{c0534be7-6a45-4d50-bad5-cf9e02741379}" />
+    <Action Name="A_AddLinAbsCircPath" Id="{33a9f7f5-5a80-4d5d-981d-e39aaeb5c2ae}" FolderPath="PathPlanning\">
+      <Implementation>
+        <ST><![CDATA[_path.ClearPath();  //Clear nodes that were in path
+
+//
+CASE _MoveCommandParser.stCommand.CoordSystem OF
+	DUT_CoordSystem.ACS:
+		_CoordRef := GVL.McsCoordRef; // TODO: we shouldnt be here. maybe fault?
+	DUT_CoordSystem.MCS:
+		_CoordRef := GVL.McsCoordRef;
+	DUT_CoordSystem.UCS1:
+		_CoordRef := GVL.Ucs1CoordRef;
+	DUT_CoordSystem.UCS2:
+		_CoordRef := GVL.Ucs2CoordRef;
+	DUT_CoordSystem.TCP:
+		_CoordRef := GVL.TcpCoordRef;
+END_CASE
+_MC_SetCoordinateTransformPreparation(PathData:=_path, CoordTransform:=_CoordRef);
+_MovePrepError := _MovePrepError OR _MC_SetCoordinateTransformPreparation.Error;
+
+_TargetPos[1]				:= _PosRef.X;
+_TargetPos[2]				:= _PosRef.Y;
+_TargetPos[3]				:= _PosRef.Z;
+_TargetPos[4]				:= GroupHandler.P_GroupStatus.CurrentPosition.A + _PosRef.A;
+_TargetPos[5]				:= GroupHandler.P_GroupStatus.CurrentPosition.B + _PosRef.B;
+_TargetPos[6]				:= GroupHandler.P_GroupStatus.CurrentPosition.C + _PosRef.C;
+_TargetPos2[1]				:= _PosRef2.X;
+_TargetPos2[2]				:= _PosRef2.Y;
+_TargetPos2[3]				:= _PosRef2.Z;
+_TargetPos2[4]				:= GroupHandler.P_GroupStatus.CurrentPosition.A + _PosRef.A;
+_TargetPos2[5]				:= GroupHandler.P_GroupStatus.CurrentPosition.B + _PosRef.B;
+_TargetPos2[6]				:= GroupHandler.P_GroupStatus.CurrentPosition.C + _PosRef.C;
+_TransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
+_TransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+
+_MC_MoveCircularAbsolutePreparation(
+	PathData:= _path, 
+	CircMode:= _MoveCommandParser.stCommand.CircleMode, 
+	AuxPoint:= ADR(_TargetPos), 
+	AuxPointCount:= 3, 
+	EndPoint:= ADR(_TargetPos2), 
+	EndPointCount:= _NumberOfAxes, 
+	PathChoice:= _MoveCommandParser.stCommand.PathChoice, 
+	Velocity:= _MoveCommandParser.stCommand.Speed, 
+	Acceleration:= MC_DEFAULT, 
+	Deceleration:= MC_DEFAULT, 
+	Jerk:= MC_DEFAULT, 
+	BufferMode:= mcBlendingPrevious, 
+	TransitionMode:= mcTransModeCornerDistanceAdvanced, 
+	TransitionParameter:= ADR (_TransitionParam), 
+	TransitionParameterCount:= 2, 
+	InvokeId:= 10, // TODO should increment this with each additional call made here if calls are added
+	DynamicConstraints:= , 
+	Error=> , 
+	ErrorId=> );
+_MovePrepError := _MovePrepError OR _MC_MoveCircularAbsolutePreparation.Error;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_AddLinAbsPath" Id="{f006f2c9-a0b4-42c7-9dc4-82f2ba9cc8ec}" FolderPath="PathPlanning\">
+      <Implementation>
+        <ST><![CDATA[_path.ClearPath();  //Clear nodes that were in path
+
+_MC_MoveLinearAbsolutePreparation.Position						:= ADR(_TargetPos); //pointer to position array
+_MC_MoveLinearAbsolutePreparation.PositionCount 				:= _NumberOfAxes; //number of axes in group
+_MC_MoveLinearAbsolutePreparation.TransitionParameter			:= ADR (_TransitionParam); //pointer to transition parameter array
+_MC_MoveLinearAbsolutePreparation.TransitionParameterCount		:= 2; //number of transition parameters, has to be set always 2
+_MC_MoveLinearAbsolutePreparation.BufferMode					:= mcBlendingPrevious;
+_MC_MoveLinearAbsolutePreparation.TransitionMode				:= mcTransModeCornerDistanceAdvanced;
+//Set dynamics to default values of the axes
+_MC_MoveLinearAbsolutePreparation.Acceleration					:= MC_DEFAULT;
+_MC_MoveLinearAbsolutePreparation.Deceleration					:= MC_DEFAULT;
+_MC_MoveLinearAbsolutePreparation.Jerk							:= MC_DEFAULT;
+
+//
+CASE _MoveCommandParser.stCommand.CoordSystem OF
+	DUT_CoordSystem.ACS:
+		_CoordRef := GVL.McsCoordRef; // TODO: we shouldnt be here. maybe fault?
+	DUT_CoordSystem.MCS:
+		_CoordRef := GVL.McsCoordRef;
+	DUT_CoordSystem.UCS1:
+		_CoordRef := GVL.Ucs1CoordRef;
+	DUT_CoordSystem.UCS2:
+		_CoordRef := GVL.Ucs2CoordRef;
+	DUT_CoordSystem.TCP:
+		_CoordRef := GVL.TcpCoordRef;
+END_CASE
+_MC_SetCoordinateTransformPreparation(PathData:=_path, CoordTransform:=_CoordRef);
+_MovePrepError := _MovePrepError OR _MC_SetCoordinateTransformPreparation.Error;
+
+//1st node
+_TargetPos[1]				:= _PosRef.X;
+_TargetPos[2]				:= _PosRef.Y;
+_TargetPos[3]				:= _PosRef.Z;
+_TargetPos[4]				:= GroupHandler.P_GroupStatus.CurrentPosition.A + _PosRef.A;
+_TargetPos[5]				:= GroupHandler.P_GroupStatus.CurrentPosition.B + _PosRef.B;
+_TargetPos[6]				:= GroupHandler.P_GroupStatus.CurrentPosition.C + _PosRef.C;
+_TransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
+_TransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+_MC_MoveLinearAbsolutePreparation(	PathData:= _path,
+									Velocity:= _MoveCommandParser.stCommand.Speed, 
+									InvokeId:= 10); // TODO should increment this with each additional call made here if calls are added
+_MovePrepError := _MovePrepError OR _MC_MoveLinearAbsolutePreparation.Error;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="A_AddLinRelPath" Id="{64a947aa-392e-470b-afeb-6e7291acf475}" FolderPath="PathPlanning\">
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Action>
     <Method Name="M_Aborting" Id="{4e26ece5-3a6a-4b95-a5a2-0147c1e26a3d}">
       <Declaration><![CDATA[METHOD PROTECTED M_Aborting : BOOL
 ]]></Declaration>
@@ -508,12 +652,7 @@ END_CASE
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
-_MC_MoveCircularAbsolute.Execute := FALSE;
-_MC_MoveCircularRelative.Execute := FALSE;
-_MC_MoveDirectAbsolute.Execute := FALSE;
-_MC_MoveDirectRelative.Execute := FALSE;
-_MC_MoveLinearAbsolute.Execute := FALSE;
-_MC_MoveLinearRelative.Execute := FALSE;
+_MC_MovePath.Execute := FALSE;
 _SequenceMoveCircularAbsolute := 0;
 _SequenceMoveCircularRelative := 0;
 _SequenceMoveDirectAbsolute := 0;
@@ -549,12 +688,7 @@ END_IF]]></ST>
       <Implementation>
         <ST><![CDATA[CASE SUPER^._SeqHolding OF
 	0:
-		_MC_MoveCircularAbsolute.Execute := FALSE;
-		_MC_MoveCircularRelative.Execute := FALSE;
-		_MC_MoveDirectAbsolute.Execute := FALSE;
-		_MC_MoveDirectRelative.Execute := FALSE;
-		_MC_MoveLinearAbsolute.Execute := FALSE;
-		_MC_MoveLinearRelative.Execute := FALSE;
+		_MC_MovePath.Execute := FALSE;
 		_MC_GroupHalt.Execute:=TRUE;
 		_SeqHolding := _SeqHolding + 1;
 	1:
@@ -575,12 +709,7 @@ END_CASE
       <Implementation>
         <ST><![CDATA[// in this state, we want to reset all the function blocks and hang out
 
-_MC_MoveCircularAbsolute.Execute := FALSE;
-_MC_MoveCircularRelative.Execute := FALSE;
-_MC_MoveDirectAbsolute.Execute := FALSE;
-_MC_MoveDirectRelative.Execute := FALSE;
-_MC_MoveLinearAbsolute.Execute := FALSE;
-_MC_MoveLinearRelative.Execute := FALSE;
+_MC_MovePath.Execute := FALSE;
 _SequenceMoveCircularAbsolute := 0;
 _SequenceMoveCircularRelative := 0;
 _SequenceMoveDirectAbsolute := 0;
@@ -632,24 +761,25 @@ SUPER^.M_StateComplete();]]></ST>
       <Implementation>
         <ST><![CDATA[// here the operator called unhold (most likely from M_Start)
 _MC_GroupHalt.Execute := FALSE;
+_MC_MovePath.Execute := TRUE;
 CASE _MoveCommandParser.stCommand.MoveType OF 
 	DUT_Command_MoveType.DirectMove:
 		IF _MoveCommandParser.stCommand.PositionType = DUT_Command_Positiontype.AbsolutePosition THEN
-			_MC_MoveDirectAbsolute.Execute := TRUE;
+			//_MC_MoveDirectAbsolute.Execute := TRUE;
 		ELSE
-			_MC_MoveDirectRelative.Execute := TRUE;
+			//_MC_MoveDirectRelative.Execute := TRUE;
 		END_IF
 	DUT_Command_MoveType.LinearMove:
 		IF _MoveCommandParser.stCommand.PositionType = DUT_Command_Positiontype.AbsolutePosition THEN
-			_MC_MoveLinearAbsolute.Execute := TRUE;
+			//_MC_MoveLinearAbsolute.Execute := TRUE;
 		ELSE
-			_MC_MoveLinearRelative.Execute := TRUE;
+			//_MC_MoveLinearRelative.Execute := TRUE;
 		END_IF
 	DUT_Command_MoveType.CircularMove:
 		IF _MoveCommandParser.stCommand.PositionType = DUT_Command_Positiontype.AbsolutePosition THEN
-			_MC_MoveCircularAbsolute.Execute := TRUE;
+			//_MC_MoveCircularAbsolute.Execute := TRUE;
 		ELSE
-			_MC_MoveCircularRelative.Execute := TRUE;
+			//_MC_MoveCircularRelative.Execute := TRUE;
 		END_IF
 END_CASE
 //

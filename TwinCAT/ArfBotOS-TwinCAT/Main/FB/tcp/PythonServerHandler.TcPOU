@@ -58,25 +58,25 @@ CASE _Step OF
 		IF _TcpClient.dRecordRead <> _ReadRecordLast THEN
 			_ReadRecordLast := _TcpClient.dRecordRead;
 			IF find(_TcpClient.strRead, 'res: ') = 1 THEN
-				MemUtils.MemSet(
-					pbyBuffer:=ADR(_Response),
-					byValue:=0,
-					dwSize:=SIZEOF(_Response));
+				MemSet(
+					destAddr:=ADR(_Response),
+					fillByte:=0,
+					n:=SIZEOF(_Response));
 				_Response := _TcpClient.strRead;
 				_Step := 0;
 				
 			ELSIF find(_TcpClient.strRead, 'worker uid: ') = 1 THEN
-				MemUtils.MemSet(
-					pbyBuffer:=ADR(_WorkerUid),
-					byValue:=0,
-					dwSize:=SIZEOF(_WorkerUid));
+				MemSet(
+					destAddr:=ADR(_WorkerUid),
+					fillByte:=0,
+					n:=SIZEOF(_WorkerUid));
 				_WorkerUid := DELETE(STR:=_TcpClient.strRead, LEN:=12, POS:=1);
 				
 			ELSIF find(_TcpClient.strRead, 'command uid: ') = 1 THEN
-				MemUtils.MemSet(
-					pbyBuffer:=ADR(_WorkerUid),
-					byValue:=0,
-					dwSize:=SIZEOF(_WorkerUid));
+				MemSet(
+					destAddr:=ADR(_WorkerUid),
+					fillByte:=0,
+					n:=SIZEOF(_WorkerUid));
 				_WorkerUid := DELETE(STR:=_TcpClient.strRead, LEN:=12, POS:=1);
 				
 			END_IF

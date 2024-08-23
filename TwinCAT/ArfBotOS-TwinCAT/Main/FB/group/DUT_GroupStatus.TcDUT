@@ -3,6 +3,7 @@
   <DUT Name="DUT_GroupStatus" Id="{8da24330-28fc-457b-af4f-78411d1da7e7}">
     <Declaration><![CDATA[TYPE DUT_GroupStatus :
 STRUCT
+	CurrentPosition: DUT_COORD_REF;
 	Valid: BOOL;
 	Busy: BOOL;
 	GroupMoving: BOOL;

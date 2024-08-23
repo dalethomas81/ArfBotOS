@@ -85,19 +85,19 @@ stCommand.Speed := STRING_TO_LREAL(_CmdParams[2]);
 
 //
 IF _CmdParams[3] = _CoordSystemAcs THEN
-	stCommand.CoordSystem := SMC_COORD_SYSTEM.ACS;
+	stCommand.CoordSystem := DUT_CoordSystem.ACS;
 ELSIF _CmdParams[3] = _CoordSystemMcs THEN
-	stCommand.CoordSystem := SMC_COORD_SYSTEM.MCS;
+	stCommand.CoordSystem := DUT_CoordSystem.MCS;
 ELSIF _CmdParams[3] = _CoordSystemPc1 THEN
-	stCommand.CoordSystem := SMC_COORD_SYSTEM.PCS_1;
+	stCommand.CoordSystem := DUT_CoordSystem.UCS1;
 ELSIF _CmdParams[3] = _CoordSystemPc2 THEN
-	stCommand.CoordSystem := SMC_COORD_SYSTEM.PCS_2;
+	stCommand.CoordSystem := DUT_CoordSystem.UCS2;
 ELSIF _CmdParams[3] = _CoordSystemTcs THEN
-	stCommand.CoordSystem := SMC_COORD_SYSTEM.TCS;
-ELSIF _CmdParams[3] = _CoordSystemWcs THEN
-	stCommand.CoordSystem := SMC_COORD_SYSTEM.WCS;
-ELSIF _CmdParams[3] = _CoordSystemIcs THEN
-	stCommand.CoordSystem := SMC_COORD_SYSTEM.ICS;
+	stCommand.CoordSystem := DUT_CoordSystem.TCP;
+// ELSIF _CmdParams[3] = _CoordSystemWcs THEN
+// 	stCommand.CoordSystem := DUT_CoordSystem.WCS;
+// ELSIF _CmdParams[3] = _CoordSystemIcs THEN
+// 	stCommand.CoordSystem := DUT_CoordSystem.ICS;
 ELSE
 	Error := TRUE;
 	ErrorDescription := 'Incorrect coordinate system type';
@@ -150,11 +150,11 @@ CASE stCommand.CoordinateType OF
 // 'C R 010 MCS H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00 BOR CLW H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
 	DUT_Command_CoordinateType.Literal:
 		IF _CmdParams[11] = _CircleModeBor THEN
-			stCommand.CircleMode := SMC_CIRC_MODE.BORDER;
+			stCommand.CircleMode := MC_CIRC_MODE.mcCircModeBorder;
 		ELSIF _CmdParams[11] = _CircleModeCen THEN
-			stCommand.CircleMode := SMC_CIRC_MODE.CENTER;
+			stCommand.CircleMode := MC_CIRC_MODE.mcCircModeCenter;
 		ELSIF _CmdParams[11] = _CircleModeRad THEN
-			stCommand.CircleMode := SMC_CIRC_MODE.RADIUS;
+			stCommand.CircleMode := MC_CIRC_MODE.mcCircModeRadius;
 		ELSE
 			Error := TRUE;
 			ErrorDescription := 'Incorrect circle mode';
@@ -162,11 +162,11 @@ CASE stCommand.CoordinateType OF
 // 'C R 010 MCS V S 001 BOR CLW H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
 	DUT_Command_CoordinateType.Variable:
 		IF _CmdParams[7] = _CircleModeBor THEN
-			stCommand.CircleMode := SMC_CIRC_MODE.BORDER;
+			stCommand.CircleMode := MC_CIRC_MODE.mcCircModeBorder;
 		ELSIF _CmdParams[7] = _CircleModeCen THEN
-			stCommand.CircleMode := SMC_CIRC_MODE.CENTER;
+			stCommand.CircleMode := MC_CIRC_MODE.mcCircModeCenter;
 		ELSIF _CmdParams[7] = _CircleModeRad THEN
-			stCommand.CircleMode := SMC_CIRC_MODE.RADIUS;
+			stCommand.CircleMode := MC_CIRC_MODE.mcCircModeRadius;
 		ELSE
 			Error := TRUE;
 			ErrorDescription := 'Incorrect circle mode';
@@ -179,9 +179,9 @@ CASE stCommand.CoordinateType OF
 // 'C R 010 MCS H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00 BOR CLW H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
 	DUT_Command_CoordinateType.Literal:
 		IF _CmdParams[12] = _PathChoiceClw THEN
-			stCommand.PathChoice := MC_CIRC_PATHCHOICE.CLOCKWISE;
+			stCommand.PathChoice := MC_CIRC_PATHCHOICE.mcCircPathChoiceClockwise;
 		ELSIF _CmdParams[12] = _PathChoiceCcw THEN
-			stCommand.PathChoice := MC_CIRC_PATHCHOICE.COUNTER_CLOCKWISE;
+			stCommand.PathChoice := MC_CIRC_PATHCHOICE.mcCircPathChoiceCounterClockwise;
 		ELSE
 			Error := TRUE;
 			ErrorDescription := 'Incorrect circle direction';
@@ -197,9 +197,9 @@ CASE stCommand.CoordinateType OF
 // 'C R 010 MCS V S 001 BOR CLW H +0250.00 +0000.00 +0500.00 +0000.00 +0045.00 +0180.00'
 	DUT_Command_CoordinateType.Variable:
 		IF _CmdParams[8] = _PathChoiceClw THEN
-			stCommand.PathChoice := MC_CIRC_PATHCHOICE.CLOCKWISE;
+			stCommand.PathChoice := MC_CIRC_PATHCHOICE.mcCircPathChoiceClockwise;
 		ELSIF _CmdParams[8] = _PathChoiceCcw THEN
-			stCommand.PathChoice := MC_CIRC_PATHCHOICE.COUNTER_CLOCKWISE;
+			stCommand.PathChoice := MC_CIRC_PATHCHOICE.mcCircPathChoiceCounterClockwise;
 		ELSE
 			Error := TRUE;
 			ErrorDescription := 'Incorrect circle direction';

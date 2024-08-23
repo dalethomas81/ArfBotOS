@@ -8,7 +8,7 @@ END_VAR
 VAR
 	
 	// group handler for all motion fbs
-	//GroupHandler: FB_GroupHandler;
+	GroupHandler: FB_GroupHandler;
 	
 	// tuning
 	//MoveDistance: LREAL := 5.0;
@@ -28,12 +28,14 @@ VAR
 	//ButtonTextIndex: INT:=0;
 	
 	// program processor
-	//ProcessPrograms: FB_ProgramProcessor;
-	//ProcessCommand_ActiveProgram: UINT := 0;
-	//ActiveCommandDetails: STRING(255):='';
+	ProcessPrograms: FB_ProgramProcessor;
+	ProcessCommand_ActiveProgram: UINT := 0;
+	ActiveCommandDetails: STRING(255):='';
 	
 	// controller
 	//Controller: FB_Controller;
+	
+	
 	fbKinConfigGroup: FB_KinConfigGroup;
 	fbKinResetGroup: FB_KinResetGroup;
 	fbKinCheckActualStatus: FB_KinCheckActualStatus;
@@ -129,16 +131,8 @@ VAR
 	TcpMode: BOOL;
 	
 	
-	{attribute 'TcInitSymbol'}
-	_OidEndNode_MCS: MC_COORD_REF;
-	{attribute 'TcInitSymbol'}
-	_OidEndNode_UCS1: MC_COORD_REF;
-	{attribute 'TcInitSymbol'}
-	_OidEndNode_UCS2: MC_COORD_REF;
-	{attribute 'TcInitSymbol'}
-	_OidEndNode_TCP: MC_COORD_REF;
+
 	
-	fbGroupHandler: FB_GroupHandler;
 	
 	EnableAcs: BOOL;
 	DisableGroup: BOOL;
@@ -189,12 +183,12 @@ CASE Sequence OF
 		END_IF
 		
 	1: // enable group
-		IF fbGroupHandler.M_EnableGroup(SEL(TcpMode, DUT_CoordSystem.MCS, DUT_CoordSystem.TCP)) THEN
+		IF GroupHandler.M_EnableGroup(SEL(TcpMode, DUT_CoordSystem.MCS, DUT_CoordSystem.TCP)) THEN
  			Sequence := Sequence + 1;
 		END_IF
 		
 	2: // wait on group enable
-		IF fbGroupHandler.P_GroupEnabled THEN
+		IF GroupHandler.P_GroupEnabled THEN
  			Sequence := Sequence + 1;
 		END_IF
 		
@@ -215,11 +209,11 @@ CASE Sequence OF
 		END_IF
 		
 	5: // disable group
-		fbGroupHandler.M_DisableGroup();
+		GroupHandler.M_DisableGroup();
 		Sequence := Sequence + 1;
 	
 	6:  // wait on group disable
-		IF NOT fbGroupHandler.P_GroupEnabled THEN
+		IF NOT GroupHandler.P_GroupEnabled THEN
  			Sequence := 0;
 		END_IF
 		
@@ -231,15 +225,15 @@ END_CASE
 //
 IF ResetSeq THEN
 	ResetSeq := FALSE;
-	fbGroupHandler.M_ResetGroup();
+	GroupHandler.M_ResetGroup();
 END_IF
 IF EnableAcs THEN
 	EnableAcs := FALSE;
-	fbGroupHandler.M_EnableGroup(DUT_CoordSystem.ACS);
+	GroupHandler.M_EnableGroup(DUT_CoordSystem.ACS);
 END_IF
 IF DisableGroup THEN
 	DisableGroup := FALSE;
-	fbGroupHandler.M_DisableGroup();
+	GroupHandler.M_DisableGroup();
 END_IF
 
 
@@ -377,14 +371,10 @@ END_IF
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
-fbGroupHandler(
+GroupHandler(
 	AxisGroup:= stGroupRef, 
 	ACS:= acs, 
 	MCS:= mcs, 
-	McsCoordRef:= _OidEndNode_MCS, 
-	Ucs1CoordRef:= _OidEndNode_UCS1, 
-	Ucs2CoordRef:= _OidEndNode_UCS2, 
-	TcpCoordRef:= _OidEndNode_TCP, 
 	Enable:= GVL.PowerOn, 
 	StoredPositions:= PersistentVars.StoredPositions, 
 	Busy=> , 
@@ -492,7 +482,7 @@ END_IF
       <Declaration><![CDATA[METHOD PRIVATE _M_Processor : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[(*
+        <ST><![CDATA[
 IF GVL.ResetRtrig.Q THEN
 	ProcessPrograms.M_Home();
 END_IF
@@ -502,7 +492,7 @@ ProcessPrograms(
 	StoredPositions:=PersistentVars.StoredPositions,
 	VisionRegisters:=PersistentVars.VisionRegisters,
 	Flags:=PersistentVars.Flags,
-	AxisGroup:= ArfBotAxisGroup,
+	AxisGroup:= stGroupRef,
 	GroupHandler:= GroupHandler,
 	CmdIO:=GVL.CmdIO,
 	Enable:= GVL.PowerOn AND PersistentVars.Flags[GVL.HOME_COMPLETE].Value,
@@ -520,7 +510,7 @@ ActiveCommandDetails := CONCAT(ActiveCommandDetails, ': ');
 ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandString);
 ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' Comment: ');
 ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandComment);
-*)]]></ST>
+]]></ST>
       </Implementation>
     </Method>
     <Method Name="_M_Tuning" Id="{7bc5b496-9c33-4d9b-b0d8-4ee9652747d2}">
@@ -721,7 +711,7 @@ fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
 fbMoveLinPrep.Jerk							:= MC_DEFAULT;
 
 // set mcs frame
-fbSetCoordTransPrep(PathData:=path, CoordTransform:=_OidEndNode_MCS);
+fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.McsCoordRef);
 bMovePrepError := bMovePrepError OR fbSetCoordTransPrep.Error;
 
 // 1st node
@@ -775,7 +765,7 @@ fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
 fbMoveLinPrep.Jerk							:= MC_DEFAULT;
 
 //
-fbSetCoordTransPrep(PathData:=path, CoordTransform:=_OidEndNode_TCP);
+fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.TcpCoordRef);
 bMovePrepError := bMovePrepError OR fbSetCoordTransPrep.Error;
 
 //1st node

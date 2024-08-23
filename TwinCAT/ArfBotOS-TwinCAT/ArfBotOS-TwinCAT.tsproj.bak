@@ -5947,7 +5947,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{58C0D9A0-4824-1856-B263-9F3BFF261A0B}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{BB45256A-D5EC-05B1-9202-0AD2AE2000F3}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
@@ -6052,7 +6052,7 @@ and will return to Group State Standby when the situation permits.
 							<Type GUID="{0E2E3852-A98C-4AF3-81E2-209EE128940C}" Namespace="MC">CDT_PLCTOMC_GROUP</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.fbGroupHandler._stPlcToKin</Name>
+							<Name>_00_Main.GroupHandler._stPlcToKin</Name>
 							<Type GUID="{48415C2A-E750-483B-A619-8655B2BEA4B8}" Namespace="MC">PLCTONC_NCICHANNEL_REF</Type>
 						</Var>
 					</Vars>
@@ -6119,7 +6119,7 @@ and will return to Group State Standby when the situation permits.
 							<Type GUID="{467F4325-10DF-4BC1-88DD-E8240EB4F8E3}" Namespace="MC">CDT_MCTOPLC_GROUP</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.fbGroupHandler._stKinToPlc</Name>
+							<Name>_00_Main.GroupHandler._stKinToPlc</Name>
 							<Type GUID="{56354211-98EF-4057-9322-975DEAD0E29D}" Namespace="MC">NCTOPLC_NCICHANNEL_REF</Type>
 						</Var>
 					</Vars>
@@ -6136,24 +6136,44 @@ and will return to Group State Standby when the situation permits.
 					</Contexts>
 					<InitSymbols>
 						<InitSymbol>
-							<Name>_00_Main._OidEndNode_MCS</Name>
+							<Name>GVL.McsCoordRef</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
-							<Data>10000101</Data>
+							<Data>00000000</Data>
+							<Properties>
+								<Property>
+									<Name>TcVarGlobal</Name>
+								</Property>
+							</Properties>
 						</InitSymbol>
 						<InitSymbol>
-							<Name>_00_Main._OidEndNode_UCS1</Name>
+							<Name>GVL.Ucs1CoordRef</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
-							<Data>50000101</Data>
+							<Data>00000000</Data>
+							<Properties>
+								<Property>
+									<Name>TcVarGlobal</Name>
+								</Property>
+							</Properties>
 						</InitSymbol>
 						<InitSymbol>
-							<Name>_00_Main._OidEndNode_UCS2</Name>
+							<Name>GVL.Ucs2CoordRef</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
-							<Data>60000101</Data>
+							<Data>00000000</Data>
+							<Properties>
+								<Property>
+									<Name>TcVarGlobal</Name>
+								</Property>
+							</Properties>
 						</InitSymbol>
 						<InitSymbol>
-							<Name>_00_Main._OidEndNode_TCP</Name>
+							<Name>GVL.TcpCoordRef</Name>
 							<Type GUID="{F5E80BDD-917E-CAF6-EEC1-F73E474170AA}" Namespace="Tc3_McCoordinatedMotion">MC_COORD_REF</Type>
-							<Data>30000101</Data>
+							<Data>00000000</Data>
+							<Properties>
+								<Property>
+									<Name>TcVarGlobal</Name>
+								</Property>
+							</Properties>
 						</InitSymbol>
 					</InitSymbols>
 					<TaskPouOids>
@@ -6522,8 +6542,8 @@ and will return to Group State Standby when the situation permits.
 				<Link VarA="PlcTask Outputs^_00_Main.mcs[3].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Kinematics">
-				<Link VarA="PlcTask Inputs^_00_Main.fbGroupHandler._stKinToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.fbGroupHandler._stPlcToKin" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Inputs^_00_Main.GroupHandler._stKinToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.GroupHandler._stPlcToKin" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Objects^MC Group Coordinated Motion">
 				<Link VarA="PlcTask Inputs^_00_Main.stGroupRef.NcToPlc" VarB="Group Outputs^ToPLC"/>

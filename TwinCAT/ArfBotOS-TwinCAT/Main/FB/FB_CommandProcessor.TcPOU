@@ -26,7 +26,7 @@ VAR
 	_ProcessPauseCommand: PauseCmdProcessor;
 	_ProcessOutputCommand: OutputCmdProcessor;
 	_ProcessorDoneRtrig: R_TRIG;
-    _ProcessVisionCommand: VisionCmdProcessor;
+    //_ProcessVisionCommand: VisionCmdProcessor;
 	_ProcessVarSetCommand: VarSetCmdProcessor;
 	_ProcessLogicCommand: LogicCmdProcessor;
 	_FirstScan: BOOL:=TRUE;
@@ -93,10 +93,10 @@ IF _ProcessOutputCommand.Error THEN
 	SUPER^.M_Error(Description:=CONCAT('Output Error: ', _ProcessOutputCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF       
-IF _ProcessVisionCommand.Error THEN
-	SUPER^.M_Error(Description:=CONCAT('Vision Error: ', _ProcessVisionCommand.ErrorDescription));
-	StatusText:=SUPER^.ErrorDescription;
-END_IF
+// IF _ProcessVisionCommand.Error THEN
+// 	SUPER^.M_Error(Description:=CONCAT('Vision Error: ', _ProcessVisionCommand.ErrorDescription));
+// 	StatusText:=SUPER^.ErrorDescription;
+// END_IF
 IF _ProcessVarSetCommand.Error THEN
 	SUPER^.M_Error(Description:=CONCAT('Variable Error: ', _ProcessVarSetCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
@@ -160,17 +160,17 @@ _ProcessLogicCommand(
 	ErrorDescription=> , 
 	CmdIO:= CmdIO);
 
-_ProcessVisionCommand(
-	VisionSystemIpAddress:= PersistentVars.VisionSystemIpAddress,
-	VisionSystemPort:= PersistentVars.VisionSystemPort,
-	StoredPositions:= PersistentVars.StoredPositions,
-	VisionRegisters:= PersistentVars.VisionRegisters,
-	Flags:= PersistentVars.Flags,
-	LogicCmdIO:= CmdIO,
-	ItfUnitMode=> ,
-	Error=> , 
-	ErrorDescription=> , 
-	VisionStateText=> );
+// _ProcessVisionCommand(
+// 	VisionSystemIpAddress:= PersistentVars.VisionSystemIpAddress,
+// 	VisionSystemPort:= PersistentVars.VisionSystemPort,
+// 	StoredPositions:= PersistentVars.StoredPositions,
+// 	VisionRegisters:= PersistentVars.VisionRegisters,
+// 	Flags:= PersistentVars.Flags,
+// 	LogicCmdIO:= CmdIO,
+// 	ItfUnitMode=> ,
+// 	Error=> , 
+// 	ErrorDescription=> , 
+// 	VisionStateText=> );
 	
 _FirstScan := FALSE;]]></ST>
     </Implementation>
@@ -183,7 +183,7 @@ _FirstScan := FALSE;]]></ST>
 		_ProcessMoveCommand.M_Abort();
 		_ProcessPauseCommand.M_Abort();
 		_ProcessOutputCommand.M_Abort();
-		_ProcessVisionCommand.M_Abort();
+// 		_ProcessVisionCommand.M_Abort();
 		_ProcessVarSetCommand.M_Abort();
 		_ProcessLogicCommand.M_Abort();
 		_SeqAborting := _SeqAborting + 1;
@@ -192,7 +192,7 @@ _FirstScan := FALSE;]]></ST>
 			AND _ProcessPauseCommand.PropCurrentState = PACK_ML.State.Aborted 
 			//AND _ProcessInputCommand.PropCurrentState = PACK_ML.State.Aborted
 			AND _ProcessOutputCommand.PropCurrentState = PACK_ML.State.Aborted
-			AND _ProcessVisionCommand.PropCurrentState = PACK_ML.State.Aborted
+			//AND _ProcessVisionCommand.PropCurrentState = PACK_ML.State.Aborted
 			AND _ProcessVarSetCommand.PropCurrentState = PACK_ML.State.Aborted
 			AND _ProcessLogicCommand.PropCurrentState = PACK_ML.State.Aborted THEN
 				_SeqAborting := 0;
@@ -344,12 +344,12 @@ CASE _SeqMain OF
 						_ProcessOutputCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
 						ItfActiveModule.M_Start();
 					
-					DUT_CommandType.VisionCommand: //
-						StatusText := 'Vision Command in Progress.';
-						ItfActiveProcessorUnitMode := _ProcessVisionCommand.ItfUnitMode;
-						ItfActiveModule := _ProcessVisionCommand;
-						_ProcessVisionCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
-						ItfActiveModule.M_Start();
+// 					DUT_CommandType.VisionCommand: //
+// 						StatusText := 'Vision Command in Progress.';
+// 						ItfActiveProcessorUnitMode := _ProcessVisionCommand.ItfUnitMode;
+// 						ItfActiveModule := _ProcessVisionCommand;
+// 						_ProcessVisionCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
+// 						ItfActiveModule.M_Start();
 					
 					DUT_CommandType.VarSetCommand: //
 						StatusText := 'VarSet Command in Progress.';
@@ -438,7 +438,7 @@ _SeqResetting := 0;]]></ST>
 		_ProcessPauseCommand.M_Home();
 		//_ProcessInputCommand.M_Home();
 		_ProcessOutputCommand.M_Home();
-		_ProcessVisionCommand.M_Home();
+		//_ProcessVisionCommand.M_Home();
 		_ProcessVarSetCommand.M_Home();
 		_ProcessLogicCommand.M_Home();
 		_SeqResetting := _SeqResetting + 1;
@@ -446,7 +446,7 @@ _SeqResetting := 0;]]></ST>
 		IF _ProcessMoveCommand.PropCurrentState = PACK_ML.State.Idle
 			AND _ProcessPauseCommand.PropCurrentState = PACK_ML.State.Idle 
 			AND _ProcessOutputCommand.PropCurrentState = PACK_ML.State.Idle
-			AND _ProcessVisionCommand.PropCurrentState = PACK_ML.State.Idle
+			//AND _ProcessVisionCommand.PropCurrentState = PACK_ML.State.Idle
 			AND _ProcessVarSetCommand.PropCurrentState = PACK_ML.State.Idle
 			AND _ProcessLogicCommand.PropCurrentState = PACK_ML.State.Idle THEN
 				_SeqResetting := 0;

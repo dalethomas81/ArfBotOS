@@ -141,7 +141,13 @@
     <Compile Include="FB\group\DUT_GroupStatus.TcDUT">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FB\group\FB_AddAllAxes.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="FB\group\FB_GroupHandler.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FB\group\FB_PowerAll.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="FB\home\FB_HomingProcessor.TcPOU">
@@ -313,12 +319,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="PlcTask.TcTTO">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\FB_AddAllAxes.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="POUs\FB_PowerAll.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\FB_SixAxisSolver.TcPOU">

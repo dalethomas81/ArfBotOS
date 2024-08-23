@@ -5,6 +5,17 @@
 
 VAR_GLOBAL CONSTANT
 	
+	NumberOfAxes: UINT:=6;
+	
+	{attribute 'TcInitSymbol'}
+	McsCoordRef: MC_COORD_REF;
+	{attribute 'TcInitSymbol'}
+	Ucs1CoordRef: MC_COORD_REF;
+	{attribute 'TcInitSymbol'}
+	Ucs2CoordRef: MC_COORD_REF;
+	{attribute 'TcInitSymbol'}
+	TcpCoordRef: MC_COORD_REF;
+	
 	// task scan times
 	dwMainInterval: DWORD:=3000; // us TODO reference this in task settings
 	dwMotionInterval: DWORD:=50; // us TODO reference this in task settings

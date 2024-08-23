@@ -3,16 +3,12 @@
   <POU Name="FB_GroupHandler" Id="{f6416d9a-a888-4f6b-9b8f-cb306c7639e1}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_GroupHandler
 VAR CONSTANT
-	NumberOfAxes: UINT:=6;
+	NumberOfAxes: UINT:=GVL.NumberOfAxes;
 END_VAR
 VAR_IN_OUT
 	AxisGroup: AXES_GROUP_REF;
 	ACS: ARRAY[1..NumberOfAxes] OF AXIS_REF;
 	MCS: ARRAY[1..NumberOfAxes] OF AXIS_REF;
-	McsCoordRef: MC_COORD_REF;
-	Ucs1CoordRef: MC_COORD_REF;
-	Ucs2CoordRef: MC_COORD_REF;
-	TcpCoordRef: MC_COORD_REF;
 END_VAR
 VAR_INPUT
 	Enable: BOOL;
@@ -61,14 +57,6 @@ VAR
 	_Ucs1OffsetFrame: DUT_CoordFrame;
 	_Ucs2OffsetFrame: DUT_CoordFrame;
 	_TcpOffsetFrame: DUT_CoordFrame;
-// 	{attribute 'TcInitSymbol'}
-// 	_OidEndNode_MCS: MC_COORD_REF;
-// 	{attribute 'TcInitSymbol'}
-// 	_OidEndNode_UCS1: MC_COORD_REF;
-// 	{attribute 'TcInitSymbol'}
-// 	_OidEndNode_UCS2: MC_COORD_REF;
-// 	{attribute 'TcInitSymbol'}
-// 	_OidEndNode_TCP: MC_COORD_REF;
 	
 	_MC_SetCoordinateTransform: MC_SetCoordinateTransform;
 	_CoordinateSystem: DUT_CoordSystem;
@@ -141,7 +129,7 @@ _FB_KinCheckActualStatus(
 	bExecute:= , 
 	stAxesListReference:= _KinAxes, 
 	stKinRefIn:= _stKinToPlc, 
-	eKinStatus=> , 
+	eKinStatus=> ,
 	bBusy=> , 
 	bDone=> , 
 	bError=> , 
@@ -164,6 +152,22 @@ _FB_KinCalcTrafo(
 	nErrorId=> );
 *)
 
+IF _CoordinateSystem = DUT_CoordSystem.ACS THEN
+	_DUT_GroupStatus.CurrentPosition.X := ACS[1].NcToPlc.ActPos;
+	_DUT_GroupStatus.CurrentPosition.Y := ACS[2].NcToPlc.ActPos;
+	_DUT_GroupStatus.CurrentPosition.Z := ACS[3].NcToPlc.ActPos;
+	_DUT_GroupStatus.CurrentPosition.A := ACS[4].NcToPlc.ActPos;
+	_DUT_GroupStatus.CurrentPosition.B := ACS[5].NcToPlc.ActPos;
+	_DUT_GroupStatus.CurrentPosition.C := ACS[6].NcToPlc.ActPos;
+ELSE
+	_DUT_GroupStatus.CurrentPosition.X := MCS[1].NcToPlc.ActPos;
+	_DUT_GroupStatus.CurrentPosition.Y := MCS[2].NcToPlc.ActPos;
+	_DUT_GroupStatus.CurrentPosition.Z := MCS[3].NcToPlc.ActPos;
+	_DUT_GroupStatus.CurrentPosition.A := MCS[4].NcToPlc.ActPos;
+	_DUT_GroupStatus.CurrentPosition.B := MCS[5].NcToPlc.ActPos;
+	_DUT_GroupStatus.CurrentPosition.C := MCS[6].NcToPlc.ActPos;
+END_IF
+
 _MC_GroupReadStatus(
 	AxesGroup:= AxisGroup, 
 	Enable:= Enable, 
@@ -180,11 +184,6 @@ _MC_GroupReadStatus(
 	InPosition=> _DUT_GroupStatus.InPosition, 
 	Error=> _DUT_GroupStatus.Error, 
 	ErrorId=> _DUT_GroupStatus.ErrorID);
-IF _MC_GroupReadStatus.Error THEN
-	//
-ELSIF NOT _MC_GroupReadStatus.Valid THEN
-	//	
-END_IF
 	
 _FB_PowerAll(
 	Enable:= _GroupPower, 
@@ -259,7 +258,7 @@ _FB_KinResetGroup(
 	
 _McsCoordinateFrame(
 	Execute:= , 
-	oidTrafo:= McsCoordRef, 
+	oidTrafo:= GVL.McsCoordRef, 
 	OffsetFrame:= _McsOffsetFrame, 
 	Done=> , 
 	Busy=> , 
@@ -267,7 +266,7 @@ _McsCoordinateFrame(
 	
 _Ucs1CoordinateFrame(
 	Execute:= , 
-	oidTrafo:= Ucs1CoordRef, 
+	oidTrafo:= GVL.Ucs1CoordRef, 
 	OffsetFrame:= _Ucs1OffsetFrame, 
 	Done=> , 
 	Busy=> , 
@@ -275,7 +274,7 @@ _Ucs1CoordinateFrame(
 	
 _Ucs2CoordinateFrame(
 	Execute:= , 
-	oidTrafo:= Ucs2CoordRef, 
+	oidTrafo:= GVL.Ucs2CoordRef, 
 	OffsetFrame:= _Ucs2OffsetFrame, 
 	Done=> , 
 	Busy=> , 
@@ -283,7 +282,7 @@ _Ucs2CoordinateFrame(
 	
 _TcpCoordinateFrame(
 	Execute:= , 
-	oidTrafo:= TcpCoordRef, 
+	oidTrafo:= GVL.TcpCoordRef, 
 	OffsetFrame:= _TcpOffsetFrame, 
 	Done=> , 
 	Busy=> , 
@@ -300,7 +299,9 @@ _MC_SetCoordinateTransform(
 	Error=> , 
 	ErrorId=> );]]></ST>
     </Implementation>
-    <Method Name="_M_DisableGroup" Id="{17aa3a99-9fea-4672-a49a-0a0b6efeb4bc}">
+    <Folder Name="private" Id="{15866e02-bed4-425e-b6fe-bfa7022ef494}" />
+    <Folder Name="public" Id="{db2da752-41b2-4614-b33d-74856b53b0dc}" />
+    <Method Name="_M_DisableGroup" Id="{17aa3a99-9fea-4672-a49a-0a0b6efeb4bc}" FolderPath="private\">
       <Declaration><![CDATA[METHOD PRIVATE _M_DisableGroup : BOOL
 ]]></Declaration>
       <Implementation>
@@ -353,7 +354,7 @@ CASE _SeqDisableGroup OF
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="_M_EnableGroup" Id="{e90d231e-c7b2-4663-a0b5-e03a8bc3210e}">
+    <Method Name="_M_EnableGroup" Id="{e90d231e-c7b2-4663-a0b5-e03a8bc3210e}" FolderPath="private\">
       <Declaration><![CDATA[METHOD PRIVATE _M_EnableGroup : BOOL
 ]]></Declaration>
       <Implementation>
@@ -453,7 +454,7 @@ CASE _SeqEnableGroup OF
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="_M_ResetGroup" Id="{93550740-bce9-4d08-8c7b-68cd49bbfaa5}">
+    <Method Name="_M_ResetGroup" Id="{93550740-bce9-4d08-8c7b-68cd49bbfaa5}" FolderPath="private\">
       <Declaration><![CDATA[METHOD PRIVATE _M_ResetGroup : BOOL
 ]]></Declaration>
       <Implementation>
@@ -485,7 +486,7 @@ CASE _SeqResetGroup OF
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="_M_SetKinematics" Id="{a1a7e940-4a9a-4003-92e9-8b3905bc4ae4}">
+    <Method Name="_M_SetKinematics" Id="{a1a7e940-4a9a-4003-92e9-8b3905bc4ae4}" FolderPath="private\">
       <Declaration><![CDATA[METHOD PRIVATE _M_SetKinematics : BOOL
 ]]></Declaration>
       <Implementation>
@@ -519,7 +520,7 @@ CASE _SequenceSetKinematics OF
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="_M_SetTransform" Id="{f384a18b-a131-42e5-946e-44fc3ee57817}">
+    <Method Name="_M_SetTransform" Id="{f384a18b-a131-42e5-946e-44fc3ee57817}" FolderPath="private\">
       <Declaration><![CDATA[METHOD PRIVATE _M_SetTransform : BOOL
 VAR_INPUT
 END_VAR
@@ -595,15 +596,15 @@ CASE _SequenceSetTrans OF
 	3:
 		CASE _CoordinateSystem OF
 			DUT_CoordSystem.ACS:
-				_MC_SetCoordinateTransform.CoordTransform := McsCoordRef;
+				_MC_SetCoordinateTransform.CoordTransform := GVL.McsCoordRef; // TODO: we shouldnt be here. maybe fault?
 			DUT_CoordSystem.MCS:
-				_MC_SetCoordinateTransform.CoordTransform := McsCoordRef;
+				_MC_SetCoordinateTransform.CoordTransform := GVL.McsCoordRef;
 			DUT_CoordSystem.UCS1:
-				_MC_SetCoordinateTransform.CoordTransform := Ucs1CoordRef;
+				_MC_SetCoordinateTransform.CoordTransform := GVL.Ucs1CoordRef;
 			DUT_CoordSystem.UCS2:
-				_MC_SetCoordinateTransform.CoordTransform := Ucs2CoordRef;
+				_MC_SetCoordinateTransform.CoordTransform := GVL.Ucs2CoordRef;
 			DUT_CoordSystem.TCP:
-				_MC_SetCoordinateTransform.CoordTransform := TcpCoordRef;
+				_MC_SetCoordinateTransform.CoordTransform := GVL.TcpCoordRef;
 		END_CASE
 		_MC_SetCoordinateTransform.Execute := TRUE;
 		_SequenceSetTrans := _SequenceSetTrans + 1;
@@ -622,7 +623,7 @@ CASE _SequenceSetTrans OF
 END_CASE]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_DisableGroup" Id="{a0a3246f-e788-42ad-9174-44a6b0b5864f}">
+    <Method Name="M_DisableGroup" Id="{a0a3246f-e788-42ad-9174-44a6b0b5864f}" FolderPath="public\">
       <Declaration><![CDATA[METHOD M_DisableGroup : BOOL
 ]]></Declaration>
       <Implementation>
@@ -634,7 +635,7 @@ END_CASE]]></ST>
 //END_IF]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_EnableGroup" Id="{42afec78-5201-449e-b1b2-e5ed96e5c8b5}">
+    <Method Name="M_EnableGroup" Id="{42afec78-5201-449e-b1b2-e5ed96e5c8b5}" FolderPath="public\">
       <Declaration><![CDATA[METHOD M_EnableGroup : BOOL
 VAR_INPUT
 	CoordinateSystem: DUT_CoordSystem;
@@ -651,14 +652,14 @@ ELSE
 END_IF]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_ResetGroup" Id="{f7b0fb23-a5d3-4128-86d4-545ea8eb93f8}">
+    <Method Name="M_ResetGroup" Id="{f7b0fb23-a5d3-4128-86d4-545ea8eb93f8}" FolderPath="public\">
       <Declaration><![CDATA[METHOD M_ResetGroup : BOOL
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[_ResetGroup := TRUE;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_SetKinematics" Id="{c272ee22-b56a-4a21-938f-13e5df726fce}">
+    <Method Name="M_SetKinematics" Id="{c272ee22-b56a-4a21-938f-13e5df726fce}" FolderPath="private\">
       <Declaration><![CDATA[METHOD PRIVATE M_SetKinematics : BOOL
 VAR_INPUT
 	CartesianMode: BOOL;
@@ -675,7 +676,7 @@ ELSE
 END_IF]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_SetTransform" Id="{f471a02b-5882-495b-9ba3-b8ab983b083c}">
+    <Method Name="M_SetTransform" Id="{f471a02b-5882-495b-9ba3-b8ab983b083c}" FolderPath="private\">
       <Declaration><![CDATA[METHOD PRIVATE M_SetTransform : BOOL
 VAR_INPUT
 	CoordinateSystem: DUT_CoordSystem;
