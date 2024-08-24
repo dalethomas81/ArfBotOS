@@ -3717,7 +3717,7 @@ and will return to Group State Standby when the situation permits.
 					<AxisPara>
 						<General UnitName="Degree"/>
 						<Dynamic Acceleration="124.679" Deceleration="124.679" Jerk="508"/>
-						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="10" Fast="10" Maximum="60"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="60"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">

@@ -3878,7 +3878,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="7" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="1">
 					<Name>MCS X</Name>
 					<AxisPara>
-						<Dynamic Acceleration="4.59185" Deceleration="4.59185" Jerk="0.843402"/>
+						<Dynamic Acceleration="37.5" Deceleration="37.5" Jerk="56.25"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="50"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -4034,7 +4034,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="8" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="2">
 					<Name>MCS Y</Name>
 					<AxisPara>
-						<Dynamic Acceleration="4.59185" Deceleration="4.59185" Jerk="0.843402"/>
+						<Dynamic Acceleration="37.5" Deceleration="37.5" Jerk="56.25"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="50"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -4190,7 +4190,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="9" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="3">
 					<Name>MCS Z</Name>
 					<AxisPara>
-						<Dynamic Acceleration="4.59185" Deceleration="4.59185" Jerk="0.843402"/>
+						<Dynamic Acceleration="37.5" Deceleration="37.5" Jerk="56.25"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="50"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -4346,7 +4346,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="10" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="4">
 					<Name>MCS A</Name>
 					<AxisPara>
-						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="4.9867" Deceleration="4.9867" Jerk="0.994688"/>
+						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="37.5" Deceleration="37.5" Jerk="56.25"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="50"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -4502,7 +4502,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="11" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="5">
 					<Name>MCS B</Name>
 					<AxisPara>
-						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="4.9867" Deceleration="4.9867" Jerk="0.994688"/>
+						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="37.5" Deceleration="37.5" Jerk="56.25"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="50"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -4658,7 +4658,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="12" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="6">
 					<Name>MCS C</Name>
 					<AxisPara>
-						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="12.3839" Deceleration="12.3839" Jerk="3.06722"/>
+						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="38.25" Deceleration="38.25" Jerk="55.2099"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="50"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
