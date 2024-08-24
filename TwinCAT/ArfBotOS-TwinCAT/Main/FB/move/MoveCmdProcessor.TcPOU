@@ -782,11 +782,15 @@ SUPER^._SeqMain := 0;]]></ST>
         <ST><![CDATA[CASE SUPER^._SeqResetting OF
 	0:
 		GroupHandler.M_ResetGroup();
-		_SeqResetting := _SeqResetting + 1;
+		SUPER^._SeqResetting := SUPER^._SeqResetting + 1;
 	1:
-		IF NOT GroupHandler.P_GroupStatus.Busy THEN
+		IF GroupHandler.Busy THEN
+			SUPER^._SeqResetting := SUPER^._SeqResetting + 1;
+		END_IF
+	2:
+		IF NOT GroupHandler.Busy THEN
 			SUPER^.M_StateComplete();
-			_SeqResetting := 0;
+			SUPER^._SeqResetting := 0;
 		END_IF
 END_CASE]]></ST>
       </Implementation>

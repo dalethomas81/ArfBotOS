@@ -2610,7 +2610,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name IecBaseType="true">ARRAY [0..5] OF DUT_PositionController</Name>
+			<Name GUID="{873E62D6-2103-62DF-E991-2F5352C4AE8B}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..5] OF DUT_PositionController</Name>
 			<BitSize>3072</BitSize>
 			<BaseType GUID="{6C6A0556-EBC5-D04D-5EEB-F615F91F008D}">DUT_PositionController</BaseType>
 			<ArrayInfo>
@@ -2792,7 +2792,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name IecBaseType="true">ARRAY [0..49] OF DUT_StoredPosition</Name>
+			<Name GUID="{E9C0A808-4113-37DD-A541-FFCB7E910137}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..49] OF DUT_StoredPosition</Name>
 			<BitSize>54400</BitSize>
 			<BaseType GUID="{253AA491-293D-EE01-B5C3-A5A2ED8D1CE8}">DUT_StoredPosition</BaseType>
 			<ArrayInfo>
@@ -2812,7 +2812,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name IecBaseType="true">ARRAY [0..49] OF DUT_VisionRegister</Name>
+			<Name GUID="{CCCB94DE-C276-DA60-DFD9-24564C06399F}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..49] OF DUT_VisionRegister</Name>
 			<BitSize>57600</BitSize>
 			<BaseType GUID="{D6E996A8-2171-D6D1-2A17-2DD547FFF9FE}">DUT_VisionRegister</BaseType>
 			<ArrayInfo>
@@ -2843,7 +2843,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name IecBaseType="true">ARRAY [0..49] OF DUT_Flags</Name>
+			<Name GUID="{3E17E049-7235-3828-4255-C95966CFE06E}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..49] OF DUT_Flags</Name>
 			<BitSize>32800</BitSize>
 			<BaseType GUID="{1DECCFBC-CD73-8A3F-E208-31DEE8033F84}">DUT_Flags</BaseType>
 			<ArrayInfo>
@@ -5953,7 +5953,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{AFE5FE87-735F-560B-B928-FD5253C18F19}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{5EC16964-F683-03AA-01E1-6BB4A1E03C24}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">

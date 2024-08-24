@@ -360,13 +360,13 @@ _SeqResetting := 0;]]></ST>
       <Declaration><![CDATA[METHOD PROTECTED M_Resetting : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[CASE _SeqResetting OF
+        <ST><![CDATA[CASE SUPER^._SeqResetting OF
 	0:
 		_ProcessCommands.M_Home();
-		_SeqResetting := _SeqResetting + 1;
+		SUPER^._SeqResetting := SUPER^._SeqResetting + 1;
 	1:
 		IF _ProcessCommands.PropCurrentState = PACK_ML.State.Idle THEN
-			_SeqResetting := 0;
+			SUPER^._SeqResetting := 0;
 			SUPER^.M_StateComplete();
 		END_IF
 		

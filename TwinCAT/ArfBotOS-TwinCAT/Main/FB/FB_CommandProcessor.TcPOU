@@ -29,6 +29,7 @@ VAR
     //_ProcessVisionCommand: VisionCmdProcessor;
 	_ProcessVarSetCommand: VarSetCmdProcessor;
 	_ProcessLogicCommand: LogicCmdProcessor;
+	_WaitingOnExecute: BOOL;
 	_FirstScan: BOOL:=TRUE;
 END_VAR
 
@@ -307,12 +308,14 @@ CASE _SeqMain OF
 		
 	_STEP_IDLE:
 		// hang out here until called to run
+		_WaitingOnExecute := FALSE;
 		_CurrentCmdIdx := 0;
 		SUPER^.M_StateComplete();
 		
 	_STEP_CMD: //
 		IF NOT Enable THEN
 			_SeqMain := _STEP_DONE;
+			
 		ELSIF _CurrentCmdIdx <= GVL.PROG_CMDS_ARR_END AND _CurrentCmdIdx >= GVL.PROG_CMDS_ARR_BEG THEN
 			//
 			IF _Commands[_CurrentCmdIdx].CommandType = DUT_CommandType.Disabled THEN
@@ -322,56 +325,65 @@ CASE _SeqMain OF
 				_SeqMain := _STEP_CMD;
 				
 			ELSE
-				CASE _Commands[_CurrentCmdIdx].CommandType OF
-					DUT_CommandType.MoveCommand: //
-						StatusText := 'Move Command in Progress.';
-						ItfActiveProcessorUnitMode := _ProcessMoveCommand.ItfUnitMode;
-						ItfActiveModule := _ProcessMoveCommand;
-						_ProcessMoveCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
-						ItfActiveModule.M_Start();
-					
-					DUT_CommandType.PauseCommand: //
-						StatusText := 'Pause Command in Progress.';
-						ItfActiveProcessorUnitMode := _ProcessPauseCommand.ItfUnitMode;
-						ItfActiveModule := _ProcessPauseCommand;
-						_ProcessPauseCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
-						ItfActiveModule.M_Start();
-					
-					DUT_CommandType.OutputCommand: //
-						StatusText := 'Output Command in Progress.';
-						ItfActiveProcessorUnitMode := _ProcessOutputCommand.ItfUnitMode;
-						ItfActiveModule := _ProcessOutputCommand;
-						_ProcessOutputCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
-						ItfActiveModule.M_Start();
-					
-// 					DUT_CommandType.VisionCommand: //
-// 						StatusText := 'Vision Command in Progress.';
-// 						ItfActiveProcessorUnitMode := _ProcessVisionCommand.ItfUnitMode;
-// 						ItfActiveModule := _ProcessVisionCommand;
-// 						_ProcessVisionCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
-// 						ItfActiveModule.M_Start();
-					
-					DUT_CommandType.VarSetCommand: //
-						StatusText := 'VarSet Command in Progress.';
-						ItfActiveProcessorUnitMode := _ProcessVarsetCommand.ItfUnitMode;
-						ItfActiveModule := _ProcessVarsetCommand;
-						_ProcessVarsetCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
-						ItfActiveModule.M_Start();
-					
-					DUT_CommandType.LogicCommand: //
-						StatusText := 'Logic Command in Progress.';
-						ItfActiveProcessorUnitMode := _ProcessLogicCommand.ItfUnitMode;
-						ItfActiveModule := _ProcessLogicCommand;
-						_ProcessLogicCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
-						ItfActiveModule.M_Start();
+				IF NOT _WaitingOnExecute THEN
+					CASE _Commands[_CurrentCmdIdx].CommandType OF
+						DUT_CommandType.MoveCommand: //
+							StatusText := 'Move Command in Progress.';
+							ItfActiveProcessorUnitMode := _ProcessMoveCommand.ItfUnitMode;
+							ItfActiveModule := _ProcessMoveCommand;
+							_ProcessMoveCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
+							ItfActiveModule.M_Start();
+							_WaitingOnExecute := TRUE;
 						
-				ELSE
-					_SeqMain := _STEP_CMD;
-					
-				END_CASE
+						DUT_CommandType.PauseCommand: //
+							StatusText := 'Pause Command in Progress.';
+							ItfActiveProcessorUnitMode := _ProcessPauseCommand.ItfUnitMode;
+							ItfActiveModule := _ProcessPauseCommand;
+							_ProcessPauseCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
+							ItfActiveModule.M_Start();
+							_WaitingOnExecute := TRUE;
+						
+						DUT_CommandType.OutputCommand: //
+							StatusText := 'Output Command in Progress.';
+							ItfActiveProcessorUnitMode := _ProcessOutputCommand.ItfUnitMode;
+							ItfActiveModule := _ProcessOutputCommand;
+							_ProcessOutputCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
+							ItfActiveModule.M_Start();
+							_WaitingOnExecute := TRUE;
+						
+	// 					DUT_CommandType.VisionCommand: //
+	// 						StatusText := 'Vision Command in Progress.';
+	// 						ItfActiveProcessorUnitMode := _ProcessVisionCommand.ItfUnitMode;
+	// 						ItfActiveModule := _ProcessVisionCommand;
+	// 						_ProcessVisionCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
+	// 						ItfActiveModule.M_Start();
+	//						_WaitingOnExecute := TRUE;
+						
+						DUT_CommandType.VarSetCommand: //
+							StatusText := 'VarSet Command in Progress.';
+							ItfActiveProcessorUnitMode := _ProcessVarsetCommand.ItfUnitMode;
+							ItfActiveModule := _ProcessVarsetCommand;
+							_ProcessVarsetCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
+							ItfActiveModule.M_Start();
+							_WaitingOnExecute := TRUE;
+						
+						DUT_CommandType.LogicCommand: //
+							StatusText := 'Logic Command in Progress.';
+							ItfActiveProcessorUnitMode := _ProcessLogicCommand.ItfUnitMode;
+							ItfActiveModule := _ProcessLogicCommand;
+							_ProcessLogicCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
+							ItfActiveModule.M_Start();
+							_WaitingOnExecute := TRUE;
+							
+					ELSE
+						_SeqMain := _STEP_CMD;
+						
+					END_CASE
+				END_IF
 				
 				// wait for executing
 				IF ItfActiveModule.PropCurrentState = PACK_ML.State.Execute THEN
+					_WaitingOnExecute := FALSE;
 					_ActiveCommand := _Commands[_CurrentCmdIdx];
 					_CurrentCmdIdx := _CurrentCmdIdx + 1;
 					_SeqMain := _STEP_WAIT;
@@ -432,7 +444,7 @@ _SeqResetting := 0;]]></ST>
       <Declaration><![CDATA[METHOD PROTECTED M_Resetting : BOOL
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[CASE _SeqResetting OF
+        <ST><![CDATA[CASE SUPER^._SeqResetting OF
 	0:
 		_ProcessMoveCommand.M_Home();
 		_ProcessPauseCommand.M_Home();
@@ -441,7 +453,7 @@ _SeqResetting := 0;]]></ST>
 		//_ProcessVisionCommand.M_Home();
 		_ProcessVarSetCommand.M_Home();
 		_ProcessLogicCommand.M_Home();
-		_SeqResetting := _SeqResetting + 1;
+		SUPER^._SeqResetting := SUPER^._SeqResetting + 1;
 	1:
 		IF _ProcessMoveCommand.PropCurrentState = PACK_ML.State.Idle
 			AND _ProcessPauseCommand.PropCurrentState = PACK_ML.State.Idle 
@@ -449,7 +461,7 @@ _SeqResetting := 0;]]></ST>
 			//AND _ProcessVisionCommand.PropCurrentState = PACK_ML.State.Idle
 			AND _ProcessVarSetCommand.PropCurrentState = PACK_ML.State.Idle
 			AND _ProcessLogicCommand.PropCurrentState = PACK_ML.State.Idle THEN
-				_SeqResetting := 0;
+				SUPER^._SeqResetting := 0;
 				SUPER^.M_StateComplete();
 		END_IF
 		
