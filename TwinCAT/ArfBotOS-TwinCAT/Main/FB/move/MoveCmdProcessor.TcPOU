@@ -169,6 +169,7 @@ CASE _SequenceMoveCircularAbsolute OF
 	0: //
 	
 	1: //
+		_MovePrepError := FALSE;
 		_MC_MovePath.Execute := FALSE;
 		A_AddLinAbsCircPath();
 		_SequenceMoveCircularAbsolute := _SequenceMoveCircularAbsolute + 1;

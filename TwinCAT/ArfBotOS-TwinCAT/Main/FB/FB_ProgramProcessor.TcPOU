@@ -128,11 +128,11 @@ END_IF*)]]></ST>
     <Method Name="M_CallProgram" Id="{7ee83db1-f29b-420a-9be4-4f2ca7f272b9}">
       <Declaration><![CDATA[METHOD M_CallProgram : BOOL
 VAR_INPUT
-	/// program to call
+	// program to call
 	ProgramNumber: UINT;
-	/// number of the program to return to when the call program ends
+	// number of the program to return to when the call program ends
 	ReturnProgram: UINT;
-	/// number of the command to start from when called program ends
+	// number of the command to start from when called program ends
 	ReturnCommand: UINT;
 END_VAR
 ]]></Declaration>

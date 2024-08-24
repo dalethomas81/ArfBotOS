@@ -44,6 +44,7 @@ VAR
 	_MC_GroupStop: MC_GroupStop;
 	_MC_UngroupAllAxes: MC_UngroupAllAxes;
 	_MC_GroupDisable: MC_GroupDisable;
+	_MC_GroupReset: MC_GroupReset;
 	_FB_KinResetGroup: FB_KinResetGroup;
 	_FB_KinCheckActualStatus: FB_KinCheckActualStatus;
     
@@ -256,6 +257,14 @@ _FB_KinResetGroup(
 	bError=> , 
 	nErrorId=> );
 	
+_MC_GroupReset(
+	AxesGroup:= AxisGroup, 
+	Execute:= , 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorId=> );
+	
 _McsCoordinateFrame(
 	Execute:= , 
 	oidTrafo:= GVL.McsCoordRef, 
@@ -464,18 +473,33 @@ CASE _SeqResetGroup OF
 		IF _ResetGroup THEN
 			_ResetGroup := FALSE;
 			//IF Error THEN // could do this for auto reset. commenting out for now.
+				Error := FALSE;
+				ErrorID := 0;
 				_SeqResetGroup := _SeqResetGroup + 1;
 			//END_IF
 		END_IF
 		
 	1:
-		Error := FALSE;
-		ErrorID := 0;
 		_FB_KinResetGroup.bExecute := TRUE;
 		_SeqResetGroup := _SeqResetGroup + 1;
+		
+	2:
+		IF _FB_KinResetGroup.bDone OR _FB_KinResetGroup.bError THEN
+			_FB_KinResetGroup.bExecute := FALSE;
+			_SeqResetGroup := _SeqResetGroup + 1;
+		END_IF
+		
+	3:
+		_MC_GroupReset.Execute := TRUE;
+		_SeqResetGroup := _SeqResetGroup + 1;
+		
+	4:
+		IF _MC_GroupReset.Done OR _MC_GroupReset.Error THEN
+			_MC_GroupReset.Execute := FALSE;
+			_SeqResetGroup := _SeqResetGroup + 1;
+		END_IF
 	
-	2: 
-		_FB_KinResetGroup.bExecute := FALSE;
+	5: 
 		//
 		_SeqEnableGroup := 0;
 		_SeqDisableGroup := 0;
