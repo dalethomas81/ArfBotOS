@@ -480,13 +480,16 @@ CASE _SeqResetGroup OF
 		END_IF
 		
 	1:
-		_FB_KinResetGroup.bExecute := TRUE;
+		IF NOT _DUT_GroupStatus.GroupDisabled THEN
+			_FB_KinResetGroup.bExecute := TRUE;
+		END_IF
 		_SeqResetGroup := _SeqResetGroup + 1;
 		
 	2:
-		IF _FB_KinResetGroup.bDone OR _FB_KinResetGroup.bError THEN
-			_FB_KinResetGroup.bExecute := FALSE;
-			_SeqResetGroup := _SeqResetGroup + 1;
+		IF _FB_KinResetGroup.bDone OR _FB_KinResetGroup.bError
+			OR _DUT_GroupStatus.GroupDisabled THEN
+				_FB_KinResetGroup.bExecute := FALSE;
+				_SeqResetGroup := _SeqResetGroup + 1;
 		END_IF
 		
 	3:

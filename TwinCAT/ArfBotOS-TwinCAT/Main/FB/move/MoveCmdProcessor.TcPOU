@@ -46,6 +46,12 @@ VAR
 	_PosRef: DUT_COORD_REF;
 	_PosRef2: DUT_COORD_REF;
 	
+	_MC_MoveRelative: ARRAY[1.._NumberOfAxes] OF MC_MoveRelative;
+	_MoveDistance: ARRAY[1.._NumberOfAxes] OF LREAL:=[0,0,0,0,0,0];
+	_MC_MoveAbsolute: ARRAY[1.._NumberOfAxes] OF MC_MoveAbsolute;
+	_MovePosition: ARRAY[1.._NumberOfAxes] OF LREAL:=[0,0,0,0,0,0];
+	
+	_i, _j, _k: UINT;
 END_VAR
 VAR CONSTANT
 	_NumberOfAxes:				UINT := GVL.NumberOfAxes;
@@ -141,8 +147,8 @@ CASE SUPER^._SeqMain OF
 			AND _SequenceMoveDirectRelative = 0
 			AND _SequenceMoveLinearAbsolute = 0
 			AND _SequenceMoveLinearRelative = 0 THEN
-				//SUPER^._SeqMain := _STEP_GROUP_DISABLE;
-				SUPER^._SeqMain := _STEP_DONE;
+				SUPER^._SeqMain := _STEP_GROUP_DISABLE;
+				//SUPER^._SeqMain := _STEP_DONE;
 		END_IF
 	
 	// TODO do we need to disable the group at this point? lets leave this here for now but skip it.
@@ -169,7 +175,6 @@ CASE _SequenceMoveCircularAbsolute OF
 	0: //
 	
 	1: //
-		_MovePrepError := FALSE;
 		_MC_MovePath.Execute := FALSE;
 		A_AddLinAbsCircPath();
 		_SequenceMoveCircularAbsolute := _SequenceMoveCircularAbsolute + 1;
@@ -202,8 +207,9 @@ CASE _SequenceMoveCircularAbsolute OF
 			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MovePath.ErrorID)));
 			_SequenceMoveCircularAbsolute := 99; // error step so we dont spam errors
 			
-		ELSE
+		ELSIF _MC_MovePath.Done THEN
 			_SequenceMoveCircularAbsolute := 0;
+			
 		END_IF
 		
 END_CASE
@@ -279,7 +285,7 @@ END_CASE
 CASE _SequenceMoveLinearAbsolute OF
 	0: //
 	
-	1: //		
+	1: //
 		_MC_MovePath.Execute := FALSE;
 		A_AddLinAbsPath();
 		_SequenceMoveLinearAbsolute := _SequenceMoveLinearAbsolute + 1;
@@ -312,8 +318,9 @@ CASE _SequenceMoveLinearAbsolute OF
 			SUPER^.M_Error(Description:=CONCAT('Move Command Error: ', TO_STRING(_MC_MovePath.ErrorID)));
 			_SequenceMoveLinearAbsolute := 99; // error step so we dont spam errors
 			
-		ELSE
+		ELSIF _MC_MovePath.Done THEN
 			_SequenceMoveLinearAbsolute := 0;
+			
 		END_IF
 		
 END_CASE
@@ -425,6 +432,47 @@ _MC_MovePath(
 // 	Error=> , 
 // 	ErrorID=> , 
 // 	MovementId=> );
+
+
+// // move relative
+// FOR _k:= 1 TO _NumberOfAxes DO
+// 	_MC_MoveRelative[_k](
+// 		Axis:= SEL(_MoveCommandParser.stCommand.CoordSystem = DUT_CoordSystem.ACS, MCS[_k], ACS[_k]), 
+// 		Execute:= , 
+// 		Distance:= _MoveDistance[_k], 
+// 		Velocity:= _MoveCommandParser.stCommand.Speed, 
+// 		Acceleration:= MC_DEFAULT, 
+// 		Deceleration:= MC_DEFAULT, 
+// 		Jerk:= MC_DEFAULT, 
+// 		BufferMode:= , 
+// 		Options:= , 
+// 		Done=> , 
+// 		Busy=> , 
+// 		Active=> , 
+// 		CommandAborted=> , 
+// 		Error=> , 
+// 		ErrorID=> );
+// END_FOR
+
+// FOR _k:= 1 TO _NumberOfAxes DO
+// 	_MC_MoveAbsolute[_k](
+// 		Axis:= SEL(_MoveCommandParser.stCommand.CoordSystem = DUT_CoordSystem.ACS, MCS[_k], ACS[_k]), 
+// 		Execute:= , 
+// 		Position:= _MovePosition[_k], 
+// 		Velocity:= _MoveCommandParser.stCommand.Speed, 
+// 		Acceleration:= MC_DEFAULT, 
+// 		Deceleration:= MC_DEFAULT, 
+// 		Jerk:= MC_DEFAULT, 
+// 		BufferMode:= , 
+// 		Options:= , 
+// 		Done=> , 
+// 		Busy=> , 
+// 		Active=> , 
+// 		CommandAborted=> , 
+// 		Error=> , 
+// 		ErrorID=> );
+// END_FOR
+
 // _MC_MoveDirectAbsolute(
 // 	AxisGroup:=AxisGroup,
 // 	Execute:= ,
@@ -446,6 +494,7 @@ _MC_MovePath(
 // 	Error=> ,
 // 	ErrorID=> ,
 // 	MovementId=> );
+
 // _MC_MoveDirectRelative(
 // 	AxisGroup:= AxisGroup, 
 // 	Execute:= , 
@@ -523,7 +572,8 @@ _MC_MovePath(
     <Folder Name="PathPlanning" Id="{c0534be7-6a45-4d50-bad5-cf9e02741379}" />
     <Action Name="A_AddLinAbsCircPath" Id="{33a9f7f5-5a80-4d5d-981d-e39aaeb5c2ae}" FolderPath="PathPlanning\">
       <Implementation>
-        <ST><![CDATA[_path.ClearPath();  //Clear nodes that were in path
+        <ST><![CDATA[_MovePrepError := FALSE;
+_path.ClearPath();  //Clear nodes that were in path
 
 //
 CASE _MoveCommandParser.stCommand.CoordSystem OF
@@ -581,7 +631,8 @@ _MovePrepError := _MovePrepError OR _MC_MoveCircularAbsolutePreparation.Error;]]
     </Action>
     <Action Name="A_AddLinAbsPath" Id="{f006f2c9-a0b4-42c7-9dc4-82f2ba9cc8ec}" FolderPath="PathPlanning\">
       <Implementation>
-        <ST><![CDATA[_path.ClearPath();  //Clear nodes that were in path
+        <ST><![CDATA[_MovePrepError := FALSE;
+_path.ClearPath();  //Clear nodes that were in path
 
 _MC_MoveLinearAbsolutePreparation.Position						:= ADR(_TargetPos); //pointer to position array
 _MC_MoveLinearAbsolutePreparation.PositionCount 				:= _NumberOfAxes; //number of axes in group
@@ -614,9 +665,12 @@ _MovePrepError := _MovePrepError OR _MC_SetCoordinateTransformPreparation.Error;
 _TargetPos[1]				:= _PosRef.X;
 _TargetPos[2]				:= _PosRef.Y;
 _TargetPos[3]				:= _PosRef.Z;
-_TargetPos[4]				:= GroupHandler.P_GroupStatus.CurrentPosition.A + _PosRef.A;
-_TargetPos[5]				:= GroupHandler.P_GroupStatus.CurrentPosition.B + _PosRef.B;
-_TargetPos[6]				:= GroupHandler.P_GroupStatus.CurrentPosition.C + _PosRef.C;
+// _TargetPos[4]				:= GroupHandler.P_GroupStatus.CurrentPosition.A + _PosRef.A;
+// _TargetPos[5]				:= GroupHandler.P_GroupStatus.CurrentPosition.B + _PosRef.B;
+// _TargetPos[6]				:= GroupHandler.P_GroupStatus.CurrentPosition.C + _PosRef.C;
+_TargetPos[4]				:= _PosRef.A;
+_TargetPos[5]				:= _PosRef.B;
+_TargetPos[6]				:= _PosRef.C;
 _TransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
 _TransitionParam[2]			:= 0; //blending distance on this segment, no influence here
 _MC_MoveLinearAbsolutePreparation(	PathData:= _path,
@@ -730,10 +784,10 @@ SUPER^._SeqMain := 0;]]></ST>
 		GroupHandler.M_ResetGroup();
 		_SeqResetting := _SeqResetting + 1;
 	1:
-		//IF NOT  THEN
+		IF NOT GroupHandler.P_GroupStatus.Busy THEN
 			SUPER^.M_StateComplete();
 			_SeqResetting := 0;
-		//END_IF
+		END_IF
 END_CASE]]></ST>
       </Implementation>
     </Method>
