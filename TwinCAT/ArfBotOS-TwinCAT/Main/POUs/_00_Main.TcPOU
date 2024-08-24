@@ -113,13 +113,15 @@ VAR
 	
 	mcMoveRelative: ARRAY[1..NumberOfAxes] OF MC_MoveRelative;
 	MoveDistance: ARRAY[1..NumberOfAxes] OF LREAL:=[0,0,0,0,0,0];
+	mcMoveAbsolute: ARRAY[1..NumberOfAxes] OF MC_MoveAbsolute;
+	MovePosition: ARRAY[1..NumberOfAxes] OF LREAL:=[0,-15,115,0,-30,0];
 	
 	fbKinPresetRotation: FB_KinPresetRotation;
 	PresetRotation: BOOL;
 	Rotation: ARRAY[1..3] OF LREAL;
 	SetVelocity: BOOL := TRUE;
 	Velocity: LREAL:=100.0;
-	KinMove: BOOL;
+	AcsMoveRelative, AcsMoveAbsolute: BOOL;
 	ResetSeq: BOOL;
 	
 	
@@ -138,7 +140,7 @@ VAR
 
 	
 	
-	EnableAcs: BOOL;
+	EnableAcs, EnableMcs, EnableTcp: BOOL;
 	DisableGroup: BOOL;
 	
 END_VAR]]></Declaration>
@@ -182,6 +184,14 @@ END_IF
 IF EnableAcs THEN
 	EnableAcs := FALSE;
 	GroupHandler.M_EnableGroup(DUT_CoordSystem.ACS);
+END_IF
+IF EnableMcs THEN
+	EnableMcs := FALSE;
+	GroupHandler.M_EnableGroup(DUT_CoordSystem.MCS);
+END_IF
+IF EnableTcp THEN
+	EnableTcp := FALSE;
+	GroupHandler.M_EnableGroup(DUT_CoordSystem.TCP);
 END_IF
 IF DisableGroup THEN
 	DisableGroup := FALSE;
@@ -319,25 +329,44 @@ TcpCoordinateFrame(
 
 
 
-// // move relative
-// FOR _k:= 1 TO NumberOfAxes DO
-// 	mcMoveRelative[_k](
-// 		Axis:= mcs[_k], 
-// 		Execute:= KinMove, 
-// 		Distance:= MoveDistance[_k], 
-// 		Velocity:= Velocity, 
-// 		Acceleration:= 1000, 
-// 		Deceleration:= 1000, 
-// 		Jerk:= 100, 
-// 		BufferMode:= , 
-// 		Options:= , 
-// 		Done=> , 
-// 		Busy=> , 
-// 		Active=> , 
-// 		CommandAborted=> , 
-// 		Error=> , 
-// 		ErrorID=> );
-// END_FOR
+// move relative
+FOR _k:= 1 TO NumberOfAxes DO
+	mcMoveRelative[_k](
+		Axis:= acs[_k], 
+		Execute:= AcsMoveRelative, 
+		Distance:= MoveDistance[_k], 
+		Velocity:= Velocity, 
+		Acceleration:= 1000, 
+		Deceleration:= 1000, 
+		Jerk:= 100, 
+		BufferMode:= , 
+		Options:= , 
+		Done=> , 
+		Busy=> , 
+		Active=> , 
+		CommandAborted=> , 
+		Error=> , 
+		ErrorID=> );
+END_FOR
+// move absolute
+FOR _k:= 1 TO NumberOfAxes DO
+	mcMoveAbsolute[_k](
+		Axis:= acs[_k], 
+		Execute:= AcsMoveAbsolute, 
+		Position:= MovePosition[_k], 
+		Velocity:= Velocity, 
+		Acceleration:= 1000, 
+		Deceleration:= 1000, 
+		Jerk:= 100, 
+		BufferMode:= , 
+		Options:= , 
+		Done=> , 
+		Busy=> , 
+		Active=> , 
+		CommandAborted=> , 
+		Error=> , 
+		ErrorID=> );
+END_FOR
 // 
 // //reverse motion
 // IF KinMove THEN

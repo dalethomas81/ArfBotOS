@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_RemoveAllAxes" Id="{bf67a495-a2b4-4fa9-9f29-1c5761a3540e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_RemoveAllAxes
+VAR_INPUT
+	Execute				: BOOL;
+END_VAR
+VAR_IN_OUT
+	stGroupRef: AXES_GROUP_REF;
+	mcs: ARRAY[1..6] OF AXIS_REF;
+END_VAR
+VAR_OUTPUT
+	Done				: BOOL;
+	Busy				: BOOL;
+	Error				: BOOL;
+END_VAR
+VAR
+	fbRemoveAxis		: ARRAY[1..6] OF MC_RemoveAxisFromGroup;
+	i					: UINT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Done := TRUE;
+Busy := FALSE;
+Error := FALSE;
+
+fbRemoveAxis[1].IdentInGroup := MCS_X; //X-Axis
+fbRemoveAxis[2].IdentInGroup := MCS_Y; //Y-Axis
+fbRemoveAxis[3].IdentInGroup := MCS_Z; //Z-Axis
+fbRemoveAxis[4].IdentInGroup := ADDAX1;
+fbRemoveAxis[5].IdentInGroup := ADDAX2;
+fbRemoveAxis[6].IdentInGroup := ADDAX3;
+
+FOR i:=1 TO 6 DO
+	fbRemoveAxis[i](AxesGroup:=stGroupRef, IdentInGroup := mcs[i], Execute := Execute);
+
+	IF (NOT fbRemoveAxis[i].Done) THEN
+		Done := FALSE;
+	END_IF
+	IF (fbRemoveAxis[i].Busy) THEN
+		Busy := TRUE;
+	END_IF
+	IF (fbRemoveAxis[i].Error) THEN
+		Error := TRUE;
+	END_IF
+END_FOR]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

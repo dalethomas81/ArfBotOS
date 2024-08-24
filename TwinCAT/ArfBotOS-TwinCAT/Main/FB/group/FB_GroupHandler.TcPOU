@@ -322,6 +322,7 @@ CASE _SeqDisableGroup OF
 			_MC_UngroupAllAxes.Execute := FALSE;
 			_MC_GroupDisable.Execute := FALSE;
 			_MC_GroupEnable.Execute := FALSE;
+			_MC_GroupReset.Execute := FALSE;
 			_SeqDisableGroup := _SeqDisableGroup + 1;
 		END_IF
 		
@@ -353,8 +354,19 @@ CASE _SeqDisableGroup OF
 			_MC_UngroupAllAxes.Execute := FALSE;
 			_SeqDisableGroup := _SeqDisableGroup + 1;
 		END_IF
-	
+		
 	5:
+		_FB_KinResetGroup.bExecute := TRUE;
+		_SeqDisableGroup := _SeqDisableGroup + 1;
+		
+	6:
+		IF _FB_KinResetGroup.bDone OR _FB_KinResetGroup.bError
+			OR _DUT_GroupStatus.GroupDisabled THEN
+				_FB_KinResetGroup.bExecute := FALSE;
+				_SeqDisableGroup := _SeqDisableGroup + 1;
+		END_IF
+	
+	7:
 		_GroupEnabled := FALSE;
 		_KinematicsSet := FALSE;
 		_GroupPower := FALSE;
@@ -389,7 +401,6 @@ CASE _SeqEnableGroup OF
 			//ErrorID := _FB_PowerAll.ErrorID; // TODO get error ID
 			_SeqEnableGroup := 0;
 		ELSIF _FB_PowerAll.Status THEN
-			_MC_GroupEnable.Execute := FALSE;
 			_SeqEnableGroup := _SeqEnableGroup + 1;
 		END_IF
 		
@@ -669,7 +680,7 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF Enable AND NOT _GroupEnabled AND NOT Error THEN
+        <ST><![CDATA[IF Enable (*AND NOT _GroupEnabled*) AND NOT Error THEN
 	M_EnableGroup := TRUE;
 	_CoordinateSystem := CoordinateSystem;
 	_EnableGroup := TRUE;

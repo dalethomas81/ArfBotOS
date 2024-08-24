@@ -116,6 +116,7 @@ CASE SUPER^._SeqMain OF
 	_STEP_MOVE_TYPE: // parse move type
 		_PosRef := _MoveCommandParser.stCommand.CoordRef;
 		_PosRef2 := _MoveCommandParser.stCommand.CoordRef2; // the second position here is used for circular moves
+		
 		IF _MoveCommandParser.stCommand.MoveType = DUT_Command_MoveType.CircularMove THEN
 			IF _MoveCommandParser.stCommand.PositionType = DUT_Command_PositionType.AbsolutePosition THEN
 				_SequenceMoveCircularAbsolute := 1;
@@ -784,6 +785,8 @@ SUPER^._SeqMain := 0;]]></ST>
 		GroupHandler.M_ResetGroup();
 		SUPER^._SeqResetting := SUPER^._SeqResetting + 1;
 	1:
+		// needed to add this here as a hack to make sure keep in lock step with the reset sequence.
+		// i think ideally, i should add a "is reset" property.
 		IF GroupHandler.Busy THEN
 			SUPER^._SeqResetting := SUPER^._SeqResetting + 1;
 		END_IF
