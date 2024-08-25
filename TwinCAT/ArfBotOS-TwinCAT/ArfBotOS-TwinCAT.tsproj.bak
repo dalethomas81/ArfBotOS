@@ -2666,7 +2666,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name IecBaseType="true">ARRAY [0..19] OF DUT_Program</Name>
+			<Name GUID="{F8044217-F5FA-AB3D-C7C1-A4095C5129AE}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..19] OF DUT_Program</Name>
 			<BitSize>2733120</BitSize>
 			<BaseType GUID="{A0D16BEC-7E28-315E-3A55-2DF43E499462}">DUT_Program</BaseType>
 			<ArrayInfo>
@@ -3878,7 +3878,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="7" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="1">
 					<Name>MCS X</Name>
 					<AxisPara>
-						<Dynamic Acceleration="4.59185" Deceleration="4.59185" Jerk="0.843402"/>
+						<Dynamic Acceleration="37.5" Deceleration="37.5" Jerk="56.25"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="50"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -4034,7 +4034,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="8" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="2">
 					<Name>MCS Y</Name>
 					<AxisPara>
-						<Dynamic Acceleration="4.59185" Deceleration="4.59185" Jerk="0.843402"/>
+						<Dynamic Acceleration="37.5" Deceleration="37.5" Jerk="56.25"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="50"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -4190,7 +4190,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="9" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="3">
 					<Name>MCS Z</Name>
 					<AxisPara>
-						<Dynamic Acceleration="4.59185" Deceleration="4.59185" Jerk="0.843402"/>
+						<Dynamic Acceleration="37.5" Deceleration="37.5" Jerk="56.25"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="50"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -4346,7 +4346,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="10" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="4">
 					<Name>MCS A</Name>
 					<AxisPara>
-						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="4.9867" Deceleration="4.9867" Jerk="0.994688"/>
+						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="37.5" Deceleration="37.5" Jerk="56.25"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="50"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -4502,7 +4502,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="11" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="5">
 					<Name>MCS B</Name>
 					<AxisPara>
-						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="4.9867" Deceleration="4.9867" Jerk="0.994688"/>
+						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="37.5" Deceleration="37.5" Jerk="56.25"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="50"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -4658,7 +4658,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="12" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="6">
 					<Name>MCS C</Name>
 					<AxisPara>
-						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="12.3839" Deceleration="12.3839" Jerk="3.06722"/>
+						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="38.25" Deceleration="38.25" Jerk="55.2099"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="50"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -5953,7 +5953,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{2969E6FF-2176-BC01-5C24-A419765B2D34}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{492170E5-5BB2-D2FC-9918-B8FFBF8AE2B8}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
