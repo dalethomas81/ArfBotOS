@@ -62,7 +62,7 @@ VAR
     fbUngroupAxes: MC_UngroupAllAxes;
     fbGroupReset: MC_GroupReset;
 	fbGroupSetOvr: MC_GroupSetOverride;
-	fVelocityFactor: LREAL:=0.2;
+	fVelocityFactor: LREAL:=1.0;
 	fbBlockerPreparation: MC_BlockerPreparation;
 	fbReleaseBlocker: MC_ReleaseBlocker;
 	fbGroupReadBlockerStatus: MC_GroupReadBlockerStatus;
@@ -120,7 +120,7 @@ VAR
 	PresetRotation: BOOL;
 	Rotation: ARRAY[1..3] OF LREAL;
 	SetVelocity: BOOL := TRUE;
-	Velocity: LREAL:=100.0;
+	Velocity: LREAL:=10.0;
 	AcsMoveRelative, AcsMoveAbsolute: BOOL;
 	ResetSeq: BOOL;
 	
@@ -229,13 +229,14 @@ CASE Sequence OF
 		
 	4: // move
 		fbMovePath.Execute := TRUE;
+		// example of how to monitor for a blocker during movement
 		//IF fbGroupReadBlockerStatus.Blocked AND fbGroupReadBlockerStatus.BlockerId = 100 THEN
-		//	SetTcpOffset := TRUE;
 			Sequence := Sequence + 1;
 		//END_IF
 		
 	5:
-		//IF TcpSet THEN
+		// example of how to release a blocker
+		//IF ReleaseBlocker THEN
 		//	fbReleaseBlocker.Execute:=TRUE;
 		//END_IF
 		IF fbMovePath.Done THEN
@@ -832,7 +833,7 @@ aTargetPos[5]				:= 90;
 aTargetPos[6]				:= 0;
 aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
 aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
-fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 10);
+fbMoveLinPrep(PathData:= path , Velocity:= 20, InvokeId:= 10);
 bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
 
 aTargetPos[1]				:= 310;
@@ -843,7 +844,7 @@ aTargetPos[5]				:= 70;
 aTargetPos[6]				:= 0;
 aTransitionParam[1]			:= 5;//200; //blending distance on previous segment (InvokeId=10), defines when to leave line
 aTransitionParam[2]			:= 5;//2400; //blending distance on this segment, defines latest positionn to be back  on line of InovkeId=20 
-fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 20); 
+fbMoveLinPrep(PathData:= path , Velocity:= 20, InvokeId:= 20); 
 bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
 
 aTargetPos[1]				:= 300;
@@ -854,21 +855,17 @@ aTargetPos[5]				:= 80;
 aTargetPos[6]				:= 0;
 aTransitionParam[1]			:= 5;//2250; 
 aTransitionParam[2]			:= 5;//2250;
-fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 30);
+fbMoveLinPrep(PathData:= path , Velocity:= 20, InvokeId:= 30);
 bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
 
-// // wait here until the TCP has been set
+// // example of how to add a blocker to the path data
 // fbBlockerPreparation(
 // 	PathData:= path, 
-// 	BlockerId:= 100, 
+// 	BlockerId:= 100, // blocker id is unique
 // 	BufferMode:= mcBuffered, 
 // 	InvokeId:= 40, 
 // 	Error=> , 
 // 	ErrorId=> );
-// 
-// //
-// fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.TcpCoordRef);
-// bMovePrepError := bMovePrepError OR fbSetCoordTransPrep.Error;
 
 //1st node
 aTargetPos[1]				:= 300;

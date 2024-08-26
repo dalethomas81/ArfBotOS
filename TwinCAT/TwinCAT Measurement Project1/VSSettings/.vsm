@@ -43,6 +43,12 @@
               <FileName></FileName>
               <Children />
             </Node>
+            <Node>
+              <Title>_SeqResetting</Title>
+              <Expanded>False</Expanded>
+              <FileName></FileName>
+              <Children />
+            </Node>
           </Children>
         </Node>
         <Node>
