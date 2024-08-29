@@ -5953,7 +5953,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{B8ABAB7B-99AC-58E0-6FAA-1548752A2A49}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{001042EE-B19C-5D3E-6EA5-2DF973157657}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
@@ -6006,55 +6006,51 @@ and will return to Group State Standby when the situation permits.
 							<Type GUID="{48415C2A-E750-483B-A619-8655B2BEA4B8}" Namespace="MC">PLCTONC_NCICHANNEL_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.out_stPlcToKin</Name>
-							<Type GUID="{48415C2A-E750-483B-A619-8655B2BEA4B8}" Namespace="MC">PLCTONC_NCICHANNEL_REF</Type>
-						</Var>
-						<Var>
-							<Name>_00_Main.acs[1].PlcToNc</Name>
+							<Name>_00_Main.ACS[1].PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.acs[2].PlcToNc</Name>
+							<Name>_00_Main.ACS[2].PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.acs[3].PlcToNc</Name>
+							<Name>_00_Main.ACS[3].PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.acs[4].PlcToNc</Name>
+							<Name>_00_Main.ACS[4].PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.acs[5].PlcToNc</Name>
+							<Name>_00_Main.ACS[5].PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.acs[6].PlcToNc</Name>
+							<Name>_00_Main.ACS[6].PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.mcs[1].PlcToNc</Name>
+							<Name>_00_Main.MCS[1].PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.mcs[2].PlcToNc</Name>
+							<Name>_00_Main.MCS[2].PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.mcs[3].PlcToNc</Name>
+							<Name>_00_Main.MCS[3].PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.mcs[4].PlcToNc</Name>
+							<Name>_00_Main.MCS[4].PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.mcs[5].PlcToNc</Name>
+							<Name>_00_Main.MCS[5].PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.mcs[6].PlcToNc</Name>
+							<Name>_00_Main.MCS[6].PlcToNc</Name>
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
@@ -6073,55 +6069,51 @@ and will return to Group State Standby when the situation permits.
 							<Type GUID="{56354211-98EF-4057-9322-975DEAD0E29D}" Namespace="MC">NCTOPLC_NCICHANNEL_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.in_stKinToPlc</Name>
-							<Type GUID="{56354211-98EF-4057-9322-975DEAD0E29D}" Namespace="MC">NCTOPLC_NCICHANNEL_REF</Type>
-						</Var>
-						<Var>
-							<Name>_00_Main.acs[1].NcToPlc</Name>
+							<Name>_00_Main.ACS[1].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.acs[2].NcToPlc</Name>
+							<Name>_00_Main.ACS[2].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.acs[3].NcToPlc</Name>
+							<Name>_00_Main.ACS[3].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.acs[4].NcToPlc</Name>
+							<Name>_00_Main.ACS[4].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.acs[5].NcToPlc</Name>
+							<Name>_00_Main.ACS[5].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.acs[6].NcToPlc</Name>
+							<Name>_00_Main.ACS[6].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.mcs[1].NcToPlc</Name>
+							<Name>_00_Main.MCS[1].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.mcs[2].NcToPlc</Name>
+							<Name>_00_Main.MCS[2].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.mcs[3].NcToPlc</Name>
+							<Name>_00_Main.MCS[3].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.mcs[4].NcToPlc</Name>
+							<Name>_00_Main.MCS[4].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.mcs[5].NcToPlc</Name>
+							<Name>_00_Main.MCS[5].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.mcs[6].NcToPlc</Name>
+							<Name>_00_Main.MCS[6].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
 						</Var>
 						<Var>
@@ -6500,52 +6492,52 @@ and will return to Group State Standby when the situation permits.
 		</OwnerA>
 		<OwnerA Name="TIPC^Main^Main Instance">
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 1">
-				<Link VarA="PlcTask Inputs^_00_Main.acs[1].NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.acs[1].PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Inputs^_00_Main.ACS[1].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.ACS[1].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 2">
-				<Link VarA="PlcTask Inputs^_00_Main.acs[2].NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.acs[2].PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Inputs^_00_Main.ACS[2].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.ACS[2].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 3">
-				<Link VarA="PlcTask Inputs^_00_Main.acs[3].NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.acs[3].PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Inputs^_00_Main.ACS[3].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.ACS[3].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 4">
-				<Link VarA="PlcTask Inputs^_00_Main.acs[4].NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.acs[4].PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Inputs^_00_Main.ACS[4].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.ACS[4].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 5">
-				<Link VarA="PlcTask Inputs^_00_Main.acs[5].NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.acs[5].PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Inputs^_00_Main.ACS[5].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.ACS[5].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 6">
-				<Link VarA="PlcTask Inputs^_00_Main.acs[6].NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.acs[6].PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Inputs^_00_Main.ACS[6].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.ACS[6].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS A">
-				<Link VarA="PlcTask Inputs^_00_Main.mcs[4].NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.mcs[4].PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Inputs^_00_Main.MCS[4].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.MCS[4].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS B">
-				<Link VarA="PlcTask Inputs^_00_Main.mcs[5].NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.mcs[5].PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Inputs^_00_Main.MCS[5].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.MCS[5].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS C">
-				<Link VarA="PlcTask Inputs^_00_Main.mcs[6].NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.mcs[6].PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Inputs^_00_Main.MCS[6].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.MCS[6].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS X">
-				<Link VarA="PlcTask Inputs^_00_Main.mcs[1].NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.mcs[1].PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Inputs^_00_Main.MCS[1].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.MCS[1].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS Y">
-				<Link VarA="PlcTask Inputs^_00_Main.mcs[2].NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.mcs[2].PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Inputs^_00_Main.MCS[2].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.MCS[2].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^MCS Z">
-				<Link VarA="PlcTask Inputs^_00_Main.mcs[3].NcToPlc" VarB="Outputs^ToPlc"/>
-				<Link VarA="PlcTask Outputs^_00_Main.mcs[3].PlcToNc" VarB="Inputs^FromPlc"/>
+				<Link VarA="PlcTask Inputs^_00_Main.MCS[3].NcToPlc" VarB="Outputs^ToPlc"/>
+				<Link VarA="PlcTask Outputs^_00_Main.MCS[3].PlcToNc" VarB="Inputs^FromPlc"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Kinematics">
 				<Link VarA="PlcTask Inputs^_00_Main.GroupHandler._stKinToPlc" VarB="Outputs^ToPlc"/>

@@ -8,7 +8,14 @@ END_VAR
 VAR
 	
 	// group handler for all motion fbs
+    // https://infosys.beckhoff.com/content/1033/tf5420_tc3_advanced_pick_and_place/8893733771.html?id=5942709046194342427
 	GroupHandler: FB_GroupHandler;
+	fbGroupSetOvr: MC_GroupSetOverride;
+	GroupVelocityFactor: LREAL:=1.0;
+    stAxesConfig: ST_KinAxes;
+    stGroupRef : AXES_GROUP_REF;
+	ACS: ARRAY[1..NumberOfAxes] OF AXIS_REF;
+	MCS: ARRAY[1..NumberOfAxes] OF AXIS_REF;
 	
 	// tuning
 	//MoveDistance: LREAL := 5.0;
@@ -35,352 +42,17 @@ VAR
 	// controller
 	//Controller: FB_Controller;
 	
-	
-	fbKinConfigGroup: FB_KinConfigGroup;
-	fbKinResetGroup: FB_KinResetGroup;
-	fbKinCheckActualStatus: FB_KinCheckActualStatus;
-	fbKinCalcTrafo: FB_KinCalcTrafo;
-	fbKinCalcMultiTrafo: FB_KinCalcMultiTrafo;
-    stKinCalcMultiIn      : ST_KinCalcMultiTrafoIn; 
-    stKinCalcMultiOut     : ST_KinCalcMultiTrafoOut; 
-	
-	mcPower: ARRAY[1..NumberOfAxes*2] OF MC_Power; // 6 ACS and 6 MCS
-    mcAddAxisToGroup: ARRAY[1..NumberOfAxes] OF MC_AddAxisToGroup;
-    AddAxesToGroup: BOOL;
-	fbGroupEnable: MC_GroupEnable;
-	fbGroupReadStatus: MC_GroupReadStatus;
+	// hello world
 	buffer: ARRAY[1..4096] OF BYTE;
-	path: MC_PATH_DATA_REF(ADR(buffer), SIZEOF(buffer));
-    AddPath: BOOL;
-    fbMoveLinPrep: MC_MoveLinearAbsolutePreparation;
-	fbSetCoordTransPrep: MC_SetCoordinateTransformPreparation;
-    aTargetPos: ARRAY[1..NumberOfAxes] OF MC_LREAL;
-    aTransitionParam: ARRAY[1..2] OF MC_LREAL;
-    bMovePrepError: BOOL;
-    fbMovePath: MC_MovePath;
-    fbStop: MC_GroupStop;
-    fbUngroupAxes: MC_UngroupAllAxes;
-    fbGroupReset: MC_GroupReset;
-	fbGroupSetOvr: MC_GroupSetOverride;
-	fVelocityFactor: LREAL:=1.0;
-	fbBlockerPreparation: MC_BlockerPreparation;
-	fbReleaseBlocker: MC_ReleaseBlocker;
-	fbGroupReadBlockerStatus: MC_GroupReadBlockerStatus;
-    
-	bEnable: BOOL;
-	
-	in_stKinToPlc      AT %I*     : NCTOPLC_NCICHANNEL_REF;
-	out_stPlcToKin     AT %Q*     : PLCTONC_NCICHANNEL_REF;
-	
-	stAxesPosIn        		: ARRAY[1..8] OF LREAL;
-    stAxesPosOut       		: ARRAY[1..8] OF LREAL;
-	uMetaInfoIn				: U_KinMetaInfo;
-	uMetaInfoOut			: U_KinMetaInfo;
-
-    stAxesConfig: ST_KinAxes;
-	acs: ARRAY[1..NumberOfAxes] OF AXIS_REF;
-	mcs: ARRAY[1..NumberOfAxes] OF AXIS_REF;
-    
-    nErrId: UDINT;   
-    eKinOperationState     : E_KINSTATUS;
-    
-    // https://infosys.beckhoff.com/content/1033/tf5420_tc3_advanced_pick_and_place/8893733771.html?id=5942709046194342427
-    stGroupRef : AXES_GROUP_REF;
-	
-	fbAddAllAxes: FB_AddAllAxes;
-	fbPower: FB_PowerAll;
 	
 	//
 	_i, _j, _k: UINT;
 	BuildTests: BOOL:=FALSE;
 	FirstScan: BOOL:=TRUE;
-
-	MoveGroup: BOOL;
-	StopGroup: BOOL;
-	UngroupAxes: BOOL;
-	ResetGroup: BOOL;
-	EnableGroup: BOOL;
-	ConfigKinGroup: BOOL;
-	ResetKinGroup: BOOL;
-	CheckKinStatus: BOOL;
-	CalculateTrafo: BOOL;
-	CalculateMultiTrafo: BOOL;
-	Sequence: INT:=0;
-	SequenceStart: BOOL;
-	AllAxesEnabled: BOOL;
-	AllAxesAdded: BOOL;
-	bCartesianMode: BOOL;
-	
-	mcMoveRelative: ARRAY[1..NumberOfAxes] OF MC_MoveRelative;
-	MoveDistance: ARRAY[1..NumberOfAxes] OF LREAL:=[0,0,0,0,0,0];
-	mcMoveAbsolute: ARRAY[1..NumberOfAxes] OF MC_MoveAbsolute;
-	MovePosition: ARRAY[1..NumberOfAxes] OF LREAL:=[0,-15,115,0,-30,0];
-	
-	fbKinPresetRotation: FB_KinPresetRotation;
-	PresetRotation: BOOL;
-	Rotation: ARRAY[1..3] OF LREAL;
-	SetVelocity: BOOL := TRUE;
-	Velocity: LREAL:=10.0;
-	AcsMoveRelative, AcsMoveAbsolute: BOOL;
-	ResetSeq: BOOL;
-	
-	
-	//fbSixAxisSolver: FB_SixAxisSolver
-	SeqSetTransform: INT;
-	McsCoordinateFrame: FB_CoordinateFrame;
-	TcpCoordinateFrame: FB_CoordinateFrame;
-	offsetFrame: DUT_CoordFrame;
-	SetTcpOffset: BOOL;
-	TcpSet: BOOL;
-	
-	mcSetCoordinateTransform: MC_SetCoordinateTransform;
-	TcpMode: BOOL;
-	
-	
-
-	
-	
-	EnableAcs, EnableMcs, EnableTcp: BOOL;
-	DisableGroup: BOOL;
 	
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[
-// twincat hello world
-
-// https://docs.google.com/spreadsheets/d/1S5TOxwbAx8pTMUdoWMnyC9WPfphhtUME/edit#gid=595805457
-
-// drive process image
-// https://infosys.beckhoff.com/content/1033/tf50x0_tc3_nc_ptp/10650598155.html?id=428682353028589629
-
-// axis process image
-// https://infosys.beckhoff.com/content/1033/tf50x0_tc3_nc_ptp/10650582539.html?id=9197998846476281621
-
-// separate file is needed when using L4 Kinematics transformation (6 Axis)
-// https://infosys.beckhoff.com/content/1033/tf5400_tc3_advanced_motion_pack/8403043979.html?id=9115801577672301435
-
-IF FirstScan THEN
-	//
-END_IF
-
-//
-fbGroupSetOvr(
-	AxesGroup:= stGroupRef, 
-	Enable:= TRUE, 
-	VelFactor:= fVelocityFactor , 
-	Enabled=> , 
-	Busy=> , 
-	Error=> , 
-	ErrorId=> , 
-	ActualVelFactor=> );
-IF fbGroupSetOvr.Error THEN
-	//
-END_IF
-
-IF ResetSeq THEN
-	ResetSeq := FALSE;
-	GroupHandler.M_ResetGroup();
-END_IF
-IF EnableAcs THEN
-	EnableAcs := FALSE;
-	GroupHandler.M_EnableGroup(DUT_CoordSystem.ACS);
-END_IF
-IF EnableMcs THEN
-	EnableMcs := FALSE;
-	GroupHandler.M_EnableGroup(DUT_CoordSystem.MCS);
-END_IF
-IF EnableTcp THEN
-	EnableTcp := FALSE;
-	GroupHandler.M_EnableGroup(DUT_CoordSystem.TCP);
-END_IF
-IF DisableGroup THEN
-	DisableGroup := FALSE;
-	GroupHandler.M_DisableGroup();
-END_IF
-
-//
-CASE Sequence OF
-		
-	0: // idle
-		IF SequenceStart THEN
-			SequenceStart := FALSE;
-			GVL.PowerOn := TRUE;
-			bMovePrepError := FALSE;
-			Sequence := Sequence + 1;
-		END_IF
-		
-	1: // enable group
-		IF GroupHandler.M_EnableGroup(SEL(TcpMode, DUT_CoordSystem.MCS, DUT_CoordSystem.TCP)) THEN
- 			Sequence := Sequence + 1;
-		END_IF
-		
-	2: // wait on group enable
-		IF GroupHandler.P_GroupEnabled THEN
- 			Sequence := Sequence + 1;
-		END_IF
-		
-	3: // add paths
-		IF TcpMode THEN A_AddPaths_Tcp(); ELSE A_AddPaths(); END_IF
-		IF NOT bMovePrepError THEN
-			fbMovePath.Execute:=FALSE;
-			//fbReleaseBlocker.Execute:=FALSE;
-			Sequence := Sequence + 1;
-		END_IF
-		
-	4: // move
-		fbMovePath.Execute := TRUE;
-		// example of how to monitor for a blocker during movement
-		//IF fbGroupReadBlockerStatus.Blocked AND fbGroupReadBlockerStatus.BlockerId = 100 THEN
-			Sequence := Sequence + 1;
-		//END_IF
-		
-	5:
-		// example of how to release a blocker
-		//IF ReleaseBlocker THEN
-		//	fbReleaseBlocker.Execute:=TRUE;
-		//END_IF
-		IF fbMovePath.Done THEN
-			fbMovePath.Execute:=FALSE;
-			Sequence := Sequence + 1;
-		ELSIF fbMovePath.Error THEN
-			//	
-		END_IF
-		
-	6: // disable group
-		GroupHandler.M_DisableGroup();
-		Sequence := Sequence + 1;
-	
-	7:  // wait on group disable
-		IF NOT GroupHandler.P_GroupEnabled THEN
- 			Sequence := 0;
-		END_IF
-		
-	1000..9999:
-		;//Error	
-	
-END_CASE
-
-fbMovePath(
-	AxesGroup:= stGroupRef, 
-	PathData:= path, 
-	Execute:= , 
-	Done=> , 
-	Busy=> , 
-	Active=> , 
-	CommandAborted=> , 
-	Error=> , 
-	ErrorId=> );
-
-fbGroupReadBlockerStatus(
-	AxesGroup:= stGroupRef, 
-	Enable:= TRUE, 
-	Valid=> , 
-	Blocked=> , 
-	BlockerId=> );
-
-fbReleaseBlocker(
-	AxesGroup:= stGroupRef, 
-	Execute:= , 
-	BlockerId:= 100, 
-	Done=> , 
-	Busy=> , 
-	Error=> , 
-	ErrorId=> );
-
-CASE SeqSetTransform OF
-	0: 
-		IF SetTcpOffset THEN
-			SetTcpOffset := FALSE;
-			TcpSet := FALSE;
-			SeqSetTransform := SeqSetTransform + 1;
-		END_IF
-		
-	1:
-		offsetFrame.Position.X := MCS[1].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.X;
-		offsetFrame.Position.Y := MCS[2].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.Y;
-		offsetFrame.Position.Z := MCS[3].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.Z;
-		offsetFrame.Position.A := MCS[4].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.A;
-		offsetFrame.Position.B := MCS[5].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.B;
-		offsetFrame.Position.C := MCS[6].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.C;
-		offsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_Z3Y2X1_DIN9300;
-		offsetFrame.Direction := MC.ReferenceDefDir.fromReference;
-		TcpCoordinateFrame.Execute := TRUE;
-		SeqSetTransform := SeqSetTransform + 1;
-		
-	2:
-		IF TcpCoordinateFrame.Done THEN
-			TcpCoordinateFrame.Execute := FALSE;
-			TcpSet := TRUE;
-			SeqSetTransform := 0;
-		END_IF
-		
-END_CASE
-
-TcpCoordinateFrame(
-	Execute:= , 
-	oidTrafo:= gvl.TcpCoordRef, 
-	OffsetFrame:= offsetFrame, 
-	Done=> , 
-	Busy=> , 
-	Error=> );
-
-//
-
-
-
-
-
-// move relative
-FOR _k:= 1 TO NumberOfAxes DO
-	mcMoveRelative[_k](
-		Axis:= acs[_k], 
-		Execute:= AcsMoveRelative, 
-		Distance:= MoveDistance[_k], 
-		Velocity:= Velocity, 
-		Acceleration:= 1000, 
-		Deceleration:= 1000, 
-		Jerk:= 100, 
-		BufferMode:= , 
-		Options:= , 
-		Done=> , 
-		Busy=> , 
-		Active=> , 
-		CommandAborted=> , 
-		Error=> , 
-		ErrorID=> );
-END_FOR
-// move absolute
-FOR _k:= 1 TO NumberOfAxes DO
-	mcMoveAbsolute[_k](
-		Axis:= acs[_k], 
-		Execute:= AcsMoveAbsolute, 
-		Position:= MovePosition[_k], 
-		Velocity:= Velocity, 
-		Acceleration:= 1000, 
-		Deceleration:= 1000, 
-		Jerk:= 100, 
-		BufferMode:= , 
-		Options:= , 
-		Done=> , 
-		Busy=> , 
-		Active=> , 
-		CommandAborted=> , 
-		Error=> , 
-		ErrorID=> );
-END_FOR
-// 
-// //reverse motion
-// IF KinMove THEN
-// 	KinMove := FALSE;
-// 	FOR _k:= 1 TO NumberOfAxes DO
-// 		MoveDistance[_k] := -MoveDistance[_k];
-// 	END_FOR
-// END_IF
-
-
-
-	
-
 {region "utility"}
 	GVL.ResetRtrig(CLK:=GVL.Reset);
 	IF GVL.ResetRtrig.Q THEN
@@ -398,6 +70,7 @@ END_FOR
 {endregion}
      
 {region "methods"}
+	_M_HelloWorld();
 	_M_GroupHandler();
     //_M_Jogging();
     //_M_Homing();
@@ -481,6 +154,21 @@ END_IF
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[
+// set the group velocity factor
+fbGroupSetOvr(
+	AxesGroup:= stGroupRef, 
+	Enable:= TRUE, 
+	VelFactor:= GroupVelocityFactor , 
+	Enabled=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorId=> , 
+	ActualVelFactor=> );
+IF fbGroupSetOvr.Error THEN
+	//
+END_IF
+
+// handle all the group specific actions
 GroupHandler(
 	AxisGroup:= stGroupRef, 
 	ACS:= acs, 
@@ -490,6 +178,419 @@ GroupHandler(
 	Busy=> , 
 	Error=> , 
 	ErrorID=> );]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="_M_HelloWorld" Id="{6c29bf60-c389-45f0-9c5a-a3e11fdbd34e}">
+      <Declaration><![CDATA[METHOD _M_HelloWorld
+VAR_INPUT
+END_VAR
+VAR_STAT
+	Velocity: LREAL:=10.0;
+	SeqHelloWorld: INT:=0;
+	HelloWorldStart: BOOL;
+	mcMoveRelative: ARRAY[1..NumberOfAxes] OF MC_MoveRelative;
+	MoveDistance: ARRAY[1..NumberOfAxes] OF LREAL:=[0,0,0,0,0,0];
+	mcMoveAbsolute: ARRAY[1..NumberOfAxes] OF MC_MoveAbsolute;
+	MovePosition: ARRAY[1..NumberOfAxes] OF LREAL:=[0,-15,115,0,-30,0];
+	AcsMoveRelative, AcsMoveAbsolute: BOOL;
+	SeqSetTransform: INT;
+	TcpCoordinateFrame: FB_CoordinateFrame;
+	offsetFrame: DUT_CoordFrame;
+	SetTcpOffset: BOOL;
+	TcpSet: BOOL;
+	mcSetCoordinateTransform: MC_SetCoordinateTransform;
+	TcpMode: BOOL;
+	EnableAcs, EnableMcs, EnableTcp,DisableGroup,ResetGroup: BOOL;
+	path: MC_PATH_DATA_REF(ADR(buffer), SIZEOF(buffer));
+    fbMoveLinPrep: MC_MoveLinearAbsolutePreparation;
+	fbSetCoordTransPrep: MC_SetCoordinateTransformPreparation;
+    aTargetPos: ARRAY[1..NumberOfAxes] OF MC_LREAL;
+    aTransitionParam: ARRAY[1..2] OF MC_LREAL;
+    bMovePrepError: BOOL;
+    fbMovePath: MC_MovePath;
+	fbBlockerPreparation: MC_BlockerPreparation;
+	fbReleaseBlocker: MC_ReleaseBlocker;
+	fbGroupReadBlockerStatus: MC_GroupReadBlockerStatus;
+	
+	AddPaths, AddPathsTcp: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// twincat hello world
+
+// https://docs.google.com/spreadsheets/d/1S5TOxwbAx8pTMUdoWMnyC9WPfphhtUME/edit#gid=595805457
+
+// drive process image
+// https://infosys.beckhoff.com/content/1033/tf50x0_tc3_nc_ptp/10650598155.html?id=428682353028589629
+
+// axis process image
+// https://infosys.beckhoff.com/content/1033/tf50x0_tc3_nc_ptp/10650582539.html?id=9197998846476281621
+
+// separate file is needed when using L4 Kinematics transformation (6 Axis)
+// https://infosys.beckhoff.com/content/1033/tf5400_tc3_advanced_motion_pack/8403043979.html?id=9115801577672301435
+
+
+IF ResetGroup THEN
+	ResetGroup := FALSE;
+	GroupHandler.M_ResetGroup();
+END_IF
+IF EnableAcs THEN
+	EnableAcs := FALSE;
+	GroupHandler.M_EnableGroup(DUT_CoordSystem.ACS);
+END_IF
+IF EnableMcs THEN
+	EnableMcs := FALSE;
+	GroupHandler.M_EnableGroup(DUT_CoordSystem.MCS);
+END_IF
+IF EnableTcp THEN
+	EnableTcp := FALSE;
+	GroupHandler.M_EnableGroup(DUT_CoordSystem.TCP);
+END_IF
+IF DisableGroup THEN
+	DisableGroup := FALSE;
+	GroupHandler.M_DisableGroup();
+END_IF
+
+//
+CASE SeqHelloWorld OF
+		
+	0: // idle
+		IF HelloWorldStart THEN
+			HelloWorldStart := FALSE;
+			GVL.PowerOn := TRUE;
+			bMovePrepError := FALSE;
+			SeqHelloWorld := SeqHelloWorld + 1;
+		END_IF
+		
+	1: // enable group
+		IF GroupHandler.M_EnableGroup(SEL(TcpMode, DUT_CoordSystem.MCS, DUT_CoordSystem.TCP)) THEN
+ 			SeqHelloWorld := SeqHelloWorld + 1;
+		END_IF
+		
+	2: // wait on group enable
+		IF GroupHandler.P_GroupEnabled THEN
+ 			SeqHelloWorld := SeqHelloWorld + 1;
+		END_IF
+		
+	3: // add paths
+		IF TcpMode THEN AddPathsTcp:=TRUE; ELSE AddPaths:=TRUE; END_IF
+		IF NOT bMovePrepError THEN
+			fbMovePath.Execute:=FALSE;
+			//fbReleaseBlocker.Execute:=FALSE;
+			SeqHelloWorld := SeqHelloWorld + 1;
+		END_IF
+		
+	4: // move
+		fbMovePath.Execute := TRUE;
+		// example of how to monitor for a blocker during movement
+		//IF fbGroupReadBlockerStatus.Blocked AND fbGroupReadBlockerStatus.BlockerId = 100 THEN
+			SeqHelloWorld := SeqHelloWorld + 1;
+		//END_IF
+		
+	5:
+		// example of how to release a blocker
+		//IF ReleaseBlocker THEN
+		//	fbReleaseBlocker.Execute:=TRUE;
+		//END_IF
+		IF fbMovePath.Done THEN
+			fbMovePath.Execute:=FALSE;
+			SeqHelloWorld := SeqHelloWorld + 1;
+		ELSIF fbMovePath.Error THEN
+			//	
+		END_IF
+		
+	6: // disable group
+		GroupHandler.M_DisableGroup();
+		SeqHelloWorld := SeqHelloWorld + 1;
+	
+	7:  // wait on group disable
+		IF NOT GroupHandler.P_GroupEnabled THEN
+ 			SeqHelloWorld := 0;
+		END_IF
+		
+	1000..9999:
+		;//Error	
+	
+END_CASE
+
+fbMovePath(
+	AxesGroup:= stGroupRef, 
+	PathData:= path, 
+	Execute:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorId=> );
+
+fbGroupReadBlockerStatus(
+	AxesGroup:= stGroupRef, 
+	Enable:= TRUE, 
+	Valid=> , 
+	Blocked=> , 
+	BlockerId=> );
+
+fbReleaseBlocker(
+	AxesGroup:= stGroupRef, 
+	Execute:= , 
+	BlockerId:= 100, 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorId=> );
+
+CASE SeqSetTransform OF
+	0: 
+		IF SetTcpOffset THEN
+			SetTcpOffset := FALSE;
+			TcpSet := FALSE;
+			SeqSetTransform := SeqSetTransform + 1;
+		END_IF
+		
+	1:
+		offsetFrame.Position.X := MCS[1].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.X;
+		offsetFrame.Position.Y := MCS[2].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.Y;
+		offsetFrame.Position.Z := MCS[3].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.Z;
+		offsetFrame.Position.A := MCS[4].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.A;
+		offsetFrame.Position.B := MCS[5].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.B;
+		offsetFrame.Position.C := MCS[6].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.C;
+		offsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_Z3Y2X1_DIN9300;
+		offsetFrame.Direction := MC.ReferenceDefDir.fromReference;
+		TcpCoordinateFrame.Execute := TRUE;
+		SeqSetTransform := SeqSetTransform + 1;
+		
+	2:
+		IF TcpCoordinateFrame.Done THEN
+			TcpCoordinateFrame.Execute := FALSE;
+			TcpSet := TRUE;
+			SeqSetTransform := 0;
+		END_IF
+		
+END_CASE
+
+//
+TcpCoordinateFrame(
+	Execute:= , 
+	oidTrafo:= gvl.TcpCoordRef, 
+	OffsetFrame:= offsetFrame, 
+	Done=> , 
+	Busy=> , 
+	Error=> );
+
+
+// move relative
+FOR _k:= 1 TO NumberOfAxes DO
+	mcMoveRelative[_k](
+		Axis:= acs[_k], 
+		Execute:= AcsMoveRelative, 
+		Distance:= MoveDistance[_k], 
+		Velocity:= Velocity, 
+		Acceleration:= 1000, 
+		Deceleration:= 1000, 
+		Jerk:= 100, 
+		BufferMode:= , 
+		Options:= , 
+		Done=> , 
+		Busy=> , 
+		Active=> , 
+		CommandAborted=> , 
+		Error=> , 
+		ErrorID=> );
+END_FOR
+
+// move absolute
+FOR _k:= 1 TO NumberOfAxes DO
+	mcMoveAbsolute[_k](
+		Axis:= acs[_k], 
+		Execute:= AcsMoveAbsolute, 
+		Position:= MovePosition[_k], 
+		Velocity:= Velocity, 
+		Acceleration:= 1000, 
+		Deceleration:= 1000, 
+		Jerk:= 100, 
+		BufferMode:= , 
+		Options:= , 
+		Done=> , 
+		Busy=> , 
+		Active=> , 
+		CommandAborted=> , 
+		Error=> , 
+		ErrorID=> );
+END_FOR
+
+{regions 'add paths'}
+IF AddPaths THEN
+	AddPaths := FALSE;
+	
+	path.ClearPath();  //Clear nodes that were in path
+
+	fbMoveLinPrep.Position						:= ADR(aTargetPos); //pointer to position array
+	fbMoveLinPrep.PositionCount 				:= NumberOfAxes; //number of axes in group
+	fbMoveLinPrep.TransitionParameter			:= ADR (aTransitionParam); //pointer to transition parameter array
+	fbMoveLinPrep.TransitionParameterCount		:= 2; //number of transition parameters, has to be set always 2
+	fbMoveLinPrep.BufferMode					:= mcBlendingPrevious;
+	fbMoveLinPrep.TransitionMode				:= mcTransModeCornerDistanceAdvanced;
+	//Set dynamics to default values of the axes
+	fbMoveLinPrep.Acceleration					:= MC_DEFAULT;
+	fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
+	fbMoveLinPrep.Jerk							:= 100.0;//MC_DEFAULT;
+	
+	// set mcs frame
+	fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.McsCoordRef);
+	bMovePrepError := bMovePrepError OR fbSetCoordTransPrep.Error;
+	
+	// 1st node
+	aTargetPos[1]				:= 300;
+	aTargetPos[2]				:= 0;
+	aTargetPos[3]				:= 415;
+	aTargetPos[4]				:= 0;
+	aTargetPos[5]				:= 90;
+	aTargetPos[6]				:= 0;
+	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
+	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+	fbMoveLinPrep(PathData:= path , Velocity:= 20, InvokeId:= 10);
+	bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
+	
+	aTargetPos[1]				:= 310;
+	aTargetPos[2]				:= 10;
+	aTargetPos[3]				:= 400;
+	aTargetPos[4]				:= 0;
+	aTargetPos[5]				:= 70;
+	aTargetPos[6]				:= 0;
+	aTransitionParam[1]			:= 5;//200; //blending distance on previous segment (InvokeId=10), defines when to leave line
+	aTransitionParam[2]			:= 5;//2400; //blending distance on this segment, defines latest positionn to be back  on line of InovkeId=20 
+	fbMoveLinPrep(PathData:= path , Velocity:= 20, InvokeId:= 20); 
+	bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
+	
+	aTargetPos[1]				:= 300;
+	aTargetPos[2]				:= 0;
+	aTargetPos[3]				:= 415;
+	aTargetPos[4]				:= 0;
+	aTargetPos[5]				:= 80;
+	aTargetPos[6]				:= 0;
+	aTransitionParam[1]			:= 5;//2250; 
+	aTransitionParam[2]			:= 5;//2250;
+	fbMoveLinPrep(PathData:= path , Velocity:= 20, InvokeId:= 30);
+	bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
+	
+	// // example of how to add a blocker to the path data
+	// fbBlockerPreparation(
+	// 	PathData:= path, 
+	// 	BlockerId:= 100, // blocker id is unique
+	// 	BufferMode:= mcBuffered, 
+	// 	InvokeId:= 40, 
+	// 	Error=> , 
+	// 	ErrorId=> );
+	
+	//1st node
+	aTargetPos[1]				:= 300;
+	aTargetPos[2]				:= 0;
+	aTargetPos[3]				:= 415;
+	aTargetPos[4]				:= 0.0;
+	aTargetPos[5]				:= 80.0;
+	aTargetPos[6]				:= 5.0;
+	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
+	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+	fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 50);
+	bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
+	
+	//1st node
+	aTargetPos[1]				:= 300;
+	aTargetPos[2]				:= 0;
+	aTargetPos[3]				:= 415;
+	aTargetPos[4]				:= 0.0;
+	aTargetPos[5]				:= 80.0;
+	aTargetPos[6]				:= -5.0;
+	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
+	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+	fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 60);
+	bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
+	
+	//1st node
+	aTargetPos[1]				:= 300;
+	aTargetPos[2]				:= 0;
+	aTargetPos[3]				:= 415;
+	aTargetPos[4]				:= 0.0;
+	aTargetPos[5]				:= 80.0;
+	aTargetPos[6]				:= 0.0;
+	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
+	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+	fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 70);
+	bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
+	
+	//1st node
+	aTargetPos[1]				:= 300;
+	aTargetPos[2]				:= 0;
+	aTargetPos[3]				:= 415;
+	aTargetPos[4]				:= 0.0;
+	aTargetPos[5]				:= 80.0 + 10.0;
+	aTargetPos[6]				:= 0.0;
+	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
+	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+	fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 80);
+	bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
+	
+	//1st node
+	aTargetPos[1]				:= 300;
+	aTargetPos[2]				:= 0;
+	aTargetPos[3]				:= 415;
+	aTargetPos[4]				:= 0.0;
+	aTargetPos[5]				:= 80.0 - 10.0;
+	aTargetPos[6]				:= 0.0;
+	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
+	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+	fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 90);
+	bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
+	
+	//1st node
+	aTargetPos[1]				:= 300;
+	aTargetPos[2]				:= 0;
+	aTargetPos[3]				:= 415;
+	aTargetPos[4]				:= 0.0;
+	aTargetPos[5]				:= 80.0;
+	aTargetPos[6]				:= 0.0;
+	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
+	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+	fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 90);
+	bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
+END_IF
+{endregion}
+
+{region 'add paths tcp'}
+IF AddPathsTcp THEN
+	AddPathsTcp := FALSE;
+	
+	path.ClearPath();  //Clear nodes that were in path
+
+	fbMoveLinPrep.Position						:= ADR(aTargetPos); //pointer to position array
+	fbMoveLinPrep.PositionCount 				:= NumberOfAxes; //number of axes in group
+	fbMoveLinPrep.TransitionParameter			:= ADR (aTransitionParam); //pointer to transition parameter array
+	fbMoveLinPrep.TransitionParameterCount		:= 2; //number of transition parameters, has to be set always 2
+	fbMoveLinPrep.BufferMode					:= mcBlendingPrevious;
+	fbMoveLinPrep.TransitionMode				:= mcTransModeCornerDistanceAdvanced;
+	//Set dynamics to default values of the axes
+	fbMoveLinPrep.Acceleration					:= MC_DEFAULT;
+	fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
+	fbMoveLinPrep.Jerk							:= MC_DEFAULT;
+	
+	//
+	fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.TcpCoordRef);
+	bMovePrepError := bMovePrepError OR fbSetCoordTransPrep.Error;
+	
+	//1st node
+	aTargetPos[1]				:= 0;
+	aTargetPos[2]				:= 0;
+	aTargetPos[3]				:= 10;
+	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0;
+	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0;
+	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0;
+	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
+	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+	fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 10);
+	bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
+END_IF
+{endregion}]]></ST>
       </Implementation>
     </Method>
     <Method Name="_M_Homing" Id="{bf4b7640-1df3-46ff-b6ca-dc416adad7e8}">
@@ -805,173 +906,6 @@ MoveRelative[5](
     *)]]></ST>
       </Implementation>
     </Method>
-    <Action Name="A_AddPaths" Id="{85a9d6a9-e5f0-4fc0-8275-43457c2f25de}">
-      <Implementation>
-        <ST><![CDATA[path.ClearPath();  //Clear nodes that were in path
-
-fbMoveLinPrep.Position						:= ADR(aTargetPos); //pointer to position array
-fbMoveLinPrep.PositionCount 				:= NumberOfAxes; //number of axes in group
-fbMoveLinPrep.TransitionParameter			:= ADR (aTransitionParam); //pointer to transition parameter array
-fbMoveLinPrep.TransitionParameterCount		:= 2; //number of transition parameters, has to be set always 2
-fbMoveLinPrep.BufferMode					:= mcBlendingPrevious;
-fbMoveLinPrep.TransitionMode				:= mcTransModeCornerDistanceAdvanced;
-//Set dynamics to default values of the axes
-fbMoveLinPrep.Acceleration					:= MC_DEFAULT;
-fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
-fbMoveLinPrep.Jerk							:= 100.0;//MC_DEFAULT;
-
-// set mcs frame
-fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.McsCoordRef);
-bMovePrepError := bMovePrepError OR fbSetCoordTransPrep.Error;
-
-// 1st node
-aTargetPos[1]				:= 300;
-aTargetPos[2]				:= 0;
-aTargetPos[3]				:= 415;
-aTargetPos[4]				:= 0;
-aTargetPos[5]				:= 90;
-aTargetPos[6]				:= 0;
-aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
-fbMoveLinPrep(PathData:= path , Velocity:= 20, InvokeId:= 10);
-bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
-
-aTargetPos[1]				:= 310;
-aTargetPos[2]				:= 10;
-aTargetPos[3]				:= 400;
-aTargetPos[4]				:= 0;
-aTargetPos[5]				:= 70;
-aTargetPos[6]				:= 0;
-aTransitionParam[1]			:= 5;//200; //blending distance on previous segment (InvokeId=10), defines when to leave line
-aTransitionParam[2]			:= 5;//2400; //blending distance on this segment, defines latest positionn to be back  on line of InovkeId=20 
-fbMoveLinPrep(PathData:= path , Velocity:= 20, InvokeId:= 20); 
-bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
-
-aTargetPos[1]				:= 300;
-aTargetPos[2]				:= 0;
-aTargetPos[3]				:= 415;
-aTargetPos[4]				:= 0;
-aTargetPos[5]				:= 80;
-aTargetPos[6]				:= 0;
-aTransitionParam[1]			:= 5;//2250; 
-aTransitionParam[2]			:= 5;//2250;
-fbMoveLinPrep(PathData:= path , Velocity:= 20, InvokeId:= 30);
-bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
-
-// // example of how to add a blocker to the path data
-// fbBlockerPreparation(
-// 	PathData:= path, 
-// 	BlockerId:= 100, // blocker id is unique
-// 	BufferMode:= mcBuffered, 
-// 	InvokeId:= 40, 
-// 	Error=> , 
-// 	ErrorId=> );
-
-//1st node
-aTargetPos[1]				:= 300;
-aTargetPos[2]				:= 0;
-aTargetPos[3]				:= 415;
-aTargetPos[4]				:= 0.0;
-aTargetPos[5]				:= 80.0;
-aTargetPos[6]				:= 5.0;
-aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
-fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 50);
-bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
-
-//1st node
-aTargetPos[1]				:= 300;
-aTargetPos[2]				:= 0;
-aTargetPos[3]				:= 415;
-aTargetPos[4]				:= 0.0;
-aTargetPos[5]				:= 80.0;
-aTargetPos[6]				:= -5.0;
-aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
-fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 60);
-bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
-
-//1st node
-aTargetPos[1]				:= 300;
-aTargetPos[2]				:= 0;
-aTargetPos[3]				:= 415;
-aTargetPos[4]				:= 0.0;
-aTargetPos[5]				:= 80.0;
-aTargetPos[6]				:= 0.0;
-aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
-fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 70);
-bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
-
-//1st node
-aTargetPos[1]				:= 300;
-aTargetPos[2]				:= 0;
-aTargetPos[3]				:= 415;
-aTargetPos[4]				:= 0.0;
-aTargetPos[5]				:= 80.0 + 10.0;
-aTargetPos[6]				:= 0.0;
-aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
-fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 80);
-bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
-
-//1st node
-aTargetPos[1]				:= 300;
-aTargetPos[2]				:= 0;
-aTargetPos[3]				:= 415;
-aTargetPos[4]				:= 0.0;
-aTargetPos[5]				:= 80.0 - 10.0;
-aTargetPos[6]				:= 0.0;
-aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
-fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 90);
-bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
-
-//1st node
-aTargetPos[1]				:= 300;
-aTargetPos[2]				:= 0;
-aTargetPos[3]				:= 415;
-aTargetPos[4]				:= 0.0;
-aTargetPos[5]				:= 80.0;
-aTargetPos[6]				:= 0.0;
-aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
-fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= 90);
-bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;]]></ST>
-      </Implementation>
-    </Action>
-    <Action Name="A_AddPaths_Tcp" Id="{39469fa3-6b21-437c-8874-99e72988a609}">
-      <Implementation>
-        <ST><![CDATA[path.ClearPath();  //Clear nodes that were in path
-
-fbMoveLinPrep.Position						:= ADR(aTargetPos); //pointer to position array
-fbMoveLinPrep.PositionCount 				:= NumberOfAxes; //number of axes in group
-fbMoveLinPrep.TransitionParameter			:= ADR (aTransitionParam); //pointer to transition parameter array
-fbMoveLinPrep.TransitionParameterCount		:= 2; //number of transition parameters, has to be set always 2
-fbMoveLinPrep.BufferMode					:= mcBlendingPrevious;
-fbMoveLinPrep.TransitionMode				:= mcTransModeCornerDistanceAdvanced;
-//Set dynamics to default values of the axes
-fbMoveLinPrep.Acceleration					:= MC_DEFAULT;
-fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
-fbMoveLinPrep.Jerk							:= MC_DEFAULT;
-
-//
-fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.TcpCoordRef);
-bMovePrepError := bMovePrepError OR fbSetCoordTransPrep.Error;
-
-//1st node
-aTargetPos[1]				:= 0;
-aTargetPos[2]				:= 0;
-aTargetPos[3]				:= 10;
-aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0;
-aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0;
-aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0;
-aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
-fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= 10);
-bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;]]></ST>
-      </Implementation>
-    </Action>
     <Method Name="M_BuildTests" Id="{9a5607a2-ed23-4572-beb3-b80fd95846d5}">
       <Declaration><![CDATA[METHOD PUBLIC M_BuildTests
 VAR_INPUT
