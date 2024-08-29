@@ -188,11 +188,16 @@ VAR_STAT
 	Velocity: LREAL:=10.0;
 	SeqHelloWorld: INT:=0;
 	HelloWorldStart: BOOL;
-	mcMoveRelative: ARRAY[1..NumberOfAxes] OF MC_MoveRelative;
-	MoveDistance: ARRAY[1..NumberOfAxes] OF LREAL:=[0,0,0,0,0,0];
-	mcMoveAbsolute: ARRAY[1..NumberOfAxes] OF MC_MoveAbsolute;
-	MovePosition: ARRAY[1..NumberOfAxes] OF LREAL:=[0,-15,115,0,-30,0];
+	mcMoveRelativeAcs: ARRAY[1..NumberOfAxes] OF MC_MoveRelative;
+	mcMoveRelativeMcs: ARRAY[1..NumberOfAxes] OF MC_MoveRelative;
+	MoveDistanceAcs: ARRAY[1..NumberOfAxes] OF LREAL:=[0,0,0,0,0,10];
+	MoveDistanceMcs: ARRAY[1..NumberOfAxes] OF LREAL:=[10,0,0,0,0,0];
+	mcMoveAbsoluteAcs: ARRAY[1..NumberOfAxes] OF MC_MoveAbsolute;
+	mcMoveAbsoluteMcs: ARRAY[1..NumberOfAxes] OF MC_MoveAbsolute;
+	MovePositionAcs: ARRAY[1..NumberOfAxes] OF LREAL:=[0,-15,115,0,-30,0];
+	MovePositionMcs: ARRAY[1..NumberOfAxes] OF LREAL:=[300,0,415,0,90,0];
 	AcsMoveRelative, AcsMoveAbsolute: BOOL;
+	McsMoveRelative, McsMoveAbsolute: BOOL;
 	SeqSetTransform: INT;
 	TcpCoordinateFrame: FB_CoordinateFrame;
 	offsetFrame: DUT_CoordFrame;
@@ -200,7 +205,7 @@ VAR_STAT
 	TcpSet: BOOL;
 	mcSetCoordinateTransform: MC_SetCoordinateTransform;
 	TcpMode: BOOL;
-	EnableAcs, EnableMcs, EnableTcp,DisableGroup,ResetGroup: BOOL;
+	EnableAcs, EnableMcs, EnableTcp, DisableGroup, ResetGroup: BOOL;
 	path: MC_PATH_DATA_REF(ADR(buffer), SIZEOF(buffer));
     fbMoveLinPrep: MC_MoveLinearAbsolutePreparation;
 	fbSetCoordTransPrep: MC_SetCoordinateTransformPreparation;
@@ -229,7 +234,8 @@ END_VAR
 // separate file is needed when using L4 Kinematics transformation (6 Axis)
 // https://infosys.beckhoff.com/content/1033/tf5400_tc3_advanced_motion_pack/8403043979.html?id=9115801577672301435
 
-
+// use these to manage the group manually while testing.
+// if things get out of wack, you can always reset, disable, then reset and all will be well again
 IF ResetGroup THEN
 	ResetGroup := FALSE;
 	GroupHandler.M_ResetGroup();
@@ -251,7 +257,10 @@ IF DisableGroup THEN
 	GroupHandler.M_DisableGroup();
 END_IF
 
-//
+// set the HelloWorldStart variable to run the hello world moves.
+// the TcpMode variable will test the TCP relative move. otherwise, the moves will be absolute the MCS
+TcpMode := TcpMode;
+HelloWorldStart := HelloWorldStart;
 CASE SeqHelloWorld OF
 		
 	0: // idle
@@ -379,12 +388,16 @@ TcpCoordinateFrame(
 	Error=> );
 
 
+// the below tests show how to use mc fbs to control the acs and mcs axes directly.
+// you will still need to use the fb_grouphandler for these
+
 // move relative
+// need to call the group handler with parameter ACS first
 FOR _k:= 1 TO NumberOfAxes DO
-	mcMoveRelative[_k](
-		Axis:= acs[_k], 
+	mcMoveRelativeAcs[_k](
+		Axis:= ACS[_k], 
 		Execute:= AcsMoveRelative, 
-		Distance:= MoveDistance[_k], 
+		Distance:= MoveDistanceAcs[_k], 
 		Velocity:= Velocity, 
 		Acceleration:= 1000, 
 		Deceleration:= 1000, 
@@ -398,13 +411,34 @@ FOR _k:= 1 TO NumberOfAxes DO
 		Error=> , 
 		ErrorID=> );
 END_FOR
+// NOT CURRENTLY WORKING AS INTENDED
+// need to call the group handler with parameter MCS first
+// FOR _k:= 1 TO NumberOfAxes DO
+// 	mcMoveRelativeMcs[_k](
+// 		Axis:= MCS[_k], 
+// 		Execute:= McsMoveRelative, 
+// 		Distance:= MoveDistanceMcs[_k], 
+// 		Velocity:= Velocity, 
+// 		Acceleration:= 1000, 
+// 		Deceleration:= 1000, 
+// 		Jerk:= 100, 
+// 		BufferMode:= , 
+// 		Options:= , 
+// 		Done=> , 
+// 		Busy=> , 
+// 		Active=> , 
+// 		CommandAborted=> , 
+// 		Error=> , 
+// 		ErrorID=> );
+// END_FOR
 
 // move absolute
+// need to call the group handler with parameter ACS first
 FOR _k:= 1 TO NumberOfAxes DO
-	mcMoveAbsolute[_k](
-		Axis:= acs[_k], 
+	mcMoveAbsoluteAcs[_k](
+		Axis:= ACS[_k], 
 		Execute:= AcsMoveAbsolute, 
-		Position:= MovePosition[_k], 
+		Position:= MovePositionAcs[_k], 
 		Velocity:= Velocity, 
 		Acceleration:= 1000, 
 		Deceleration:= 1000, 
@@ -418,6 +452,26 @@ FOR _k:= 1 TO NumberOfAxes DO
 		Error=> , 
 		ErrorID=> );
 END_FOR
+// NOT CURRENTLY WORKING AS INTENDED
+// need to call the group handler with parameter MCS first
+// FOR _k:= 1 TO NumberOfAxes DO
+// 	mcMoveAbsoluteMcs[_k](
+// 		Axis:= MCS[_k], 
+// 		Execute:= McsMoveAbsolute, 
+// 		Position:= MovePositionMcs[_k], 
+// 		Velocity:= Velocity, 
+// 		Acceleration:= 1000, 
+// 		Deceleration:= 1000, 
+// 		Jerk:= 100, 
+// 		BufferMode:= , 
+// 		Options:= , 
+// 		Done=> , 
+// 		Busy=> , 
+// 		Active=> , 
+// 		CommandAborted=> , 
+// 		Error=> , 
+// 		ErrorID=> );
+// END_FOR
 
 {regions 'add paths'}
 IF AddPaths THEN
