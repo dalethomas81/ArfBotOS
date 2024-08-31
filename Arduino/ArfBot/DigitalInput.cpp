@@ -1,12 +1,12 @@
-#include "InputDebounced.h"
+#include "DigitalInput.h"
 
-InputDebounced::InputDebounced(int pin, int mode, unsigned long debounce){
+DigitalInput::DigitalInput(int pin, int mode, unsigned long debounce){
   _pin = pin;
   _mode = mode;
   _debounce = debounce;
 }
 
-bool InputDebounced::read(){
+bool DigitalInput::read(){
   _read = (digitalReadFast(_pin) ? true : false);
   _timer = millis();
   if (_read == _read_last){
@@ -20,7 +20,7 @@ bool InputDebounced::read(){
   return _read_out;
 }
 
-void InputDebounced::init(){
+void DigitalInput::init(){
   _read = _read_last = _read_out = false;
   _timer_last = _timer = millis();
 

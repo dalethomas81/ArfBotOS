@@ -1,9 +1,9 @@
-#ifndef INPUTDEBOUNCED_h
-#define INPUTDEBOUNCED_h
+#ifndef DIGITALINPUT_H
+#define DIGITAL_INPUT_H
 
 #include <Arduino.h>
 
-class InputDebounced {
+class DigitalInput {
   
   private:
     int _pin, _mode;
@@ -12,7 +12,7 @@ class InputDebounced {
     unsigned long _timer, _timer_last;
 
   public:
-    InputDebounced(int pin, int mode, unsigned long debounce);
+    DigitalInput(int pin, int mode, unsigned long debounce);
     bool read();
     void init();
 

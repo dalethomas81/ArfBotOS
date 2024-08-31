@@ -38,21 +38,29 @@ void PTO::run(int16_t Frequency){
 void PTO::init() {
   pinModeFast(dirPin, OUTPUT);
   pinModeFast(pulsePin, OUTPUT);
-  pinModeFast(enablePin, OUTPUT);
+  if (enablePin >= 0) {
+    pinModeFast(enablePin, OUTPUT);
+  }
   
   digitalWriteFast(dirPin, HIGH);
   digitalWriteFast(pulsePin, HIGH);
-  digitalWriteFast(enablePin, LOW);
+  if (enablePin >= 0) {
+    digitalWriteFast(enablePin, LOW);
+  }
 }
 
 int PTO::turnON() {
   DriveEnabled = true;
-  digitalWriteFast(enablePin, HIGH);
+  if (enablePin >= 0) {
+    digitalWriteFast(enablePin, HIGH);
+  }
   return DriveEnabled;
 }
 
 int PTO::turnOFF() {
   DriveEnabled = false;
-  digitalWriteFast(enablePin, LOW);
+  if (enablePin >= 0) {
+    digitalWriteFast(enablePin, LOW);
+  }
   return DriveEnabled;
 }

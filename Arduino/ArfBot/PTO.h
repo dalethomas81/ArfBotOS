@@ -18,7 +18,7 @@ class PTO {
     bool bOffOneshot;
 
   public:
-    PTO(int In_DirPin, int In_PulsePin, int In_EnablePin);
+    PTO(int In_DirPin, int In_PulsePin, int In_EnablePin = -1);
     void init();
     void run(int16_t Frequency);
     int turnON();
