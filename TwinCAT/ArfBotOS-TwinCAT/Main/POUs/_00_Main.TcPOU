@@ -39,8 +39,9 @@ VAR
 	ProcessCommand_ActiveProgram: UINT := 0;
 	ActiveCommandDetails: STRING(255):='';
 	
-	// controller
+	// devices
 	//Controller: FB_Controller;
+	Gripper: FB_DigitalOutput;
 	
 	// hello world
 	buffer: ARRAY[1..4096] OF BYTE;
@@ -75,15 +76,15 @@ END_VAR]]></Declaration>
     //_M_Jogging();
     //_M_Homing();
     _M_Processor();
-	//_M_Controller();
+	_M_Devices();
 	//_M_Tuning();
 {endregion}
 
 // do not put anything below this
 FirstScan:=FALSE;]]></ST>
     </Implementation>
-    <Method Name="_M_Controller" Id="{111d7557-61e1-48d4-ad0f-48b4ac517334}">
-      <Declaration><![CDATA[METHOD PRIVATE _M_Controller : BOOL
+    <Method Name="_M_Devices" Id="{111d7557-61e1-48d4-ad0f-48b4ac517334}">
+      <Declaration><![CDATA[METHOD PRIVATE _M_Devices : BOOL
 VAR_INPUT
 END_VAR
 VAR_STAT
@@ -99,7 +100,10 @@ VAR_STAT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[(*
+        <ST><![CDATA[//
+Gripper();
+
+(*
 // dont get sleepy
 Controller(sIpAddress:= '127.0.0.1', uPort:= 50013);
 
@@ -216,6 +220,7 @@ VAR_STAT
 	fbBlockerPreparation: MC_BlockerPreparation;
 	fbReleaseBlocker: MC_ReleaseBlocker;
 	fbGroupReadBlockerStatus: MC_GroupReadBlockerStatus;
+	ToggleGripper: BOOL;
 	
 	AddPaths, AddPathsTcp: BOOL;
 END_VAR
@@ -255,6 +260,10 @@ END_IF
 IF DisableGroup THEN
 	DisableGroup := FALSE;
 	GroupHandler.M_DisableGroup();
+END_IF
+IF ToggleGripper THEN
+	ToggleGripper := FALSE;
+	Gripper.Toggle();
 END_IF
 
 // set the HelloWorldStart variable to run the hello world moves.

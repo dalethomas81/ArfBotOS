@@ -120,6 +120,9 @@
     <Compile Include="FB\coord\FB_CoordinateFrame.TcPOU">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FB\digital\FB_DigitalOutput.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="FB\FB_CommandProcessor.TcPOU">
       <SubType>Code</SubType>
     </Compile>
@@ -327,9 +330,6 @@
     <Compile Include="POUs\FB_SixAxisSolver.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\MAIN.TcPOU">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="POUs\ST_KinCalcMultiTrafoIn.TcDUT">
       <SubType>Code</SubType>
     </Compile>
@@ -355,6 +355,7 @@
     <Folder Include="FB\logic" />
     <Folder Include="FB\move" />
     <Folder Include="FB\coord" />
+    <Folder Include="FB\digital" />
     <Folder Include="FB\vision" />
     <Folder Include="FB\varset" />
     <Folder Include="FB\template" />
@@ -419,7 +420,7 @@
   <ItemGroup>
     <SubObject Include="_00_Main.M_BuildTests" />
     <SubObject Include="_00_Main.M_Init" />
-    <SubObject Include="_00_Main._M_Controller" />
+    <SubObject Include="_00_Main._M_Devices" />
     <SubObject Include="_00_Main._M_GroupHandler" />
     <SubObject Include="_00_Main._M_Homing" />
     <SubObject Include="_00_Main._M_Jogging" />

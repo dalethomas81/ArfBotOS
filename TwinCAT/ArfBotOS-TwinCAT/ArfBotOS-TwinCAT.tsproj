@@ -2558,7 +2558,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{8F17CC22-5066-96AD-155B-A6EB4D660931}" AutoDeleteType="true">DUT_CommandType</Name>
+			<Name GUID="{B2003512-5847-0C6B-FA34-26B2597BAD26}" AutoDeleteType="true">DUT_CommandType</Name>
 			<BitSize>16</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
 			<EnumInfo>
@@ -2612,11 +2612,11 @@ and will return to Group State Standby when the situation permits.
 				</Property>
 				<Property>
 					<Name>to_string_function</Name>
-					<Value>__TO_STRING__1257</Value>
+					<Value>__TO_STRING__1267</Value>
 				</Property>
 				<Property>
 					<Name>to_wstring_function</Name>
-					<Value>__TO_WSTRING__1257</Value>
+					<Value>__TO_WSTRING__1267</Value>
 				</Property>
 				<Property>
 					<Name>generate_implicit_init_function</Name>
@@ -2624,11 +2624,11 @@ and will return to Group State Standby when the situation permits.
 			</Properties>
 		</DataType>
 		<DataType>
-			<Name GUID="{72B5DCB6-9F7B-5081-F1D1-FFF574301F0B}" AutoDeleteType="true">DUT_Command</Name>
+			<Name GUID="{3C3A378F-AF8B-B21B-15D4-D7FAAA63C362}" AutoDeleteType="true">DUT_Command</Name>
 			<BitSize>2720</BitSize>
 			<SubItem>
 				<Name>CommandType</Name>
-				<Type GUID="{8F17CC22-5066-96AD-155B-A6EB4D660931}">DUT_CommandType</Type>
+				<Type GUID="{B2003512-5847-0C6B-FA34-26B2597BAD26}">DUT_CommandType</Type>
 				<BitSize>16</BitSize>
 				<BitOffs>0</BitOffs>
 			</SubItem>
@@ -2646,7 +2646,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{A0D16BEC-7E28-315E-3A55-2DF43E499462}" AutoDeleteType="true">DUT_Program</Name>
+			<Name GUID="{8A6C0331-2CF1-54B8-75FB-EC0BDF167E18}" AutoDeleteType="true">DUT_Program</Name>
 			<BitSize>136656</BitSize>
 			<SubItem>
 				<Name>ProgramName</Name>
@@ -2656,7 +2656,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 			<SubItem>
 				<Name>Commands</Name>
-				<Type GUID="{72B5DCB6-9F7B-5081-F1D1-FFF574301F0B}">DUT_Command</Type>
+				<Type GUID="{3C3A378F-AF8B-B21B-15D4-D7FAAA63C362}">DUT_Command</Type>
 				<ArrayInfo>
 					<LBound>0</LBound>
 					<Elements>50</Elements>
@@ -2666,9 +2666,9 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{F8044217-F5FA-AB3D-C7C1-A4095C5129AE}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..19] OF DUT_Program</Name>
+			<Name IecBaseType="true">ARRAY [0..19] OF DUT_Program</Name>
 			<BitSize>2733120</BitSize>
-			<BaseType GUID="{A0D16BEC-7E28-315E-3A55-2DF43E499462}">DUT_Program</BaseType>
+			<BaseType GUID="{8A6C0331-2CF1-54B8-75FB-EC0BDF167E18}">DUT_Program</BaseType>
 			<ArrayInfo>
 				<LBound>0</LBound>
 				<Elements>20</Elements>
@@ -5953,19 +5953,14 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{3D4585E8-3E19-08F0-4824-B0B02D338D28}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{7F317295-00A6-B716-325A-F10DAF538F06}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
 						<Name>PlcTask Retains</Name>
 						<Var>
 							<Name>PersistentVars.Programs</Name>
-							<Type GUID="{F8044217-F5FA-AB3D-C7C1-A4095C5129AE}">ARRAY [0..19] OF DUT_Program</Type>
-							<InOut>7</InOut>
-						</Var>
-						<Var>
-							<Name>PersistentVars.VisionSystemPort</Name>
-							<Type>UINT</Type>
+							<Type GUID="{4ED02207-1C6F-ABE3-08A5-29D3808D3D99}">ARRAY [0..19] OF DUT_Program</Type>
 							<InOut>7</InOut>
 						</Var>
 						<Var>
@@ -5981,6 +5976,11 @@ and will return to Group State Standby when the situation permits.
 						<Var>
 							<Name>PersistentVars.Flags</Name>
 							<Type GUID="{3E17E049-7235-3828-4255-C95966CFE06E}">ARRAY [0..49] OF DUT_Flags</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>PersistentVars.VisionSystemPort</Name>
+							<Type>UINT</Type>
 							<InOut>7</InOut>
 						</Var>
 						<Var>
@@ -6004,6 +6004,10 @@ and will return to Group State Standby when the situation permits.
 						<Var>
 							<Name>_00_Main.GroupHandler._stPlcToKin</Name>
 							<Type GUID="{48415C2A-E750-483B-A619-8655B2BEA4B8}" Namespace="MC">PLCTONC_NCICHANNEL_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.stGroupRef.PlcToNc</Name>
+							<Type GUID="{0E2E3852-A98C-4AF3-81E2-209EE128940C}" Namespace="MC">CDT_PLCTOMC_GROUP</Type>
 						</Var>
 						<Var>
 							<Name>_00_Main.ACS[1].PlcToNc</Name>
@@ -6054,8 +6058,9 @@ and will return to Group State Standby when the situation permits.
 							<Type GUID="{96B75FEB-2D84-43BE-A3EC-D9A681F27D52}" Namespace="MC">PLCTONC_AXIS_REF</Type>
 						</Var>
 						<Var>
-							<Name>_00_Main.stGroupRef.PlcToNc</Name>
-							<Type GUID="{0E2E3852-A98C-4AF3-81E2-209EE128940C}" Namespace="MC">CDT_PLCTOMC_GROUP</Type>
+							<Name>_00_Main.Gripper.Output</Name>
+							<Comment><![CDATA[ https://infosys.beckhoff.com/content/1033/tc3_plc_intro/11948825611.html?id=1756449079294237528]]></Comment>
+							<Type>BOOL</Type>
 						</Var>
 					</Vars>
 					<Vars VarGrpType="1">
@@ -6067,6 +6072,10 @@ and will return to Group State Standby when the situation permits.
 						<Var>
 							<Name>_00_Main.GroupHandler._stKinToPlc</Name>
 							<Type GUID="{56354211-98EF-4057-9322-975DEAD0E29D}" Namespace="MC">NCTOPLC_NCICHANNEL_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.stGroupRef.NcToPlc</Name>
+							<Type GUID="{467F4325-10DF-4BC1-88DD-E8240EB4F8E3}" Namespace="MC">CDT_MCTOPLC_GROUP</Type>
 						</Var>
 						<Var>
 							<Name>_00_Main.ACS[1].NcToPlc</Name>
@@ -6115,10 +6124,6 @@ and will return to Group State Standby when the situation permits.
 						<Var>
 							<Name>_00_Main.MCS[6].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
-						</Var>
-						<Var>
-							<Name>_00_Main.stGroupRef.NcToPlc</Name>
-							<Type GUID="{467F4325-10DF-4BC1-88DD-E8240EB4F8E3}" Namespace="MC">CDT_MCTOPLC_GROUP</Type>
 						</Var>
 					</Vars>
 					<Contexts>
@@ -6410,6 +6415,7 @@ and will return to Group State Standby when the situation permits.
 	</Project>
 	<Mappings>
 		<MappingInfo Identifier="{00000000-0010-0304-3000-040310000403}" Id="#x02030010"/>
+		<MappingInfo Identifier="{08502001-0010-0304-0020-500810000403}" Id="#x02030040" Watchdog="00000000000000000000000000000000"/>
 		<MappingInfo Identifier="{05000010-2001-0850-1000-120500205008}" Id="#x02030030" Watchdog="14000000040000000400000004000000"/>
 		<MappingInfo Identifier="{05000010-2001-0850-3000-040300205008}" Id="#x02030020" Watchdog="14000000040000000400000004000000"/>
 		<OwnerA Name="TINC^NC-Task 1 SAF^Axes^ACS 1">
@@ -6491,6 +6497,9 @@ and will return to Group State Standby when the situation permits.
 			</OwnerB>
 		</OwnerA>
 		<OwnerA Name="TIPC^Main^Main Instance">
+			<OwnerB Name="TIID^Device 1 (EtherCAT)^Box 1 (EasyCAT 32+32 rev 1)">
+				<Link VarA="PlcTask Outputs^_00_Main.Gripper.Output" VarB="Outputs^Byte26" Size="1"/>
+			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 1">
 				<Link VarA="PlcTask Inputs^_00_Main.ACS[1].NcToPlc" VarB="Outputs^ToPlc"/>
 				<Link VarA="PlcTask Outputs^_00_Main.ACS[1].PlcToNc" VarB="Inputs^FromPlc"/>

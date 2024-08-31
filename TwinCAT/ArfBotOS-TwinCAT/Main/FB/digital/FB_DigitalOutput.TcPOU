@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_DigitalOutput" Id="{9ccb68c3-5dd7-4441-a68d-8f407a5bbf39}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_DigitalOutput
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR	
+	// https://infosys.beckhoff.com/content/1033/tc3_plc_intro/11948825611.html?id=1756449079294237528
+	Output AT %Q* : BOOL;
+	_FirstScan: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF _FirstScan THEN
+	//
+END_IF
+
+// do some things?
+
+// do not put anything below this
+_FirstScan := FALSE;]]></ST>
+    </Implementation>
+    <Method Name="Off" Id="{f8b6fdb2-6544-4607-9a19-3594027652d2}">
+      <Declaration><![CDATA[METHOD PUBLIC Off : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Output := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="On" Id="{8d32d062-36c2-487a-8ff3-0192a0a033a4}">
+      <Declaration><![CDATA[METHOD PUBLIC On : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Output := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Toggle" Id="{acfd7b5d-3f2d-4ece-8bee-8a0616bd626e}">
+      <Declaration><![CDATA[METHOD PUBLIC Toggle : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Output := NOT Output;]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>
