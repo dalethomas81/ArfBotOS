@@ -277,6 +277,7 @@ CASE SeqHelloWorld OF
 			HelloWorldStart := FALSE;
 			GVL.PowerOn := TRUE;
 			bMovePrepError := FALSE;
+			Gripper.Off(); // open the gripper
 			SeqHelloWorld := SeqHelloWorld + 1;
 		END_IF
 		
@@ -294,22 +295,26 @@ CASE SeqHelloWorld OF
 		IF TcpMode THEN AddPathsTcp:=TRUE; ELSE AddPaths:=TRUE; END_IF
 		IF NOT bMovePrepError THEN
 			fbMovePath.Execute:=FALSE;
-			//fbReleaseBlocker.Execute:=FALSE;
+			fbReleaseBlocker.Execute:=FALSE;
 			SeqHelloWorld := SeqHelloWorld + 1;
 		END_IF
 		
 	4: // move
 		fbMovePath.Execute := TRUE;
-		// example of how to monitor for a blocker during movement
-		//IF fbGroupReadBlockerStatus.Blocked AND fbGroupReadBlockerStatus.BlockerId = 100 THEN
+		// wait for gripper position
+		IF fbGroupReadBlockerStatus.Blocked AND fbGroupReadBlockerStatus.BlockerId = 100 THEN
 			SeqHelloWorld := SeqHelloWorld + 1;
-		//END_IF
+		ELSIF TcpMode THEN // no blocker is set for TcpMode
+			SeqHelloWorld := SeqHelloWorld + 2;
+		END_IF
 		
-	5:
-		// example of how to release a blocker
-		//IF ReleaseBlocker THEN
-		//	fbReleaseBlocker.Execute:=TRUE;
-		//END_IF
+	5: // close the gripper and release the blocker
+		Gripper.On();
+		fbReleaseBlocker.Execute:=TRUE;
+		SeqHelloWorld := SeqHelloWorld + 1;
+		
+	6:
+		// wait for motion to be done
 		IF fbMovePath.Done THEN
 			fbMovePath.Execute:=FALSE;
 			SeqHelloWorld := SeqHelloWorld + 1;
@@ -317,11 +322,11 @@ CASE SeqHelloWorld OF
 			//	
 		END_IF
 		
-	6: // disable group
+	7: // disable group
 		GroupHandler.M_DisableGroup();
 		SeqHelloWorld := SeqHelloWorld + 1;
 	
-	7:  // wait on group disable
+	8:  // wait on group disable
 		IF NOT GroupHandler.P_GroupEnabled THEN
  			SeqHelloWorld := 0;
 		END_IF
@@ -537,14 +542,14 @@ IF AddPaths THEN
 	fbMoveLinPrep(PathData:= path , Velocity:= 20, InvokeId:= 30);
 	bMovePrepError := bMovePrepError OR fbMoveLinPrep.Error;
 	
-	// // example of how to add a blocker to the path data
-	// fbBlockerPreparation(
-	// 	PathData:= path, 
-	// 	BlockerId:= 100, // blocker id is unique
-	// 	BufferMode:= mcBuffered, 
-	// 	InvokeId:= 40, 
-	// 	Error=> , 
-	// 	ErrorId=> );
+	// example of how to add a blocker to the path data
+	fbBlockerPreparation(
+		PathData:= path, 
+		BlockerId:= 100, // blocker id is unique
+		BufferMode:= mcBuffered, 
+		InvokeId:= 40, 
+		Error=> , 
+		ErrorId=> );
 	
 	//1st node
 	aTargetPos[1]				:= 300;
