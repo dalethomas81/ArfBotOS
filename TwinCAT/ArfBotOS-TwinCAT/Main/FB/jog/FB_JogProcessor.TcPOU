@@ -2,22 +2,39 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="FB_JogProcessor" Id="{9ad0dd5a-e160-4345-8eee-ad9cf9bfb3eb}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_JogProcessor
+VAR CONSTANT
+	NumberOfAxes: UINT:=GVL.NumberOfAxes;
+END_VAR
 VAR_IN_OUT
-	AxisGroup: ST_KinAxes;
+	ACS: ARRAY[1..NumberOfAxes] OF AXIS_REF;
+	MCS: ARRAY[1..NumberOfAxes] OF AXIS_REF;
 	GroupHandler: FB_GroupHandler;
 	Controller: FB_Controller;
 END_VAR
 VAR_INPUT
 	Enable: BOOL;
+	Execute: BOOL;
 	Reset: BOOL;
+	Velocity: LREAL := 0;
+	Acceleration: LREAL := 0;
+	Deceleration: LREAL := 0;
+	Jerk: LREAL := 0;
+    MaxAngularDistance: LREAL := 90.0;
+	MaxLinearDistance: LREAL := 50.0;
+// 	AccFactor: LREAL := 1.0;
+// 	VelFactor: LREAL := 0.1;
+// 	JerkFactor: LREAL := 1.0;
+// 	TorqueFactor: LREAL := 1.0;
+	JogForward: ARRAY[1..NumberOfAxes] OF BOOL;
+	JogBackwards: ARRAY[1..NumberOfAxes] OF BOOL;
+	CoordSystem: DUT_CoordSystem := DUT_CoordSystem.TCP;
+	ABC_as_ACS: BOOL;
 	StoredPositions: REFERENCE TO ARRAY[GVL.POS_ARR_BEG..GVL.POS_ARR_END] OF DUT_StoredPosition;
 	VisionRegisters: REFERENCE TO ARRAY[GVL.VIS_ARR_BEG..GVL.VIS_ARR_END] OF DUT_VisionRegister;
 	Flags: REFERENCE TO ARRAY[GVL.FLG_ARR_BEG..GVL.FLG_ARR_END] OF DUT_Flags;
 END_VAR
 VAR_OUTPUT
-	ABC_as_ACS: BOOL;
-	CoordSystem: SMC_COORD_SYSTEM;
-	Position: SMC_POS_REF;
+	Position: DUT_COORD_REF;
 	Enabled: BOOL;
 	Done: BOOL;
 	Busy: BOOL;
@@ -34,7 +51,13 @@ VAR
 	_SequenceMain: INT;
 	_SequenceSetCoordTrans: INT;
 	
-	_SMC_GroupJog2: SMC_GroupJog2;
+	_MC_Jog: ARRAY[1..NumberOfAxes*2] OF MC_JOG;
+	_MC_Halt: ARRAY[1..NumberOfAxes*2] OF MC_HALT;
+	_Halt: ARRAY[1..NumberOfAxes*2] OF BOOL;
+	_HaltFtrig: ARRAY[1..NumberOfAxes*2] OF F_Trig;
+	_JogForward: ARRAY[1..NumberOfAxes] OF BOOL;
+	_JogBackwards: ARRAY[1..NumberOfAxes] OF BOOL;
+	_CoordSystem: DUT_CoordSystem := DUT_CoordSystem.TCP;
 	
 	_ControllerCenter: USINT:=128;
 	_ControllerDeadZone: USINT:=40;
@@ -44,7 +67,7 @@ VAR
 	_MoveToPose: ARRAY[0..GVL.POSE_5_IDX-GVL.POSE_1_IDX] OF BOOL;
 	_MoveCommandProcessor: MoveCmdProcessor;
 	
-	_i, _j, _k: INT;
+	_i, _j, _k: UINT;
 	_FirstScan: BOOL:=TRUE;
 	
 END_VAR
@@ -63,22 +86,22 @@ VAR CONSTANT
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[_ExecuteRtrig(CLK:=_SMC_GroupJog2.Enable);
-_ExecuteFtrig(CLK:=_SMC_GroupJog2.Enable);
+      <ST><![CDATA[_ExecuteRtrig(CLK:=Execute);
+_ExecuteFtrig(CLK:=Execute);
 _ResetRtrig(CLK:=Reset);
 
 IF _FirstScan THEN
-	_SMC_GroupJog2.Velocity := 50.0;
-	_SMC_GroupJog2.Acceleration := 300.0;
-	_SMC_GroupJog2.Deceleration := 300.0;
-	_SMC_GroupJog2.Jerk := 1000.0;
-	_SMC_GroupJog2.MaxAngularDistance := 90.0;
-	_SMC_GroupJog2.MaxLinearDistance := 200.0;
-	_SMC_GroupJog2.AccFactor := 1.0;
-	_SMC_GroupJog2.VelFactor := 0.1;
-	_SMC_GroupJog2.JerkFactor := 1.0;
-	_SMC_GroupJog2.TorqueFactor := 1.0;
-	_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
+// 	_SMC_GroupJog2.Velocity := 50.0;
+// 	_SMC_GroupJog2.Acceleration := 300.0;
+// 	_SMC_GroupJog2.Deceleration := 300.0;
+// 	_SMC_GroupJog2.Jerk := 1000.0;
+// 	_SMC_GroupJog2.MaxAngularDistance := 90.0;
+// 	_SMC_GroupJog2.MaxLinearDistance := 200.0;
+// 	_SMC_GroupJog2.AccFactor := 1.0;
+// 	_SMC_GroupJog2.VelFactor := 0.1;
+// 	_SMC_GroupJog2.JerkFactor := 1.0;
+// 	_SMC_GroupJog2.TorqueFactor := 1.0;
+// 	_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
 	
 END_IF
 
@@ -89,7 +112,7 @@ _M_HandlePose();
 //
 _EnableFtrig(CLK:=Enable);
 IF _EnableFtrig.Q THEN
-	_SMC_GroupJog2.Enable := FALSE;
+	//
 END_IF
 
 //
@@ -98,18 +121,19 @@ CASE _SequenceMain OF
 		Busy := FALSE;
 		Done := TRUE;
 		_SequenceMain := STEP_IDLE;
-		_MoveCommandProcessor.M_Home();
 		
 	STEP_IDLE: // IDLE
 		IF _ExecuteRtrig.Q AND Enable THEN
 			Busy := TRUE;
 			Done := FALSE;
+			_CoordSystem := CoordSystem;
+			_Halt:=FALSE;
 			_M_CheckOffsets();
 			_SequenceMain := STEP_GROUP_ENABLE;
 		END_IF
 		
 	STEP_GROUP_ENABLE:
-		IF GroupHandler.M_EnableGroup() THEN
+		IF GroupHandler.M_EnableGroup(_CoordSystem) THEN
 			_SequenceMain := STEP_WAIT_ENABLE;
 		ELSE
 			_SequenceMain := STEP_DONE;
@@ -120,35 +144,36 @@ CASE _SequenceMain OF
 	STEP_WAIT_ENABLE:
 		// TODO add timeout timer here
 		IF GroupHandler.P_GroupEnabled THEN
-			_SequenceMain := STEP_SET_KINEMATICS;
+			_SequenceMain := STEP_WAIT_JOG;
 		END_IF;
 		
-	STEP_SET_KINEMATICS: // set kinematics
-		IF GroupHandler.M_SetKinematics(_SMC_GroupJog2.CoordSystem) THEN
-			_SequenceMain := STEP_WAIT_KINEMATICS;
-		ELSE
-			_SequenceMain := STEP_DONE;
-			Error := TRUE;
-			ErrorID := GroupHandler.ErrorID;
-		END_IF
-		
-	STEP_WAIT_KINEMATICS:
-		// TODO add timeout timer here
-		IF GroupHandler.P_KinematicsSet THEN
-			_SequenceMain := STEP_WAIT_JOG;
-		END_IF
+// 	STEP_SET_KINEMATICS: // set kinematics
+// 		IF GroupHandler.M_SetKinematics(_SMC_GroupJog2.CoordSystem) THEN
+// 			_SequenceMain := STEP_WAIT_KINEMATICS;
+// 		ELSE
+// 			_SequenceMain := STEP_DONE;
+// 			Error := TRUE;
+// 			ErrorID := GroupHandler.ErrorID;
+// 		END_IF
+// 		
+// 	STEP_WAIT_KINEMATICS:
+// 		// TODO add timeout timer here
+// 		IF GroupHandler.P_KinematicsSet THEN
+// 			_SequenceMain := STEP_WAIT_JOG;
+// 		END_IF
 		
 	STEP_WAIT_JOG: //
-		IF _SMC_GroupJog2.Error THEN
-			Error := TRUE;
-			ErrorID := _SMC_GroupJog2.ErrorID;
-		END_IF
+		FOR _k:= 1 TO NumberOfAxes DO
+			IF _MC_Jog[_k].Error THEN
+				Error := TRUE;
+				ErrorID := _MC_Jog[_k].ErrorID;
+			END_IF
+		END_FOR
 		IF _ExecuteFtrig.Q THEN
-			//_SequenceMain := STEP_GROUP_DISABLE;
-			_SequenceMain := STEP_DONE;
+			_SequenceMain := STEP_GROUP_DISABLE;
+			//_SequenceMain := STEP_DONE;
 		END_IF
-		
-	// TODO: do we need to disable the group at this point? lets leave this here for now but skip it.	
+			
 	STEP_GROUP_DISABLE:
 		IF GroupHandler.M_DisableGroup() THEN
 			_SequenceMain := STEP_WAIT_DISABLE;
@@ -175,28 +200,117 @@ IF _ResetRtrig.Q AND Error THEN
 	_MoveCommandProcessor.M_Home();
 END_IF
 
-_SMC_GroupJog2(
-	AxisGroup:= AxisGroup, 
-	Enable:= , 
-	Forward:= , 
-	Backward:= , 
-	MaxLinearDistance:= , 
-	MaxAngularDistance:= , 
-	Velocity:= , 
-	Acceleration:= , 
-	Deceleration:= , 
-	Jerk:= , 
-	VelFactor:= , 
-	AccFactor:= , 
-	JerkFactor:= , 
-	TorqueFactor:= , 
-	CoordSystem:= , 
-	ABC_as_ACS:= , 
-	Active=> , 
-	Busy=> , 
-	Error=> , 
-	ErrorID=> , 
-	CurrentPosition=> Position);
+// https://infosys.beckhoff.com/content/1033/tcplclib_tc2_mc2/70120459.html?id=7121036612998147748
+FOR _k:= 1 TO NumberOfAxes DO
+	_MC_Jog[_k](
+		Axis:= ACS[_k], 
+		JogForward:= SEL(_CoordSystem = DUT_CoordSystem.ACS, FALSE, _JogForward[_k]), 
+		JogBackwards:= SEL(_CoordSystem = DUT_CoordSystem.ACS, FALSE, _JogBackwards[_k]), 
+		Mode:= MC_JOGMODE_INCHING, // MC_JOGMODE_STANDARD_SLOW, MC_JOGMODE_STANDARD_FAST, MC_JOGMODE_CONTINUOUS, MC_JOGMODE_INCHING, MC_JOGMODE_INCHING_MODULO
+		Position:= MaxAngularDistance, 
+		Velocity:= Velocity, 
+		Acceleration:= Acceleration, 
+		Deceleration:= Deceleration, 
+		Jerk:= Jerk, 
+		Done=> , 
+		Busy=> , 
+		Active=> , 
+		CommandAborted=> , 
+		Error=> , 
+		ErrorID=> );
+	_MC_Jog[_k+NumberOfAxes](
+		Axis:= MCS[_k], 
+		JogForward:= SEL(_CoordSystem = DUT_CoordSystem.MCS, FALSE, _JogForward[_k]), 
+		JogBackwards:= SEL(_CoordSystem = DUT_CoordSystem.MCS, FALSE, _JogBackwards[_k]), 
+		Mode:= MC_JOGMODE_INCHING, // MC_JOGMODE_STANDARD_SLOW, MC_JOGMODE_STANDARD_FAST, MC_JOGMODE_CONTINUOUS, MC_JOGMODE_INCHING, MC_JOGMODE_INCHING_MODULO
+		Position:= MaxLinearDistance, 
+		Velocity:= Velocity, 
+		Acceleration:= Acceleration, 
+		Deceleration:= Deceleration, 
+		Jerk:= Jerk, 
+		Done=> , 
+		Busy=> , 
+		Active=> , 
+		CommandAborted=> , 
+		Error=> , 
+		ErrorID=> );
+END_FOR
+FOR _k:= 1 TO NumberOfAxes DO
+	IF _MC_Jog[_k].Error OR _MC_Jog[_k+NumberOfAxes].Error THEN
+		
+	END_IF
+END_FOR
+
+//
+FOR _k:= 1 TO NumberOfAxes DO
+	_HaltFtrig[_k](CLK:=_JogForward[_k] OR _JogBackwards[_k]);
+	IF _HaltFtrig[_k].Q THEN
+		_Halt[_k]:=TRUE;
+	END_IF
+	_HaltFtrig[_k+NumberOfAxes](CLK:=_JogForward[_k] OR _JogBackwards[_k]);
+	IF _HaltFtrig[_k+NumberOfAxes].Q THEN
+		_Halt[_k+NumberOfAxes]:=TRUE;
+	END_IF
+END_FOR
+FOR _k:= 1 TO NumberOfAxes DO
+	_MC_Halt[_k](
+		Axis:= ACS[_k], 
+		Execute:= _Halt[_k], 
+		Deceleration:= Deceleration, 
+		Jerk:= Jerk, 
+		BufferMode:= , 
+		Options:= , 
+		Done=> , 
+		Busy=> , 
+		Active=> , 
+		CommandAborted=> , 
+		Error=> , 
+		ErrorID=> );
+	_MC_Halt[_k+NumberOfAxes](
+		Axis:= MCS[_k], 
+		Execute:= _Halt[_k+NumberOfAxes], 
+		Deceleration:= Deceleration, 
+		Jerk:= Jerk, 
+		BufferMode:= , 
+		Options:= , 
+		Done=> , 
+		Busy=> , 
+		Active=> , 
+		CommandAborted=> , 
+		Error=> , 
+		ErrorID=> );
+END_FOR
+FOR _k:= 1 TO NumberOfAxes DO
+	IF _MC_Halt[_k].Done OR _MC_Halt[_k].Error THEN
+		_Halt[_k]:=FALSE;
+	END_IF
+	IF _MC_Halt[_k+NumberOfAxes].Done OR _MC_Halt[_k+NumberOfAxes].Error THEN
+		_Halt[_k+NumberOfAxes]:=FALSE;
+	END_IF
+END_FOR
+
+// _SMC_GroupJog2(
+// 	AxisGroup:= AxisGroup, 
+// 	Enable:= , 
+// 	Forward:= , 
+// 	Backward:= , 
+// 	MaxLinearDistance:= , 
+// 	MaxAngularDistance:= , 
+// 	Velocity:= , 
+// 	Acceleration:= , 
+// 	Deceleration:= , 
+// 	Jerk:= , 
+// 	VelFactor:= , 
+// 	AccFactor:= , 
+// 	JerkFactor:= , 
+// 	TorqueFactor:= , 
+// 	CoordSystem:= , 
+// 	ABC_as_ACS:= , 
+// 	Active=> , 
+// 	Busy=> , 
+// 	Error=> , 
+// 	ErrorID=> , 
+// 	CurrentPosition=> Position);
 
 //
 CoordSystem := _SMC_GroupJog2.CoordSystem;
@@ -205,7 +319,7 @@ Enabled := _SMC_GroupJog2.Enable;
 
 //
 _ErrorRtrig(CLK:=GroupHandler.Error
-				OR _SMC_GroupJog2.Error
+				//OR _SMC_GroupJog2.Error
 				OR _MoveCommandProcessor.Error);			
 IF _ErrorRtrig.Q THEN
 	// TODO need to rework how error messages are handled (globally)
