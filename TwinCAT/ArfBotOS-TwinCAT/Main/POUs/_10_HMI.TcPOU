@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
-  <POU Name="_30_Visu" Id="{9462f316-faa5-42b7-be46-708f3ef2e1f0}" SpecialFunc="None">
-    <Declaration><![CDATA[PROGRAM _30_Visu
+  <POU Name="_10_HMI" Id="{9462f316-faa5-42b7-be46-708f3ef2e1f0}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM _10_HMI
 VAR	
 	
 	SelectedProgramNumber: INT;
