@@ -5,14 +5,14 @@
 VAR_INPUT
 	CurrentOffset: LREAL;
 	CurrentPosition: LREAL;
-	HomeSearchDirection: MC_Direction;
+	HomeSearchDirection: Tc2_MC2.MC_Direction;
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[IF HomeSearchDirection = MC_Direction.positive THEN
+      <ST><![CDATA[IF (HomeSearchDirection = Tc2_MC2.MC_Direction.MC_Negative_Direction) THEN
 	F_HomeOffsetCalc := -F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
 	
-ELSIF HomeSearchDirection = MC_Direction.negative THEN
+ELSIF (HomeSearchDirection = Tc2_MC2.MC_Direction.MC_Positive_Direction) THEN
 	F_HomeOffsetCalc := F_RoundLreal(ABS(CurrentPosition - CurrentOffset),2);
 	
 ELSE

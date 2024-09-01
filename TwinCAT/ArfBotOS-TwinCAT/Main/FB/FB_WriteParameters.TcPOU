@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FB_WriteParameters" Id="{354cf1fb-f624-4983-96ea-6aaa15bf364e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_WriteParameters
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// axis parameters offsets
+// https://infosys.beckhoff.com/content/1033/tc3_ads_intro/713091211.html?id=750639462434375559]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

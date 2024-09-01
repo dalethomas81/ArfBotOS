@@ -2,15 +2,16 @@
 <TcPlcObject Version="1.1.0.1">
   <POU Name="FB_HomingProcessor" Id="{6c30ff35-bc31-4ed8-ab4a-320ad080dc49}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_HomingProcessor
+VAR CONSTANT
+	NumberOfAxes: UINT:=GVL.NumberOfAxes;
+END_VAR
 VAR_IN_OUT
-	J1, J2, J3, J4, J5, J6: AXIS_REF;
+	ACS: ARRAY[1..NumberOfAxes] OF AXIS_REF;
 	AxisGroup: AXES_GROUP_REF;
 	GroupHandler: FB_GroupHandler;
-	Controller: FB_Controller;
+	//Controller: FB_Controller;
 END_VAR
-
 VAR_INPUT
-	J1_Limit, J2_Limit, J3_Limit, J4_Limit, J5_Limit, J6_Limit: BOOL;
 	Enable: BOOL;
 	Reset: BOOL;
 	StoredPositions: REFERENCE TO ARRAY[GVL.POS_ARR_BEG..GVL.POS_ARR_END] OF DUT_StoredPosition;
@@ -52,7 +53,9 @@ VAR
 	_MoveCommand: ST_MoveCmd;
 	_MoveCommandProcessor: MoveCmdProcessor;
 	
-	_i, _j, _k: INT;
+	_MC_MoveAbsolute: ARRAY[1..NumberOfAxes] OF MC_MoveAbsolute;
+	
+	_i, _j, _k: UINT;
 	_FirstScan: BOOL:=TRUE;
 END_VAR
 
@@ -65,16 +68,19 @@ VAR CONSTANT
 	STEP_WAIT_FAST_HOME_G1:		INT := 0045;
 	STEP_SLOW_HOME_G1:			INT := 0050;
 	STEP_WAIT_SLOW_HOME_G1:		INT := 0055;
+	STEP_MOVE_HOME_G1:			INT := 0056;
 	
 	STEP_FAST_HOME_G2:			INT := 0060;
 	STEP_WAIT_FAST_HOME_G2:		INT := 0065;
 	STEP_SLOW_HOME_G2:			INT := 0070;
 	STEP_WAIT_SLOW_HOME_G2:		INT := 0075;
+	STEP_MOVE_HOME_G2:			INT := 0076;
 	
 	STEP_FAST_HOME_G3:			INT := 0080;
 	STEP_WAIT_FAST_HOME_G3:		INT := 0085;
 	STEP_SLOW_HOME_G3:			INT := 0090;
 	STEP_WAIT_SLOW_HOME_G3:		INT := 0095;
+	STEP_MOVE_HOME_G3:			INT := 0096;
 	
 	STEP_MOVE_TO_POSE:			INT := 1000;
 	STEP_WAIT_MOVE_TO_POSE:		INT := 1010;
@@ -113,27 +119,30 @@ CASE _SequenceMain OF
 		END_IF
 		
 	STEP_GROUP_ENABLE:
-		//IF GroupHandler.M_EnableGroup() THEN
+		IF GroupHandler.M_EnableGroup(DUT_CoordSystem.ACS) THEN
 			_SequenceMain := STEP_WAIT_ENABLE;
-		//ELSE
-		//	_SequenceMain := STEP_DONE;
-		//	Error := TRUE;
-		//	ErrorID := GroupHandler.ErrorID;
-		//END_IF
+		ELSE
+			_SequenceMain := STEP_DONE;
+			Error := TRUE;
+			ErrorID := GroupHandler.ErrorID;
+		END_IF
 		
 	STEP_WAIT_ENABLE:
 		// TODO add timeout timer here
-		//IF GroupHandler.P_GroupEnabled THEN
+		IF GroupHandler.P_GroupEnabled THEN
 			_SequenceMain := STEP_FAST_HOME_G1;
-		//END_IF;
+		END_IF;
 		
 	STEP_FAST_HOME_G1:	
 		_SMC_Homing_J1.Execute := TRUE;
 		_SMC_Homing_J2.Execute := TRUE;
 		_SMC_Homing_J3.Execute := TRUE;
-		_SMC_Homing_J1.Options.SearchVelocity := _HomingVelocitySlow;
-		_SMC_Homing_J2.Options.SearchVelocity := _HomingVelocitySlow;
-		_SMC_Homing_J3.Options.SearchVelocity := _HomingVelocitySlow;
+		_ST_HomingOptions_J1.SearchVelocity := _HomingVelocitySlow;
+		_ST_HomingOptions_J2.SearchVelocity := _HomingVelocitySlow;
+		_ST_HomingOptions_J3.SearchVelocity := _HomingVelocitySlow;
+		_ST_HomingOptions_J1.SearchDirection := Tc2_MC2.MC_Direction.MC_Positive_Direction;
+		_ST_HomingOptions_J2.SearchDirection := Tc2_MC2.MC_Direction.MC_Negative_Direction;
+		_ST_HomingOptions_J3.SearchDirection := Tc2_MC2.MC_Direction.MC_Positive_Direction;
 		_SequenceMain := STEP_WAIT_FAST_HOME_G1;
 		
 	STEP_WAIT_FAST_HOME_G1: // wait fast home group 1
@@ -150,9 +159,9 @@ CASE _SequenceMain OF
 		_SMC_Homing_J1.Execute := TRUE;
 		_SMC_Homing_J2.Execute := TRUE;
 		_SMC_Homing_J3.Execute := TRUE;
-		_SMC_Homing_J1.Options.SearchVelocity := _HomingVelocitySlowSlow;
-		_SMC_Homing_J2.Options.SearchVelocity := _HomingVelocitySlowSlow;
-		_SMC_Homing_J3.Options.SearchVelocity := _HomingVelocitySlowSlow;
+		_ST_HomingOptions_J1.SearchVelocity := _HomingVelocitySlowSlow;
+		_ST_HomingOptions_J2.SearchVelocity := _HomingVelocitySlowSlow;
+		_ST_HomingOptions_J3.SearchVelocity := _HomingVelocitySlowSlow;
 		_SequenceMain := STEP_WAIT_SLOW_HOME_G1;
 		
 	STEP_WAIT_SLOW_HOME_G1:
@@ -162,18 +171,29 @@ CASE _SequenceMain OF
 				_SMC_Homing_J1.Execute := FALSE;
 				_SMC_Homing_J2.Execute := FALSE;
 				_SMC_Homing_J3.Execute := FALSE;
+				_MC_MoveAbsolute[1].Execute := FALSE;
+				_MC_MoveAbsolute[2].Execute := FALSE;
+				_MC_MoveAbsolute[3].Execute := FALSE;
+				_SequenceMain := STEP_MOVE_HOME_G1;
+		END_IF
+		
+	STEP_MOVE_HOME_G1:
+		_MC_MoveAbsolute[1].Execute := TRUE;
+		_MC_MoveAbsolute[2].Execute := TRUE;
+		_MC_MoveAbsolute[3].Execute := TRUE;
+		IF _MC_MoveAbsolute[1].Done 
+			AND _MC_MoveAbsolute[2].Done 
+			AND _MC_MoveAbsolute[3].Done THEN
 				_SequenceMain := STEP_FAST_HOME_G2;
 		END_IF
 		
 	STEP_FAST_HOME_G2:		
 		_SMC_Homing_J4.Execute := TRUE;
 		_SMC_Homing_J5.Execute := TRUE;
-		//_SMC_Homing_J4.bReturnToZero := FALSE;
-		//_SMC_Homing_J5.bReturnToZero := FALSE;
-		_SMC_Homing_J4.Options.SearchVelocity := _HomingVelocitySlow;
-		_SMC_Homing_J5.Options.SearchVelocity := _HomingVelocitySlow;
-		//J4.bSWLimitEnable := FALSE;
-		//J5.bSWLimitEnable := FALSE;
+		_ST_HomingOptions_J2.SearchVelocity := _HomingVelocitySlow;
+		_ST_HomingOptions_J3.SearchVelocity := _HomingVelocitySlow;
+		_ST_HomingOptions_J4.SearchDirection := Tc2_MC2.MC_Direction.MC_Negative_Direction;
+		_ST_HomingOptions_J5.SearchDirection := Tc2_MC2.MC_Direction.MC_Negative_Direction;
 		_SequenceMain := STEP_WAIT_FAST_HOME_G2;
 		
 	STEP_WAIT_FAST_HOME_G2:
@@ -187,8 +207,8 @@ CASE _SequenceMain OF
 	STEP_SLOW_HOME_G2:
 		_SMC_Homing_J4.Execute := TRUE;
 		_SMC_Homing_J5.Execute := TRUE;
-		_SMC_Homing_J4.Options.SearchVelocity := _HomingVelocitySlowSlow;
-		_SMC_Homing_J5.Options.SearchVelocity := _HomingVelocitySlowSlow;
+		_ST_HomingOptions_J4.SearchVelocity := _HomingVelocitySlowSlow;
+		_ST_HomingOptions_J5.SearchVelocity := _HomingVelocitySlowSlow;
 		_SequenceMain := STEP_WAIT_SLOW_HOME_G2;
 		
 	STEP_WAIT_SLOW_HOME_G2:
@@ -196,12 +216,23 @@ CASE _SequenceMain OF
 			AND _SMC_Homing_J5.Done THEN
 				_SMC_Homing_J4.Execute := FALSE;
 				_SMC_Homing_J5.Execute := FALSE;
+				_MC_MoveAbsolute[4].Execute := FALSE;
+				_MC_MoveAbsolute[5].Execute := FALSE;
+				_SequenceMain := STEP_MOVE_HOME_G2;
+		END_IF
+		
+	STEP_MOVE_HOME_G2:
+		_MC_MoveAbsolute[4].Execute := TRUE;
+		_MC_MoveAbsolute[5].Execute := TRUE;
+		IF _MC_MoveAbsolute[4].Done 
+			AND _MC_MoveAbsolute[5].Done THEN
 				_SequenceMain := STEP_FAST_HOME_G3;
 		END_IF
 		
 	STEP_FAST_HOME_G3:
 		_SMC_Homing_J6.Execute := TRUE;
-		_SMC_Homing_J6.Options.SearchVelocity := _HomingVelocitySlow;
+		_ST_HomingOptions_J6.SearchVelocity := _HomingVelocitySlow;
+		_ST_HomingOptions_J6.SearchDirection := Tc2_MC2.MC_Direction.MC_Positive_Direction;
 		_SequenceMain := STEP_WAIT_FAST_HOME_G3;
 		
 	STEP_WAIT_FAST_HOME_G3:
@@ -212,19 +243,26 @@ CASE _SequenceMain OF
 		
 	STEP_SLOW_HOME_G3:
 		_SMC_Homing_J6.Execute := TRUE;
-		_SMC_Homing_J6.Options.SearchVelocity := _HomingVelocitySlowSlow;
+		_ST_HomingOptions_J6.SearchVelocity := _HomingVelocitySlowSlow;
 		_SequenceMain := STEP_WAIT_SLOW_HOME_G3;
 		
 	STEP_WAIT_SLOW_HOME_G3:
 		IF _SMC_Homing_J6.Done THEN
 			_SMC_Homing_J6.Execute := FALSE;
+			_MC_MoveAbsolute[6].Execute := FALSE;
+			_SequenceMain := STEP_MOVE_HOME_G3;
+		END_IF;
+		
+	STEP_MOVE_HOME_G3:
+		_MC_MoveAbsolute[6].Execute := TRUE;
+		IF _MC_MoveAbsolute[6].Done  THEN
 			Flags[GVL.HOME_COMPLETE].Value := TRUE;
 			IF NOT Flags[GVL.HOM_TO_POSE_IDX].Value THEN
 				_SequenceMain := STEP_DONE;
 			ELSE
 				_SequenceMain := STEP_MOVE_TO_POSE;
 			END_IF
-		END_IF;
+		END_IF
 		
 	STEP_MOVE_TO_POSE:
 		_MoveToPose := TRUE;
@@ -245,7 +283,7 @@ END_CASE
 _M_HandlePose();
 
 //
-IF _ResetRtrig.Q AND Error THEN
+IF _ResetRtrig.Q (*AND Error*) THEN
 	Error := FALSE;
 	ErrorID := 0;
 	_SequenceMain := STEP_DONE;
@@ -287,7 +325,7 @@ END_IF
 // https://infosys.beckhoff.com/content/1033/tcplclibmc2/458433931.html?id=4042515396221059782
 //_ST_HomingOptions_J1.SearchDirection := MC_Negative_Direction;
 _SMC_Homing_J1(
-	Axis:= J1, 
+	Axis:= ACS[1], 
 	Execute:= , 
 	Position:=StoredPositions[GVL.HOM_POS_IDX].Position.X, // DEFAULT_HOME_POSITION, 
 	HomingMode:= MC_HomingMode.MC_DefaultHoming, 
@@ -301,7 +339,7 @@ _SMC_Homing_J1(
 	Error=> , 
 	ErrorID=> );
 _SMC_Homing_J2(
-	Axis:= J2, 
+	Axis:= ACS[2], 
 	Execute:= , 
 	Position:=StoredPositions[GVL.HOM_POS_IDX].Position.Y, // DEFAULT_HOME_POSITION, 
 	HomingMode:= MC_HomingMode.MC_DefaultHoming, 
@@ -315,7 +353,7 @@ _SMC_Homing_J2(
 	Error=> , 
 	ErrorID=> );
 _SMC_Homing_J3(
-	Axis:= J3, 
+	Axis:= ACS[3], 
 	Execute:= , 
 	Position:=StoredPositions[GVL.HOM_POS_IDX].Position.Z, // DEFAULT_HOME_POSITION, 
 	HomingMode:= MC_HomingMode.MC_DefaultHoming, 
@@ -329,7 +367,7 @@ _SMC_Homing_J3(
 	Error=> , 
 	ErrorID=> );
 _SMC_Homing_J4(
-	Axis:= J4, 
+	Axis:= ACS[4], 
 	Execute:= , 
 	Position:=StoredPositions[GVL.HOM_POS_IDX].Position.A, // DEFAULT_HOME_POSITION, 
 	HomingMode:= MC_HomingMode.MC_DefaultHoming, 
@@ -343,7 +381,7 @@ _SMC_Homing_J4(
 	Error=> , 
 	ErrorID=> );
 _SMC_Homing_J5(
-	Axis:= J5, 
+	Axis:= ACS[5], 
 	Execute:= , 
 	Position:=StoredPositions[GVL.HOM_POS_IDX].Position.B, // DEFAULT_HOME_POSITION, 
 	HomingMode:= MC_HomingMode.MC_DefaultHoming, 
@@ -357,7 +395,7 @@ _SMC_Homing_J5(
 	Error=> , 
 	ErrorID=> );
 _SMC_Homing_J6(
-	Axis:= J6, 
+	Axis:= ACS[6], 
 	Execute:= , 
 	Position:=StoredPositions[GVL.HOM_POS_IDX].Position.C, // DEFAULT_HOME_POSITION, 
 	HomingMode:= MC_HomingMode.MC_DefaultHoming, 
@@ -372,10 +410,9 @@ _SMC_Homing_J6(
 	ErrorID=> );
 	
 //
-(*
 _ST_SetPositionsOptions_J1.ClearPositionLag := TRUE;
 _MC_SetPosition_J1(
-	Axis:= J1, 
+	Axis:= ACS[1], 
 	Execute:= _MC_SetPosition_J1.Execute AND NOT _MC_SetPosition_J1.Done AND NOT _MC_SetPosition_J1.Error, 
 	Position:= 0.0, 
 	Mode:= FALSE, // true=relative false=absolute
@@ -386,7 +423,7 @@ _MC_SetPosition_J1(
 	ErrorID=> );
 _ST_SetPositionsOptions_J2.ClearPositionLag := TRUE;
 _MC_SetPosition_J2(
-	Axis:= J2, 
+	Axis:= ACS[2], 
 	Execute:= _MC_SetPosition_J2.Execute AND NOT _MC_SetPosition_J2.Done AND NOT _MC_SetPosition_J2.Error, 
 	Position:= 0.0, 
 	Mode:= FALSE, // true=relative false=absolute
@@ -397,7 +434,7 @@ _MC_SetPosition_J2(
 	ErrorID=> );
 _ST_SetPositionsOptions_J3.ClearPositionLag := TRUE;
 _MC_SetPosition_J3(
-	Axis:= J3, 
+	Axis:= ACS[3], 
 	Execute:= _MC_SetPosition_J3.Execute AND NOT _MC_SetPosition_J3.Done AND NOT _MC_SetPosition_J3.Error, 
 	Position:= 0.0, 
 	Mode:= FALSE, // true=relative false=absolute
@@ -408,7 +445,7 @@ _MC_SetPosition_J3(
 	ErrorID=> );
 _ST_SetPositionsOptions_J4.ClearPositionLag := TRUE;
 _MC_SetPosition_J4(
-	Axis:= J4, 
+	Axis:= ACS[4], 
 	Execute:= _MC_SetPosition_J4.Execute AND NOT _MC_SetPosition_J4.Done AND NOT _MC_SetPosition_J4.Error, 
 	Position:= 0.0, 
 	Mode:= FALSE, // true=relative false=absolute
@@ -419,7 +456,7 @@ _MC_SetPosition_J4(
 	ErrorID=> );
 _ST_SetPositionsOptions_J5.ClearPositionLag := TRUE;
 _MC_SetPosition_J5(
-	Axis:= J5, 
+	Axis:= ACS[5], 
 	Execute:= _MC_SetPosition_J5.Execute AND NOT _MC_SetPosition_J5.Done AND NOT _MC_SetPosition_J5.Error, 
 	Position:= 0.0, 
 	Mode:= FALSE, // true=relative false=absolute
@@ -430,7 +467,7 @@ _MC_SetPosition_J5(
 	ErrorID=> );
 _ST_SetPositionsOptions_J6.ClearPositionLag := TRUE;
 _MC_SetPosition_J6(
-	Axis:= J6, 
+	Axis:= ACS[6], 
 	Execute:= _MC_SetPosition_J6.Execute AND NOT _MC_SetPosition_J6.Done AND NOT _MC_SetPosition_J6.Error, 
 	Position:= 0.0, 
 	Mode:= FALSE, // true=relative false=absolute
@@ -439,7 +476,25 @@ _MC_SetPosition_J6(
 	Busy=> , 
 	Error=> , 
 	ErrorID=> );
-    *)]]></ST>
+	
+FOR _k:= 1 TO NumberOfAxes DO
+	_MC_MoveAbsolute[_k](
+		Axis:= ACS[_k], 
+		Execute:= , 
+		Position:= 0.0, 
+		Velocity:= _HomingVelocityFast, 
+		Acceleration:= MC_DEFAULT, 
+		Deceleration:= MC_DEFAULT, 
+		Jerk:= MC_DEFAULT, 
+		BufferMode:= , 
+		Options:= , 
+		Done=> , 
+		Busy=> , 
+		Active=> , 
+		CommandAborted=> , 
+		Error=> , 
+		ErrorID=> );
+END_FOR]]></ST>
     </Implementation>
     <Folder Name="private" Id="{e1ed6b77-9798-48c9-8936-2629def057bb}" />
     <Folder Name="public" Id="{d78dbefb-b47c-4f80-bc4e-2ff84a391da0}" />
@@ -463,7 +518,7 @@ END_VAR
 			_MoveCommand.PositionType 		:= DUT_Command_PositionType.AbsolutePosition;
 			_MoveCommand.CoordinateType 	:= DUT_Command_CoordinateType.Literal;
 			_MoveCommand.Speed 				:= _PoseSpeed;
-			//_MoveCommand.CoordSystem 		:= SMC_COORD_SYSTEM.ACS;
+			_MoveCommand.CoordSystem 		:= DUT_CoordSystem.ACS;
 			_MoveCommand.CoordRef 			:= StoredPositions[GVL.POSE_2_IDX].Position;
 			//
 			_MoveCommandProcessor.Command := BuildMoveCmd(_MoveCommand);
@@ -495,28 +550,28 @@ _MoveCommandProcessor(
         <ST><![CDATA[
 // adjust all the persistent variables to take on the calibrated values
 StoredPositions[GVL.HOM_POS_IDX].Position.X := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X, 
-																				CurrentPosition:= J1.NcToPlc.ActPos, 
-																				HomeSearchDirection:= _SMC_Homing_J1.Options.SearchDirection);
+																				CurrentPosition:= ACS[1].NcToPlc.ActPos, 
+																				HomeSearchDirection:= _ST_HomingOptions_J1.SearchDirection);
 
 StoredPositions[GVL.HOM_POS_IDX].Position.Y := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y, 
-																				CurrentPosition:= J2.NcToPlc.ActPos, 
-																				HomeSearchDirection:= _SMC_Homing_J2.Options.SearchDirection);
+																				CurrentPosition:= ACS[2].NcToPlc.ActPos, 
+																				HomeSearchDirection:= _ST_HomingOptions_J2.SearchDirection);
 
 StoredPositions[GVL.HOM_POS_IDX].Position.Z := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z, 
-																				CurrentPosition:= J3.NcToPlc.ActPos, 
-																				HomeSearchDirection:= _SMC_Homing_J3.Options.SearchDirection);
+																				CurrentPosition:= ACS[3].NcToPlc.ActPos, 
+																				HomeSearchDirection:= _ST_HomingOptions_J3.SearchDirection);
 
 StoredPositions[GVL.HOM_POS_IDX].Position.A := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A, 
-																				CurrentPosition:= J4.NcToPlc.ActPos, 
-																				HomeSearchDirection:= _SMC_Homing_J4.Options.SearchDirection);
+																				CurrentPosition:= ACS[4].NcToPlc.ActPos, 
+																				HomeSearchDirection:= _ST_HomingOptions_J4.SearchDirection);
 
 StoredPositions[GVL.HOM_POS_IDX].Position.B := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B, 
-																				CurrentPosition:= J5.NcToPlc.ActPos, 
-																				HomeSearchDirection:= _SMC_Homing_J5.Options.SearchDirection);
+																				CurrentPosition:= ACS[5].NcToPlc.ActPos, 
+																				HomeSearchDirection:= _ST_HomingOptions_J5.SearchDirection);
 
 StoredPositions[GVL.HOM_POS_IDX].Position.C := F_HomeOffsetCalc(	CurrentOffset:= PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C, 
-																				CurrentPosition:= J6.NcToPlc.ActPos, 
-																				HomeSearchDirection:= _SMC_Homing_J6.Options.SearchDirection);
+																				CurrentPosition:= ACS[6].NcToPlc.ActPos, 
+																				HomeSearchDirection:= _ST_HomingOptions_J6.SearchDirection);
 
 // this isnt totally needed but will calibrate the current session without the need to rehome
 _MC_SetPosition_J1.Execute:=TRUE;

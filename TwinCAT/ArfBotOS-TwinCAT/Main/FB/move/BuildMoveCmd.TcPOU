@@ -75,20 +75,20 @@ F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Speed));
 
 //
 CASE stCommand.CoordSystem OF
-	SMC_COORD_SYSTEM.ACS:
+	DUT_CoordSystem.ACS:
 		F_AddElement(_Command, _Delimiter, _CoordSystemAcs);
-	SMC_COORD_SYSTEM.MCS:
+	DUT_CoordSystem.MCS:
 		F_AddElement(_Command, _Delimiter, _CoordSystemMcs);
-	SMC_COORD_SYSTEM.PCS_1:
+	DUT_CoordSystem.UCS1:
 		F_AddElement(_Command, _Delimiter, _CoordSystemPc1);
-	SMC_COORD_SYSTEM.PCS_2:
+	DUT_CoordSystem.UCS2:
 		F_AddElement(_Command, _Delimiter, _CoordSystemPc2);
-	SMC_COORD_SYSTEM.TCS:
+	DUT_CoordSystem.TCP:
 		F_AddElement(_Command, _Delimiter, _CoordSystemTcs);
-	SMC_COORD_SYSTEM.WCS:
-		F_AddElement(_Command, _Delimiter, _CoordSystemWcs);
-	SMC_COORD_SYSTEM.ICS:
-		F_AddElement(_Command, _Delimiter, _CoordSystemIcs);
+// 	DUT_CoordSystem.WCS:
+// 		F_AddElement(_Command, _Delimiter, _CoordSystemWcs);
+// 	DUT_CoordSystem.ICS:
+// 		F_AddElement(_Command, _Delimiter, _CoordSystemIcs);
 END_CASE
 
 //
@@ -120,18 +120,18 @@ END_CASE
 IF stCommand.MoveType = DUT_Command_MoveType.CircularMove THEN
 	//
 	CASE stCommand.CircleMode OF
-		SMC_CIRC_MODE.BORDER:
+		MC_CIRC_MODE.mcCircModeBorder:
 			F_AddElement(_Command, _Delimiter, _CircleModeBor);
-		SMC_CIRC_MODE.CENTER:
+		MC_CIRC_MODE.mcCircModeCenter:
 			F_AddElement(_Command, _Delimiter, _CircleModeCen);
-		SMC_CIRC_MODE.RADIUS:
+		MC_CIRC_MODE.mcCircModeRadius:
 			F_AddElement(_Command, _Delimiter, _CircleModeRad);
 	END_CASE
 	//
 	CASE stCommand.PathChoice OF
-		MC_CIRC_PATHCHOICE.CLOCKWISE:
+		MC_CIRC_PATHCHOICE.mcCircPathChoiceClockwise:
 			F_AddElement(_Command, _Delimiter, _PathChoiceClw);
-		MC_CIRC_PATHCHOICE.COUNTER_CLOCKWISE:
+		MC_CIRC_PATHCHOICE.mcCircPathChoiceCounterClockwise:
 			F_AddElement(_Command, _Delimiter, _PathChoiceCcw);
 	END_CASE
 	//

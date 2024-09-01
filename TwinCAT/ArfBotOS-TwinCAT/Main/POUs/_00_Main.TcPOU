@@ -26,8 +26,8 @@ VAR
 	//SetTuningMoveValues: BOOL:=TRUE;
 	
 	// homing
-	//ProcessHome: FB_HomingProcessor;
-	//HomingStatusText: STRING(255);
+	ProcessHome: FB_HomingProcessor;
+	HomingStatusText: STRING(255);
 	
 	// jogging
 	//ProcessJog: FB_JogProcessor;
@@ -74,7 +74,7 @@ END_VAR]]></Declaration>
 	_M_HelloWorld();
 	_M_GroupHandler();
     //_M_Jogging();
-    //_M_Homing();
+    _M_Homing();
     _M_Processor();
 	_M_Devices();
 	//_M_Tuning();
@@ -155,7 +155,9 @@ END_IF
     </Method>
     <Method Name="_M_GroupHandler" Id="{39e1494b-f21b-4425-b5e3-86e0f472492e}">
       <Declaration><![CDATA[METHOD PRIVATE _M_GroupHandler : BOOL
-]]></Declaration>
+VAR_STAT
+	ResetGroup: BOOL;
+END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[
 // set the group velocity factor
@@ -175,13 +177,18 @@ END_IF
 // handle all the group specific actions
 GroupHandler(
 	AxisGroup:= stGroupRef, 
-	ACS:= acs, 
-	MCS:= mcs, 
+	ACS:= ACS, 
+	MCS:= MCS, 
 	Enable:= GVL.PowerOn, 
 	StoredPositions:= PersistentVars.StoredPositions, 
 	Busy=> , 
 	Error=> , 
-	ErrorID=> );]]></ST>
+	ErrorID=> );
+	
+IF ResetGroup THEN
+	ResetGroup := FALSE;
+	GroupHandler.M_ResetGroup();
+END_IF]]></ST>
       </Implementation>
     </Method>
     <Method Name="_M_HelloWorld" Id="{6c29bf60-c389-45f0-9c5a-a3e11fdbd34e}">
@@ -663,25 +670,17 @@ END_IF
     </Method>
     <Method Name="_M_Homing" Id="{bf4b7640-1df3-46ff-b6ca-dc416adad7e8}">
       <Declaration><![CDATA[METHOD PRIVATE _M_Homing : BOOL
-]]></Declaration>
+VAR_STAT
+	StartHome: BOOL;
+	SetHome: BOOL;
+END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[
-(*ProcessHome(
-	J1:= SM_Drive_PosControl_J1, 
-	J2:= SM_Drive_PosControl_J2, 
-	J3:= SM_Drive_PosControl_J3, 
-	J4:= SM_Drive_PosControl_J4, 
-	J5:= SM_Drive_PosControl_J5, 
-	J6:= SM_Drive_PosControl_J6, 
-	AxisGroup:= ArfBotAxisGroup,
+ProcessHome(
+	ACS:= ACS, 
+	AxisGroup:= stGroupRef, 
 	GroupHandler:= GroupHandler, 
-	Controller:= Controller, 
-	J1_Limit:= _10_Drives.rx_j1_limit, 
-	J2_Limit:= _10_Drives.rx_j2_limit, 
-	J3_Limit:= _10_Drives.rx_j3_limit, 
-	J4_Limit:= _10_Drives.rx_j4_limit, 
-	J5_Limit:= _10_Drives.rx_j5_limit, 
-	J6_Limit:= _10_Drives.rx_j6_limit, 
+	//Controller:= Controller,
 	Enable:= GVL.PowerOn, 
 	Reset:= GVL.ResetRtrig.Q, 
 	StoredPositions:= PersistentVars.StoredPositions,
@@ -690,19 +689,28 @@ END_IF
 	Done=> , 
 	Busy=> , 
 	Error=> , 
-	ErrorID=> );*)
-(*
+	ErrorID=> );
+
+IF StartHome THEN
+	StartHome:=FALSE;
+	GVL.PowerOn :=TRUE;
+	ProcessHome.M_StartHoming();
+END_IF
+IF SetHome THEN
+	SetHome:=FALSE;
+	ProcessHome.M_SetHome();
+END_IF
 IF ProcessHome.Reset THEN
 	HomingStatusText := '';
 END_IF
 IF ProcessHome.Error THEN
-	(*JogStatusText := CONCAT('Homing Processor Error: ',
+	(*HomingStatusText := CONCAT('Homing Processor Error: ',
 						CONCAT(TO_STRING(ProcessHome.ErrorID),
 						CONCAT(' ', SMC_ErrorString(ProcessHome.ErrorID,
 									SMC_Language_Type.english)))) ;*)
-	JogStatusText := CONCAT('Homing Processor Error: ', TO_STRING(ProcessHome.ErrorID));
+	HomingStatusText := CONCAT('Homing Processor Error: ', TO_STRING(ProcessHome.ErrorID));
 END_IF
-*)]]></ST>
+]]></ST>
       </Implementation>
     </Method>
     <Method Name="_M_Jogging" Id="{0244d8b9-9bfb-4b7e-b2e7-dffe5ddef546}">
@@ -1146,17 +1154,17 @@ IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
 	// poses
 	PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Value := FALSE;
 	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.X := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Y := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Z := -30.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Y := -15.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.Z := 115.0;
 	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.B := -30.0;
+	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.B := 30.0;
 	PersistentVars.StoredPositions[GVL.POSE_1_IDX].Position.C := 0.0;
 	
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.X := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Y := 30.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Z := -30.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Y := -15.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.Z := 115.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.B := 30.0;
+	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.B := -30.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.C := 0.0;
 		 
 	// decoder
@@ -1168,12 +1176,12 @@ IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
 	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.C := 0.0;
 	
 	// set homing offsets
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X := 179.29; // J1 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y := 36.74; // J2 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z := -59.25; // J3 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A := -194.38; // J4 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B := -102.41; // J5 initial home offset
-	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C := 166.611; // J6 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.X := 166; // J1 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Y := -35.3; // J2 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.Z := 145; // J3 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.A := -166; // J4 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.B := -99.2; // J5 initial home offset
+	PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Position.C := 178; // J6 initial home offset
 	
 	// set speeds
 	PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Position.X := 100.0; // max velocity
