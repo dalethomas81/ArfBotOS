@@ -9,11 +9,10 @@ VAR_IN_OUT
 	ACS: ARRAY[1..NumberOfAxes] OF AXIS_REF;
 	MCS: ARRAY[1..NumberOfAxes] OF AXIS_REF;
 	GroupHandler: FB_GroupHandler;
-	Controller: FB_Controller;
+	//Controller: FB_Controller;
 END_VAR
 VAR_INPUT
 	Enable: BOOL;
-	Execute: BOOL;
 	Reset: BOOL;
 	Velocity: LREAL := 0;
 	Acceleration: LREAL := 0;
@@ -25,8 +24,8 @@ VAR_INPUT
 // 	VelFactor: LREAL := 0.1;
 // 	JerkFactor: LREAL := 1.0;
 // 	TorqueFactor: LREAL := 1.0;
-	JogForward: ARRAY[1..NumberOfAxes] OF BOOL;
-	JogBackwards: ARRAY[1..NumberOfAxes] OF BOOL;
+// 	JogForward: ARRAY[1..NumberOfAxes] OF BOOL;
+// 	JogBackwards: ARRAY[1..NumberOfAxes] OF BOOL;
 	CoordSystem: DUT_CoordSystem := DUT_CoordSystem.TCP;
 	ABC_as_ACS: BOOL;
 	StoredPositions: REFERENCE TO ARRAY[GVL.POS_ARR_BEG..GVL.POS_ARR_END] OF DUT_StoredPosition;
@@ -42,10 +41,9 @@ VAR_OUTPUT
 	ErrorID: UDINT;
 END_VAR
 VAR
-	_ExecuteRtrig: R_TRIG;
-	_ExecuteFtrig: F_TRIG;
 	_ResetRtrig: R_TRIG;
 	_ErrorRtrig: R_TRIG;
+	_EnableRtrig: R_TRIG;
 	_EnableFtrig: F_TRIG;
 	
 	_SequenceMain: INT;
@@ -86,23 +84,10 @@ VAR CONSTANT
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[_ExecuteRtrig(CLK:=Execute);
-_ExecuteFtrig(CLK:=Execute);
-_ResetRtrig(CLK:=Reset);
+      <ST><![CDATA[_ResetRtrig(CLK:=Reset);
 
 IF _FirstScan THEN
-// 	_SMC_GroupJog2.Velocity := 50.0;
-// 	_SMC_GroupJog2.Acceleration := 300.0;
-// 	_SMC_GroupJog2.Deceleration := 300.0;
-// 	_SMC_GroupJog2.Jerk := 1000.0;
-// 	_SMC_GroupJog2.MaxAngularDistance := 90.0;
-// 	_SMC_GroupJog2.MaxLinearDistance := 200.0;
-// 	_SMC_GroupJog2.AccFactor := 1.0;
-// 	_SMC_GroupJog2.VelFactor := 0.1;
-// 	_SMC_GroupJog2.JerkFactor := 1.0;
-// 	_SMC_GroupJog2.TorqueFactor := 1.0;
-// 	_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
-	
+	//
 END_IF
 
 //
@@ -112,6 +97,10 @@ _M_HandlePose();
 //
 _EnableFtrig(CLK:=Enable);
 IF _EnableFtrig.Q THEN
+	//;
+END_IF
+_EnableRtrig(CLK:=Enable);
+IF _EnableRtrig.Q THEN
 	//
 END_IF
 
@@ -123,11 +112,10 @@ CASE _SequenceMain OF
 		_SequenceMain := STEP_IDLE;
 		
 	STEP_IDLE: // IDLE
-		IF _ExecuteRtrig.Q AND Enable THEN
+		IF _EnableRtrig.Q THEN
 			Busy := TRUE;
 			Done := FALSE;
 			_CoordSystem := CoordSystem;
-			_Halt:=FALSE;
 			_M_CheckOffsets();
 			_SequenceMain := STEP_GROUP_ENABLE;
 		END_IF
@@ -147,21 +135,6 @@ CASE _SequenceMain OF
 			_SequenceMain := STEP_WAIT_JOG;
 		END_IF;
 		
-// 	STEP_SET_KINEMATICS: // set kinematics
-// 		IF GroupHandler.M_SetKinematics(_SMC_GroupJog2.CoordSystem) THEN
-// 			_SequenceMain := STEP_WAIT_KINEMATICS;
-// 		ELSE
-// 			_SequenceMain := STEP_DONE;
-// 			Error := TRUE;
-// 			ErrorID := GroupHandler.ErrorID;
-// 		END_IF
-// 		
-// 	STEP_WAIT_KINEMATICS:
-// 		// TODO add timeout timer here
-// 		IF GroupHandler.P_KinematicsSet THEN
-// 			_SequenceMain := STEP_WAIT_JOG;
-// 		END_IF
-		
 	STEP_WAIT_JOG: //
 		FOR _k:= 1 TO NumberOfAxes DO
 			IF _MC_Jog[_k].Error THEN
@@ -169,7 +142,7 @@ CASE _SequenceMain OF
 				ErrorID := _MC_Jog[_k].ErrorID;
 			END_IF
 		END_FOR
-		IF _ExecuteFtrig.Q THEN
+		IF _EnableFtrig.Q THEN
 			_SequenceMain := STEP_GROUP_DISABLE;
 			//_SequenceMain := STEP_DONE;
 		END_IF
@@ -237,7 +210,7 @@ FOR _k:= 1 TO NumberOfAxes DO
 END_FOR
 FOR _k:= 1 TO NumberOfAxes DO
 	IF _MC_Jog[_k].Error OR _MC_Jog[_k+NumberOfAxes].Error THEN
-		
+		//
 	END_IF
 END_FOR
 
@@ -289,33 +262,10 @@ FOR _k:= 1 TO NumberOfAxes DO
 	END_IF
 END_FOR
 
-// _SMC_GroupJog2(
-// 	AxisGroup:= AxisGroup, 
-// 	Enable:= , 
-// 	Forward:= , 
-// 	Backward:= , 
-// 	MaxLinearDistance:= , 
-// 	MaxAngularDistance:= , 
-// 	Velocity:= , 
-// 	Acceleration:= , 
-// 	Deceleration:= , 
-// 	Jerk:= , 
-// 	VelFactor:= , 
-// 	AccFactor:= , 
-// 	JerkFactor:= , 
-// 	TorqueFactor:= , 
-// 	CoordSystem:= , 
-// 	ABC_as_ACS:= , 
-// 	Active=> , 
-// 	Busy=> , 
-// 	Error=> , 
-// 	ErrorID=> , 
-// 	CurrentPosition=> Position);
-
 //
-CoordSystem := _SMC_GroupJog2.CoordSystem;
-ABC_as_ACS := _SMC_GroupJog2.ABC_as_ACS;
-Enabled := _SMC_GroupJog2.Enable;
+// CoordSystem := _SMC_GroupJog2.CoordSystem;
+// ABC_as_ACS := _SMC_GroupJog2.ABC_as_ACS;
+// Enabled := _SMC_GroupJog2.Enable;
 
 //
 _ErrorRtrig(CLK:=GroupHandler.Error
@@ -339,7 +289,7 @@ VAR
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF _SMC_GroupJog2.Enable THEN
+        <ST><![CDATA[IF Enable THEN
 	FOR _j:=0 TO GVL.MCS_POS_IDX-GVL.TCP_POS_IDX BY 1 DO
 		_OffsetExist[_j] := FALSE;
 	END_FOR
@@ -379,183 +329,183 @@ VAR_STAT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[//
-OptionsTimer(IN:=Controller.P_State.Buttons.Options);
-OptionsRtrig(CLK:=Controller.P_State.Buttons.Options);
-//
-ShareTimer(IN:=Controller.P_State.Buttons.Share);
-ShareRtrig(CLK:=Controller.P_State.Buttons.Share);
-//
-OptionsShareRtrig(CLK:=OptionsTimer.Q AND_THEN ShareTimer.Q);
-JogEnabledRtrig(CLK:=_SMC_GroupJog2.Enable);
-JogEnabledFtrig(CLK:=_SMC_GroupJog2.Enable);
-
-
-IF Enable AND_THEN Controller.P_State.Connected THEN
-	
-	// toggle jog enable
-	IF OptionsShareRtrig.Q THEN
-		_SMC_GroupJog2.Enable := NOT _SMC_GroupJog2.Enable;
-	END_IF
-	IF JogEnabledRtrig.Q OR JogEnabledFtrig.Q THEN
-		IF _SMC_GroupJog2.Enable THEN
-			_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
-			Controller.M_SetTriggerMode(E_ControllerTrigger.Right, E_ControllerTriggerMode.Rigid);
-			Controller.M_SetTriggerForce(E_ControllerTrigger.Right, E_ControllerTriggerForceParameter.One, 0);
-			Controller.M_SetPlayerID(E_ControllerPlayerID.PlayerALL);
-			Controller.M_SetMicrophoneState(TRUE);
-		ELSE
-			Controller.M_SetTriggerMode(E_ControllerTrigger.Right, E_ControllerTriggerMode.Off);
-			Controller.M_SetMicrophoneState(FALSE);
-		END_IF
-	END_IF
-	
-	// cycle through coord system
-	IF OptionsRtrig.Q AND NOT Controller.P_State.Buttons.Share THEN
-		CASE _SMC_GroupJog2.CoordSystem OF
-			SMC_COORD_SYSTEM.ACS:
-				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.MCS;
-				Controller.M_SetPlayerID(E_ControllerPlayerID.Player2);
-			SMC_COORD_SYSTEM.MCS:
-				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.PCS_1;
-				Controller.M_SetPlayerID(E_ControllerPlayerID.Player3);
-			SMC_COORD_SYSTEM.PCS_1:
-				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.PCS_2;
-				Controller.M_SetPlayerID(E_ControllerPlayerID.Player4);
-			SMC_COORD_SYSTEM.PCS_2:
-				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.TCS;
-				Controller.M_SetPlayerID(E_ControllerPlayerID.PlayerALL);
-			SMC_COORD_SYSTEM.TCS:
-				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.ACS; // skip WCS
-				Controller.M_SetPlayerID(E_ControllerPlayerID.Player1);
-			SMC_COORD_SYSTEM.WCS:
-				_SMC_GroupJog2.CoordSystem := SMC_COORD_SYSTEM.ACS;
-				Controller.M_SetPlayerID(E_ControllerPlayerID.Player1);
-		END_CASE
-	END_IF
-	
-	// toggle the ABC as ACS setting
-	IF ShareRtrig.Q AND NOT Controller.P_State.Buttons.Options THEN
-		_SMC_GroupJog2.ABC_as_ACS := NOT _SMC_GroupJog2.ABC_as_ACS;
-	END_IF
-	
-	// set the velocity factor while the left trigger button is pressed
-	IF Controller.P_State.Dpad.Left AND_THEN Controller.P_State.Triggers.Right.Two <> R2_Last THEN
-		R2_Last := Controller.P_State.Triggers.Right.Two;
-		_SMC_GroupJog2.VelFactor := MAX(FactorMin, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
-	END_IF
-	// set the acceleration factor while the up dpad button is pressed
-	IF Controller.P_State.Dpad.Up AND_THEN Controller.P_State.Triggers.Right.Two <> R2_Last THEN
-		R2_Last := Controller.P_State.Triggers.Right.Two;
-		_SMC_GroupJog2.AccFactor := MAX(FactorMin, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
-	END_IF
-	// set the jerk factor while the right dpad button is pressed
-	IF Controller.P_State.Dpad.Right AND_THEN Controller.P_State.Triggers.Right.Two <> R2_Last THEN
-		R2_Last := Controller.P_State.Triggers.Right.Two;
-		_SMC_GroupJog2.JerkFactor := MAX(FactorMin, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
-	END_IF
-	// set the torque factor while the down dpad down is pressed
-	IF Controller.P_State.Dpad.Down AND_THEN Controller.P_State.Triggers.Right.Two <> R2_Last THEN
-		R2_Last := Controller.P_State.Triggers.Right.Two;
-		_SMC_GroupJog2.TorqueFactor := MAX(FactorMin, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
-	END_IF
-	
-	// first 4 poses can be called using buttons
-	SquareButtonRtrig(CLK:=Controller.P_State.Buttons.Square);
-	IF SquareButtonRtrig.Q THEN
-		M_MoveToPose(E_Pose.One);
-	END_IF
-	TriangleButtonRtrig(CLK:=Controller.P_State.Buttons.Triangle);
-	IF TriangleButtonRtrig.Q THEN
-		M_MoveToPose(E_Pose.Two);
-	END_IF
-	CircleButtonRtrig(CLK:=Controller.P_State.Buttons.Circle);
-	IF CircleButtonRtrig.Q THEN
-		M_MoveToPose(E_Pose.Three);
-	END_IF
-	CrossButtonRtrig(CLK:=Controller.P_State.Buttons.Cross);
-	IF CrossButtonRtrig.Q THEN
-		M_MoveToPose(E_Pose.Four);
-	END_IF
-	
-	//
-	IF _SequenceMain = STEP_WAIT_JOG THEN
-		
-		//
-		IF Controller.P_State.Joysticks.Left.X <> JoyStickLeftXLast
-			OR Controller.P_State.Joysticks.Left.Y <> JoyStickLeftYLast THEN
-				//
-				JoyStickLeftXLast := Controller.P_State.Joysticks.Left.X;
-				JoyStickLeftYLast := Controller.P_State.Joysticks.Left.Y;
-				//	
-				IF NOT Controller.P_State.Triggers.Left.One THEN
-					// disable
-					_SMC_GroupJog2.Forward[0] := FALSE;
-					// disable
-					_SMC_GroupJog2.Backward[0] := FALSE;
-					// Controller.P_State.Joysticks.Left.X // X0-128 is -Y (Backward[1])
-					_SMC_GroupJog2.Backward[1] := Controller.P_State.Joysticks.Left.X < _ControllerCenter - _ControllerDeadZone;
-					// Controller.P_State.Joysticks.Left.X // X128-256 is +Y (Forward[1])
-					_SMC_GroupJog2.Forward[1] := Controller.P_State.Joysticks.Left.X > _ControllerCenter + _ControllerDeadZone;
-					// Controller.P_State.Joysticks.Left.Y // Y0-128 is +Z (Forward[2])
-					_SMC_GroupJog2.Forward[2] := Controller.P_State.Joysticks.Left.Y < _ControllerCenter - _ControllerDeadZone;
-					// Controller.P_State.Joysticks.Left.Y // Y128-256 is -Z (Backward[2])
-					_SMC_GroupJog2.Backward[2] := Controller.P_State.Joysticks.Left.Y > _ControllerCenter + _ControllerDeadZone;
-				ELSE
-					// Controller.P_State.Joysticks.Left.Y // Y0-128 is +X (Forward[0])
-					_SMC_GroupJog2.Forward[0] := Controller.P_State.Joysticks.Left.Y < _ControllerCenter - _ControllerDeadZone;
-					// Controller.P_State.Joysticks.Left.Y // Y128-256 is -X (Backward[0])
-					_SMC_GroupJog2.Backward[0] := Controller.P_State.Joysticks.Left.Y > _ControllerCenter + _ControllerDeadZone;
-					// disable
-					_SMC_GroupJog2.Backward[1] := FALSE;
-					// disable
-					_SMC_GroupJog2.Forward[1] := FALSE;
-					// disable
-					_SMC_GroupJog2.Forward[2] := FALSE;
-					// disable])
-					_SMC_GroupJog2.Backward[2] := FALSE;
-				END_IF
-		END_IF
-
-		//
-		IF Controller.P_State.Joysticks.Right.X <> JoyStickRightXLast
-			OR Controller.P_State.Joysticks.Right.Y <> JoyStickRightYLast THEN
-				//
-				JoyStickRightXLast := Controller.P_State.Joysticks.Right.X;
-				JoyStickRightYLast := Controller.P_State.Joysticks.Right.Y;
-				//				
-				IF NOT Controller.P_State.Triggers.Right.One THEN
-					// Controller.P_State.Joysticks.Right.X // X0-128 is +Roll (rot about x) (Forward[3])
-					_SMC_GroupJog2.Backward[3] := Controller.P_State.Joysticks.Right.X > _ControllerCenter + _ControllerDeadZone;
-					// Controller.P_State.Joysticks.Right.X // X128-256 is -Roll (rot about x) (Backward[3])
-					_SMC_GroupJog2.Forward[3] := Controller.P_State.Joysticks.Right.X < _ControllerCenter - _ControllerDeadZone;
-					// Controller.P_State.Joysticks.Right.Y // Y0-128 is +Pitch (rot about y) (Forward[4])
-					_SMC_GroupJog2.Forward[4] := Controller.P_State.Joysticks.Right.Y < _ControllerCenter - _ControllerDeadZone;
-					// Controller.P_State.Joysticks.Right.Y // Y128-256 is -Pitch (rot about y) (Backward[4])
-					_SMC_GroupJog2.Backward[4] := Controller.P_State.Joysticks.Right.Y > _ControllerCenter + _ControllerDeadZone;
-					// disable
-					_SMC_GroupJog2.Backward[5] := FALSE;
-					// disable
-					_SMC_GroupJog2.Forward[5] := FALSE;
-				ELSE
-					// disable
-					_SMC_GroupJog2.Backward[3] := FALSE;
-					// disable
-					_SMC_GroupJog2.Forward[3] := FALSE;
-					// disable
-					_SMC_GroupJog2.Forward[4] := FALSE;
-					// disable
-					_SMC_GroupJog2.Backward[4] := FALSE;
-					// Controller.P_State.Joysticks.Right.X // X0-128 is -Yaw (rot about z) (Backward[5])
-					_SMC_GroupJog2.Backward[5] := Controller.P_State.Joysticks.Right.X < _ControllerCenter - _ControllerDeadZone;
-					// Controller.P_State.Joysticks.Right.X // X128-256 is +Yaw (rot about z) (Forward[5])
-					_SMC_GroupJog2.Forward[5] := Controller.P_State.Joysticks.Right.X > _ControllerCenter + _ControllerDeadZone;
-				END_IF
-		END_IF
-
-	END_IF
-	
-END_IF]]></ST>
+        <ST><![CDATA[// //
+// OptionsTimer(IN:=Controller.P_State.Buttons.Options);
+// OptionsRtrig(CLK:=Controller.P_State.Buttons.Options);
+// //
+// ShareTimer(IN:=Controller.P_State.Buttons.Share);
+// ShareRtrig(CLK:=Controller.P_State.Buttons.Share);
+// //
+// OptionsShareRtrig(CLK:=OptionsTimer.Q AND_THEN ShareTimer.Q);
+// JogEnabledRtrig(CLK:=Enable);
+// JogEnabledFtrig(CLK:=Enable);
+// 
+// 
+// IF Enable AND_THEN Controller.P_State.Connected THEN
+// 	
+// 	// toggle jog enable
+// 	IF OptionsShareRtrig.Q THEN
+// 		//_SMC_GroupJog2.Enable := NOT _SMC_GroupJog2.Enable;
+// 	END_IF
+// 	IF JogEnabledRtrig.Q OR JogEnabledFtrig.Q THEN
+// 		IF Enable THEN
+// 			_CoordSystem := DUT_CoordSystem.TCP;
+// 			Controller.M_SetTriggerMode(E_ControllerTrigger.Right, E_ControllerTriggerMode.Rigid);
+// 			Controller.M_SetTriggerForce(E_ControllerTrigger.Right, E_ControllerTriggerForceParameter.One, 0);
+// 			Controller.M_SetPlayerID(E_ControllerPlayerID.PlayerALL);
+// 			Controller.M_SetMicrophoneState(TRUE);
+// 		ELSE
+// 			Controller.M_SetTriggerMode(E_ControllerTrigger.Right, E_ControllerTriggerMode.Off);
+// 			Controller.M_SetMicrophoneState(FALSE);
+// 		END_IF
+// 	END_IF
+// 	
+// 	// cycle through coord system
+// 	IF OptionsRtrig.Q AND NOT Controller.P_State.Buttons.Share THEN
+// 		CASE _.CoordSystem OF
+// 			DUT_CoordSystem.ACS:
+// 				_CoordSystem := DUT_CoordSystem.MCS;
+// 				Controller.M_SetPlayerID(E_ControllerPlayerID.Player2);
+// 			DUT_CoordSystem.MCS:
+// 				_CoordSystem := DUT_CoordSystem.UCS1;
+// 				Controller.M_SetPlayerID(E_ControllerPlayerID.Player3);
+// 			DUT_CoordSystem.UCS1:
+// 				_CoordSystem := DUT_CoordSystem.UCS2;
+// 				Controller.M_SetPlayerID(E_ControllerPlayerID.Player4);
+// 			DUT_CoordSystem.UCS2:
+// 				_CoordSystem := DUT_CoordSystem.TCP;
+// 				Controller.M_SetPlayerID(E_ControllerPlayerID.PlayerALL);
+// 			DUT_CoordSystem.TCP:
+// 				_CoordSystem := DUT_CoordSystem.ACS;
+// 				Controller.M_SetPlayerID(E_ControllerPlayerID.Player1);
+// // 			DUT_CoordSystem.WCS:
+// // 				_CoordSystem := DUT_CoordSystem.ACS;
+// // 				Controller.M_SetPlayerID(E_ControllerPlayerID.Player1);
+// 		END_CASE
+// 	END_IF
+// 	
+// 	// toggle the ABC as ACS setting
+// 	IF ShareRtrig.Q AND NOT Controller.P_State.Buttons.Options THEN
+// 		ABC_as_ACS := NOT ABC_as_ACS;
+// 	END_IF
+// 	
+// 	// set the velocity factor while the left trigger button is pressed
+// 	IF Controller.P_State.Dpad.Left AND_THEN Controller.P_State.Triggers.Right.Two <> R2_Last THEN
+// 		R2_Last := Controller.P_State.Triggers.Right.Two;
+// 		//_SMC_GroupJog2.VelFactor := MAX(FactorMin, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
+// 	END_IF
+// 	// set the acceleration factor while the up dpad button is pressed
+// 	IF Controller.P_State.Dpad.Up AND_THEN Controller.P_State.Triggers.Right.Two <> R2_Last THEN
+// 		R2_Last := Controller.P_State.Triggers.Right.Two;
+// 		//_SMC_GroupJog2.AccFactor := MAX(FactorMin, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
+// 	END_IF
+// 	// set the jerk factor while the right dpad button is pressed
+// 	IF Controller.P_State.Dpad.Right AND_THEN Controller.P_State.Triggers.Right.Two <> R2_Last THEN
+// 		R2_Last := Controller.P_State.Triggers.Right.Two;
+// 		//_SMC_GroupJog2.JerkFactor := MAX(FactorMin, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
+// 	END_IF
+// 	// set the torque factor while the down dpad down is pressed
+// 	IF Controller.P_State.Dpad.Down AND_THEN Controller.P_State.Triggers.Right.Two <> R2_Last THEN
+// 		R2_Last := Controller.P_State.Triggers.Right.Two;
+// 		//_SMC_GroupJog2.TorqueFactor := MAX(FactorMin, Controller.P_State.Triggers.Right.Two * 1.0 / 255.0);
+// 	END_IF
+// 	
+// 	// first 4 poses can be called using buttons
+// 	SquareButtonRtrig(CLK:=Controller.P_State.Buttons.Square);
+// 	IF SquareButtonRtrig.Q THEN
+// 		M_MoveToPose(E_Pose.One);
+// 	END_IF
+// 	TriangleButtonRtrig(CLK:=Controller.P_State.Buttons.Triangle);
+// 	IF TriangleButtonRtrig.Q THEN
+// 		M_MoveToPose(E_Pose.Two);
+// 	END_IF
+// 	CircleButtonRtrig(CLK:=Controller.P_State.Buttons.Circle);
+// 	IF CircleButtonRtrig.Q THEN
+// 		M_MoveToPose(E_Pose.Three);
+// 	END_IF
+// 	CrossButtonRtrig(CLK:=Controller.P_State.Buttons.Cross);
+// 	IF CrossButtonRtrig.Q THEN
+// 		M_MoveToPose(E_Pose.Four);
+// 	END_IF
+// 	
+// 	//
+// 	IF _SequenceMain = STEP_WAIT_JOG THEN
+// 		
+// 		//
+// 		IF Controller.P_State.Joysticks.Left.X <> JoyStickLeftXLast
+// 			OR Controller.P_State.Joysticks.Left.Y <> JoyStickLeftYLast THEN
+// 				//
+// 				JoyStickLeftXLast := Controller.P_State.Joysticks.Left.X;
+// 				JoyStickLeftYLast := Controller.P_State.Joysticks.Left.Y;
+// 				//	
+// 				IF NOT Controller.P_State.Triggers.Left.One THEN
+// 					// disable
+// 					_JogForward[0] := FALSE;
+// 					// disable
+// 					_JogBackwards[0] := FALSE;
+// 					// Controller.P_State.Joysticks.Left.X // X0-128 is -Y (Backward[1])
+// 					_JogBackwards[1] := Controller.P_State.Joysticks.Left.X < _ControllerCenter - _ControllerDeadZone;
+// 					// Controller.P_State.Joysticks.Left.X // X128-256 is +Y (Forward[1])
+// 					_JogForward[1] := Controller.P_State.Joysticks.Left.X > _ControllerCenter + _ControllerDeadZone;
+// 					// Controller.P_State.Joysticks.Left.Y // Y0-128 is +Z (Forward[2])
+// 					_JogForward[2] := Controller.P_State.Joysticks.Left.Y < _ControllerCenter - _ControllerDeadZone;
+// 					// Controller.P_State.Joysticks.Left.Y // Y128-256 is -Z (Backward[2])
+// 					_JogBackwards[2] := Controller.P_State.Joysticks.Left.Y > _ControllerCenter + _ControllerDeadZone;
+// 				ELSE
+// 					// Controller.P_State.Joysticks.Left.Y // Y0-128 is +X (Forward[0])
+// 					_JogForward[0] := Controller.P_State.Joysticks.Left.Y < _ControllerCenter - _ControllerDeadZone;
+// 					// Controller.P_State.Joysticks.Left.Y // Y128-256 is -X (Backward[0])
+// 					_JogBackwards[0] := Controller.P_State.Joysticks.Left.Y > _ControllerCenter + _ControllerDeadZone;
+// 					// disable
+// 					_JogBackwards[1] := FALSE;
+// 					// disable
+// 					_JogForward[1] := FALSE;
+// 					// disable
+// 					_JogForward[2] := FALSE;
+// 					// disable])
+// 					_JogBackwards[2] := FALSE;
+// 				END_IF
+// 		END_IF
+// 
+// 		//
+// 		IF Controller.P_State.Joysticks.Right.X <> JoyStickRightXLast
+// 			OR Controller.P_State.Joysticks.Right.Y <> JoyStickRightYLast THEN
+// 				//
+// 				JoyStickRightXLast := Controller.P_State.Joysticks.Right.X;
+// 				JoyStickRightYLast := Controller.P_State.Joysticks.Right.Y;
+// 				//				
+// 				IF NOT Controller.P_State.Triggers.Right.One THEN
+// 					// Controller.P_State.Joysticks.Right.X // X0-128 is +Roll (rot about x) (Forward[3])
+// 					_JogBackwards[3] := Controller.P_State.Joysticks.Right.X > _ControllerCenter + _ControllerDeadZone;
+// 					// Controller.P_State.Joysticks.Right.X // X128-256 is -Roll (rot about x) (Backward[3])
+// 					_JogForward[3] := Controller.P_State.Joysticks.Right.X < _ControllerCenter - _ControllerDeadZone;
+// 					// Controller.P_State.Joysticks.Right.Y // Y0-128 is +Pitch (rot about y) (Forward[4])
+// 					_JogForward[4] := Controller.P_State.Joysticks.Right.Y < _ControllerCenter - _ControllerDeadZone;
+// 					// Controller.P_State.Joysticks.Right.Y // Y128-256 is -Pitch (rot about y) (Backward[4])
+// 					_JogBackwards[4] := Controller.P_State.Joysticks.Right.Y > _ControllerCenter + _ControllerDeadZone;
+// 					// disable
+// 					_JogBackwards[5] := FALSE;
+// 					// disable
+// 					_JogForward[5] := FALSE;
+// 				ELSE
+// 					// disable
+// 					_JogBackwards[3] := FALSE;
+// 					// disable
+// 					_JogForward[3] := FALSE;
+// 					// disable
+// 					_JogForward[4] := FALSE;
+// 					// disable
+// 					_JogBackwards[4] := FALSE;
+// 					// Controller.P_State.Joysticks.Right.X // X0-128 is -Yaw (rot about z) (Backward[5])
+// 					_JogBackwards[5] := Controller.P_State.Joysticks.Right.X < _ControllerCenter - _ControllerDeadZone;
+// 					// Controller.P_State.Joysticks.Right.X // X128-256 is +Yaw (rot about z) (Forward[5])
+// 					_JogForward[5] := Controller.P_State.Joysticks.Right.X > _ControllerCenter + _ControllerDeadZone;
+// 				END_IF
+// 		END_IF
+// 
+// 	END_IF
+// 	
+// END_IF]]></ST>
       </Implementation>
     </Method>
     <Method Name="_M_HandlePose" Id="{043b4f3b-61e5-44ea-8800-b568d3612acd}">
@@ -563,53 +513,56 @@ END_IF]]></ST>
 VAR
 	_MoveCommand: ST_MoveCmd;
 	_PoseSpeed: LREAL := 20.0;
+	_i, _j, _k: INT;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[FOR _i:=0 TO GVL.POSE_5_IDX - GVL.POSE_1_IDX BY 1 DO
-	IF _MoveToPose[_i] THEN
-		_MoveToPose[_i] := FALSE;
-		//
-		IF GVL.PowerOn 
-			AND_THEN PersistentVars.Flags[GVL.HOME_COMPLETE].Value
-			AND_THEN NOT _MoveCommandProcessor.Busy
-			AND_THEN NOT _MoveCommandProcessor.Error THEN
-				//
-				_MoveCommand.MoveType 			:= DUT_Command_MoveType.DirectMove;
-				_MoveCommand.PositionType 		:= DUT_Command_PositionType.AbsolutePosition;
-				_MoveCommand.CoordinateType 	:= DUT_Command_CoordinateType.Literal;
-				_MoveCommand.Speed 				:= _PoseSpeed;
-				_MoveCommand.CoordSystem 		:= SMC_COORD_SYSTEM.ACS;
-				_MoveCommand.CoordRef 			:= PersistentVars.StoredPositions[GVL.POSE_1_IDX + _i].Position;
-				//
-				_MoveCommandProcessor.Command := BuildMoveCmd(_MoveCommand);
-				_MoveCommandProcessor.M_Start();
-				//
-				EXIT;
-		END_IF;
-	END_IF
-END_FOR
-
-_MoveCommandProcessor(
-	StoredPositions:= StoredPositions,
-	VisionRegisters:= VisionRegisters,
-	Flags:= Flags,
-	AxisGroup:= AxisGroup, 
-	GroupHandler:= GroupHandler,
-	Velocity:= StoredPositions[GVL.SPEEDS_IDX].Position.X, 
-	VelFactor:= StoredPositions[GVL.SPEEDS_IDX].Position.A,
-	Acceleration:= StoredPositions[GVL.SPEEDS_IDX].Position.Y, 
-	AccFactor:= StoredPositions[GVL.SPEEDS_IDX].Position.B,
-	Jerk:= StoredPositions[GVL.SPEEDS_IDX].Position.Z,
-	JerkFactor:= StoredPositions[GVL.SPEEDS_IDX].Position.C, 
-	Position=> ,
-	ItfUnitMode=> , 
-	Error=> );]]></ST>
+        <ST><![CDATA[// FOR _i:=0 TO GVL.POSE_5_IDX - GVL.POSE_1_IDX BY 1 DO
+// 	IF _MoveToPose[_i] THEN
+// 		_MoveToPose[_i] := FALSE;
+// 		//
+// 		IF GVL.PowerOn 
+// 			AND_THEN PersistentVars.Flags[GVL.HOME_COMPLETE].Value
+// 			AND_THEN NOT _MoveCommandProcessor.Busy
+// 			AND_THEN NOT _MoveCommandProcessor.Error THEN
+// 				//
+// 				_MoveCommand.MoveType 			:= DUT_Command_MoveType.DirectMove;
+// 				_MoveCommand.PositionType 		:= DUT_Command_PositionType.AbsolutePosition;
+// 				_MoveCommand.CoordinateType 	:= DUT_Command_CoordinateType.Literal;
+// 				_MoveCommand.Speed 				:= _PoseSpeed;
+// 				_MoveCommand.CoordSystem 		:= DUT_CoordSystem.ACS;
+// 				_MoveCommand.CoordRef 			:= PersistentVars.StoredPositions[GVL.POSE_1_IDX + _i].Position;
+// 				//
+// 				_MoveCommandProcessor.Command := BuildMoveCmd(_MoveCommand);
+// 				_MoveCommandProcessor.M_Start();
+// 				//
+// 				EXIT;
+// 		END_IF;
+// 	END_IF
+// END_FOR
+// 
+// _MoveCommandProcessor(
+// 	StoredPositions:= StoredPositions,
+// 	VisionRegisters:= VisionRegisters,
+// 	Flags:= Flags,
+// 	AxisGroup:= AxisGroup, 
+// 	GroupHandler:= GroupHandler,
+// 	Velocity:= StoredPositions[GVL.SPEEDS_IDX].Position.X, 
+// 	VelFactor:= StoredPositions[GVL.SPEEDS_IDX].Position.A,
+// 	Acceleration:= StoredPositions[GVL.SPEEDS_IDX].Position.Y, 
+// 	AccFactor:= StoredPositions[GVL.SPEEDS_IDX].Position.B,
+// 	Jerk:= StoredPositions[GVL.SPEEDS_IDX].Position.Z,
+// 	JerkFactor:= StoredPositions[GVL.SPEEDS_IDX].Position.C, 
+// 	Position=> ,
+// 	ItfUnitMode=> , 
+// 	Error=> );]]></ST>
       </Implementation>
     </Method>
     <Method Name="M_ClearOffsets" Id="{5b18153f-c32f-4189-9485-f501f275c7f5}">
       <Declaration><![CDATA[METHOD M_ClearOffsets : BOOL
-]]></Declaration>
+VAR
+	_i, _j, _k: INT;
+END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[
 FOR _j:=0 TO 3 BY 1 DO

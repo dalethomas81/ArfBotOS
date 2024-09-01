@@ -30,8 +30,8 @@ VAR
 	HomingStatusText: STRING(255);
 	
 	// jogging
-	//ProcessJog: FB_JogProcessor;
-	//JogStatusText: STRING(255);
+	ProcessJog: FB_JogProcessor;
+	JogStatusText: STRING(255);
 	//ButtonTextIndex: INT:=0;
 	
 	// program processor
@@ -73,7 +73,7 @@ END_VAR]]></Declaration>
 {region "methods"}
 	_M_HelloWorld();
 	_M_GroupHandler();
-    //_M_Jogging();
+    _M_Jogging();
     _M_Homing();
     _M_Processor();
 	_M_Devices();
@@ -717,18 +717,18 @@ END_IF
       <Declaration><![CDATA[METHOD PRIVATE _M_Jogging : BOOL
 VAR_STAT
 	EnableRtrig: R_TRIG;
-	//CoordSystemLast: SMC_COORD_SYSTEM;
+	CoordSystemLast: DUT_CoordSystem;
 	ABC_AS_ACSLast: BOOL;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[(*
-// dont get sleepy
+        <ST><![CDATA[// dont get sleepy
 ProcessJog(
-	AxisGroup:= ArfBotAxisGroup,
-	GroupHandler:= GroupHandler,
-	Controller:= Controller,
-	Enable:= GVL.PowerOn,
+	GroupHandler:= GroupHandler, 
+	ACS:= ACS, 
+	MCS:= MCS, 
+	//Controller:= Controller,
+	Enable:= ,//GVL.PowerOn,
 	Reset:= GVL.ResetRtrig.Q,
 	StoredPositions:= PersistentVars.StoredPositions,
 	VisionRegisters:= PersistentVars.VisionRegisters,
@@ -748,7 +748,7 @@ EnableRtrig(CLK:=ProcessJog.CoordSystem <> CoordSystemLast
 IF EnableRtrig.Q THEN
 	CoordSystemLast := ProcessJog.CoordSystem;
 	ABC_AS_ACSLast := ProcessJog.ABC_as_ACS;
-	ButtonTextIndex := F_SetJogButtons(ProcessJog.CoordSystem, ProcessJog.ABC_as_ACS);
+	//ButtonTextIndex := F_SetJogButtons(ProcessJog.CoordSystem, ProcessJog.ABC_as_ACS);
 END_IF
 	
 //
@@ -762,7 +762,7 @@ IF ProcessJog.Error THEN
 									SMC_Language_Type.english)))) ;*)
 	JogStatusText := CONCAT('Jog Processor Error: ', TO_STRING(ProcessJog.ErrorID));
 END_IF
-*)]]></ST>
+]]></ST>
       </Implementation>
     </Method>
     <Method Name="_M_Processor" Id="{d0cb92ac-a65b-4a94-99d2-d1aa2daea05c}">
