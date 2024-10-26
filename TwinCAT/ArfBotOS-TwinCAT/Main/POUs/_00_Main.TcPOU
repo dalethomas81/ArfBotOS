@@ -800,6 +800,252 @@ ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCo
 ]]></ST>
       </Implementation>
     </Method>
+    <Method Name="_M_SpookyHalloween" Id="{a639a100-d3c3-420a-82a3-fbee25b24829}">
+      <Declaration><![CDATA[METHOD _M_SpookyHalloween
+VAR_INPUT
+END_VAR
+VAR_STAT
+	SeqSpookyHalloween: INT;
+	SeqSetUcs1, SeqSetTcp: INT;
+	SeqEnableMcs, SeqEnableTcp: INT;
+	CurrentRow: INT:=0;
+	CurrentColumn: INT:=0;
+	Ucs1CoordinateFrame: FB_CoordinateFrame;
+	offsetFrame: DUT_CoordFrame;
+	NestHomePosition: DUT_COORD_REF:=(X:=0.0, Y:=0.0, Z:=0.0, A:=0.0, B:=0.0, C:=0.0); // This will be the position of the first part in the nest in the MCS frame.
+	SetUcs, UcsSet: BOOL;
+	EnableMcs, McsEnabled: BOOL;
+	EnableTcp, TcpEnabled: BOOL;
+	PickGlowStick: BOOL;
+	AddPrePickPaths, movePrepError: BOOL;
+	
+	//
+    fbMovePath: MC_MovePath;
+	fbBlockerPreparation: MC_BlockerPreparation;
+	fbReleaseBlocker: MC_ReleaseBlocker;
+	fbGroupReadBlockerStatus: MC_GroupReadBlockerStatus;
+	
+	//
+	path: MC_PATH_DATA_REF(ADR(buffer), SIZEOF(buffer));
+	
+END_VAR
+VAR CONSTANT
+	// Steps
+	S_IDLE: 					INT:=0000;
+	S_ENABLEMCS: 				INT:=0010;
+	S_WAITENABLEMCS: 			INT:=0020;
+	S_ADDPREPICKPATH: 			INT:=0030;
+	S_PREPICK:					INT:=0040;
+	S_GRIP:						INT:=0050;
+	S_PICK:						INT:=0060;
+	
+	// Nest Dimensions
+	ROWCOUNT: INT:=10;
+	COLCOUNT: INT:=10;
+	ROWOFFSET: LREAL:=2.0;
+	COLOFFSET: LREAL:=1.5;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE SeqSpookyHalloween OF
+	S_IDLE: //
+		IF PickGlowStick THEN
+			AddPrePickPaths:=FALSE;
+			AddPickPaths:FALSE;
+			AddPrePlacePaths:FALSE;
+			AddPlacePaths:=FALSE;
+			PickGlowStick := FALSE;
+			GVL.PowerOn := TRUE;
+			movePrepError := FALSE;
+			Gripper.Off(); // open the gripper
+			SeqSpookyHalloween := S_ENABLEMCS + 1;
+		END_IF
+		
+	S_ENABLEMCS: // enable group
+		EnableMcs := TRUE;
+ 		SeqSpookyHalloween := S_WAITENABLEMCS;
+		
+	S_WAITENABLEMCS: // wait on group enable
+		IF McsEnabled THEN
+			McsEnabled := FALSE;
+ 			SeqSpookyHalloween := S_ADDPREPICKPATH;
+		END_IF
+		
+	S_ADDPREPICKPATH: // add paths
+		AddPrePickPaths:=TRUE;
+		IF NOT movePrepError THEN
+			fbMovePath.Execute:=FALSE;
+			fbReleaseBlocker.Execute:=FALSE;
+			SeqSpookyHalloween := S_PREPICK;
+		END_IF
+	
+	S_PREPICK: //
+		fbMovePath.Execute := TRUE;
+		
+	S_WAITPREPICK: //
+		IF fbMovePath.Done AND NOT fbMovePath.Error THEN
+			fbMovePath.Execute := FALSE;
+		END_IF
+		
+	S_DISABLEGROUPMCS: //
+		IF GroupHandler.M_DisableGroup() THEN
+			
+		END_IF
+	
+	S_ENABLETCP: //
+		EnableTcp := TRUE;
+	
+	S_WAITENABLETCP: //
+		IF TcpEnabled THEN
+			TcpEnabled := FALSE;
+			
+		END_IF
+	
+	S_ADDPICKPATH: //
+		AddPickPaths:=TRUE;
+		IF NOT movePrepError THEN
+			fbMovePath.Execute:=FALSE;
+			fbReleaseBlocker.Execute:=FALSE;
+			SeqSpookyHalloween := S_PICK;
+		END_IF
+	
+	S_PICK: //
+		fbMovePath.Execute := TRUE;
+		// wait for gripper to be open and tool in position
+		IF fbGroupReadBlockerStatus.Blocked AND fbGroupReadBlockerStatus.BlockerId = 100 THEN
+			SeqSpookyHalloween := S_GRIP;
+		END_IF
+		
+	S_GRIP: // close the gripper and release the blocker
+		Gripper.On();
+		fbReleaseBlocker.Execute:=TRUE;
+		SeqSpookyHalloween := S_PICK;
+	
+	S_ADDPREPLACEPATHS: //
+	
+	S_PREPLACE: //
+	
+	S_DISABLEGROUPTCP: //
+	
+	S_ENABLEMCS2: //
+	
+	S_WAITENABLEMCS2: //
+	
+	S_ADDPLACEPATHS: //
+	
+	S_PLACE: //
+	
+END_CASE
+//
+fbMovePath(
+	AxesGroup:= stGroupRef, 
+	PathData:= path, 
+	Execute:= , 
+	Done=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorId=> );
+fbGroupReadBlockerStatus(
+	AxesGroup:= stGroupRef, 
+	Enable:= TRUE, 
+	Valid=> , 
+	Blocked=> , 
+	BlockerId=> );
+fbReleaseBlocker(
+	AxesGroup:= stGroupRef, 
+	Execute:= , 
+	BlockerId:= 100, 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorId=> );
+	
+
+// enable the group in the mcs frame
+CASE SeqEnableMcs OF
+	0: // idle
+		IF EnableMcs THEN
+			EnableMcs := FALSE;
+			McsEnabled := FALSE;
+			SeqEnableMcs := SeqEnableMcs + 1;
+		END_IF
+	
+	1: // enable group
+		IF GroupHandler.M_EnableGroup(DUT_CoordSystem.MCS) THEN
+			SeqEnableMcs := SeqEnableMcs + 1;
+		END_IF
+		
+	2: // wait on group enable
+		IF GroupHandler.P_GroupEnabled THEN
+			McsEnabled := TRUE;
+			SeqEnableMcs := 0;
+		END_IF
+		
+END_CASE
+// enable the group in the tcp frame
+CASE SeqEnableTcp OF
+	0: // idle
+		IF EnableTcp THEN
+			EnableTcp := FALSE;
+			TcpEnabled := FALSE;
+			SeqEnableTcp := SeqEnableTcp + 1;
+		END_IF
+	
+	1: // enable group
+		IF GroupHandler.M_EnableGroup(DUT_CoordSystem.TCP) THEN
+			SeqEnableTcp := SeqEnableTcp + 1;
+		END_IF
+		
+	2: // wait on group enable
+		IF GroupHandler.P_GroupEnabled THEN
+			TcpEnabled := TRUE;
+			SeqEnableTcp := 0;
+		END_IF
+		
+END_CASE
+
+
+// set the offset of the user coordinate system.
+// this will be at the first pick position in the nest that is holding the glow sticks.
+CASE SeqSetUcs1 OF
+	0: 
+		IF SetUcs THEN
+			SetUcs := FALSE;
+			UcsSet := FALSE;
+			SeqSetUcs1 := SeqSetUcs1 + 1;
+		END_IF
+		
+	1:
+		offsetFrame.Position.X := NestHomePosition.X;
+		offsetFrame.Position.Y := NestHomePosition.Y;
+		offsetFrame.Position.Z := NestHomePosition.Z;
+		offsetFrame.Position.A := NestHomePosition.A;
+		offsetFrame.Position.B := NestHomePosition.B;
+		offsetFrame.Position.C := NestHomePosition.C;
+		offsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_Z3Y2X1_DIN9300;
+		offsetFrame.Direction := MC.ReferenceDefDir.fromReference;
+		Ucs1CoordinateFrame.Execute := TRUE;
+		SeqSetUcs1 := SeqSetUcs1 + 1;
+		
+	2:
+		IF Ucs1CoordinateFrame.Done THEN
+			Ucs1CoordinateFrame.Execute := FALSE;
+			UcsSet := TRUE;
+			SeqSetUcs1 := 0;
+		END_IF
+		
+END_CASE
+//
+Ucs1CoordinateFrame(
+	Execute:= , 
+	oidTrafo:= gvl.Ucs1CoordRef, 
+	OffsetFrame:= offsetFrame, 
+	Done=> , 
+	Busy=> , 
+	Error=> );]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="_M_Tuning" Id="{7bc5b496-9c33-4d9b-b0d8-4ee9652747d2}">
       <Declaration><![CDATA[METHOD PRIVATE _M_Tuning : BOOL
 VAR_INPUT
