@@ -891,10 +891,10 @@ VAR_STAT CONSTANT
 	UNGRIPBLOCKERID: UDINT:=200;
 	
 	// Nest Dimensions
-	ROWCOUNT: INT:=10;
-	COLCOUNT: INT:=10;
-	ROWOFFSET: LREAL:=2.0;
-	COLOFFSET: LREAL:=1.5;
+	TOTALROWS: INT:=2;
+	TOTALCOLUMNS: INT:=4;
+	ROWOFFSET: LREAL:=20.0;
+	COLOFFSET: LREAL:=15.0;
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[// use these to manage the group manually while testing.
@@ -1173,6 +1173,8 @@ CASE SeqSpookyHalloween OF
 		END_IF
 	
 END_CASE
+
+{region 'function blocks'}
 //
 fbMovePath(
 	AxesGroup:= stGroupRef, 
@@ -1216,6 +1218,7 @@ FOR _k:= 1 TO NumberOfAxes DO
 		Error=> , 
 		ErrorID=> );
 END_FOR
+{endregion}
 	
 {region 'add ucs1 paths'}
 //
@@ -1241,12 +1244,6 @@ IF AddPrePickPaths THEN
 	MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
 	
 	// 1st node
-	(*aTargetPos[1]				:= _x;
-	aTargetPos[2]				:= _y;
-	aTargetPos[3]				:= _z;
-	aTargetPos[4]				:= _a;
-	aTargetPos[5]				:= _b;
-	aTargetPos[6]				:= _c;*)
 	aTargetPos[1]				:= 0; //350; // x
 	aTargetPos[2]				:= 0; //-150; // y
 	aTargetPos[3]				:= 0; //210; // z
@@ -1281,12 +1278,6 @@ IF AddPrePlacePaths THEN
 	MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
 	
 	// 1st node
-	(*aTargetPos[1]				:= _x;
-	aTargetPos[2]				:= _y;
-	aTargetPos[3]				:= _z;
-	aTargetPos[4]				:= _a;
-	aTargetPos[5]				:= _b;
-	aTargetPos[6]				:= _c;*)
 	aTargetPos[1]				:= 50; //350; // x
 	aTargetPos[2]				:= 300; //-150; // y
 	aTargetPos[3]				:= 150; //210; // z
@@ -1325,8 +1316,21 @@ IF AddPickPaths THEN
 	
 	//1st node
 	aTargetPos[1]				:= 0; // x
-	aTargetPos[2]				:= 0; // y
-	aTargetPos[3]				:= 10; // z
+	aTargetPos[2]				:= -(CurrentColumn * COLOFFSET); // y
+	aTargetPos[3]				:= (CurrentRow * ROWOFFSET); // z
+	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
+	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
+	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
+	aTransitionParam[1]			:= 0; // blending distance on previous segmente
+	aTransitionParam[2]			:= 0; // blending distance on previous segment
+	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+	fbMoveLinPrep(PathData:= path , Velocity:= 50, InvokeId:= InvokeId);
+	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+	
+	//1st node
+	aTargetPos[1]				:= 0; // x
+	aTargetPos[2]				:= -(CurrentColumn * COLOFFSET); // y
+	aTargetPos[3]				:= (CurrentRow * ROWOFFSET) + 10; // z
 	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
 	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
 	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
@@ -1348,8 +1352,8 @@ IF AddPickPaths THEN
 	
 	//1st node
 	aTargetPos[1]				:= -75; // x
-	aTargetPos[2]				:= 0; // y
-	aTargetPos[3]				:= 10; // z
+	aTargetPos[2]				:= -(CurrentColumn * COLOFFSET); // y
+	aTargetPos[3]				:= (CurrentRow * ROWOFFSET) + 10; // z
 	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
 	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
 	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
@@ -1358,6 +1362,21 @@ IF AddPickPaths THEN
 	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
 	fbMoveLinPrep(PathData:= path , Velocity:= 50, InvokeId:= InvokeId);
 	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+	
+	//
+	// increment column and row
+	//
+	IF CurrentColumn < TOTALCOLUMNS-1 THEN
+		CurrentColumn := CurrentColumn + 1;
+	ELSE
+		CurrentColumn := 0;
+		IF CurrentRow < TOTALROWS-1 THEN
+			CurrentRow := CurrentRow + 1;
+		ELSE
+			CurrentRow := 0;
+		END_IF
+	END_IF
+	
 END_IF
 IF AddPlacePaths THEN
 	AddPlacePaths := FALSE;
