@@ -2657,7 +2657,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name IecBaseType="true">ARRAY [0..19] OF DUT_Program</Name>
+			<Name GUID="{3BF2C477-3BCD-1489-A279-6AD2911E9A61}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..19] OF DUT_Program</Name>
 			<BitSize>2733120</BitSize>
 			<BaseType GUID="{0D984A04-251F-ABF2-3DB9-B89492C8DB95}">DUT_Program</BaseType>
 			<ArrayInfo>
@@ -3552,7 +3552,7 @@ and will return to Group State Standby when the situation permits.
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
 						<EncPara ScaleFactorNumerator="0.00917197452229299" Inverse="true" EncMode="1" MaxCount="#xffffffff">
-							<SoftEndMinControl Enable="true" Range="-75"/>
+							<SoftEndMinControl Enable="true" Range="-80"/>
 							<SoftEndMaxControl Enable="true" Range="100"/>
 							<Inc RefSearchInverse="true" RefSyncInverse="false" RefPosition="-77" HomingSensorSource="9"/>
 						</EncPara>
@@ -5946,7 +5946,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{581E3F8F-CF52-1C39-C21F-739B780B3BD9}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{850392B8-1A5A-AC97-4AA1-773C3293DB35}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
