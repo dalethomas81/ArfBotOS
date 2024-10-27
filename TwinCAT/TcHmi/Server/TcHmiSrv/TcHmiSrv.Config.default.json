@@ -685,6 +685,126 @@
             },
             "USEMAPPING": true
         },
+        "ADS.PLC1.GVL.PowerOn": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::GVL::PowerOn",
+            "SCHEMA": {
+                "$ref": "tchmi:general#/definitions/BOOL"
+            },
+            "USEMAPPING": true
+        },
+        "ADS.PLC1.GVL.Reset": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::GVL::Reset",
+            "SCHEMA": {
+                "$ref": "tchmi:general#/definitions/BOOL"
+            },
+            "USEMAPPING": true
+        },
+        "ADS.PLC1._00_Main._M_SpookyHalloween.CurrentColumn": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::_00_Main::_M_SpookyHalloween::CurrentColumn",
+            "SCHEMA": {
+                "$ref": "tchmi:general#/definitions/INT"
+            },
+            "USEMAPPING": true
+        },
+        "ADS.PLC1._00_Main._M_SpookyHalloween.CurrentRow": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::_00_Main::_M_SpookyHalloween::CurrentRow",
+            "SCHEMA": {
+                "$ref": "tchmi:general#/definitions/INT"
+            },
+            "USEMAPPING": true
+        },
+        "ADS.PLC1._00_Main._M_SpookyHalloween.DisableGroup": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::_00_Main::_M_SpookyHalloween::DisableGroup",
+            "SCHEMA": {
+                "$ref": "tchmi:general#/definitions/BOOL"
+            },
+            "USEMAPPING": true
+        },
+        "ADS.PLC1._00_Main._M_SpookyHalloween.EnableAcs": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::_00_Main::_M_SpookyHalloween::EnableAcs",
+            "SCHEMA": {
+                "$ref": "tchmi:general#/definitions/BOOL"
+            },
+            "USEMAPPING": true
+        },
+        "ADS.PLC1._00_Main._M_SpookyHalloween.EnableMcs": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::_00_Main::_M_SpookyHalloween::EnableMcs",
+            "SCHEMA": {
+                "$ref": "tchmi:general#/definitions/BOOL"
+            },
+            "USEMAPPING": true
+        },
+        "ADS.PLC1._00_Main._M_SpookyHalloween.EnableTcp": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::_00_Main::_M_SpookyHalloween::EnableTcp",
+            "SCHEMA": {
+                "$ref": "tchmi:general#/definitions/BOOL"
+            },
+            "USEMAPPING": true
+        },
+        "ADS.PLC1._00_Main._M_SpookyHalloween.EnableUcs1": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::_00_Main::_M_SpookyHalloween::EnableUcs1",
+            "SCHEMA": {
+                "$ref": "tchmi:general#/definitions/BOOL"
+            },
+            "USEMAPPING": true
+        },
+        "ADS.PLC1._00_Main._M_SpookyHalloween.PickGlowStick": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::_00_Main::_M_SpookyHalloween::PickGlowStick",
+            "SCHEMA": {
+                "$ref": "tchmi:general#/definitions/BOOL"
+            },
+            "USEMAPPING": true
+        },
+        "ADS.PLC1._00_Main._M_SpookyHalloween.PreparePick": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::_00_Main::_M_SpookyHalloween::PreparePick",
+            "SCHEMA": {
+                "$ref": "tchmi:general#/definitions/BOOL"
+            },
+            "USEMAPPING": true
+        },
+        "ADS.PLC1._00_Main._M_SpookyHalloween.ToggleGripper": {
+            "ACCESS": 3,
+            "DOMAIN": "ADS",
+            "DYNAMIC": true,
+            "MAPPING": "PLC1::_00_Main::_M_SpookyHalloween::ToggleGripper",
+            "SCHEMA": {
+                "$ref": "tchmi:general#/definitions/BOOL"
+            },
+            "USEMAPPING": true
+        },
         "ADS.RuntimePorts": {
             "ACCESS": 3,
             "DOMAIN": "ADS",
@@ -3515,6 +3635,18 @@
                 "ADS.AdsSyncReadStateReq": 3,
                 "ADS.CheckLicense": 3,
                 "ADS.Diagnostics": 3,
+                "ADS.PLC1.GVL.PowerOn": 3,
+                "ADS.PLC1.GVL.Reset": 3,
+                "ADS.PLC1._00_Main._M_SpookyHalloween.CurrentColumn": 3,
+                "ADS.PLC1._00_Main._M_SpookyHalloween.CurrentRow": 3,
+                "ADS.PLC1._00_Main._M_SpookyHalloween.DisableGroup": 3,
+                "ADS.PLC1._00_Main._M_SpookyHalloween.EnableAcs": 3,
+                "ADS.PLC1._00_Main._M_SpookyHalloween.EnableMcs": 3,
+                "ADS.PLC1._00_Main._M_SpookyHalloween.EnableTcp": 3,
+                "ADS.PLC1._00_Main._M_SpookyHalloween.EnableUcs1": 3,
+                "ADS.PLC1._00_Main._M_SpookyHalloween.PickGlowStick": 3,
+                "ADS.PLC1._00_Main._M_SpookyHalloween.PreparePick": 3,
+                "ADS.PLC1._00_Main._M_SpookyHalloween.ToggleGripper": 3,
                 "ChangeUserSettings": 3,
                 "ConfirmAlarm": 3,
                 "CreateEvent": 3,
