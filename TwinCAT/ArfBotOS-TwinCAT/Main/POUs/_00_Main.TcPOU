@@ -71,7 +71,8 @@ END_VAR]]></Declaration>
 {endregion}
      
 {region "methods"}
-	_M_HelloWorld();
+	_M_SpookyHalloween();
+	//_M_HelloWorld();
 	_M_GroupHandler();
     _M_Jogging();
     _M_Homing();
@@ -815,9 +816,6 @@ VAR_STAT
 	NestHomePosition: DUT_COORD_REF:=(X:=0.0, Y:=0.0, Z:=0.0, A:=0.0, B:=0.0, C:=0.0); // This will be the position of the first part in the nest in the MCS frame.
 	SetUcs1, Ucs1Set: BOOL;
 	SetTcp, TcpSet: BOOL;
-	EnableGroupMcs, McsGroupEnabled: BOOL;
-	EnableGroupTcp, TcpGroupEnabled: BOOL;
-	EnableGroupUcs1, Ucs1GroupEnabled: BOOL;
 	PreparePick, PickGlowStick: BOOL;
 	AddPrePickPaths, AddPickPaths, AddPrePlacePaths, AddPlacePaths, movePrepError: BOOL;
 	
@@ -838,53 +836,53 @@ VAR_STAT
 	//
 	MoveAcs, AcsMoveDone: BOOL;
 	mcMoveAbsoluteAcs: ARRAY[1..NumberOfAxes] OF MC_MoveAbsolute;
-	MovePositionAcs: ARRAY[1..NumberOfAxes] OF LREAL:=[0,-15,115,0,-30,0];
+	MovePositionAcs: ARRAY[1..NumberOfAxes] OF LREAL:=[0, -15, 115, 0, 30, 0];
 	
 	//
-	ResetGroup, EnableAcs, EnableMcs, EnableTcp, DisableGroup, ToggleGripper: BOOL;
+	ResetGroup, EnableAcs, EnableMcs, EnableUcs1, EnableTcp, DisableGroup, ToggleGripper: BOOL;
 	
 END_VAR
 VAR CONSTANT
 	// Steps
-	{error <'you will need to set unique values for each step here before compiling.'>}
 	S_IDLE: INT:=0000;
-	S_ENABLEGROUPMCS1: INT:=0000;
-	S_WAITENABLEGROUPMCS1: INT:=0000;
-	S_MOVEHOMEACS: INT:=0000;
-	S_WAITMOVEHOMEACS: INT:=0000;
-	S_SETUCS1: INT:=0000;
-	S_WAITUCS1SET: INT:=0000;
-	S_ENABLEGROUPUCS1: INT:=0000;
-	S_WAITENABLEGROUPUCS1: INT:=0000;
-	S_ADDPREPICKPATH: INT:=0000;
-	S_PREPICK: INT:=0000;
-	S_WAITFORPREPICKDONE: INT:=0000;
-	S_DISABLEGROUPUCS1: INT:=0000;
-	S_WAITFORPICKTRIGGER: INT:=0000;
-	S_SETTCP1: INT:=0000;
-	S_WAITTCPSET1: INT:=0000;
-	S_ENABLEGROUPTCP1: INT:=0000;
-	S_WAITENABLETCP1: INT:=0000;
-	S_ADDPICKPATH: INT:=0000;
-	S_PICK: INT:=0000;
-	S_GRIP: INT:=0000;
-	S_WAITFORPICKDONE: INT:=0000;
-	S_DISABLEGROUPTCP1: INT:=0000;
-	S_ENABLEGROUPUCS2: INT:=0000;
-	S_WAITENABLEGROUPUCS2: INT:=0000;
-	S_ADDPREPLACEPATHS: INT:=0000;
-	S_PREPLACE: INT:=0000;
-	S_WAITFORPREPLACEDONE: INT:=0000;
-	S_DISABLEGROUPUCS2: INT:=0000;
-	S_SETTCP2: INT:=0000;
-	S_WAITTCPSET2: INT:=0000;
-	S_ENABLEGROUPTCP2: INT:=0000;
-	S_WAITENABLEGROUPTCP2: INT:=0000;
-	S_ADDPLACEPATHS: INT:=0000;
-	S_PLACE: INT:=0000;
-	S_UNGRIP: INT:=0000;
-	S_WAITFROPLACEDONE: INT:=0000;
-	S_DISABLEGROUPTCP2: INT:=0000;
+	S_ENABLEGROUPACS1: INT:=0010;
+	S_WAITENABLEGROUPACS1: INT:=0020;
+	S_MOVEHOMEACS: INT:=0030;
+	S_WAITMOVEHOMEACS: INT:=0040;
+	S_DISABLEGROUPACS: INT:=0045;
+	S_SETUCS1: INT:=0050;
+	S_WAITUCS1SET: INT:=0060;
+	S_ENABLEGROUPUCS1: INT:=0070;
+	S_WAITENABLEGROUPUCS1: INT:=0080;
+	S_ADDPREPICKPATH: INT:=0090;
+	S_PREPICK: INT:=0100;
+	S_WAITFORPREPICKDONE: INT:=0110;
+	S_DISABLEGROUPUCS1: INT:=0120;
+	S_WAITFORPICKTRIGGER: INT:=0130;
+	S_SETTCP1: INT:=0140;
+	S_WAITTCPSET1: INT:=0150;
+	S_ENABLEGROUPTCP1: INT:=0160;
+	S_WAITENABLETCP1: INT:=0170;
+	S_ADDPICKPATH: INT:=0180;
+	S_PICK: INT:=0190;
+	S_GRIP: INT:=0200;
+	S_WAITFORPICKDONE: INT:=0210;
+	S_DISABLEGROUPTCP1: INT:=0220;
+	S_ENABLEGROUPUCS2: INT:=0230;
+	S_WAITENABLEGROUPUCS2: INT:=0240;
+	S_ADDPREPLACEPATHS: INT:=0250;
+	S_PREPLACE: INT:=0260;
+	S_WAITFORPREPLACEDONE: INT:=0270;
+	S_DISABLEGROUPUCS2: INT:=0280;
+	S_SETTCP2: INT:=0290;
+	S_WAITTCPSET2: INT:=0300;
+	S_ENABLEGROUPTCP2: INT:=0310;
+	S_WAITENABLEGROUPTCP2: INT:=0320;
+	S_ADDPLACEPATHS: INT:=0330;
+	S_PLACE: INT:=0340;
+	S_UNGRIP: INT:=0350;
+	S_WAITFROPLACEDONE: INT:=0360;
+	S_DISABLEGROUPTCP2: INT:=0370;
 
 	//
 	GRIPBLOCKERID: UDINT:=100;
@@ -911,6 +909,10 @@ IF EnableMcs THEN
 	EnableMcs := FALSE;
 	GroupHandler.M_EnableGroup(DUT_CoordSystem.MCS);
 END_IF
+IF EnableUcs1 THEN
+	EnableUcs1 := FALSE;
+	GroupHandler.M_EnableGroup(DUT_CoordSystem.UCS1);
+END_IF
 IF EnableTcp THEN
 	EnableTcp := FALSE;
 	GroupHandler.M_EnableGroup(DUT_CoordSystem.TCP);
@@ -932,30 +934,23 @@ CASE SeqSpookyHalloween OF
 			//
 			GVL.PowerOn := TRUE; // TODO this should arguably not be here but leaving it here for dev and testing
 			AddPrePickPaths := AddPickPaths := AddPrePlacePaths := AddPlacePaths :=FALSE;
-			EnableGroupMcs := McsGroupEnabled := FALSE;
-			EnableGroupUcs1 := Ucs1GroupEnabled := FALSE;
-			EnableGroupTcp := TcpGroupEnabled := FALSE;
 			PickGlowStick := FALSE;
 			fbMovePath.Execute := fbReleaseBlocker.Execute :=FALSE;
 			movePrepError := FALSE;
 			Gripper.Off(); // open the gripper
 			//
-			TcpCoordinateFrame.Execute := Ucs1CoordinateFrame.Execute := FALSE;
-			SetTcp := TcpSet := SetUcs1 := Ucs1Set := FALSE;
-			SeqSetTcp := SeqSetUcs1 := 0;
-			//
 			MoveAcs:=FALSE;
 			//
-			SeqSpookyHalloween := S_ENABLEGROUPMCS1;
+			SeqSpookyHalloween := S_ENABLEGROUPACS1;
 		END_IF
 		
-	S_ENABLEGROUPMCS1: // enable group
-		EnableGroupMcs := TRUE;
- 		SeqSpookyHalloween := S_WAITENABLEGROUPMCS1;
+	S_ENABLEGROUPACS1: // enable group
+		IF GroupHandler.M_EnableGroup(DUT_CoordSystem.ACS) THEN
+ 			SeqSpookyHalloween := S_WAITENABLEGROUPACS1;
+		END_IF
 		
-	S_WAITENABLEGROUPMCS1: // wait on group enable
-		IF McsGroupEnabled THEN
-			McsGroupEnabled := FALSE;
+	S_WAITENABLEGROUPACS1: // wait on group enable
+		IF GroupHandler.P_GroupEnabled THEN
  			SeqSpookyHalloween := S_MOVEHOMEACS;
 		END_IF
 		
@@ -972,28 +967,25 @@ CASE SeqSpookyHalloween OF
 		END_FOR
 		IF AcsMoveDone THEN
 			MoveAcs:=FALSE;
-			SeqSpookyHalloween := S_SETUCS1;
+			SeqSpookyHalloween := S_DISABLEGROUPACS;
 		END_IF
 		
-	S_SETUCS1: //
-		SetUcs1:=TRUE;
-		SeqSpookyHalloween := S_WAITUCS1SET;
-	
-	S_WAITUCS1SET: //
-		IF Ucs1CoordinateFrame.Error THEN
-			//
-		ELSIF Ucs1Set THEN
-			Ucs1Set:=FALSE;
+	S_DISABLEGROUPACS: //
+		IF GroupHandler.M_DisableGroup() THEN
 			SeqSpookyHalloween := S_ENABLEGROUPUCS1;
 		END_IF
 		
 	S_ENABLEGROUPUCS1: // enable group
-		EnableGroupUcs1 := TRUE;
- 		SeqSpookyHalloween := S_WAITENABLEGROUPUCS1;
+		IF NOT GroupHandler.P_GroupEnabled THEN
+			IF GroupHandler.M_EnableGroup(DUT_CoordSystem.MCS) THEN
+				SeqSpookyHalloween := S_WAITENABLEGROUPUCS1;
+			ELSE
+				//
+			END_IF
+		END_IF
 		
 	S_WAITENABLEGROUPUCS1: // wait on group enable
-		IF Ucs1GroupEnabled THEN
-			Ucs1GroupEnabled := FALSE;
+		IF GroupHandler.P_GroupEnabled THEN
  			SeqSpookyHalloween := S_ADDPREPICKPATH;
 		END_IF
 		
@@ -1027,28 +1019,20 @@ CASE SeqSpookyHalloween OF
 	S_WAITFORPICKTRIGGER: //
 		IF PickGlowStick THEN
 			PickGlowStick := FALSE;
-			SeqSpookyHalloween := S_SETTCP1;
-		END_IF
-		
-	S_SETTCP1: //
-		SetTcp:=TRUE;
-		SeqSpookyHalloween := S_WAITTCPSET1;
-	
-	S_WAITTCPSET1: //
-		IF TcpCoordinateFrame.Error THEN
-			//
-		ELSIF TcpSet THEN
-			TcpSet:=FALSE;
 			SeqSpookyHalloween := S_ENABLEGROUPTCP1;
 		END_IF
 	
 	S_ENABLEGROUPTCP1: //
-		EnableGroupTcp := TRUE;
-		SeqSpookyHalloween := S_WAITENABLETCP1;
+		IF NOT GroupHandler.P_GroupEnabled THEN
+			IF GroupHandler.M_EnableGroup(DUT_CoordSystem.TCP) THEN
+				SeqSpookyHalloween := S_WAITENABLETCP1;
+			ELSE
+				//
+			END_IF
+		END_IF
 	
 	S_WAITENABLETCP1: //
-		IF TcpGroupEnabled THEN
-			TcpGroupEnabled := FALSE;
+		IF GroupHandler.P_GroupEnabled THEN
 			SeqSpookyHalloween := S_ADDPICKPATH;
 		END_IF
 	
@@ -1072,6 +1056,7 @@ CASE SeqSpookyHalloween OF
 		
 	S_GRIP: // close the gripper and release the blocker
 		Gripper.On(); // TODO may need to wait for a time here or add inputs to the gripper
+		fbReleaseBlocker.BlockerId:=GRIPBLOCKERID;
 		fbReleaseBlocker.Execute:=TRUE;
 		SeqSpookyHalloween := S_WAITFORPICKDONE;
 		
@@ -1089,12 +1074,16 @@ CASE SeqSpookyHalloween OF
 		END_IF
 	
 	S_ENABLEGROUPUCS2: //
-		EnableGroupUcs1:=TRUE;
-		SeqSpookyHalloween := S_WAITENABLEGROUPUCS2;
+		IF NOT GroupHandler.P_GroupEnabled THEN
+			IF GroupHandler.M_EnableGroup(DUT_CoordSystem.MCS) THEN
+				SeqSpookyHalloween := S_WAITENABLEGROUPUCS2;
+			ELSE
+				//
+			END_IF
+		END_IF
 	
 	S_WAITENABLEGROUPUCS2: //
-		IF Ucs1GroupEnabled THEN
-			Ucs1GroupEnabled:=FALSE;
+		IF GroupHandler.P_GroupEnabled THEN
 			SeqSpookyHalloween := S_ADDPREPLACEPATHS;
 		END_IF
 	
@@ -1122,30 +1111,22 @@ CASE SeqSpookyHalloween OF
 	
 	S_DISABLEGROUPUCS2: //
 		IF GroupHandler.M_DisableGroup() THEN
-			SeqSpookyHalloween := S_SETTCP2;
+			SeqSpookyHalloween := S_ENABLEGROUPTCP2;
 		ELSE
 			//
 		END_IF
-		
-	S_SETTCP2: //
-		SetTcp:=TRUE;
-		SeqSpookyHalloween := S_WAITTCPSET2;
-	
-	S_WAITTCPSET2: //
-		IF TcpCoordinateFrame.Error THEN
-			//
-		ELSIF TcpSet THEN
-			TcpSet:=FALSE;
-			SeqSpookyHalloween := S_ENABLEGROUPTCP2;
-		END_IF
 	
 	S_ENABLEGROUPTCP2: //
-		EnableGroupTcp:=TRUE;
-		SeqSpookyHalloween := S_WAITENABLEGROUPTCP2;
+		IF NOT GroupHandler.P_GroupEnabled THEN
+			IF GroupHandler.M_EnableGroup(DUT_CoordSystem.TCP) THEN
+				SeqSpookyHalloween := S_WAITENABLEGROUPTCP2;
+			ELSE
+				//
+			END_IF
+		END_IF
 	
 	S_WAITENABLEGROUPTCP2: //
-		IF TcpGroupEnabled THEN
-			TcpGroupEnabled:=FALSE;
+		IF GroupHandler.P_GroupEnabled THEN
 			SeqSpookyHalloween := S_ADDPLACEPATHS;
 		END_IF
 	
@@ -1169,6 +1150,7 @@ CASE SeqSpookyHalloween OF
 		
 	S_UNGRIP: // open the gripper and release the blocker
 		Gripper.Off(); // TODO may need to wait for a time here or add inputs to the gripper
+		fbReleaseBlocker.BlockerId:=UNGRIPBLOCKERID;
 		fbReleaseBlocker.Execute:=TRUE;
 		SeqSpookyHalloween := S_WAITFROPLACEDONE;
 	
@@ -1209,7 +1191,7 @@ fbGroupReadBlockerStatus(
 fbReleaseBlocker(
 	AxesGroup:= stGroupRef, 
 	Execute:= , 
-	BlockerId:= 100, 
+	BlockerId:= , 
 	Done=> , 
 	Busy=> , 
 	Error=> , 
@@ -1232,153 +1214,6 @@ FOR _k:= 1 TO NumberOfAxes DO
 		Error=> , 
 		ErrorID=> );
 END_FOR
-
-{region 'group enable'}
-// enable the group in the mcs frame
-CASE SeqEnableMcs OF
-	0: // idle
-		IF EnableGroupMcs THEN
-			EnableGroupMcs := FALSE;
-			McsGroupEnabled := FALSE;
-			SeqEnableMcs := SeqEnableMcs + 1;
-		END_IF
-	
-	1: // enable group
-		IF GroupHandler.M_EnableGroup(DUT_CoordSystem.MCS) THEN
-			SeqEnableMcs := SeqEnableMcs + 1;
-		END_IF
-		
-	2: // wait on group enable
-		IF GroupHandler.P_GroupEnabled THEN
-			McsGroupEnabled := TRUE;
-			SeqEnableMcs := 0;
-		END_IF
-		
-END_CASE	
-// enable the group in the ucs1 frame
-CASE SeqEnableUcs1 OF
-	0: // idle
-		IF EnableGroupUcs1 THEN
-			EnableGroupUcs1 := FALSE;
-			Ucs1GroupEnabled := FALSE;
-			SeqEnableUcs1 := SeqEnableUcs1 + 1;
-		END_IF
-	
-	1: // enable group
-		IF GroupHandler.M_EnableGroup(DUT_CoordSystem.UCS1) THEN
-			SeqEnableUcs1 := SeqEnableUcs1 + 1;
-		END_IF
-		
-	2: // wait on group enable
-		IF GroupHandler.P_GroupEnabled THEN
-			Ucs1GroupEnabled := TRUE;
-			SeqEnableUcs1 := 0;
-		END_IF
-		
-END_CASE
-// enable the group in the tcp frame
-CASE SeqEnableTcp OF
-	0: // idle
-		IF EnableGroupTcp THEN
-			EnableGroupTcp := FALSE;
-			TcpGroupEnabled := FALSE;
-			SeqEnableTcp := SeqEnableTcp + 1;
-		END_IF
-	
-	1: // enable group
-		IF GroupHandler.M_EnableGroup(DUT_CoordSystem.TCP) THEN
-			SeqEnableTcp := SeqEnableTcp + 1;
-		END_IF
-		
-	2: // wait on group enable
-		IF GroupHandler.P_GroupEnabled THEN
-			TcpGroupEnabled := TRUE;
-			SeqEnableTcp := 0;
-		END_IF
-		
-END_CASE
-{endregion}
-{region 'set coordinate frames'}
-// set the offset of the user coordinate system.
-// this will be at the first pick position in the nest that is holding the glow sticks.
-CASE SeqSetUcs1 OF
-	0:
-		Ucs1CoordinateFrame.Execute := FALSE;
-		SeqSetUcs1 := SeqSetUcs1 + 1;
-	1: 
-		IF SetUcs1 THEN
-			SetUcs1 := FALSE;
-			Ucs1Set := FALSE;
-			SeqSetUcs1 := SeqSetUcs1 + 1;
-		END_IF
-		
-	2:
-		Ucs1OffsetFrame.Position.X := NestHomePosition.X;
-		Ucs1OffsetFrame.Position.Y := NestHomePosition.Y;
-		Ucs1OffsetFrame.Position.Z := NestHomePosition.Z;
-		Ucs1OffsetFrame.Position.A := NestHomePosition.A;
-		Ucs1OffsetFrame.Position.B := NestHomePosition.B;
-		Ucs1OffsetFrame.Position.C := NestHomePosition.C;
-		Ucs1OffsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_Z3Y2X1_DIN9300;
-		Ucs1OffsetFrame.Direction := MC.ReferenceDefDir.fromReference;
-		Ucs1CoordinateFrame.Execute := TRUE;
-		SeqSetUcs1 := SeqSetUcs1 + 1;
-		
-	3:
-		IF Ucs1CoordinateFrame.Done THEN
-			Ucs1CoordinateFrame.Execute := FALSE;
-			Ucs1Set := TRUE;
-			SeqSetUcs1 := 0;
-		END_IF
-		
-END_CASE
-Ucs1CoordinateFrame(
-	Execute:= , 
-	oidTrafo:= gvl.Ucs1CoordRef, 
-	OffsetFrame:= Ucs1OffsetFrame, 
-	Done=> , 
-	Busy=> , 
-	Error=> );
-//
-CASE SeqSetTcp OF
-	0:
-		TcpCoordinateFrame.Execute := FALSE;
-		SeqSetTcp := SeqSetTcp + 1;
-	1: 
-		IF SetTcp THEN
-			SetTcp := FALSE;
-			TcpSet := FALSE;
-			SeqSetTcp := SeqSetTcp + 1;
-		END_IF
-		
-	2:
-		TcpOffsetFrame.Position.X := MCS[1].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.X;
-		TcpOffsetFrame.Position.Y := MCS[2].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.Y;
-		TcpOffsetFrame.Position.Z := MCS[3].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.Z;
-		TcpOffsetFrame.Position.A := MCS[4].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.A;
-		TcpOffsetFrame.Position.B := MCS[5].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.B;
-		TcpOffsetFrame.Position.C := MCS[6].NcToPlc.ActPos + PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position.C;
-		TcpOffsetFrame.Interpretation := MC.CoordInterpretation_SO3.Rotation_Z3Y2X1_DIN9300;
-		TcpOffsetFrame.Direction := MC.ReferenceDefDir.fromReference;
-		TcpCoordinateFrame.Execute := TRUE;
-		SeqSetTcp := SeqSetTcp + 1;
-		
-	3:
-		IF TcpCoordinateFrame.Done THEN
-			TcpCoordinateFrame.Execute := FALSE;
-			TcpSet := TRUE;
-			SeqSetTcp := 0;
-		END_IF
-		
-END_CASE
-TcpCoordinateFrame(
-	Execute:= , 
-	oidTrafo:= gvl.TcpCoordRef, 
-	OffsetFrame:= TcpOffsetFrame, 
-	Done=> , 
-	Busy=> , 
-	Error=> );
-{endregion}
 	
 {region 'add ucs1 paths'}
 //
@@ -1400,31 +1235,18 @@ IF AddPrePickPaths THEN
 	fbMoveLinPrep.Jerk							:= 100.0;//MC_DEFAULT;
 	
 	// set ucs frame
-	fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.Ucs1CoordRef);
+	fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.McsCoordRef);
 	MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
 	
 	// 1st node
-	aTargetPos[1]				:= 0;
-	aTargetPos[2]				:= 0;
-	aTargetPos[3]				:= 0;
-	aTargetPos[4]				:= 0;
-	aTargetPos[5]				:= 0;
-	aTargetPos[6]				:= 0;
-	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
-	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= 20, InvokeId:= InvokeId);
-	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
-	
-	//1st node
-	aTargetPos[1]				:= 0;
-	aTargetPos[2]				:= 0;
-	aTargetPos[3]				:= 0;
-	aTargetPos[4]				:= 0;
-	aTargetPos[5]				:= 80;
-	aTargetPos[6]				:= 0;
-	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+	aTargetPos[1]				:= 331; // x
+	aTargetPos[2]				:= -136; // y
+	aTargetPos[3]				:= 163; // z
+	aTargetPos[4]				:= 152; // a
+	aTargetPos[5]				:= 80; // b
+	aTargetPos[6]				:= 103; // c
+	aTransitionParam[1]			:= 0; // blending distance on previous segment
+	aTransitionParam[2]			:= 0; // blending distance on previous segment
 	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
 	fbMoveLinPrep(PathData:= path , Velocity:= 20, InvokeId:= InvokeId);
 	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
@@ -1446,34 +1268,21 @@ IF AddPrePlacePaths THEN
 	fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
 	fbMoveLinPrep.Jerk							:= 100.0;//MC_DEFAULT;
 	
-	// set mcs frame
-	fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.Ucs1CoordRef);
+	// set ucs frame
+	fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.McsCoordRef);
 	MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
 	
 	// 1st node
-	aTargetPos[1]				:= 300;
-	aTargetPos[2]				:= 0;
-	aTargetPos[3]				:= 415;
-	aTargetPos[4]				:= 0;
-	aTargetPos[5]				:= 90;
-	aTargetPos[6]				:= 0;
-	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+	aTargetPos[1]				:= 331; // x
+	aTargetPos[2]				:= -136; // y
+	aTargetPos[3]				:= 163; // z
+	aTargetPos[4]				:= 152; // a
+	aTargetPos[5]				:= 80; // b
+	aTargetPos[6]				:= 103; // c
+	aTransitionParam[1]			:= 0; // blending distance on previous segment
+	aTransitionParam[2]			:= 0; // blending distance on previous segment
 	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
 	fbMoveLinPrep(PathData:= path , Velocity:= 20, InvokeId:= InvokeId);
-	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
-	
-	//1st node
-	aTargetPos[1]				:= 300;
-	aTargetPos[2]				:= 0;
-	aTargetPos[3]				:= 415;
-	aTargetPos[4]				:= 0.0;
-	aTargetPos[5]				:= 80.0;
-	aTargetPos[6]				:= 5.0;
-	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
-	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= 5, InvokeId:= InvokeId);
 	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
 END_IF
 {endregion}
@@ -1501,14 +1310,14 @@ IF AddPickPaths THEN
 	MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
 	
 	//1st node
-	aTargetPos[1]				:= 0;
-	aTargetPos[2]				:= 0;
-	aTargetPos[3]				:= 10;
-	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0;
-	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0;
-	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0;
-	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+	aTargetPos[1]				:= 10; // x
+	aTargetPos[2]				:= 0; // y
+	aTargetPos[3]				:= 0; // z
+	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
+	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
+	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
+	aTransitionParam[1]			:= 0; // blending distance on previous segmente
+	aTransitionParam[2]			:= 0; // blending distance on previous segment
 	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
 	fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= InvokeId);
 	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
@@ -1524,14 +1333,14 @@ IF AddPickPaths THEN
 		ErrorId=> );
 	
 	//1st node
-	aTargetPos[1]				:= 0;
-	aTargetPos[2]				:= 0;
-	aTargetPos[3]				:= 10;
-	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0;
-	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0;
-	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0;
-	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+	aTargetPos[1]				:= -10; // x
+	aTargetPos[2]				:= 0; // y
+	aTargetPos[3]				:= 0; // z
+	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
+	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
+	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
+	aTransitionParam[1]			:= 0; // blending distance on previous segment
+	aTransitionParam[2]			:= 0; // blending distance on previous segment
 	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
 	fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= InvokeId);
 	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
@@ -1558,14 +1367,14 @@ IF AddPlacePaths THEN
 	MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
 	
 	//1st node
-	aTargetPos[1]				:= 0;
-	aTargetPos[2]				:= 0;
-	aTargetPos[3]				:= 10;
-	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0;
-	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0;
-	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0;
-	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+	aTargetPos[1]				:= 10; // x
+	aTargetPos[2]				:= 0; // y
+	aTargetPos[3]				:= 0; // z
+	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
+	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
+	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
+	aTransitionParam[1]			:= 0;// blending distance on previous segment
+	aTransitionParam[2]			:= 0; // blending distance on previous segment
 	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
 	fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= InvokeId);
 	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
@@ -1581,14 +1390,14 @@ IF AddPlacePaths THEN
 		ErrorId=> );
 	
 	//1st node
-	aTargetPos[1]				:= 0;
-	aTargetPos[2]				:= 0;
-	aTargetPos[3]				:= 10;
-	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0;
-	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0;
-	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0;
-	aTransitionParam[1]			:= 0; //blending distance on previous segment, no influence here
-	aTransitionParam[2]			:= 0; //blending distance on this segment, no influence here
+	aTargetPos[1]				:= -10; // x
+	aTargetPos[2]				:= 0; // y
+	aTargetPos[3]				:= 0; // z
+	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
+	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
+	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
+	aTransitionParam[1]			:= 0; // blending distance on previous segment
+	aTransitionParam[2]			:= 0; // blending distance on previous segment
 	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
 	fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= InvokeId);
 	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
