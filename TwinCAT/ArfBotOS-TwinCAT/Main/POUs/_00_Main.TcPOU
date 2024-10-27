@@ -813,7 +813,7 @@ VAR_STAT
 	CurrentColumn: INT:=0;
 	TcpCoordinateFrame, Ucs1CoordinateFrame: FB_CoordinateFrame;
 	TcpOffsetFrame, Ucs1OffsetFrame: DUT_CoordFrame;
-	NestHomePosition: DUT_COORD_REF:=(X:=0.0, Y:=0.0, Z:=0.0, A:=0.0, B:=0.0, C:=0.0); // This will be the position of the first part in the nest in the MCS frame.
+	NestHomePosition: DUT_COORD_REF:=(X:=350.0, Y:=-100.0, Z:=172.0, A:=0.0, B:=0.0, C:=130.0); // This will be the position of the first part in the nest in the MCS frame.
 	SetUcs1, Ucs1Set: BOOL;
 	SetTcp, TcpSet: BOOL;
 	PreparePick, PickGlowStick: BOOL;
@@ -836,13 +836,13 @@ VAR_STAT
 	//
 	MoveAcs, AcsMoveDone: BOOL;
 	mcMoveAbsoluteAcs: ARRAY[1..NumberOfAxes] OF MC_MoveAbsolute;
-	MovePositionAcs: ARRAY[1..NumberOfAxes] OF LREAL:=[0, -15, 115, 0, 30, 0];
+	MovePositionAcs: ARRAY[1..NumberOfAxes] OF LREAL:=[0, -15, 130, 0, -30, 0];
 	
 	//
 	ResetGroup, EnableAcs, EnableMcs, EnableUcs1, EnableTcp, DisableGroup, ToggleGripper: BOOL;
 	
 END_VAR
-VAR CONSTANT
+VAR_STAT CONSTANT
 	// Steps
 	S_IDLE: INT:=0000;
 	S_ENABLEGROUPACS1: INT:=0010;
@@ -1239,16 +1239,16 @@ IF AddPrePickPaths THEN
 	MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
 	
 	// 1st node
-	aTargetPos[1]				:= 331; // x
-	aTargetPos[2]				:= -136; // y
-	aTargetPos[3]				:= 163; // z
+	aTargetPos[1]				:= 350; // x
+	aTargetPos[2]				:= -150; // y
+	aTargetPos[3]				:= 210; // z
 	aTargetPos[4]				:= 152; // a
-	aTargetPos[5]				:= 80; // b
-	aTargetPos[6]				:= 103; // c
+	aTargetPos[5]				:= 90; // b
+	aTargetPos[6]				:= 110; // c
 	aTransitionParam[1]			:= 0; // blending distance on previous segment
 	aTransitionParam[2]			:= 0; // blending distance on previous segment
 	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= 20, InvokeId:= InvokeId);
+	fbMoveLinPrep(PathData:= path , Velocity:= 40, InvokeId:= InvokeId);
 	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
 END_IF
 IF AddPrePlacePaths THEN
@@ -1273,16 +1273,16 @@ IF AddPrePlacePaths THEN
 	MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
 	
 	// 1st node
-	aTargetPos[1]				:= 331; // x
-	aTargetPos[2]				:= -136; // y
-	aTargetPos[3]				:= 163; // z
+	aTargetPos[1]				:= 350; // x
+	aTargetPos[2]				:= -150; // y
+	aTargetPos[3]				:= 210; // z
 	aTargetPos[4]				:= 152; // a
-	aTargetPos[5]				:= 80; // b
-	aTargetPos[6]				:= 103; // c
+	aTargetPos[5]				:= 90; // b
+	aTargetPos[6]				:= 110; // c
 	aTransitionParam[1]			:= 0; // blending distance on previous segment
 	aTransitionParam[2]			:= 0; // blending distance on previous segment
 	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= 20, InvokeId:= InvokeId);
+	fbMoveLinPrep(PathData:= path , Velocity:= 40, InvokeId:= InvokeId);
 	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
 END_IF
 {endregion}
@@ -1319,7 +1319,7 @@ IF AddPickPaths THEN
 	aTransitionParam[1]			:= 0; // blending distance on previous segmente
 	aTransitionParam[2]			:= 0; // blending distance on previous segment
 	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= InvokeId);
+	fbMoveLinPrep(PathData:= path , Velocity:= 50, InvokeId:= InvokeId);
 	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
 	
 	// example of how to add a blocker to the path data
@@ -1342,7 +1342,7 @@ IF AddPickPaths THEN
 	aTransitionParam[1]			:= 0; // blending distance on previous segment
 	aTransitionParam[2]			:= 0; // blending distance on previous segment
 	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= InvokeId);
+	fbMoveLinPrep(PathData:= path , Velocity:= 50, InvokeId:= InvokeId);
 	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
 END_IF
 IF AddPlacePaths THEN
@@ -1376,7 +1376,7 @@ IF AddPlacePaths THEN
 	aTransitionParam[1]			:= 0;// blending distance on previous segment
 	aTransitionParam[2]			:= 0; // blending distance on previous segment
 	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= InvokeId);
+	fbMoveLinPrep(PathData:= path , Velocity:= 50, InvokeId:= InvokeId);
 	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
 	
 	// example of how to add a blocker to the path data
@@ -1399,7 +1399,7 @@ IF AddPlacePaths THEN
 	aTransitionParam[1]			:= 0; // blending distance on previous segment
 	aTransitionParam[2]			:= 0; // blending distance on previous segment
 	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= 10, InvokeId:= InvokeId);
+	fbMoveLinPrep(PathData:= path , Velocity:= 50, InvokeId:= InvokeId);
 	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
 END_IF
 {endregion}]]></ST>
