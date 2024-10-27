@@ -1,8 +1,8 @@
-<div id="Desktop" data-tchmi-type="TcHmi.Controls.System.TcHmiView" data-tchmi-top="0" data-tchmi-left="0" data-tchmi-width-mode="Content" data-tchmi-min-width="100" data-tchmi-min-width-unit="%" data-tchmi-height-mode="Content" data-tchmi-min-height="100" data-tchmi-min-height-unit="%">
-  <div id="ViewDesktopBeckhoffLogo" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiImage" data-tchmi-src="Images/Beckhoff_Logo.svg" data-tchmi-left="20" data-tchmi-top="20" data-tchmi-width="194" data-tchmi-height="57">
+<div id="Desktop" data-tchmi-type="TcHmi.Controls.System.TcHmiView" data-tchmi-top="0" data-tchmi-left="0" data-tchmi-width-mode="Content" data-tchmi-min-width="100" data-tchmi-min-width-unit="%" data-tchmi-height-mode="Content" data-tchmi-min-height="100" data-tchmi-min-height-unit="%" data-tchmi-zindex="1">
+  <div id="ViewDesktopBeckhoffLogo" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiImage" data-tchmi-src="Images/Beckhoff_Logo.svg" data-tchmi-left="20" data-tchmi-top="20" data-tchmi-width="194" data-tchmi-height="57" data-tchmi-zindex="1">
 
   </div>
-<div id="TcHmiToggleButton_2" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiToggleButton" data-tchmi-height="35" data-tchmi-height-unit="%" data-tchmi-left="20" data-tchmi-left-unit="%" data-tchmi-text="Trick?" data-tchmi-top="15" data-tchmi-top-unit="%" data-tchmi-width="60" data-tchmi-width-unit="%" data-tchmi-word-wrap="true" data-tchmi-state-symbol="%s%ADS.PLC1._00_Main._M_SpookyHalloween.PickGlowStick%/s%" data-tchmi-text-font-size-unit="%" data-tchmi-text-font-size="1000" data-tchmi-text-font-style="Auto" data-tchmi-text-font-weight="Auto" data-tchmi-text-font-family="Showcard Gothic">
+<div id="TcHmiToggleButton_2" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiToggleButton" data-tchmi-height="35" data-tchmi-height-unit="%" data-tchmi-left="60.0" data-tchmi-left-unit="%" data-tchmi-text="Trick" data-tchmi-top="7.1" data-tchmi-top-unit="%" data-tchmi-width="35.5" data-tchmi-width-unit="%" data-tchmi-word-wrap="false" data-tchmi-state-symbol="%s%ADS.PLC1._00_Main._M_SpookyHalloween.PickGlowStick%/s%" data-tchmi-text-font-size-unit="%" data-tchmi-text-font-size="1000" data-tchmi-text-font-style="Auto" data-tchmi-text-font-weight="Auto" data-tchmi-text-font-family="Showcard Gothic" data-tchmi-zindex="1">
 
 <script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">
 {
@@ -20,7 +20,7 @@
 }
 </script>
 </div>
-<div id="TcHmiToggleButton_3" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiToggleButton" data-tchmi-height="35" data-tchmi-height-unit="%" data-tchmi-left="20.0" data-tchmi-left-unit="%" data-tchmi-text="Treat?" data-tchmi-top="55" data-tchmi-top-unit="%" data-tchmi-width="60" data-tchmi-width-unit="%" data-tchmi-word-wrap="true" data-tchmi-state-symbol="%s%ADS.PLC1._00_Main._M_SpookyHalloween.PickGlowStick%/s%" data-tchmi-text-font-size-unit="%" data-tchmi-text-font-size="1000" data-tchmi-text-font-style="Auto" data-tchmi-text-font-weight="Auto" data-tchmi-text-font-family="Showcard Gothic">
+<div id="TcHmiToggleButton_3" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiToggleButton" data-tchmi-height="35" data-tchmi-height-unit="%" data-tchmi-left="60.2" data-tchmi-left-unit="%" data-tchmi-text="Treat" data-tchmi-top="58.4" data-tchmi-top-unit="%" data-tchmi-width="35.3" data-tchmi-width-unit="%" data-tchmi-word-wrap="false" data-tchmi-state-symbol="%s%ADS.PLC1._00_Main._M_SpookyHalloween.PickGlowStick%/s%" data-tchmi-text-font-size-unit="%" data-tchmi-text-font-size="1000" data-tchmi-text-font-style="Auto" data-tchmi-text-font-weight="Auto" data-tchmi-text-font-family="Showcard Gothic" data-tchmi-zindex="1">
 <script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">
 {
   "angle": 0.0,
@@ -34,6 +34,60 @@
       "stop": "34.45%"
     }
   ]
+}
+</script>
+</div>
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">
+{
+  "angle": 0.0,
+  "stopPoints": [
+    {
+      "color": "rgba(0, 0, 0, 1)",
+      "stop": "0%"
+    },
+    {
+      "color": "rgba(255, 255, 255, 1)",
+      "stop": "100%"
+    }
+  ]
+}
+</script>
+<div id="TcHmiVideo_2" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiVideo" data-tchmi-controls="false" data-tchmi-height="55.2" data-tchmi-height-unit="%" data-tchmi-left="32" data-tchmi-left-unit="px" data-tchmi-mute="false" data-tchmi-top="129" data-tchmi-top-unit="px" data-tchmi-width="51.5" data-tchmi-width-unit="%" data-tchmi-autoplay="true" data-tchmi-zindex="0" data-tchmi-loop="true">
+<script data-tchmi-target-attribute="data-tchmi-src-list" type="application/json">
+[
+  {
+    "objectType": "VideoSource",
+    "source": "Monster Mash.MP4",
+    "type": "video/mp4"
+  }
+]
+</script>
+
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">
+{
+  "color": "None"
+}
+</script>
+</div>
+<div id="TcHmiTextblock_1" data-tchmi-type="TcHmi.Controls.Beckhoff.TcHmiTextblock" data-tchmi-height="6.7" data-tchmi-height-unit="%" data-tchmi-left="71.8" data-tchmi-left-unit="%" data-tchmi-text="or" data-tchmi-top="48.3" data-tchmi-top-unit="%" data-tchmi-width="12.3" data-tchmi-width-unit="%" data-tchmi-word-wrap="true" data-tchmi-text-font-family="Showcard Gothic" data-tchmi-text-horizontal-alignment="Center" data-tchmi-text-vertical-alignment="Center" data-tchmi-text-font-size="300" data-tchmi-text-font-size-unit="%" data-tchmi-is-enabled="false" data-tchmi-zindex="1">
+
+<script data-tchmi-target-attribute="data-tchmi-background-color" type="application/json">
+{
+  "color": "None"
+}
+</script>
+
+<script data-tchmi-target-attribute="data-tchmi-border-color" type="application/json">
+{
+  "color": "None"
+}
+</script>
+
+<script data-tchmi-target-attribute="data-tchmi-text-color" type="application/json">
+{
+  "color": "rgba(0, 0, 0, 1)"
 }
 </script>
 </div>

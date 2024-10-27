@@ -410,3 +410,5 @@ FodyWeavers.xsd
 
 Codesys/ArfBot.~u
 /TwinCAT/ArfBotOS-TwinCAT/_Boot
+/TwinCAT/TcHmi/Videos
+*.MP4
