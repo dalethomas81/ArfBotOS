@@ -2549,7 +2549,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{C830A277-8CBC-2487-E030-9239EF048808}" AutoDeleteType="true">DUT_CommandType</Name>
+			<Name GUID="{2CC6F061-D0DD-0FD0-350F-2E5625F1045F}" AutoDeleteType="true">DUT_CommandType</Name>
 			<BitSize>16</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
 			<EnumInfo>
@@ -2590,6 +2590,9 @@ and will return to Group State Standby when the situation permits.
 			</EnumInfo>
 			<Properties>
 				<Property>
+					<Name>generate_implicit_init_function</Name>
+				</Property>
+				<Property>
 					<Name>textlistenumeration</Name>
 				</Property>
 				<Property>
@@ -2609,17 +2612,14 @@ and will return to Group State Standby when the situation permits.
 					<Name>to_wstring_function</Name>
 					<Value>__TO_WSTRING__1635</Value>
 				</Property>
-				<Property>
-					<Name>generate_implicit_init_function</Name>
-				</Property>
 			</Properties>
 		</DataType>
 		<DataType>
-			<Name GUID="{AF69B211-641B-EB5E-ED14-55D5AB1D42B3}" AutoDeleteType="true">DUT_Command</Name>
+			<Name GUID="{E04261CA-89D9-359D-147B-E283AF3EF414}" AutoDeleteType="true">DUT_Command</Name>
 			<BitSize>2720</BitSize>
 			<SubItem>
 				<Name>CommandType</Name>
-				<Type GUID="{C830A277-8CBC-2487-E030-9239EF048808}">DUT_CommandType</Type>
+				<Type GUID="{2CC6F061-D0DD-0FD0-350F-2E5625F1045F}">DUT_CommandType</Type>
 				<BitSize>16</BitSize>
 				<BitOffs>0</BitOffs>
 			</SubItem>
@@ -2637,7 +2637,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{0D984A04-251F-ABF2-3DB9-B89492C8DB95}" AutoDeleteType="true">DUT_Program</Name>
+			<Name GUID="{AFD2A8E0-CF7C-E28C-A06D-D32D3FB6EA7B}" AutoDeleteType="true">DUT_Program</Name>
 			<BitSize>136656</BitSize>
 			<SubItem>
 				<Name>ProgramName</Name>
@@ -2647,7 +2647,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 			<SubItem>
 				<Name>Commands</Name>
-				<Type GUID="{AF69B211-641B-EB5E-ED14-55D5AB1D42B3}">DUT_Command</Type>
+				<Type GUID="{E04261CA-89D9-359D-147B-E283AF3EF414}">DUT_Command</Type>
 				<ArrayInfo>
 					<LBound>0</LBound>
 					<Elements>50</Elements>
@@ -2657,9 +2657,9 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{3BF2C477-3BCD-1489-A279-6AD2911E9A61}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..19] OF DUT_Program</Name>
+			<Name IecBaseType="true">ARRAY [0..19] OF DUT_Program</Name>
 			<BitSize>2733120</BitSize>
-			<BaseType GUID="{0D984A04-251F-ABF2-3DB9-B89492C8DB95}">DUT_Program</BaseType>
+			<BaseType GUID="{AFD2A8E0-CF7C-E28C-A06D-D32D3FB6EA7B}">DUT_Program</BaseType>
 			<ArrayInfo>
 				<LBound>0</LBound>
 				<Elements>20</Elements>
@@ -3360,7 +3360,7 @@ and will return to Group State Standby when the situation permits.
 					</Drive>
 					<Controller Name="Ctrl" CtrType="1">
 						<CtrPara PriorControlFactor="1">
-							<PID PosKp="10"/>
+							<PID PosKp="90"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -3523,7 +3523,7 @@ and will return to Group State Standby when the situation permits.
 					</Drive>
 					<Controller Name="Ctrl" CtrType="1">
 						<CtrPara PriorControlFactor="1">
-							<PID PosKp="14"/>
+							<PID PosKp="75"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -3686,7 +3686,7 @@ and will return to Group State Standby when the situation permits.
 					</Drive>
 					<Controller Name="Ctrl" CtrType="1">
 						<CtrPara PriorControlFactor="1">
-							<PID PosKp="12"/>
+							<PID PosKp="55"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -3849,7 +3849,7 @@ and will return to Group State Standby when the situation permits.
 					</Drive>
 					<Controller Name="Ctrl" CtrType="1">
 						<CtrPara PriorControlFactor="1">
-							<PID PosKp="14"/>
+							<PID PosKp="50"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -5946,14 +5946,14 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{CB5F9565-652D-F5A8-731A-305417C26C50}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{B51C21AB-6358-A28C-6DCF-DA52354033F4}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
 						<Name>PlcTask Retains</Name>
 						<Var>
 							<Name>PersistentVars.Programs</Name>
-							<Type GUID="{3BF2C477-3BCD-1489-A279-6AD2911E9A61}">ARRAY [0..19] OF DUT_Program</Type>
+							<Type GUID="{B8078405-239C-8495-227D-30541F7CED27}">ARRAY [0..19] OF DUT_Program</Type>
 							<InOut>7</InOut>
 						</Var>
 						<Var>
