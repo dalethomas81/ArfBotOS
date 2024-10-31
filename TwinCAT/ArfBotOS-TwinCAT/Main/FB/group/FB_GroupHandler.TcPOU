@@ -415,8 +415,6 @@ CASE _SeqEnableGroup OF
 		
 	4:	// TODO add timeout timer here
 		IF Error THEN
-			Error := TRUE;
-			//ErrorID := _FB_PowerAll.ErrorID; // TODO get error ID
 			_SeqEnableGroup := 0;
 		ELSIF _KinematicsSet THEN 
 			_SeqEnableGroup := _SeqEnableGroup + 1;

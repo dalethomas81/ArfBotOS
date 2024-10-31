@@ -3,6 +3,10 @@
 #include "DigitalInput.h"
 #include "DigitalOutput.h"
 #include "R_TRIG.h"
+
+// This optional setting causes Encoder to use more optimized code,
+// It must be defined before Encoder.h is included.
+#define ENCODER_OPTIMIZE_INTERRUPTS
 #include <Encoder.h>
 #include <Servo.h>
 
@@ -39,8 +43,8 @@ const int J4_CalPin = 29; // D29 | PWM | TX7
 const int J5_CalPin = 30; // D30 | 
 const int J6_CalPin = 31; // D31 | 
 
-const int J1_EncPinA = 14; // D14 | A0 | PWM | TX3
-const int J1_EncPinB = 15; // D15 | A1 | PWM | RX3
+const int J1_EncPinA = 32; // D32 | 
+const int J1_EncPinB = 35; // D35 | TX8
 const int J2_EncPinA = 38; // D38 | A14
 const int J2_EncPinB = 39; // D39 | A15
 const int J3_EncPinA = 36; // D36 | PWM
@@ -64,9 +68,9 @@ const int DigitalInputPin2 = 41; // D41 | A17
 //const int  = 11; // D11 | PWM | MOSI | RESERVED FOR SPI
 //const int  = 12; // D12 | PWM | MISO | RESERVED FOR SPI
 //const int  = 13; // D13 | PWM | LED | SCK | RESERVED FOR SPI
+//const int  = 14; // D14 | A0 | PWM | TX3
+//const int  = 15; // D15 | A1 | PWM | RX3
 //const int  = 16; // D16 | A2 | SCL1 | RX4
-//const int  = 32; // D32 | 
-//const int  = 35; // D35 | TX8
 
 union u_pto {
   uint8_t b[2];
@@ -126,20 +130,20 @@ DigitalOutput DigitalOutput2(DigitalOutputPin2, OUTPUT, HOLD_LAST); // TODO make
 //
 void setup() {
 
-  Serial.begin(115200);                                           // start serial for output
+  //Serial.begin(115200);                                           // start serial for output
 
                                                                   //---- initialize the EasyCAT board -----
                                                                   
   if (EASYCAT.Init() == true)                                     // initialization
   {                                                               // succesfully completed
     CommsOK = true;
-    Serial.print ("initialized");                                 //
+    //Serial.print ("initialized");                                 //
   }                                                               //
   
   else                                                            // initialization failed   
   {                                                               // the EasyCAT board was not recognized
     CommsOK = false;
-    Serial.print ("initialization failed");                       //     
+    //Serial.print ("initialization failed");                       //     
                                                                   // The most common reason is that the SPI 
                                                                   // chip select choosen on the board doesn't 
                                                                   // match the one choosen by the firmware
@@ -218,7 +222,7 @@ void loop() {
 	SerialOutputTimer = millis();
 	if (SerialOutputTimer - SerialOutputTimer_last > 1000) {
 		SerialOutputTimer_last = SerialOutputTimer;
-		handleSerial();
+		//handleSerial();
 	}
 }
 
@@ -356,11 +360,11 @@ void handleOutputs(){
 }
 
 void handleSerial(){
-  Serial.print(Frequency[0].ival);
+  //Serial.print(Frequency[0].ival);
   //Serial.print(" ");
   //Serial.print(rx_heartbeat);
   //Serial.print(" ");
-  Serial.println();
+  //Serial.println();
 }
 
 // https://www.tutorialspoint.com/cyclic-redundancy-check-crc-in-arduino

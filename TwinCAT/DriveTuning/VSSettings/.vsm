@@ -5,7 +5,7 @@
   <Children>
     <Node>
       <Title>ScopeProject</Title>
-      <Expanded>True</Expanded>
+      <Expanded>False</Expanded>
       <FileName>C:\Users\dalet\Documents\GitHub\ArfBotOS\TwinCAT\DriveTuning\ScopeProject.tcscopex</FileName>
       <Children>
         <Node>
@@ -725,7 +725,7 @@
         </Node>
         <Node>
           <Title>ACS 6</Title>
-          <Expanded>True</Expanded>
+          <Expanded>False</Expanded>
           <FileName></FileName>
           <Children>
             <Node>
@@ -902,7 +902,7 @@
             </Node>
             <Node>
               <Title>Position Lab (5)</Title>
-              <Expanded>True</Expanded>
+              <Expanded>False</Expanded>
               <FileName></FileName>
               <Children>
                 <Node>

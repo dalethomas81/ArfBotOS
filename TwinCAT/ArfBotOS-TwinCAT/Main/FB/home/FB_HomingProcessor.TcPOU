@@ -160,7 +160,7 @@ CASE _SequenceMain OF
 		_SMC_Homing_J2.Execute := TRUE;
 		_SMC_Homing_J3.Execute := TRUE;
 		_ST_HomingOptions_J1.SearchVelocity := _HomingVelocitySlowSlow;
-		_ST_HomingOptions_J2.SearchVelocity := _HomingVelocitySlowSlow;
+		_ST_HomingOptions_J2.SearchVelocity := _HomingVelocitySlow;
 		_ST_HomingOptions_J3.SearchVelocity := _HomingVelocitySlowSlow;
 		_SequenceMain := STEP_WAIT_SLOW_HOME_G1;
 		
