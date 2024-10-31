@@ -461,8 +461,6 @@ CASE _SeqEnableGroup OF
 	10: 
 		// TODO add timeout timer here
 		IF Error THEN
-			Error := TRUE;
-			//ErrorID := ; // TODO get error ID
 			_SeqEnableGroup := 0;
 		ELSIF _TransformSet THEN
 			_GroupEnabled := TRUE;
@@ -593,6 +591,7 @@ CASE _SequenceSetTrans OF
 		_Ucs2OffsetFrame.Direction := MC.ReferenceDefDir.fromReference; // TODO make configurable
 		_Ucs2CoordinateFrame.Execute := TRUE;
 		
+		// tcp will be set to the current mcs position plus any offset in the configuration
 		_TcpOffsetFrame.Position.X := MCS[1].NcToPlc.ActPos + StoredPositions[GVL.TCP_POS_IDX].Position.X;
 		_TcpOffsetFrame.Position.Y := MCS[2].NcToPlc.ActPos + StoredPositions[GVL.TCP_POS_IDX].Position.Y;
 		_TcpOffsetFrame.Position.Z := MCS[3].NcToPlc.ActPos + StoredPositions[GVL.TCP_POS_IDX].Position.Z;

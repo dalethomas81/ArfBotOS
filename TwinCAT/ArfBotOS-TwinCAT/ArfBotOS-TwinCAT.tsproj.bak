@@ -2549,7 +2549,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{2CC6F061-D0DD-0FD0-350F-2E5625F1045F}" AutoDeleteType="true">DUT_CommandType</Name>
+			<Name GUID="{C830A277-8CBC-2487-E030-9239EF048808}" AutoDeleteType="true">DUT_CommandType</Name>
 			<BitSize>16</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
 			<EnumInfo>
@@ -2590,9 +2590,6 @@ and will return to Group State Standby when the situation permits.
 			</EnumInfo>
 			<Properties>
 				<Property>
-					<Name>generate_implicit_init_function</Name>
-				</Property>
-				<Property>
 					<Name>textlistenumeration</Name>
 				</Property>
 				<Property>
@@ -2612,14 +2609,17 @@ and will return to Group State Standby when the situation permits.
 					<Name>to_wstring_function</Name>
 					<Value>__TO_WSTRING__1635</Value>
 				</Property>
+				<Property>
+					<Name>generate_implicit_init_function</Name>
+				</Property>
 			</Properties>
 		</DataType>
 		<DataType>
-			<Name GUID="{E04261CA-89D9-359D-147B-E283AF3EF414}" AutoDeleteType="true">DUT_Command</Name>
+			<Name GUID="{AF69B211-641B-EB5E-ED14-55D5AB1D42B3}" AutoDeleteType="true">DUT_Command</Name>
 			<BitSize>2720</BitSize>
 			<SubItem>
 				<Name>CommandType</Name>
-				<Type GUID="{2CC6F061-D0DD-0FD0-350F-2E5625F1045F}">DUT_CommandType</Type>
+				<Type GUID="{C830A277-8CBC-2487-E030-9239EF048808}">DUT_CommandType</Type>
 				<BitSize>16</BitSize>
 				<BitOffs>0</BitOffs>
 			</SubItem>
@@ -2637,7 +2637,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{AFD2A8E0-CF7C-E28C-A06D-D32D3FB6EA7B}" AutoDeleteType="true">DUT_Program</Name>
+			<Name GUID="{0D984A04-251F-ABF2-3DB9-B89492C8DB95}" AutoDeleteType="true">DUT_Program</Name>
 			<BitSize>136656</BitSize>
 			<SubItem>
 				<Name>ProgramName</Name>
@@ -2647,7 +2647,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 			<SubItem>
 				<Name>Commands</Name>
-				<Type GUID="{E04261CA-89D9-359D-147B-E283AF3EF414}">DUT_Command</Type>
+				<Type GUID="{AF69B211-641B-EB5E-ED14-55D5AB1D42B3}">DUT_Command</Type>
 				<ArrayInfo>
 					<LBound>0</LBound>
 					<Elements>50</Elements>
@@ -2657,9 +2657,9 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{B8078405-239C-8495-227D-30541F7CED27}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..19] OF DUT_Program</Name>
+			<Name IecBaseType="true">ARRAY [0..19] OF DUT_Program</Name>
 			<BitSize>2733120</BitSize>
-			<BaseType GUID="{AFD2A8E0-CF7C-E28C-A06D-D32D3FB6EA7B}">DUT_Program</BaseType>
+			<BaseType GUID="{0D984A04-251F-ABF2-3DB9-B89492C8DB95}">DUT_Program</BaseType>
 			<ArrayInfo>
 				<LBound>0</LBound>
 				<Elements>20</Elements>
@@ -2900,10 +2900,10 @@ and will return to Group State Standby when the situation permits.
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
-						<EncPara ScaleFactorNumerator="0.00227" EncMode="1" MaxCount="#xffffffff">
+						<EncPara ScaleFactorNumerator="0.00225" EncMode="1" MaxCount="#xffffffff">
 							<SoftEndMinControl Enable="true" Range="-180"/>
 							<SoftEndMaxControl Enable="true" Range="180"/>
-							<Inc RefPosition="166" HomingSensorSource="9"/>
+							<Inc RefPosition="173.32" HomingSensorSource="9"/>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -3035,7 +3035,7 @@ and will return to Group State Standby when the situation permits.
 					</Drive>
 					<Controller Name="Ctrl" CtrType="1">
 						<CtrPara PriorControlFactor="1.15">
-							<PID PosKp="40"/>
+							<PID PosKp="20"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -3066,7 +3066,7 @@ and will return to Group State Standby when the situation permits.
 						<EncPara ScaleFactorNumerator="0.0018" Inverse="true" EncMode="1" MaxCount="#xffffffff">
 							<SoftEndMinControl Enable="true" Range="-30"/>
 							<SoftEndMaxControl Enable="true" Range="180"/>
-							<Inc RefSearchInverse="true" RefSyncInverse="false" RefPosition="-35.27" HomingSensorSource="9"/>
+							<Inc RefSearchInverse="true" RefSyncInverse="false" RefPosition="-34.52" HomingSensorSource="9"/>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -3228,8 +3228,8 @@ and will return to Group State Standby when the situation permits.
 					<Encoder Name="Enc" EncType="16">
 						<EncPara ScaleFactorNumerator="0.0018" Inverse="true" EncMode="1" MaxCount="#xffffffff">
 							<SoftEndMinControl Enable="true" Range="-25"/>
-							<SoftEndMaxControl Enable="true" Range="143"/>
-							<Inc RefPosition="145" HomingSensorSource="9"/>
+							<SoftEndMaxControl Enable="true" Range="148"/>
+							<Inc RefPosition="149.38" HomingSensorSource="9"/>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -3392,7 +3392,7 @@ and will return to Group State Standby when the situation permits.
 						<EncPara ScaleFactorNumerator="0.00200892857142857" EncMode="1" MaxCount="#xffffffff">
 							<SoftEndMinControl Enable="true" Range="-160"/>
 							<SoftEndMaxControl Enable="true" Range="120"/>
-							<Inc RefSearchInverse="true" RefSyncInverse="false" RefPosition="-166" HomingSensorSource="9"/>
+							<Inc RefSearchInverse="true" RefSyncInverse="false" RefPosition="-167.97" HomingSensorSource="9"/>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -3553,9 +3553,9 @@ and will return to Group State Standby when the situation permits.
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
 						<EncPara ScaleFactorNumerator="0.00917197452229299" Inverse="true" EncMode="1" MaxCount="#xffffffff">
-							<SoftEndMinControl Enable="true" Range="-80"/>
+							<SoftEndMinControl Enable="true" Range="-85"/>
 							<SoftEndMaxControl Enable="true" Range="100"/>
-							<Inc RefSearchInverse="true" RefSyncInverse="false" RefPosition="-77" HomingSensorSource="9"/>
+							<Inc RefSearchInverse="true" RefSyncInverse="false" RefPosition="-94.05" HomingSensorSource="9"/>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -3718,7 +3718,7 @@ and will return to Group State Standby when the situation permits.
 						<EncPara ScaleFactorNumerator="0.00445475638051044" EncMode="1" MaxCount="#xffffffff">
 							<SoftEndMinControl Enable="true" Range="-180"/>
 							<SoftEndMaxControl Enable="true" Range="180"/>
-							<Inc RefPosition="178" HomingSensorSource="9"/>
+							<Inc RefPosition="178.14" HomingSensorSource="9"/>
 						</EncPara>
 						<Vars VarGrpType="1">
 							<Name>Inputs</Name>
@@ -5947,14 +5947,14 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{96158DCD-DBD9-254D-D34E-86CCCA665B6C}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{4A90AB7C-AE49-6C72-38EB-F8912559BFE4}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
 						<Name>PlcTask Retains</Name>
 						<Var>
 							<Name>PersistentVars.Programs</Name>
-							<Type GUID="{B8078405-239C-8495-227D-30541F7CED27}">ARRAY [0..19] OF DUT_Program</Type>
+							<Type GUID="{3BF2C477-3BCD-1489-A279-6AD2911E9A61}">ARRAY [0..19] OF DUT_Program</Type>
 							<InOut>7</InOut>
 						</Var>
 						<Var>
@@ -5992,12 +5992,12 @@ and will return to Group State Standby when the situation permits.
 					<Vars VarGrpType="2" AreaNo="1">
 						<Name>PlcTask Outputs</Name>
 						<Var>
-							<Name>_00_Main.GroupHandler._stPlcToKin</Name>
-							<Type GUID="{48415C2A-E750-483B-A619-8655B2BEA4B8}" Namespace="MC">PLCTONC_NCICHANNEL_REF</Type>
-						</Var>
-						<Var>
 							<Name>_00_Main.stGroupRef.PlcToNc</Name>
 							<Type GUID="{0E2E3852-A98C-4AF3-81E2-209EE128940C}" Namespace="MC">CDT_PLCTOMC_GROUP</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.GroupHandler._stPlcToKin</Name>
+							<Type GUID="{48415C2A-E750-483B-A619-8655B2BEA4B8}" Namespace="MC">PLCTONC_NCICHANNEL_REF</Type>
 						</Var>
 						<Var>
 							<Name>_00_Main.ACS[1].PlcToNc</Name>

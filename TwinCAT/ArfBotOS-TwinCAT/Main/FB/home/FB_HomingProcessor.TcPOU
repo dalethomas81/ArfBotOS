@@ -190,8 +190,8 @@ CASE _SequenceMain OF
 	STEP_FAST_HOME_G2:		
 		_SMC_Homing_J4.Execute := TRUE;
 		_SMC_Homing_J5.Execute := TRUE;
-		_ST_HomingOptions_J2.SearchVelocity := _HomingVelocitySlow;
-		_ST_HomingOptions_J3.SearchVelocity := _HomingVelocitySlow;
+		_ST_HomingOptions_J4.SearchVelocity := _HomingVelocitySlow;
+		_ST_HomingOptions_J5.SearchVelocity := _HomingVelocitySlow;
 		_ST_HomingOptions_J4.SearchDirection := Tc2_MC2.MC_Direction.MC_Negative_Direction;
 		_ST_HomingOptions_J5.SearchDirection := Tc2_MC2.MC_Direction.MC_Negative_Direction;
 		_SequenceMain := STEP_WAIT_FAST_HOME_G2;

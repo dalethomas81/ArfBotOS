@@ -74,9 +74,9 @@ END_VAR]]></Declaration>
 	_M_SpookyHalloween();
 	//_M_HelloWorld();
 	_M_GroupHandler();
-    _M_Jogging();
+    //_M_Jogging();
     _M_Homing();
-    _M_Processor();
+    //_M_Processor();
 	_M_Devices();
 	//_M_Tuning();
 {endregion}
@@ -672,7 +672,6 @@ END_IF
     <Method Name="_M_Homing" Id="{bf4b7640-1df3-46ff-b6ca-dc416adad7e8}">
       <Declaration><![CDATA[METHOD PRIVATE _M_Homing : BOOL
 VAR_STAT
-	StartHome: BOOL;
 	SetHome: BOOL;
 END_VAR]]></Declaration>
       <Implementation>
@@ -692,8 +691,8 @@ ProcessHome(
 	Error=> , 
 	ErrorID=> );
 
-IF StartHome THEN
-	StartHome:=FALSE;
+IF GVL.StartHome THEN
+	GVL.StartHome:=FALSE;
 	GVL.PowerOn :=TRUE;
 	ProcessHome.M_StartHoming();
 END_IF
@@ -843,6 +842,13 @@ VAR_STAT
 	
 	_x, _y, _z, _a, _b, _c: MC_LREAL;
 	
+	GrossVelocity: LREAL:=100.0; // mm/s
+	FineVelocity: LREAL:=40.0; // mm/s
+	
+	NestRotation_A: LREAL:=89.5; // degrees
+	NestRotation_B: LREAL:=90.5; // degrees
+	NestRotation_C: LREAL:=0.0; // degrees
+	
 END_VAR
 VAR_STAT CONSTANT
 	// Steps
@@ -885,19 +891,25 @@ VAR_STAT CONSTANT
 	S_UNGRIP: INT:=0350;
 	S_WAITFROPLACEDONE: INT:=0360;
 	S_DISABLEGROUPTCP2: INT:=0370;
+	S_WAITFORGRIP: INT:=0380;
+	S_WAITFORUNGRIP: INT:=0390;
+	S_WAITFORPICKBLOCK: INT:=0400;
 
 	//
 	GRIPBLOCKERID: UDINT:=100;
 	UNGRIPBLOCKERID: UDINT:=200;
+	PICKBLOCKERID: UDINT:=300;
 	
 	// Nest Dimensions
-	TOTALROWS: INT:=2;
-	TOTALCOLUMNS: INT:=4;
+	TOTALROWS: INT:=11;
+	TOTALCOLUMNS: INT:=17;
 	ROWOFFSET: LREAL:=15.0;
-	COLOFFSET: LREAL:=20.0;
+	COLOFFSET: LREAL:=19.5;
 	
 	// Product Dimensions
-	PICKHEIGHT: LREAL:=170.0;
+	PICKHEIGHT: LREAL:=170.0; // mm
+	GRIPDEPTH: LREAL:=8.0; // mm
+	UNGRIPDEPTH: LREAL:=50.0; // mm
 END_VAR]]></Declaration>
       <Implementation>
         <ST><![CDATA[// use these to manage the group manually while testing.
@@ -930,6 +942,12 @@ IF ToggleGripper THEN
 	ToggleGripper := FALSE;
 	Gripper.Toggle();
 END_IF
+
+// handy variables
+GroupVelocityFactor := GroupVelocityFactor;
+GVL.Reset := GVL.Reset;
+GVL.PowerOn := GVL.PowerOn;
+GVL.StartHome := GVL.StartHome;
 
 //
 CASE SeqSpookyHalloween OF
@@ -998,17 +1016,77 @@ CASE SeqSpookyHalloween OF
 		AddPrePickPaths:=TRUE;
 		movePrepError:=FALSE;
 		fbMovePath.Execute:=FALSE;
+		fbReleaseBlocker.Execute:=FALSE;
 		SeqSpookyHalloween := S_PREPICK;
 	
 	S_PREPICK: //
-		IF NOT movePrepError THEN
-			fbMovePath.Execute := TRUE;
-			SeqSpookyHalloween := S_WAITFORPREPICKDONE;
-		ELSE
+		IF movePrepError THEN
 			//
+		ELSE
+			fbMovePath.Execute := TRUE;
+			SeqSpookyHalloween := S_WAITFORPICKBLOCK;	
 		END_IF
 		
-	S_WAITFORPREPICKDONE: //
+	S_WAITFORPICKBLOCK: //
+		IF fbMovePath.Error THEN
+			//
+		ELSIF fbGroupReadBlockerStatus.Blocked AND fbGroupReadBlockerStatus.BlockerId = PICKBLOCKERID THEN
+			fbReleaseBlocker.Execute:=FALSE;
+			SeqSpookyHalloween := S_WAITFORPICKTRIGGER;	
+		END_IF
+		
+	S_WAITFORPICKTRIGGER: //
+		IF fbMovePath.Error THEN
+			//
+		ELSIF PickGlowStick THEN
+			PickGlowStick := FALSE;
+			fbReleaseBlocker.BlockerId:=PICKBLOCKERID;
+			fbReleaseBlocker.Execute:=TRUE;
+			SeqSpookyHalloween := S_WAITFORGRIP;
+		END_IF
+		
+	S_WAITFORGRIP: //
+		IF fbMovePath.Error THEN
+			//
+		ELSIF fbGroupReadBlockerStatus.Blocked AND fbGroupReadBlockerStatus.BlockerId = GRIPBLOCKERID THEN
+			fbReleaseBlocker.Execute:=FALSE;
+			SeqSpookyHalloween := S_GRIP;
+		END_IF
+		
+	S_GRIP: // close the gripper and release the blocker
+		Gripper.On(); // TODO may need to wait for a time here or add inputs to the gripper
+		fbReleaseBlocker.BlockerId:=GRIPBLOCKERID;
+		fbReleaseBlocker.Execute:=TRUE;
+		SeqSpookyHalloween := S_WAITFORUNGRIP;
+		
+	S_WAITFORUNGRIP: //
+		IF fbMovePath.Error THEN
+			//
+		ELSIF fbGroupReadBlockerStatus.Blocked AND fbGroupReadBlockerStatus.BlockerId = UNGRIPBLOCKERID THEN
+			fbReleaseBlocker.Execute:=FALSE;
+			SeqSpookyHalloween := S_UNGRIP;
+		END_IF
+		
+	S_UNGRIP: // open the gripper and release the blocker
+		Gripper.Off(); // TODO may need to wait for a time here or add inputs to the gripper
+		fbReleaseBlocker.BlockerId:=UNGRIPBLOCKERID;
+		fbReleaseBlocker.Execute:=TRUE;
+		SeqSpookyHalloween := S_WAITFROPLACEDONE;
+	
+	S_WAITFROPLACEDONE: //
+		IF fbMovePath.Error THEN
+			//
+		ELSIF fbMovePath.Done THEN
+			fbMovePath.Execute := FALSE;
+			fbReleaseBlocker.Execute:=FALSE;
+			SeqSpookyHalloween := S_ADDPREPICKPATH;
+		END_IF
+	
+		
+		
+		
+		
+	(*S_WAITFORPREPICKDONE: //
 		IF fbMovePath.Error THEN
 			//
 		ELSIF fbMovePath.Done THEN
@@ -1173,7 +1251,7 @@ CASE SeqSpookyHalloween OF
 			SeqSpookyHalloween := S_ENABLEGROUPUCS1;
 		ELSE
 			//
-		END_IF
+		END_IF*)
 	
 END_CASE
 
@@ -1246,20 +1324,141 @@ IF AddPrePickPaths THEN
 	fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.Ucs1CoordRef);
 	MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
 	
-	// 1st node
+	// go to nest home
 	aTargetPos[1]				:= 0.0; // x
 	aTargetPos[2]				:= 0.0; // y
 	aTargetPos[3]				:= 0.0; // z
-	aTargetPos[4]				:= 89.0; // a
-	aTargetPos[5]				:= 90.5; // b
-	aTargetPos[6]				:= 0.0; // c
+	aTargetPos[4]				:= NestRotation_A; // a
+	aTargetPos[5]				:= NestRotation_B; // b
+	aTargetPos[6]				:= NestRotation_C; // c
 	aTransitionParam[1]			:= 0; // blending distance on previous segment
 	aTransitionParam[2]			:= 0; // blending distance on previous segment
 	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= 40, InvokeId:= InvokeId);
+	fbMoveLinPrep(PathData:= path , Velocity:= GrossVelocity, InvokeId:= InvokeId);
 	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+	
+	// block for the trigger to pick
+	InvokeId := InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+	fbBlockerPreparation(
+		PathData:= path, 
+		BlockerId:= PICKBLOCKERID, // blocker id is unique
+		BufferMode:= mcBuffered, 
+		InvokeId:= InvokeId, 
+		Error=> , 
+		ErrorId=> );
+	
+	// move down to the correct row and column
+	aTargetPos[1]				:= -(CurrentColumn * COLOFFSET); // x
+	aTargetPos[2]				:= -(CurrentRow * ROWOFFSET); // y
+	aTargetPos[3]				:= 0.0; // z
+	aTargetPos[4]				:= NestRotation_A; // a
+	aTargetPos[5]				:= NestRotation_B; // b
+	aTargetPos[6]				:= NestRotation_C; // c
+	aTransitionParam[1]			:= 0; // blending distance on previous segment
+	aTransitionParam[2]			:= 0; // blending distance on previous segment
+	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+	fbMoveLinPrep(PathData:= path , Velocity:= GrossVelocity, InvokeId:= InvokeId);
+	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+	
+	// move in to the pick position
+	aTargetPos[1]				:= -(CurrentColumn * COLOFFSET); // x
+	aTargetPos[2]				:= -(CurrentRow * ROWOFFSET) - GRIPDEPTH; // y
+	aTargetPos[3]				:= 0.0; // z
+	aTargetPos[4]				:= NestRotation_A; // a
+	aTargetPos[5]				:= NestRotation_B; // b
+	aTargetPos[6]				:= NestRotation_C; // c
+	aTransitionParam[1]			:= 0; // blending distance on previous segment
+	aTransitionParam[2]			:= 0; // blending distance on previous segment
+	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+	fbMoveLinPrep(PathData:= path , Velocity:= FineVelocity, InvokeId:= InvokeId);
+	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+	
+	// block for the gripper to actuate
+	InvokeId := InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+	fbBlockerPreparation(
+		PathData:= path, 
+		BlockerId:= GRIPBLOCKERID, // blocker id is unique
+		BufferMode:= mcBuffered, 
+		InvokeId:= InvokeId, 
+		Error=> , 
+		ErrorId=> );
+	
+	// pick the glow stick out of the nest
+	aTargetPos[1]				:= -(CurrentColumn * COLOFFSET); // x
+	aTargetPos[2]				:= -(CurrentRow * ROWOFFSET) - GRIPDEPTH; // y
+	aTargetPos[3]				:= PICKHEIGHT; // z
+	aTargetPos[4]				:= NestRotation_A; // a
+	aTargetPos[5]				:= NestRotation_B; // b
+	aTargetPos[6]				:= NestRotation_C; // c
+	aTransitionParam[1]			:= 0; // blending distance on previous segment
+	aTransitionParam[2]			:= 0; // blending distance on previous segment
+	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+	fbMoveLinPrep(PathData:= path , Velocity:= FineVelocity, InvokeId:= InvokeId);
+	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+	
+	// increment column and row
+	IF CurrentColumn < TOTALCOLUMNS-1 THEN
+		CurrentColumn := CurrentColumn + 1;
+	ELSE
+		CurrentColumn := 0;
+		IF CurrentRow < TOTALROWS-1 THEN
+			CurrentRow := CurrentRow + 1;
+		ELSE
+			CurrentRow := 0;
+		END_IF
+	END_IF
+	
+	// move to preplace position TODO make this at UCS2
+	aTargetPos[1]				:= 50; // x
+	aTargetPos[2]				:= 200; // y
+	aTargetPos[3]				:= PICKHEIGHT; // z
+	aTargetPos[4]				:= 0; // a
+	aTargetPos[5]				:= 90; // b
+	aTargetPos[6]				:= 0; // c
+	aTransitionParam[1]			:= 0; // blending distance on previous segment
+	aTransitionParam[2]			:= 0; // blending distance on previous segment
+	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+	fbMoveLinPrep(PathData:= path , Velocity:= GrossVelocity, InvokeId:= InvokeId);
+	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+	
+	// move to place position TODO make this at UCS2
+	aTargetPos[1]				:= 50 + UNGRIPDEPTH; // x
+	aTargetPos[2]				:= 200; // y
+	aTargetPos[3]				:= PICKHEIGHT; // z
+	aTargetPos[4]				:= 0; // a
+	aTargetPos[5]				:= 90; // b
+	aTargetPos[6]				:= 0; // c
+	aTransitionParam[1]			:= 0; // blending distance on previous segment
+	aTransitionParam[2]			:= 0; // blending distance on previous segment
+	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+	fbMoveLinPrep(PathData:= path , Velocity:= FineVelocity, InvokeId:= InvokeId);
+	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+	
+	// open the gripper to drop the glowstick
+	InvokeId := InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+	fbBlockerPreparation(
+		PathData:= path, 
+		BlockerId:= UNGRIPBLOCKERID, // blocker id is unique
+		BufferMode:= mcBuffered, 
+		InvokeId:= InvokeId, 
+		Error=> , 
+		ErrorId=> );
+	
+	// move to preplace position TODO make this at UCS2
+	aTargetPos[1]				:= 50; // x
+	aTargetPos[2]				:= 200; // y
+	aTargetPos[3]				:= PICKHEIGHT; // z
+	aTargetPos[4]				:= 0; // a
+	aTargetPos[5]				:= 90; // b
+	aTargetPos[6]				:= 0; // c
+	aTransitionParam[1]			:= 0; // blending distance on previous segment
+	aTransitionParam[2]			:= 0; // blending distance on previous segment
+	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+	fbMoveLinPrep(PathData:= path , Velocity:= FineVelocity, InvokeId:= InvokeId);
+	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+
 END_IF
-IF AddPrePlacePaths THEN
+(*IF AddPrePlacePaths THEN
 	AddPrePlacePaths := FALSE;
 	
 	path.ClearPath();  //Clear nodes that were in path
@@ -1438,7 +1637,7 @@ IF AddPlacePaths THEN
 	fbMoveLinPrep(PathData:= path , Velocity:= 50, InvokeId:= InvokeId);
 	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
 	
-END_IF
+END_IF*)
 {endregion}]]></ST>
       </Implementation>
     </Method>

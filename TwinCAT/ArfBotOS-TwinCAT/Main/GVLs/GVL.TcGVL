@@ -87,6 +87,7 @@ VAR_GLOBAL
 	//
 	PowerOn:BOOL;
 	Reset: BOOL;
+	StartHome: BOOL;
 	ResetRtrig: R_TRIG;
 	StorePersist: BOOL;
 	

@@ -409,16 +409,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <SubObject Include="_00_Main.M_BuildTests" />
-    <SubObject Include="_00_Main.M_Init" />
-    <SubObject Include="_00_Main._M_Devices" />
-    <SubObject Include="_00_Main._M_GroupHandler" />
-    <SubObject Include="_00_Main._M_Homing" />
-    <SubObject Include="_00_Main._M_Jogging" />
-    <SubObject Include="_00_Main._M_Processor" />
-    <SubObject Include="_00_Main._M_Tuning" />
-  </ItemGroup>
-  <ItemGroup>
     <PlaceholderResolution Include="CmpDynamicText">
       <Resolution>CmpDynamicText, 3.5.17.0 (System)</Resolution>
     </PlaceholderResolution>
