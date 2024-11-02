@@ -5,7 +5,7 @@
   <Children>
     <Node>
       <Title>ScopeProject</Title>
-      <Expanded>True</Expanded>
+      <Expanded>False</Expanded>
       <FileName>C:\Users\dalet\Documents\GitHub\ArfBotOS\TwinCAT\DriveTuning\ScopeProject.tcscopex</FileName>
       <Children>
         <Node>
@@ -1241,12 +1241,12 @@
         </Node>
         <Node>
           <Title>MCS</Title>
-          <Expanded>True</Expanded>
+          <Expanded>False</Expanded>
           <FileName></FileName>
           <Children>
             <Node>
               <Title>X</Title>
-              <Expanded>True</Expanded>
+              <Expanded>False</Expanded>
               <FileName></FileName>
               <Children>
                 <Node>
@@ -1259,7 +1259,7 @@
             </Node>
             <Node>
               <Title>Y</Title>
-              <Expanded>True</Expanded>
+              <Expanded>False</Expanded>
               <FileName></FileName>
               <Children>
                 <Node>
@@ -1272,7 +1272,7 @@
             </Node>
             <Node>
               <Title>Z</Title>
-              <Expanded>True</Expanded>
+              <Expanded>False</Expanded>
               <FileName></FileName>
               <Children>
                 <Node>
@@ -1285,7 +1285,7 @@
             </Node>
             <Node>
               <Title>A</Title>
-              <Expanded>True</Expanded>
+              <Expanded>False</Expanded>
               <FileName></FileName>
               <Children>
                 <Node>
@@ -1298,7 +1298,7 @@
             </Node>
             <Node>
               <Title>B</Title>
-              <Expanded>True</Expanded>
+              <Expanded>False</Expanded>
               <FileName></FileName>
               <Children>
                 <Node>
@@ -1311,7 +1311,7 @@
             </Node>
             <Node>
               <Title>C</Title>
-              <Expanded>True</Expanded>
+              <Expanded>False</Expanded>
               <FileName></FileName>
               <Children>
                 <Node>

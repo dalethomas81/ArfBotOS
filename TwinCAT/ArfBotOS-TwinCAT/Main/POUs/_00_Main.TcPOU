@@ -42,6 +42,8 @@ VAR
 	// devices
 	//Controller: FB_Controller;
 	Gripper: FB_DigitalOutput;
+	Laser: FB_DigitalOutput;
+	Smoke: FB_DigitalOutput;
 	
 	// hello world
 	buffer: ARRAY[1..4096] OF BYTE;
@@ -103,6 +105,8 @@ END_VAR
       <Implementation>
         <ST><![CDATA[//
 Gripper();
+Laser();
+Smoke();
 
 (*
 // dont get sleepy
@@ -840,7 +844,8 @@ VAR_STAT
 	MovePositionAcs: ARRAY[1..NumberOfAxes] OF LREAL:=[0, -15, 130, 0, -30, 0];
 	
 	//
-	ResetGroup, EnableAcs, EnableMcs, EnableUcs1, EnableTcp, DisableGroup, ToggleGripper: BOOL;
+	ResetGroup, EnableAcs, EnableMcs, EnableUcs1, EnableTcp, DisableGroup, 
+	ToggleGripper, ToggleLaser, ToggleSmoke: BOOL;
 	
 	_x, _y, _z, _a, _b, _c: MC_LREAL;
 	
@@ -947,6 +952,14 @@ END_IF
 IF ToggleGripper THEN
 	ToggleGripper := FALSE;
 	Gripper.Toggle();
+END_IF
+IF ToggleLaser THEN
+	ToggleLaser := FALSE;
+	Laser.Toggle();
+END_IF
+IF ToggleSmoke THEN
+	ToggleSmoke := FALSE;
+	Smoke.Toggle();
 END_IF
 
 // handy variables
