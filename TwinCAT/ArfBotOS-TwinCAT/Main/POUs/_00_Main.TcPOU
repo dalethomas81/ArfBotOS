@@ -805,6 +805,8 @@ ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCo
 VAR_INPUT
 END_VAR
 VAR_STAT
+	SeqReset: INT;
+	ResetSeq: BOOL;
 	SeqSpookyHalloween: INT;
 	SeqSetUcs1, SeqSetTcp: INT;
 	SeqEnableMcs, SeqEnableUcs1, SeqEnableTcp: INT;
@@ -846,9 +848,10 @@ VAR_STAT
 	FineVelocity: LREAL:=40.0; // mm/s
 	
 	// rotation is din9000 standard evaluated in the order z, then y, then x
+	// this is how we want the end effector to be rotated in relation to the nest
 	NestRotation_A: LREAL:=89.3; // degrees rotated about the x axis
 	NestRotation_B: LREAL:=91.0; // degrees rotated about the y axis
-	NestRotation_C: LREAL:=0.0; // degrees rotatied about the z axis
+	NestRotation_C: LREAL:=0.0; // degrees rotated about the z axis
 	
 END_VAR
 VAR_STAT CONSTANT
@@ -951,8 +954,24 @@ GVL.PowerOn;
 GVL.StartHome;
 CurrentRow;
 CurrentColumn;
+ResetSeq;
 PreparePick;
 PickGlowStick;
+
+CASE SeqReset OF
+	0:
+		IF ResetSeq THEN
+			ResetSeq:=FALSE;
+			SeqSpookyHalloween := 0;
+			GroupHandler.M_DisableGroup();
+			SeqReset := SeqReset + 1;
+		END_IF
+	1:
+		IF NOT GroupHandler.P_GroupEnabled THEN
+			GroupHandler.M_ResetGroup();
+			SeqReset := 0;
+		END_IF
+END_CASE
 
 //
 CASE SeqSpookyHalloween OF
@@ -1024,7 +1043,7 @@ CASE SeqSpookyHalloween OF
 		SeqSpookyHalloween := S_PREPICK;
 	
 	S_PREPICK: //
-		IF NOT movePrepError THEN
+		IF NOT movePrepError AND NOT AddPrePickPaths THEN
 			fbMovePath.Execute := TRUE;
 			SeqSpookyHalloween := S_WAITFORPREPICKDONE;
 		ELSE
@@ -1072,7 +1091,7 @@ CASE SeqSpookyHalloween OF
 		SeqSpookyHalloween := S_PICK;
 	
 	S_PICK: //
-		IF NOT movePrepError THEN
+		IF NOT movePrepError AND NOT AddPickPaths THEN
 			fbMovePath.Execute := TRUE;
 			// wait for gripper to be open and tool in position
 			IF fbGroupReadBlockerStatus.Blocked AND fbGroupReadBlockerStatus.BlockerId = GRIPBLOCKERID THEN
@@ -1122,7 +1141,7 @@ CASE SeqSpookyHalloween OF
 		SeqSpookyHalloween := S_PREPLACE;
 	
 	S_PREPLACE: //
-		IF NOT movePrepError THEN
+		IF NOT movePrepError AND NOT AddPrePlacePaths THEN
 			fbMovePath.Execute := TRUE;
 			SeqSpookyHalloween := S_WAITFORPREPLACEDONE;
 		ELSE
@@ -1166,7 +1185,7 @@ CASE SeqSpookyHalloween OF
 		SeqSpookyHalloween := S_PLACE;
 	
 	S_PLACE: //
-		IF NOT movePrepError THEN
+		IF NOT movePrepError AND NOT AddPlacePaths THEN
 			fbMovePath.Execute := TRUE;
 			// wait for gripper to be open and tool in position
 			IF fbGroupReadBlockerStatus.Blocked AND fbGroupReadBlockerStatus.BlockerId = UNGRIPBLOCKERID THEN
@@ -1252,70 +1271,79 @@ IF AddPrePickPaths THEN
 	AddPrePickPaths := FALSE;
 	
 	path.ClearPath();  //Clear nodes that were in path
-	InvokeId := 0;
-
-	fbMoveLinPrep.Position						:= ADR(aTargetPos); //pointer to position array
-	fbMoveLinPrep.PositionCount 				:= NumberOfAxes; //number of axes in group
-	fbMoveLinPrep.TransitionParameter			:= ADR (aTransitionParam); //pointer to transition parameter array
-	fbMoveLinPrep.TransitionParameterCount		:= 2; //number of transition parameters, has to be set always 2
-	fbMoveLinPrep.BufferMode					:= mcBlendingPrevious;
-	fbMoveLinPrep.TransitionMode				:= mcTransModeCornerDistanceAdvanced;
-	//Set dynamics to default values of the axes
-	fbMoveLinPrep.Acceleration					:= MC_DEFAULT;
-	fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
-	fbMoveLinPrep.Jerk							:= MC_DEFAULT;
+	IF path.OccupiedBuffer <> 0 THEN
+		MovePrepError := TRUE;
+	ELSE
+		InvokeId := 0;
 	
-	// set ucs frame
-	fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.Ucs1CoordRef);
-	MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
+		fbMoveLinPrep.Position						:= ADR(aTargetPos); //pointer to position array
+		fbMoveLinPrep.PositionCount 				:= NumberOfAxes; //number of axes in group
+		fbMoveLinPrep.TransitionParameter			:= ADR (aTransitionParam); //pointer to transition parameter array
+		fbMoveLinPrep.TransitionParameterCount		:= 2; //number of transition parameters, has to be set always 2
+		fbMoveLinPrep.BufferMode					:= mcBlendingPrevious;
+		fbMoveLinPrep.TransitionMode				:= mcTransModeCornerDistanceAdvanced;
+		//Set dynamics to default values of the axes
+		fbMoveLinPrep.Acceleration					:= MC_DEFAULT;
+		fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
+		fbMoveLinPrep.Jerk							:= MC_DEFAULT;
+		
+		// set ucs frame
+		fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.Ucs1CoordRef);
+		MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
+		
+		// 1st node
+		aTargetPos[1]				:= 0.0; // x
+		aTargetPos[2]				:= 0.0; // y
+		aTargetPos[3]				:= 0.0; // z
+		aTargetPos[4]				:= NestRotation_A; // a 
+		aTargetPos[5]				:= NestRotation_B; // b
+		aTargetPos[6]				:= NestRotation_C; // c
+		aTransitionParam[1]			:= 0; // blending distance on previous segment
+		aTransitionParam[2]			:= 0; // blending distance on previous segment
+		InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+		fbMoveLinPrep(PathData:= path , Velocity:= GrossVelocity, InvokeId:= InvokeId);
+		MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+	END_IF
 	
-	// 1st node
-	aTargetPos[1]				:= 0.0; // x
-	aTargetPos[2]				:= 0.0; // y
-	aTargetPos[3]				:= 0.0; // z
-	// TODO, for some reason the rotation doesnt work when assigned in the UCS1 frame. Lets rotate here for now
-	aTargetPos[4]				:= NestRotation_A; // a 
-	aTargetPos[5]				:= NestRotation_B; // b
-	aTargetPos[6]				:= NestRotation_C; // c
-	aTransitionParam[1]			:= 0; // blending distance on previous segment
-	aTransitionParam[2]			:= 0; // blending distance on previous segment
-	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= GrossVelocity, InvokeId:= InvokeId);
-	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
 END_IF
 IF AddPrePlacePaths THEN
 	AddPrePlacePaths := FALSE;
 	
 	path.ClearPath();  //Clear nodes that were in path
-	InvokeId := 0;
-
-	fbMoveLinPrep.Position						:= ADR(aTargetPos); //pointer to position array
-	fbMoveLinPrep.PositionCount 				:= NumberOfAxes; //number of axes in group
-	fbMoveLinPrep.TransitionParameter			:= ADR (aTransitionParam); //pointer to transition parameter array
-	fbMoveLinPrep.TransitionParameterCount		:= 2; //number of transition parameters, has to be set always 2
-	fbMoveLinPrep.BufferMode					:= mcBlendingPrevious;
-	fbMoveLinPrep.TransitionMode				:= mcTransModeCornerDistanceAdvanced;
-	//Set dynamics to default values of the axes
-	fbMoveLinPrep.Acceleration					:= MC_DEFAULT;
-	fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
-	fbMoveLinPrep.Jerk							:= MC_DEFAULT;
+	IF path.OccupiedBuffer <> 0 THEN
+		MovePrepError := TRUE;
+	ELSE
+		InvokeId := 0;
 	
-	// set ucs frame
-	fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.Ucs1CoordRef);
-	MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
+		fbMoveLinPrep.Position						:= ADR(aTargetPos); //pointer to position array
+		fbMoveLinPrep.PositionCount 				:= NumberOfAxes; //number of axes in group
+		fbMoveLinPrep.TransitionParameter			:= ADR (aTransitionParam); //pointer to transition parameter array
+		fbMoveLinPrep.TransitionParameterCount		:= 2; //number of transition parameters, has to be set always 2
+		fbMoveLinPrep.BufferMode					:= mcBlendingPrevious;
+		fbMoveLinPrep.TransitionMode				:= mcTransModeCornerDistanceAdvanced;
+		//Set dynamics to default values of the axes
+		fbMoveLinPrep.Acceleration					:= MC_DEFAULT;
+		fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
+		fbMoveLinPrep.Jerk							:= MC_DEFAULT;
+		
+		// set ucs frame
+		fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.Ucs1CoordRef);
+		MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
+		
+		// 1st node
+		aTargetPos[1]				:= 50; // x
+		aTargetPos[2]				:= 200; // y
+		aTargetPos[3]				:= 180; // z
+		aTargetPos[4]				:= 0; // a
+		aTargetPos[5]				:= 90; // b
+		aTargetPos[6]				:= 0; // c
+		aTransitionParam[1]			:= 0; // blending distance on previous segment
+		aTransitionParam[2]			:= 0; // blending distance on previous segment
+		InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+		fbMoveLinPrep(PathData:= path , Velocity:= GrossVelocity, InvokeId:= InvokeId);
+		MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+	END_IF
 	
-	// 1st node
-	aTargetPos[1]				:= 50; // x
-	aTargetPos[2]				:= 200; // y
-	aTargetPos[3]				:= 180; // z
-	aTargetPos[4]				:= 0; // a
-	aTargetPos[5]				:= 90; // b
-	aTargetPos[6]				:= 0; // c
-	aTransitionParam[1]			:= 0; // blending distance on previous segment
-	aTransitionParam[2]			:= 0; // blending distance on previous segment
-	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= GrossVelocity, InvokeId:= InvokeId);
-	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
 END_IF
 {endregion}
 {region 'add tcp paths'}
@@ -1324,83 +1352,87 @@ IF AddPickPaths THEN
 	AddPickPaths := FALSE;
 	
 	path.ClearPath();  //Clear nodes that were in path
-	InvokeId := 0;
-
-	fbMoveLinPrep.Position						:= ADR(aTargetPos); //pointer to position array
-	fbMoveLinPrep.PositionCount 				:= NumberOfAxes; //number of axes in group
-	fbMoveLinPrep.TransitionParameter			:= ADR (aTransitionParam); //pointer to transition parameter array
-	fbMoveLinPrep.TransitionParameterCount		:= 2; //number of transition parameters, has to be set always 2
-	fbMoveLinPrep.BufferMode					:= mcBlendingPrevious;
-	fbMoveLinPrep.TransitionMode				:= mcTransModeCornerDistanceAdvanced;
-	//Set dynamics to default values of the axes
-	fbMoveLinPrep.Acceleration					:= MC_DEFAULT;
-	fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
-	fbMoveLinPrep.Jerk							:= MC_DEFAULT;
-	
-	//
-	fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.TcpCoordRef);
-	MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
-	
-	//1st node
-	aTargetPos[1]				:= 0; // x
-	aTargetPos[2]				:= -(CurrentColumn * COLOFFSET); // y
-	aTargetPos[3]				:= (CurrentRow * ROWOFFSET); // z
-	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
-	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
-	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
-	aTransitionParam[1]			:= 0; // blending distance on previous segmente
-	aTransitionParam[2]			:= 0; // blending distance on previous segment
-	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= FineVelocity, InvokeId:= InvokeId);
-	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
-	
-	//1st node
-	aTargetPos[1]				:= 0; // x
-	aTargetPos[2]				:= -(CurrentColumn * COLOFFSET); // y
-	aTargetPos[3]				:= (CurrentRow * ROWOFFSET) + GRIPDEPTH; // z
-	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
-	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
-	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
-	aTransitionParam[1]			:= 0; // blending distance on previous segmente
-	aTransitionParam[2]			:= 0; // blending distance on previous segment
-	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= FineVelocity, InvokeId:= InvokeId);
-	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
-	
-	// example of how to add a blocker to the path data
-	InvokeId := InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbBlockerPreparation(
-		PathData:= path, 
-		BlockerId:= GRIPBLOCKERID, // blocker id is unique
-		BufferMode:= mcBuffered, 
-		InvokeId:= InvokeId, 
-		Error=> , 
-		ErrorId=> );
-	
-	//1st node
-	aTargetPos[1]				:= -PICKHEIGHT; // x
-	aTargetPos[2]				:= -(CurrentColumn * COLOFFSET); // y
-	aTargetPos[3]				:= (CurrentRow * ROWOFFSET) + GRIPDEPTH; // z
-	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
-	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
-	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
-	aTransitionParam[1]			:= 0; // blending distance on previous segment
-	aTransitionParam[2]			:= 0; // blending distance on previous segment
-	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= FineVelocity, InvokeId:= InvokeId);
-	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
-	
-	//
-	// increment column and row
-	//
-	IF CurrentColumn < TOTALCOLUMNS-1 THEN
-		CurrentColumn := CurrentColumn + 1;
+	IF path.OccupiedBuffer <> 0 THEN
+		MovePrepError := TRUE;
 	ELSE
-		CurrentColumn := 0;
-		IF CurrentRow < TOTALROWS-1 THEN
-			CurrentRow := CurrentRow + 1;
+		InvokeId := 0;
+	
+		fbMoveLinPrep.Position						:= ADR(aTargetPos); //pointer to position array
+		fbMoveLinPrep.PositionCount 				:= NumberOfAxes; //number of axes in group
+		fbMoveLinPrep.TransitionParameter			:= ADR (aTransitionParam); //pointer to transition parameter array
+		fbMoveLinPrep.TransitionParameterCount		:= 2; //number of transition parameters, has to be set always 2
+		fbMoveLinPrep.BufferMode					:= mcBlendingPrevious;
+		fbMoveLinPrep.TransitionMode				:= mcTransModeCornerDistanceAdvanced;
+		//Set dynamics to default values of the axes
+		fbMoveLinPrep.Acceleration					:= MC_DEFAULT;
+		fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
+		fbMoveLinPrep.Jerk							:= MC_DEFAULT;
+		
+		//
+		fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.TcpCoordRef);
+		MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
+		
+		//1st node
+		aTargetPos[1]				:= 0; // x
+		aTargetPos[2]				:= -(CurrentColumn * COLOFFSET); // y
+		aTargetPos[3]				:= (CurrentRow * ROWOFFSET); // z
+		aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
+		aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
+		aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
+		aTransitionParam[1]			:= 0; // blending distance on previous segmente
+		aTransitionParam[2]			:= 0; // blending distance on previous segment
+		InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+		fbMoveLinPrep(PathData:= path , Velocity:= FineVelocity, InvokeId:= InvokeId);
+		MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+		
+		//1st node
+		aTargetPos[1]				:= 0; // x
+		aTargetPos[2]				:= -(CurrentColumn * COLOFFSET); // y
+		aTargetPos[3]				:= (CurrentRow * ROWOFFSET) + GRIPDEPTH; // z
+		aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
+		aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
+		aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
+		aTransitionParam[1]			:= 0; // blending distance on previous segmente
+		aTransitionParam[2]			:= 0; // blending distance on previous segment
+		InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+		fbMoveLinPrep(PathData:= path , Velocity:= FineVelocity, InvokeId:= InvokeId);
+		MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+		
+		// example of how to add a blocker to the path data
+		InvokeId := InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+		fbBlockerPreparation(
+			PathData:= path, 
+			BlockerId:= GRIPBLOCKERID, // blocker id is unique
+			BufferMode:= mcBuffered, 
+			InvokeId:= InvokeId, 
+			Error=> , 
+			ErrorId=> );
+		
+		//1st node
+		aTargetPos[1]				:= -PICKHEIGHT; // x
+		aTargetPos[2]				:= -(CurrentColumn * COLOFFSET); // y
+		aTargetPos[3]				:= (CurrentRow * ROWOFFSET) + GRIPDEPTH; // z
+		aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
+		aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
+		aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
+		aTransitionParam[1]			:= 0; // blending distance on previous segment
+		aTransitionParam[2]			:= 0; // blending distance on previous segment
+		InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+		fbMoveLinPrep(PathData:= path , Velocity:= FineVelocity, InvokeId:= InvokeId);
+		MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+		
+		//
+		// increment column and row
+		//
+		IF CurrentColumn < TOTALCOLUMNS-1 THEN
+			CurrentColumn := CurrentColumn + 1;
 		ELSE
-			CurrentRow := 0;
+			CurrentColumn := 0;
+			IF CurrentRow < TOTALROWS-1 THEN
+				CurrentRow := CurrentRow + 1;
+			ELSE
+				CurrentRow := 0;
+			END_IF
 		END_IF
 	END_IF
 	
@@ -1409,58 +1441,62 @@ IF AddPlacePaths THEN
 	AddPlacePaths := FALSE;
 	
 	path.ClearPath();  //Clear nodes that were in path
-	InvokeId := 0;
-
-	fbMoveLinPrep.Position						:= ADR(aTargetPos); //pointer to position array
-	fbMoveLinPrep.PositionCount 				:= NumberOfAxes; //number of axes in group
-	fbMoveLinPrep.TransitionParameter			:= ADR (aTransitionParam); //pointer to transition parameter array
-	fbMoveLinPrep.TransitionParameterCount		:= 2; //number of transition parameters, has to be set always 2
-	fbMoveLinPrep.BufferMode					:= mcBlendingPrevious;
-	fbMoveLinPrep.TransitionMode				:= mcTransModeCornerDistanceAdvanced;
-	//Set dynamics to default values of the axes
-	fbMoveLinPrep.Acceleration					:= MC_DEFAULT;
-	fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
-	fbMoveLinPrep.Jerk							:= MC_DEFAULT;
+	IF path.OccupiedBuffer <> 0 THEN
+		MovePrepError := TRUE;
+	ELSE
+		InvokeId := 0;
 	
-	//
-	fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.TcpCoordRef);
-	MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
-	
-	//1st node
-	aTargetPos[1]				:= 0; // x
-	aTargetPos[2]				:= 0; // y
-	aTargetPos[3]				:= UNGRIPDEPTH; // z
-	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
-	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
-	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
-	aTransitionParam[1]			:= 0;// blending distance on previous segment
-	aTransitionParam[2]			:= 0; // blending distance on previous segment
-	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= FineVelocity, InvokeId:= InvokeId);
-	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
-	
-	// example of how to add a blocker to the path data
-	InvokeId := InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbBlockerPreparation(
-		PathData:= path, 
-		BlockerId:= UNGRIPBLOCKERID, // blocker id is unique
-		BufferMode:= mcBuffered, 
-		InvokeId:= InvokeId, 
-		Error=> , 
-		ErrorId=> );
-	
-	//1st node
-	aTargetPos[1]				:= 0; // x
-	aTargetPos[2]				:= 0; // y
-	aTargetPos[3]				:= 0; // z
-	aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
-	aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
-	aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
-	aTransitionParam[1]			:= 0; // blending distance on previous segment
-	aTransitionParam[2]			:= 0; // blending distance on previous segment
-	InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
-	fbMoveLinPrep(PathData:= path , Velocity:= FineVelocity, InvokeId:= InvokeId);
-	MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+		fbMoveLinPrep.Position						:= ADR(aTargetPos); //pointer to position array
+		fbMoveLinPrep.PositionCount 				:= NumberOfAxes; //number of axes in group
+		fbMoveLinPrep.TransitionParameter			:= ADR (aTransitionParam); //pointer to transition parameter array
+		fbMoveLinPrep.TransitionParameterCount		:= 2; //number of transition parameters, has to be set always 2
+		fbMoveLinPrep.BufferMode					:= mcBlendingPrevious;
+		fbMoveLinPrep.TransitionMode				:= mcTransModeCornerDistanceAdvanced;
+		//Set dynamics to default values of the axes
+		fbMoveLinPrep.Acceleration					:= MC_DEFAULT;
+		fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
+		fbMoveLinPrep.Jerk							:= MC_DEFAULT;
+		
+		//
+		fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.TcpCoordRef);
+		MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
+		
+		//1st node
+		aTargetPos[1]				:= 0; // x
+		aTargetPos[2]				:= 0; // y
+		aTargetPos[3]				:= UNGRIPDEPTH; // z
+		aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
+		aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
+		aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
+		aTransitionParam[1]			:= 0;// blending distance on previous segment
+		aTransitionParam[2]			:= 0; // blending distance on previous segment
+		InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+		fbMoveLinPrep(PathData:= path , Velocity:= FineVelocity, InvokeId:= InvokeId);
+		MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+		
+		// example of how to add a blocker to the path data
+		InvokeId := InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+		fbBlockerPreparation(
+			PathData:= path, 
+			BlockerId:= UNGRIPBLOCKERID, // blocker id is unique
+			BufferMode:= mcBuffered, 
+			InvokeId:= InvokeId, 
+			Error=> , 
+			ErrorId=> );
+		
+		//1st node
+		aTargetPos[1]				:= 0; // x
+		aTargetPos[2]				:= 0; // y
+		aTargetPos[3]				:= 0; // z
+		aTargetPos[4]				:= mcs[4].NcToPlc.ActPos + 0.0; // a
+		aTargetPos[5]				:= mcs[5].NcToPlc.ActPos + 0.0; // b
+		aTargetPos[6]				:= mcs[6].NcToPlc.ActPos + 0.0; // c
+		aTransitionParam[1]			:= 0; // blending distance on previous segment
+		aTransitionParam[2]			:= 0; // blending distance on previous segment
+		InvokeId 					:= InvokeId + 10; // this is just used for debugging in the case a cnc command goes wrong
+		fbMoveLinPrep(PathData:= path , Velocity:= FineVelocity, InvokeId:= InvokeId);
+		MovePrepError := MovePrepError OR fbMoveLinPrep.Error;
+	END_IF
 	
 END_IF
 {endregion}]]></ST>
