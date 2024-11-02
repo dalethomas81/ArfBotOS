@@ -131,7 +131,7 @@ CASE _SequenceMain OF
 		
 	STEP_WAIT_ENABLE:
 		// TODO add timeout timer here
-		IF GroupHandler.P_GroupEnabled THEN
+		IF GroupHandler.P_GroupReady THEN
 			_SequenceMain := STEP_WAIT_JOG;
 		END_IF;
 		
@@ -158,7 +158,7 @@ CASE _SequenceMain OF
 		
 	STEP_WAIT_DISABLE:
 		// TODO add timeouttimer here
-		IF NOT GroupHandler.P_GroupEnabled THEN
+		IF NOT GroupHandler.P_GroupReady THEN
 			_SequenceMain := STEP_DONE;
 		END_IF
 	

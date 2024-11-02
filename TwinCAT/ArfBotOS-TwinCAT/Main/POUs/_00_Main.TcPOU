@@ -295,7 +295,7 @@ CASE SeqHelloWorld OF
 		END_IF
 		
 	2: // wait on group enable
-		IF GroupHandler.P_GroupEnabled THEN
+		IF GroupHandler.P_GroupReady THEN
  			SeqHelloWorld := SeqHelloWorld + 1;
 		END_IF
 		
@@ -335,7 +335,7 @@ CASE SeqHelloWorld OF
 		SeqHelloWorld := SeqHelloWorld + 1;
 	
 	8:  // wait on group disable
-		IF NOT GroupHandler.P_GroupEnabled THEN
+		IF NOT GroupHandler.P_GroupReady THEN
  			SeqHelloWorld := 0;
 		END_IF
 		
@@ -898,6 +898,8 @@ VAR_STAT CONSTANT
 	S_WAITFORGRIP: INT:=0380;
 	S_WAITFORUNGRIP: INT:=0390;
 	S_WAITFORPICKBLOCK: INT:=0400;
+	S_SETTRANSFORMUCS1: INT:=0410;
+	S_WAITENABLEGROUPUCS3: INT:=0420;
 
 	//
 	GRIPBLOCKERID: UDINT:=100;
@@ -967,7 +969,7 @@ CASE SeqReset OF
 			SeqReset := SeqReset + 1;
 		END_IF
 	1:
-		IF NOT GroupHandler.P_GroupEnabled THEN
+		IF NOT GroupHandler.P_GroupReady THEN
 			GroupHandler.M_ResetGroup();
 			SeqReset := 0;
 		END_IF
@@ -997,7 +999,7 @@ CASE SeqSpookyHalloween OF
 		END_IF
 		
 	S_WAITENABLEGROUPACS1: // wait on group enable
-		IF GroupHandler.P_GroupEnabled THEN
+		IF GroupHandler.P_GroupReady THEN
  			SeqSpookyHalloween := S_MOVEHOMEACS;
 		END_IF
 		
@@ -1023,7 +1025,7 @@ CASE SeqSpookyHalloween OF
 		END_IF
 		
 	S_ENABLEGROUPUCS1: // enable group
-		IF NOT GroupHandler.P_GroupEnabled THEN
+		IF NOT GroupHandler.P_GroupReady THEN
 			IF GroupHandler.M_EnableGroup(DUT_CoordSystem.UCS1) THEN
 				SeqSpookyHalloween := S_WAITENABLEGROUPUCS1;
 			ELSE
@@ -1032,7 +1034,7 @@ CASE SeqSpookyHalloween OF
 		END_IF
 		
 	S_WAITENABLEGROUPUCS1: // wait on group enable
-		IF GroupHandler.P_GroupEnabled THEN
+		IF GroupHandler.P_GroupReady THEN
  			SeqSpookyHalloween := S_ADDPREPICKPATH;
 		END_IF
 		
@@ -1055,7 +1057,8 @@ CASE SeqSpookyHalloween OF
 			//
 		ELSIF fbMovePath.Done THEN
 			fbMovePath.Execute := FALSE;
-			SeqSpookyHalloween := S_DISABLEGROUPUCS1;
+			//SeqSpookyHalloween := S_DISABLEGROUPUCS1;
+			SeqSpookyHalloween := S_WAITFORPICKTRIGGER;
 		END_IF
 		
 	S_DISABLEGROUPUCS1: //
@@ -1070,16 +1073,17 @@ CASE SeqSpookyHalloween OF
 		END_IF
 	
 	S_ENABLEGROUPTCP1: //
-		IF NOT GroupHandler.P_GroupEnabled THEN
-			IF GroupHandler.M_EnableGroup(DUT_CoordSystem.TCP) THEN
+		//IF NOT GroupHandler.P_GroupReady THEN
+			IF GroupHandler.M_SetTransform(DUT_CoordSystem.TCP) THEN
+			//IF GroupHandler.M_EnableGroup(DUT_CoordSystem.TCP) THEN
 				SeqSpookyHalloween := S_WAITENABLETCP1;
 			ELSE
 				//
 			END_IF
-		END_IF
+		//END_IF
 	
 	S_WAITENABLETCP1: //
-		IF GroupHandler.P_GroupEnabled THEN
+		IF GroupHandler.P_TransformSet THEN
 			SeqSpookyHalloween := S_ADDPICKPATH;
 		END_IF
 	
@@ -1112,7 +1116,8 @@ CASE SeqSpookyHalloween OF
 			//
 		ELSIF fbMovePath.Done THEN
 			fbMovePath.Execute := FALSE;
-			SeqSpookyHalloween := S_DISABLEGROUPTCP1;
+			//SeqSpookyHalloween := S_DISABLEGROUPTCP1;
+			SeqSpookyHalloween := S_ENABLEGROUPUCS2;
 		END_IF
 	
 	S_DISABLEGROUPTCP1: //
@@ -1121,16 +1126,17 @@ CASE SeqSpookyHalloween OF
 		END_IF
 	
 	S_ENABLEGROUPUCS2: //
-		IF NOT GroupHandler.P_GroupEnabled THEN
-			IF GroupHandler.M_EnableGroup(DUT_CoordSystem.UCS1) THEN
+		//IF NOT GroupHandler.P_GroupReady THEN
+			IF GroupHandler.M_SetTransform(DUT_CoordSystem.UCS1) THEN
+			//IF GroupHandler.M_EnableGroup(DUT_CoordSystem.UCS1) THEN
 				SeqSpookyHalloween := S_WAITENABLEGROUPUCS2;
 			ELSE
 				//
 			END_IF
-		END_IF
+		//END_IF
 	
 	S_WAITENABLEGROUPUCS2: //
-		IF GroupHandler.P_GroupEnabled THEN
+		IF GroupHandler.P_TransformSet THEN
 			SeqSpookyHalloween := S_ADDPREPLACEPATHS;
 		END_IF
 	
@@ -1153,7 +1159,8 @@ CASE SeqSpookyHalloween OF
 			//
 		ELSIF fbMovePath.Done THEN
 			fbMovePath.Execute := FALSE;
-			SeqSpookyHalloween := S_DISABLEGROUPUCS2;
+			//SeqSpookyHalloween := S_DISABLEGROUPUCS2;
+			SeqSpookyHalloween := S_ENABLEGROUPTCP2;
 		END_IF
 	
 	S_DISABLEGROUPUCS2: //
@@ -1164,16 +1171,17 @@ CASE SeqSpookyHalloween OF
 		END_IF
 	
 	S_ENABLEGROUPTCP2: //
-		IF NOT GroupHandler.P_GroupEnabled THEN
-			IF GroupHandler.M_EnableGroup(DUT_CoordSystem.TCP) THEN
+		//IF NOT GroupHandler.P_GroupReady THEN
+			//IF GroupHandler.M_EnableGroup(DUT_CoordSystem.TCP) THEN
+			IF GroupHandler.M_SetTransform(DUT_CoordSystem.TCP) THEN
 				SeqSpookyHalloween := S_WAITENABLEGROUPTCP2;
 			ELSE
 				//
 			END_IF
-		END_IF
+		//END_IF
 	
 	S_WAITENABLEGROUPTCP2: //
-		IF GroupHandler.P_GroupEnabled THEN
+		IF GroupHandler.P_TransformSet THEN
 			SeqSpookyHalloween := S_ADDPLACEPATHS;
 		END_IF
 	
@@ -1206,7 +1214,20 @@ CASE SeqSpookyHalloween OF
 			//
 		ELSIF fbMovePath.Done THEN
 			fbMovePath.Execute := FALSE;
-			SeqSpookyHalloween := S_DISABLEGROUPTCP2;
+			//SeqSpookyHalloween := S_DISABLEGROUPTCP2;
+			SeqSpookyHalloween := S_SETTRANSFORMUCS1;
+		END_IF
+		
+	S_SETTRANSFORMUCS1: //
+		IF GroupHandler.M_SetTransform(DUT_CoordSystem.UCS1) THEN
+			SeqSpookyHalloween := S_WAITENABLEGROUPUCS3;
+		ELSE
+			//
+		END_IF
+	
+	S_WAITENABLEGROUPUCS3: //
+		IF GroupHandler.P_TransformSet THEN
+			SeqSpookyHalloween := S_ADDPREPICKPATH;
 		END_IF
 	
 	S_DISABLEGROUPTCP2: //
@@ -1288,8 +1309,8 @@ IF AddPrePickPaths THEN
 		fbMoveLinPrep.Jerk							:= MC_DEFAULT;
 		
 		// set ucs frame
-		fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.Ucs1CoordRef);
-		MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
+		//fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.Ucs1CoordRef);
+		//MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
 		
 		// 1st node
 		aTargetPos[1]				:= 0.0; // x
@@ -1327,8 +1348,8 @@ IF AddPrePlacePaths THEN
 		fbMoveLinPrep.Jerk							:= MC_DEFAULT;
 		
 		// set ucs frame
-		fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.Ucs1CoordRef);
-		MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
+		//fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.Ucs1CoordRef);
+		//MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
 		
 		// 1st node
 		aTargetPos[1]				:= 50; // x
@@ -1369,8 +1390,8 @@ IF AddPickPaths THEN
 		fbMoveLinPrep.Jerk							:= MC_DEFAULT;
 		
 		//
-		fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.TcpCoordRef);
-		MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
+		//fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.TcpCoordRef);
+		//MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
 		
 		//1st node
 		aTargetPos[1]				:= 0; // x
@@ -1458,8 +1479,8 @@ IF AddPlacePaths THEN
 		fbMoveLinPrep.Jerk							:= MC_DEFAULT;
 		
 		//
-		fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.TcpCoordRef);
-		MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
+		//fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.TcpCoordRef);
+		//MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
 		
 		//1st node
 		aTargetPos[1]				:= 0; // x

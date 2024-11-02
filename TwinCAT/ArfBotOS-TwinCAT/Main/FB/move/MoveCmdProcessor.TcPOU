@@ -109,7 +109,7 @@ CASE SUPER^._SeqMain OF
 		
 	_STEP_WAIT_ENABLE:
 		// TODO add timeout timer here?
-		IF GroupHandler.P_GroupEnabled THEN
+		IF GroupHandler.P_GroupReady THEN
 			SUPER^._SeqMain := _STEP_MOVE_TYPE;
 		END_IF;
 		
@@ -166,7 +166,7 @@ CASE SUPER^._SeqMain OF
 		END_IF
 		
 	_STEP_WAIT_DISABLE:
-		IF NOT GroupHandler.P_GroupEnabled THEN
+		IF NOT GroupHandler.P_GroupReady THEN
 			SUPER^._SeqMain := _STEP_DONE;
 		END_IF
 	
@@ -694,7 +694,7 @@ _MovePrepError := _MovePrepError OR _MC_MoveLinearAbsolutePreparation.Error;]]><
 		GroupHandler.M_DisableGroup();
 		_SeqAborting := _SeqAborting + 1;
 	1:
-		IF NOT GroupHandler.P_GroupEnabled THEN
+		IF NOT GroupHandler.P_GroupReady THEN
 			SUPER^.M_StateComplete();
 			_SeqAborting := 0;
 		END_IF

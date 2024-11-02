@@ -129,7 +129,7 @@ CASE _SequenceMain OF
 		
 	STEP_WAIT_ENABLE:
 		// TODO add timeout timer here
-		IF GroupHandler.P_GroupEnabled THEN
+		IF GroupHandler.P_GroupReady THEN
 			_SequenceMain := STEP_FAST_HOME_G1;
 		END_IF;
 		

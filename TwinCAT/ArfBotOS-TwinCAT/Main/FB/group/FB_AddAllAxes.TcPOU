@@ -24,12 +24,13 @@ END_VAR
 Busy := FALSE;
 Error := FALSE;
 
+// https://infosys.beckhoff.com/content/1033/tf5420_tc3_advanced_pick_and_place/8892979211.html?id=8490282963745653116
 fbAddAxis[1].IdentInGroup := MCS_X; //X-Axis
 fbAddAxis[2].IdentInGroup := MCS_Y; //Y-Axis
 fbAddAxis[3].IdentInGroup := MCS_Z; //Z-Axis
-fbAddAxis[4].IdentInGroup := ADDAX1;
-fbAddAxis[5].IdentInGroup := ADDAX2;
-fbAddAxis[6].IdentInGroup := ADDAX3;
+fbAddAxis[4].IdentInGroup := ADDAX1; //MCS_A3;//
+fbAddAxis[5].IdentInGroup := ADDAX2; //MCS_B2;//
+fbAddAxis[6].IdentInGroup := ADDAX3; //MCS_C1;//
 
 FOR i:=1 TO 6 DO
 	fbAddAxis[i](AxesGroup:=stGroupRef, Axis := mcs[i], Execute := Execute);

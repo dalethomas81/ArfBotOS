@@ -5947,7 +5947,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{1ABE85A4-5F93-A6D8-049A-C965016B7DD8}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{CAFE6254-F9BF-C56D-2E74-E95CE874457C}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
@@ -5994,10 +5994,6 @@ and will return to Group State Standby when the situation permits.
 						<Var>
 							<Name>_00_Main.stGroupRef.PlcToNc</Name>
 							<Type GUID="{0E2E3852-A98C-4AF3-81E2-209EE128940C}" Namespace="MC">CDT_PLCTOMC_GROUP</Type>
-						</Var>
-						<Var>
-							<Name>_00_Main.GroupHandler._stPlcToKin</Name>
-							<Type GUID="{48415C2A-E750-483B-A619-8655B2BEA4B8}" Namespace="MC">PLCTONC_NCICHANNEL_REF</Type>
 						</Var>
 						<Var>
 							<Name>_00_Main.ACS[1].PlcToNc</Name>
@@ -6052,13 +6048,13 @@ and will return to Group State Standby when the situation permits.
 							<Comment><![CDATA[ https://infosys.beckhoff.com/content/1033/tc3_plc_intro/11948825611.html?id=1756449079294237528]]></Comment>
 							<Type>BOOL</Type>
 						</Var>
+						<Var>
+							<Name>_00_Main.GroupHandler._stPlcToKin</Name>
+							<Type GUID="{48415C2A-E750-483B-A619-8655B2BEA4B8}" Namespace="MC">PLCTONC_NCICHANNEL_REF</Type>
+						</Var>
 					</Vars>
 					<Vars VarGrpType="1">
 						<Name>PlcTask Inputs</Name>
-						<Var>
-							<Name>_00_Main.GroupHandler._stKinToPlc</Name>
-							<Type GUID="{56354211-98EF-4057-9322-975DEAD0E29D}" Namespace="MC">NCTOPLC_NCICHANNEL_REF</Type>
-						</Var>
 						<Var>
 							<Name>_00_Main.stGroupRef.NcToPlc</Name>
 							<Type GUID="{467F4325-10DF-4BC1-88DD-E8240EB4F8E3}" Namespace="MC">CDT_MCTOPLC_GROUP</Type>
@@ -6110,6 +6106,10 @@ and will return to Group State Standby when the situation permits.
 						<Var>
 							<Name>_00_Main.MCS[6].NcToPlc</Name>
 							<Type GUID="{25521FAA-EA5F-4C7F-8864-BBCCDACD2E98}" Namespace="MC">NCTOPLC_AXIS_REF</Type>
+						</Var>
+						<Var>
+							<Name>_00_Main.GroupHandler._stKinToPlc</Name>
+							<Type GUID="{56354211-98EF-4057-9322-975DEAD0E29D}" Namespace="MC">NCTOPLC_NCICHANNEL_REF</Type>
 						</Var>
 					</Vars>
 					<Contexts>

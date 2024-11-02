@@ -62,6 +62,7 @@ VAR
 	_MC_SetCoordinateTransform: MC_SetCoordinateTransform;
 	_CoordinateSystem: DUT_CoordSystem;
 	
+	_GroupReady: BOOL;
 	_EnableGroup: BOOL;
 	_DisableGroup: BOOL;
 	_GroupEnabled: BOOL;
@@ -366,7 +367,8 @@ CASE _SeqDisableGroup OF
 				_SeqDisableGroup := _SeqDisableGroup + 1;
 		END_IF
 	
-	7:
+	7:	
+		_GroupReady := FALSE;
 		_GroupEnabled := FALSE;
 		_KinematicsSet := FALSE;
 		_GroupPower := FALSE;
@@ -385,6 +387,7 @@ CASE _SeqEnableGroup OF
 		IF _EnableGroup THEN
 			_EnableGroup := FALSE;
 			_GroupEnabled := FALSE;
+			_GroupReady := FALSE;
 			_MC_GroupEnable.Execute := FALSE;
 			_FB_AddAllAxes.Execute := FALSE;
 			_SeqEnableGroup := _SeqEnableGroup + 1;
@@ -446,6 +449,7 @@ CASE _SeqEnableGroup OF
 			//ErrorID := _MC_GroupEnable.ErrorID; // TODO get error ID
 			_SeqEnableGroup := 0;
 		ELSIF _MC_GroupEnable.Done THEN
+			_GroupEnabled := TRUE;
 			_SeqEnableGroup := _SeqEnableGroup + 1;
 		END_IF;
 		
@@ -463,7 +467,7 @@ CASE _SeqEnableGroup OF
 		IF Error THEN
 			_SeqEnableGroup := 0;
 		ELSIF _TransformSet THEN
-			_GroupEnabled := TRUE;
+			_GroupReady := TRUE;
 			_SeqEnableGroup := 0;
 		END_IF
 		
@@ -711,14 +715,14 @@ ELSE
 END_IF]]></ST>
       </Implementation>
     </Method>
-    <Method Name="M_SetTransform" Id="{f471a02b-5882-495b-9ba3-b8ab983b083c}" FolderPath="private\">
-      <Declaration><![CDATA[METHOD PRIVATE M_SetTransform : BOOL
+    <Method Name="M_SetTransform" Id="{f471a02b-5882-495b-9ba3-b8ab983b083c}" FolderPath="public\">
+      <Declaration><![CDATA[METHOD PUBLIC M_SetTransform : BOOL
 VAR_INPUT
 	CoordinateSystem: DUT_CoordSystem;
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[IF (*_GroupEnabled AND*) NOT Error THEN
+        <ST><![CDATA[IF _GroupEnabled AND _KinematicsSet AND NOT Error THEN
 	M_SetTransform := TRUE;
 	_CoordinateSystem := CoordinateSystem;
 	_SetTransform := TRUE;
@@ -728,14 +732,14 @@ ELSE
 END_IF]]></ST>
       </Implementation>
     </Method>
-    <Property Name="P_GroupEnabled" Id="{6c9aae5d-4785-4006-b6e7-a4e70fe8d11f}">
+    <Property Name="P_GroupReady" Id="{6c9aae5d-4785-4006-b6e7-a4e70fe8d11f}">
       <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
-PROPERTY P_GroupEnabled : BOOL
+PROPERTY P_GroupReady : BOOL
 ]]></Declaration>
       <Get Name="Get" Id="{dbc64c57-ffa9-4365-a52e-3fd1f7074869}">
         <Declaration><![CDATA[]]></Declaration>
         <Implementation>
-          <ST><![CDATA[P_GroupEnabled := _GroupEnabled;]]></ST>
+          <ST><![CDATA[P_GroupReady := _GroupReady;]]></ST>
         </Implementation>
       </Get>
     </Property>
