@@ -858,6 +858,11 @@ VAR_STAT
 	NestRotation_B: LREAL:=91.0; // degrees rotated about the y axis
 	NestRotation_C: LREAL:=0.0; // degrees rotated about the z axis
 	
+	//
+	ReleaseSmoke: BOOL;
+	SmokeTime: TIME:=T#500MS;
+	SmokeTimer: TON;
+	
 END_VAR
 VAR_STAT CONSTANT
 	// Steps
@@ -1297,6 +1302,11 @@ FOR _k:= 1 TO NumberOfAxes DO
 		Error=> , 
 		ErrorID=> );
 END_FOR
+
+SmokeTimer(IN:=Smoke.P_StateOn, PT:=SmokeTime);
+IF SmokeTimer.Q THEN
+    Smoke.Off();
+END_IF
 {endregion}
 	
 {region 'add ucs1 paths'}

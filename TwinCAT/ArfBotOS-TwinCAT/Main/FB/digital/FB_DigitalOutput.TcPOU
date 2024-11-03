@@ -9,6 +9,7 @@ END_VAR
 VAR	
 	// https://infosys.beckhoff.com/content/1033/tc3_plc_intro/11948825611.html?id=1756449079294237528
 	Output AT %Q* : BOOL;
+	_Output: BOOL;
 	_FirstScan: BOOL;
 END_VAR
 ]]></Declaration>
@@ -18,35 +19,61 @@ END_VAR
 END_IF
 
 // do some things?
+Output :=_Output;
 
 // do not put anything below this
 _FirstScan := FALSE;]]></ST>
     </Implementation>
-    <Method Name="Off" Id="{f8b6fdb2-6544-4607-9a19-3594027652d2}">
+    <Folder Name="public" Id="{0da57af1-9d70-4000-8a8d-dad5dfab92ff}" />
+    <Method Name="Off" Id="{f8b6fdb2-6544-4607-9a19-3594027652d2}" FolderPath="public\">
       <Declaration><![CDATA[METHOD PUBLIC Off : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[Output := FALSE;]]></ST>
+        <ST><![CDATA[_Output := FALSE;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="On" Id="{8d32d062-36c2-487a-8ff3-0192a0a033a4}">
+    <Method Name="On" Id="{8d32d062-36c2-487a-8ff3-0192a0a033a4}" FolderPath="public\">
       <Declaration><![CDATA[METHOD PUBLIC On : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[Output := TRUE;]]></ST>
+        <ST><![CDATA[_Output := TRUE;]]></ST>
       </Implementation>
     </Method>
-    <Method Name="Toggle" Id="{acfd7b5d-3f2d-4ece-8bee-8a0616bd626e}">
+    <Property Name="P_StateOff" Id="{e6661ae8-a7e9-466d-aa33-4575a19f892b}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY PUBLIC P_StateOff : BOOL]]></Declaration>
+      <Get Name="Get" Id="{c5dfac2e-9fcf-40c5-98c6-a526c0fb2c0d}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_StateOff := NOT _Output;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="P_StateOn" Id="{15ab277e-c978-4e7b-9e52-7a854e0469dd}">
+      <Declaration><![CDATA[{attribute 'monitoring' := 'variable'}
+PROPERTY PUBLIC P_StateOn : BOOL]]></Declaration>
+      <Get Name="Get" Id="{3e9280db-f833-416e-8f4f-78f55b065785}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[P_StateOn := _Output;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="Toggle" Id="{acfd7b5d-3f2d-4ece-8bee-8a0616bd626e}" FolderPath="public\">
       <Declaration><![CDATA[METHOD PUBLIC Toggle : BOOL
 VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[Output := NOT Output;]]></ST>
+        <ST><![CDATA[_Output := NOT _Output;]]></ST>
       </Implementation>
     </Method>
   </POU>

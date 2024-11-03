@@ -5950,7 +5950,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{B3BFCC29-EAF9-7833-3B95-1B9ACB208D3D}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{1DD30092-163C-ACBF-6A40-F8E79BDF2785}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
@@ -5958,6 +5958,11 @@ and will return to Group State Standby when the situation permits.
 						<Var>
 							<Name>PersistentVars.Programs</Name>
 							<Type GUID="{3BF2C477-3BCD-1489-A279-6AD2911E9A61}">ARRAY [0..19] OF DUT_Program</Type>
+							<InOut>7</InOut>
+						</Var>
+						<Var>
+							<Name>PersistentVars.VisionSystemPort</Name>
+							<Type>UINT</Type>
 							<InOut>7</InOut>
 						</Var>
 						<Var>
@@ -5973,11 +5978,6 @@ and will return to Group State Standby when the situation permits.
 						<Var>
 							<Name>PersistentVars.Flags</Name>
 							<Type GUID="{3E17E049-7235-3828-4255-C95966CFE06E}">ARRAY [0..49] OF DUT_Flags</Type>
-							<InOut>7</InOut>
-						</Var>
-						<Var>
-							<Name>PersistentVars.VisionSystemPort</Name>
-							<Type>UINT</Type>
 							<InOut>7</InOut>
 						</Var>
 						<Var>
