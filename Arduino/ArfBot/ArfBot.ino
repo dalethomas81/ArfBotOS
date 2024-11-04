@@ -56,7 +56,7 @@ const int J5_EncPinB = 23; // D23 | A9 | PWM
 const int J6_EncPinA = 24; // D24 | A10 | PWM | SCL2 | TX6
 const int J6_EncPinB = 25; // D25 | A11 | PWM | SDA2 | RX6
 
-const int HeartbeatLed = 17; // D17 | A3 | SDA1 | TX4
+const int StatusLed = 17; // D17 | A3 | SDA1 | TX4
 
 const int DigitalOutputPin1 = 18; // D18 | A4 | PWM | SDA
 const int DigitalOutputPin2 = 19; // D19 | A5 | PWM | SCL
@@ -176,13 +176,14 @@ void setup() {
   DigitalOutput2.init();
 
   //
-  pinMode(HeartbeatLed, OUTPUT); digitalWriteFast(HeartbeatLed, LOW);
+  pinMode(StatusLed, OUTPUT); digitalWriteFast(StatusLed, LOW);
   
 }
 
 bool LimitState[6];
 bool DigitalInputState1, DigitalInputState2;
 bool DigitalOutputState1, DigitalOutputState2;
+bool DriveIsEnabled;
 void loop() {
 
   // WATCHDOG                   0x80
@@ -205,9 +206,11 @@ void loop() {
   handleInputs();
   handleOutputs();
   
+  DriveIsEnabled = false;
 	for (int i=0;i<=5;i++){
 		if (DriveControl[i].Enable) {
 			Drive[i].turnON();
+      DriveIsEnabled = true; // turn on led to warn at least one drive is enabled
 		} else {
 			Drive[i].turnOFF();
 		}
@@ -347,14 +350,15 @@ void handleInputs(){
 void handleOutputs(){
 
   // write auxillary digital outputs
+
+  digitalWriteFast(StatusLed, DriveIsEnabled);
+
   if (CommsOK){
     DigitalOutputState1 ? DigitalOutput1.on() : DigitalOutput1.off();
     DigitalOutputState2 ? DigitalOutput2.on() : DigitalOutput2.off();
-
   } else {
     DigitalOutput1.fail();
     DigitalOutput2.fail();
-
   }
 
 }
