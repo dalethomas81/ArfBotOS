@@ -2657,7 +2657,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{3BF2C477-3BCD-1489-A279-6AD2911E9A61}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..19] OF DUT_Program</Name>
+			<Name IecBaseType="true">ARRAY [0..19] OF DUT_Program</Name>
 			<BitSize>2733120</BitSize>
 			<BaseType GUID="{0D984A04-251F-ABF2-3DB9-B89492C8DB95}">DUT_Program</BaseType>
 			<ArrayInfo>
@@ -2900,6 +2900,7 @@ and will return to Group State Standby when the situation permits.
 						<General UnitName="Degree"/>
 						<Dynamic Acceleration="33.3333" Deceleration="33.3333" Jerk="44.4444"/>
 						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="25"/>
+						<BacklashCompensation Range="1"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
@@ -3063,6 +3064,7 @@ and will return to Group State Standby when the situation permits.
 						<General UnitName="Degree"/>
 						<Dynamic Acceleration="13.3333" Deceleration="13.3333" Jerk="17.7778"/>
 						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="10"/>
+						<BacklashCompensation Range="0.5"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
@@ -3226,6 +3228,7 @@ and will return to Group State Standby when the situation permits.
 						<General UnitName="Degree"/>
 						<Dynamic Acceleration="26.6666" Deceleration="26.6666" Jerk="35.5556"/>
 						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="20"/>
+						<BacklashCompensation Range="2.5"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
@@ -3527,6 +3530,7 @@ and will return to Group State Standby when the situation permits.
 					</Drive>
 					<Controller Name="Ctrl" CtrType="1">
 						<CtrPara PriorControlFactor="1">
+							<PosDiffControl Enable="false"/>
 							<PID PosKp="35"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
@@ -3690,6 +3694,7 @@ and will return to Group State Standby when the situation permits.
 					</Drive>
 					<Controller Name="Ctrl" CtrType="1">
 						<CtrPara PriorControlFactor="1">
+							<PosDiffControl Enable="false"/>
 							<PID PosKp="55"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
@@ -3853,6 +3858,7 @@ and will return to Group State Standby when the situation permits.
 					</Drive>
 					<Controller Name="Ctrl" CtrType="1">
 						<CtrPara PriorControlFactor="1">
+							<PosDiffControl Enable="false"/>
 							<PID PosKp="50"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
@@ -3875,7 +3881,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="7" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="1">
 					<Name>MCS X</Name>
 					<AxisPara>
-						<Dynamic Acceleration="50" Deceleration="50" Jerk="50"/>
+						<Dynamic Acceleration="100" Deceleration="100" Jerk="100"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="100"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -4031,7 +4037,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="8" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="2">
 					<Name>MCS Y</Name>
 					<AxisPara>
-						<Dynamic Acceleration="50" Deceleration="50" Jerk="50"/>
+						<Dynamic Acceleration="100" Deceleration="100" Jerk="100"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="100"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -4187,7 +4193,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="9" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="3">
 					<Name>MCS Z</Name>
 					<AxisPara>
-						<Dynamic Acceleration="50" Deceleration="50" Jerk="50"/>
+						<Dynamic Acceleration="100" Deceleration="100" Jerk="100"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="100"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -4343,7 +4349,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="10" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="4">
 					<Name>MCS A</Name>
 					<AxisPara>
-						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="50" Deceleration="50" Jerk="50"/>
+						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="100" Deceleration="100" Jerk="100"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="100"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -4499,7 +4505,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="11" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="5">
 					<Name>MCS B</Name>
 					<AxisPara>
-						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="50" Deceleration="50" Jerk="50"/>
+						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="100" Deceleration="100" Jerk="100"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="100"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -4655,7 +4661,7 @@ and will return to Group State Standby when the situation permits.
 				<Axis Id="12" CreateSymbols="true" AxisType="1" AxisFolder="MCS" GroupId="6">
 					<Name>MCS C</Name>
 					<AxisPara>
-						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="50" Deceleration="50" Jerk="50"/>
+						<Dynamic AccelerationMaximum="1000" DecelerationMaximum="1000" Acceleration="100" Deceleration="100" Jerk="100"/>
 						<Velo SlowManual="10" FastManual="30" Fast="10" Maximum="100"/>
 						<OtherSettings AllowMotionCmdToSlave="true" AllowMotionCmdToExtSetGenAxis="true"/>
 					</AxisPara>
@@ -5950,7 +5956,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{FA932847-2CCD-EA70-E12D-0A8034B2DF3B}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{70BD013E-AC18-4D90-A914-6C796617179E}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
