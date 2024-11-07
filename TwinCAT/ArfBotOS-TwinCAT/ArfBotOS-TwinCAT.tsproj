@@ -2657,7 +2657,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name IecBaseType="true">ARRAY [0..19] OF DUT_Program</Name>
+			<Name GUID="{3BF2C477-3BCD-1489-A279-6AD2911E9A61}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..19] OF DUT_Program</Name>
 			<BitSize>2733120</BitSize>
 			<BaseType GUID="{0D984A04-251F-ABF2-3DB9-B89492C8DB95}">DUT_Program</BaseType>
 			<ArrayInfo>
@@ -5956,7 +5956,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{70BD013E-AC18-4D90-A914-6C796617179E}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{158F9A51-9B69-6DD4-E42A-87F0F961E0A8}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
@@ -6639,7 +6639,6 @@ and will return to Group State Standby when the situation permits.
 	<Mappings>
 		<MappingInfo Identifier="{00000000-2001-0850-0020-500841000403}" Id="#x02030050"/>
 		<MappingInfo Identifier="{00000000-0010-0304-3000-040310000403}" Id="#x02030010"/>
-		<MappingInfo Identifier="{08502001-0010-0304-0020-500810000403}" Id="#x02030040" Watchdog="00000000000000000000000000000000"/>
 		<MappingInfo Identifier="{05000010-2001-0850-1000-120500205008}" Id="#x02030030" Watchdog="08000000040000000400000004000000"/>
 		<MappingInfo Identifier="{05000010-2001-0850-3000-040300205008}" Id="#x02030020" Watchdog="08000000040000000400000004000000"/>
 		<OwnerA Name="TINC^NC-Task 1 SAF^Axes^ACS 1">
@@ -6721,11 +6720,9 @@ and will return to Group State Standby when the situation permits.
 			</OwnerB>
 		</OwnerA>
 		<OwnerA Name="TIPC^Main^Main Instance">
-			<OwnerB Name="TIID^Device 1 (EtherCAT)^Box 1 (EasyCAT 32+32 rev 1)">
-				<Link VarA="PlcTask Outputs^_00_Main.Gripper.Output" VarB="Outputs^Byte26" Size="1"/>
-			</OwnerB>
 			<OwnerB Name="TIID^Device 1 (EtherCAT)^Term 2 (EK1100)^Term 8 (EL2809)">
-				<Link VarA="PlcTask Outputs^_00_Main.Laser.Output" VarB="Channel 1^Output"/>
+				<Link VarA="PlcTask Outputs^_00_Main.Gripper.Output" VarB="Channel 1^Output"/>
+				<Link VarA="PlcTask Outputs^_00_Main.Laser.Output" VarB="Channel 3^Output"/>
 				<Link VarA="PlcTask Outputs^_00_Main.Smoke.Output" VarB="Channel 2^Output"/>
 			</OwnerB>
 			<OwnerB Name="TINC^NC-Task 1 SAF^Axes^ACS 1">

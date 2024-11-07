@@ -880,9 +880,10 @@ VAR_STAT
 	HandofRotation_C: LREAL:=0.0; // degrees rotated about the z axis
 	
 	//
-	ReleaseSmoke: BOOL;
-	SmokeTime: TIME:=T#500MS;
+	SmokeTime: TIME:=T#2000MS;
 	SmokeTimer: TON;
+	LaserTime: TIME:=T#30S;
+	LaserTimer: TON;
 	
 END_VAR
 VAR_STAT CONSTANT
@@ -1007,7 +1008,7 @@ CASE SeqReset OF
 			ResetSeq:=FALSE;
 			SeqSpookyHalloween := 0;
 			GroupHandler.M_DisableGroup();
-            //Gripper.Off();
+            Gripper.On(); // open the gripper
 			SeqReset := SeqReset + 1;
 		END_IF
 	1:
@@ -1028,7 +1029,7 @@ CASE SeqSpookyHalloween OF
 			PickGlowStick := FALSE;
 			fbMovePath.Execute := fbReleaseBlocker.Execute :=FALSE;
 			movePrepError := FALSE;
-			//Gripper.Off(); // open the gripper
+			Gripper.On(); // open the gripper
 			//
 			MoveAcs:=FALSE;
 			//
@@ -1111,6 +1112,8 @@ CASE SeqSpookyHalloween OF
 	S_WAITFORPICKTRIGGER: //
 		IF PickGlowStick THEN
 			PickGlowStick := FALSE;
+			Smoke.On();
+			Laser.On();
 			SeqSpookyHalloween := S_ENABLEGROUPTCP1;
 		END_IF
 	
@@ -1148,7 +1151,7 @@ CASE SeqSpookyHalloween OF
 		END_IF
 		
 	S_GRIP: // close the gripper and release the blocker
-		//Gripper.On(); // TODO may need to wait for a time here or add inputs to the gripper
+		Gripper.Off(); // TODO may need to wait for a time here or add inputs to the gripper
 		fbReleaseBlocker.BlockerId:=GRIPBLOCKERID;
 		fbReleaseBlocker.Execute:=TRUE;
 		SeqSpookyHalloween := S_WAITFORPICKDONE;
@@ -1257,7 +1260,8 @@ CASE SeqSpookyHalloween OF
 		END_IF
 		
 	S_UNGRIP: // open the gripper and release the blocker
-		//Gripper.Off(); // TODO may need to wait for a time here or add inputs to the gripper
+		Gripper.On(); // TODO may need to wait for a time here or add inputs to the gripper
+		Laser.Off();
 		fbReleaseBlocker.BlockerId:=UNGRIPBLOCKERID;
 		fbReleaseBlocker.Execute:=TRUE;
 		SeqSpookyHalloween := S_WAITFROPLACEDONE;
@@ -1342,6 +1346,11 @@ SmokeTimer(IN:=Smoke.P_StateOn, PT:=SmokeTime);
 IF SmokeTimer.Q THEN
     Smoke.Off();
 END_IF
+LaserTimer(IN:=Laser.P_StateOn, PT:=LaserTime);
+IF LaserTimer.Q THEN
+    Laser.Off();
+END_IF
+	
 {endregion}
 	
 {region 'add ucs1 paths'}
