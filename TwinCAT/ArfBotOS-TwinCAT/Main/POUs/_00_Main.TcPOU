@@ -946,7 +946,7 @@ VAR_STAT CONSTANT
 	
 	// Product Dimensions
 	PICKHEIGHT: LREAL:=170.0; // mm
-	GRIPDEPTH: LREAL:=10.0; // mm
+	GRIPDEPTH: LREAL:=15.0; // mm
 	UNGRIPDEPTH: LREAL:=50.0; // mm
 END_VAR]]></Declaration>
       <Implementation>
@@ -1036,21 +1036,21 @@ CASE SeqSpookyHalloween OF
 			SeqSpookyHalloween := S_ENABLEGROUPACS1;
 		END_IF
 		
-	S_ENABLEGROUPACS1: // enable group
+	S_ENABLEGROUPACS1: // enable group in the ACS (axis coordinate system)
 		IF GroupHandler.M_EnableGroup(DUT_CoordSystem.ACS) THEN
  			SeqSpookyHalloween := S_WAITENABLEGROUPACS1;
 		END_IF
 		
-	S_WAITENABLEGROUPACS1: // wait on group enable
+	S_WAITENABLEGROUPACS1: // wait for group to be ready
 		IF GroupHandler.P_GroupReady THEN
  			SeqSpookyHalloween := S_MOVEHOMEACS;
 		END_IF
 		
-	S_MOVEHOMEACS: //
+	S_MOVEHOMEACS: // execute absolute moves for all axes
 		MoveAcs:=TRUE;
 		SeqSpookyHalloween := S_WAITMOVEHOMEACS;
 	
-	S_WAITMOVEHOMEACS: //
+	S_WAITMOVEHOMEACS: // wait for all absolute moves to be done
 		AcsMoveDone:=TRUE;
 		FOR _i:=1 TO NumberOfAxes BY 1 DO
 			IF NOT mcMoveAbsoluteAcs[_i].Done THEN
@@ -1062,12 +1062,12 @@ CASE SeqSpookyHalloween OF
 			SeqSpookyHalloween := S_DISABLEGROUPACS;
 		END_IF
 		
-	S_DISABLEGROUPACS: //
+	S_DISABLEGROUPACS: // disable the group so that we can reenable in a cartesian coordinate system
 		IF GroupHandler.M_DisableGroup() THEN
 			SeqSpookyHalloween := S_ENABLEGROUPUCS1;
 		END_IF
 		
-	S_ENABLEGROUPUCS1: // enable group
+	S_ENABLEGROUPUCS1: // enable the group in a cartesian coordinate system
 		IF NOT GroupHandler.P_GroupReady THEN
 			IF GroupHandler.M_EnableGroup(DUT_CoordSystem.UCS1) THEN
 				SeqSpookyHalloween := S_WAITENABLEGROUPUCS1;
@@ -1076,18 +1076,18 @@ CASE SeqSpookyHalloween OF
 			END_IF
 		END_IF
 		
-	S_WAITENABLEGROUPUCS1: // wait on group enable
+	S_WAITENABLEGROUPUCS1: // wait for the group to be ready
 		IF GroupHandler.P_GroupReady THEN
  			SeqSpookyHalloween := S_ADDPREPICKPATH;
 		END_IF
 		
-	S_ADDPREPICKPATH: // add paths
+	S_ADDPREPICKPATH: // add pre-pick paths to the motion queue
 		AddPrePickPaths:=TRUE;
 		movePrepError:=FALSE;
 		fbMovePath.Execute:=FALSE;
 		SeqSpookyHalloween := S_PREPICK;
 	
-	S_PREPICK: //
+	S_PREPICK: // after paths have been added, execute movement
 		IF NOT movePrepError AND NOT AddPrePickPaths THEN
 			fbMovePath.Execute := TRUE;
 			SeqSpookyHalloween := S_WAITFORPREPICKDONE;
@@ -1095,21 +1095,15 @@ CASE SeqSpookyHalloween OF
 			//
 		END_IF
 		
-	S_WAITFORPREPICKDONE: //
+	S_WAITFORPREPICKDONE: // wait for the pre-pick moves to be complete
 		IF fbMovePath.Error THEN
 			//
 		ELSIF fbMovePath.Done THEN
 			fbMovePath.Execute := FALSE;
-			//SeqSpookyHalloween := S_DISABLEGROUPUCS1;
 			SeqSpookyHalloween := S_WAITFORPICKTRIGGER;
 		END_IF
 		
-	S_DISABLEGROUPUCS1: //
-		IF GroupHandler.M_DisableGroup() THEN
-			SeqSpookyHalloween := S_WAITFORPICKTRIGGER;
-		END_IF
-		
-	S_WAITFORPICKTRIGGER: //
+	S_WAITFORPICKTRIGGER: // stay here until triggered to pick a glowstick
 		IF PickGlowStick THEN
 			PickGlowStick := FALSE;
 			Smoke.On();
@@ -1117,29 +1111,26 @@ CASE SeqSpookyHalloween OF
 			SeqSpookyHalloween := S_ENABLEGROUPTCP1;
 		END_IF
 	
-	S_ENABLEGROUPTCP1: //
-		//IF NOT GroupHandler.P_GroupReady THEN
-			IF GroupHandler.M_SetTransform(DUT_CoordSystem.TCP) THEN
-			//IF GroupHandler.M_EnableGroup(DUT_CoordSystem.TCP) THEN
-				SeqSpookyHalloween := S_WAITENABLETCP1;
-			ELSE
-				//
-			END_IF
-		//END_IF
+	S_ENABLEGROUPTCP1: // change the coordinate system to the TCP
+		IF GroupHandler.M_SetTransform(DUT_CoordSystem.TCP) THEN
+			SeqSpookyHalloween := S_WAITENABLETCP1;
+		ELSE
+			//
+		END_IF
 	
-	S_WAITENABLETCP1: //
+	S_WAITENABLETCP1: // wait for the transform to be set
 		IF GroupHandler.P_TransformSet THEN
 			SeqSpookyHalloween := S_ADDPICKPATH;
 		END_IF
 	
-	S_ADDPICKPATH: //
+	S_ADDPICKPATH: // add all pick paths to the motion queue
 		AddPickPaths:=TRUE;
 		movePrepError:=FALSE;
 		fbMovePath.Execute:=FALSE;
 		fbReleaseBlocker.Execute:=FALSE;
 		SeqSpookyHalloween := S_PICK;
 	
-	S_PICK: //
+	S_PICK: // after all paths have been added, execute motion
 		IF NOT movePrepError AND NOT AddPickPaths THEN
 			fbMovePath.Execute := TRUE;
 			// wait for gripper to be open and tool in position
@@ -1156,12 +1147,13 @@ CASE SeqSpookyHalloween OF
 		fbReleaseBlocker.Execute:=TRUE;
 		SeqSpookyHalloween := S_WAITFORPICKDONE;
 		
-	S_WAITFORPICKDONE: //
+	S_WAITFORPICKDONE: // after the gripper has been unblocked, wait for the remaining motion to complete
 		IF fbMovePath.Error THEN
 			//
 		ELSIF fbMovePath.Done THEN
 			fbMovePath.Execute := FALSE;
-            // increment column and row
+            // increment the column and row so that we pick the next glow stick on the next try.
+			// roll back over to start once we reach the last glow stick.
             IF CurrentColumn < TOTALCOLUMNS-1 THEN
                 CurrentColumn := CurrentColumn + 1;
             ELSE
@@ -1172,37 +1164,28 @@ CASE SeqSpookyHalloween OF
                     CurrentRow := 0;
                 END_IF
             END_IF
-			//SeqSpookyHalloween := S_DISABLEGROUPTCP1;
 			SeqSpookyHalloween := S_ENABLEGROUPUCS2;
 		END_IF
 	
-	S_DISABLEGROUPTCP1: //
-		IF GroupHandler.M_DisableGroup() THEN
-			SeqSpookyHalloween := S_ENABLEGROUPUCS2;
+	S_ENABLEGROUPUCS2: // change the coordinate system to the UCS1 (user coordinate system 1)
+		IF GroupHandler.M_SetTransform(DUT_CoordSystem.UCS1) THEN
+			SeqSpookyHalloween := S_WAITENABLEGROUPUCS2;
+		ELSE
+			//
 		END_IF
 	
-	S_ENABLEGROUPUCS2: //
-		//IF NOT GroupHandler.P_GroupReady THEN
-			IF GroupHandler.M_SetTransform(DUT_CoordSystem.UCS1) THEN
-			//IF GroupHandler.M_EnableGroup(DUT_CoordSystem.UCS1) THEN
-				SeqSpookyHalloween := S_WAITENABLEGROUPUCS2;
-			ELSE
-				//
-			END_IF
-		//END_IF
-	
-	S_WAITENABLEGROUPUCS2: //
+	S_WAITENABLEGROUPUCS2: // wait for the transformation to be complete
 		IF GroupHandler.P_TransformSet THEN
 			SeqSpookyHalloween := S_ADDPREPLACEPATHS;
 		END_IF
 	
-	S_ADDPREPLACEPATHS: //
+	S_ADDPREPLACEPATHS: // add the pre-place paths to the motion queue
 		AddPrePlacePaths:=TRUE;
 		movePrepError:=FALSE;
 		fbMovePath.Execute:=FALSE;
 		SeqSpookyHalloween := S_PREPLACE;
 	
-	S_PREPLACE: //
+	S_PREPLACE: // after all motion paths have been added to the queue, move to the pre-place position
 		IF NOT movePrepError AND NOT AddPrePlacePaths THEN
 			fbMovePath.Execute := TRUE;
 			SeqSpookyHalloween := S_WAITFORPREPLACEDONE;
@@ -1210,45 +1193,34 @@ CASE SeqSpookyHalloween OF
 			//
 		END_IF
 		
-	S_WAITFORPREPLACEDONE: //
+	S_WAITFORPREPLACEDONE: // wait for motion to be complete and tool to be in pre-place position
 		IF fbMovePath.Error THEN
 			//
 		ELSIF fbMovePath.Done THEN
 			fbMovePath.Execute := FALSE;
-			//SeqSpookyHalloween := S_DISABLEGROUPUCS2;
 			SeqSpookyHalloween := S_ENABLEGROUPTCP2;
 		END_IF
 	
-	S_DISABLEGROUPUCS2: //
-		IF GroupHandler.M_DisableGroup() THEN
-			SeqSpookyHalloween := S_ENABLEGROUPTCP2;
+	S_ENABLEGROUPTCP2: // change the coordinate system back to the TCP
+		IF GroupHandler.M_SetTransform(DUT_CoordSystem.TCP) THEN
+			SeqSpookyHalloween := S_WAITENABLEGROUPTCP2;
 		ELSE
 			//
 		END_IF
 	
-	S_ENABLEGROUPTCP2: //
-		//IF NOT GroupHandler.P_GroupReady THEN
-			//IF GroupHandler.M_EnableGroup(DUT_CoordSystem.TCP) THEN
-			IF GroupHandler.M_SetTransform(DUT_CoordSystem.TCP) THEN
-				SeqSpookyHalloween := S_WAITENABLEGROUPTCP2;
-			ELSE
-				//
-			END_IF
-		//END_IF
-	
-	S_WAITENABLEGROUPTCP2: //
+	S_WAITENABLEGROUPTCP2: // wait for the transformation to be complete
 		IF GroupHandler.P_TransformSet THEN
 			SeqSpookyHalloween := S_ADDPLACEPATHS;
 		END_IF
 	
-	S_ADDPLACEPATHS: //
+	S_ADDPLACEPATHS: // add all place paths to the motion queue
 		AddPlacePaths:=TRUE;
 		movePrepError:=FALSE;
 		fbMovePath.Execute:=FALSE;
 		fbReleaseBlocker.Execute:=FALSE;
 		SeqSpookyHalloween := S_PLACE;
 	
-	S_PLACE: //
+	S_PLACE: // once all place paths have been added, execute motiong and place the glowstick
 		IF NOT movePrepError AND NOT AddPlacePaths THEN
 			fbMovePath.Execute := TRUE;
 			// wait for gripper to be open and tool in position
@@ -1266,33 +1238,24 @@ CASE SeqSpookyHalloween OF
 		fbReleaseBlocker.Execute:=TRUE;
 		SeqSpookyHalloween := S_WAITFROPLACEDONE;
 	
-	S_WAITFROPLACEDONE: //
+	S_WAITFROPLACEDONE: // wait for the motion to be complete
 		IF fbMovePath.Error THEN
 			//
 		ELSIF fbMovePath.Done THEN
 			fbMovePath.Execute := FALSE;
-			//SeqSpookyHalloween := S_DISABLEGROUPTCP2;
 			SeqSpookyHalloween := S_SETTRANSFORMUCS1;
 		END_IF
 		
-	S_SETTRANSFORMUCS1: //
+	S_SETTRANSFORMUCS1: // change the coordinate system back to the UCS1
 		IF GroupHandler.M_SetTransform(DUT_CoordSystem.UCS1) THEN
 			SeqSpookyHalloween := S_WAITENABLEGROUPUCS3;
 		ELSE
 			//
 		END_IF
 	
-	S_WAITENABLEGROUPUCS3: //
+	S_WAITENABLEGROUPUCS3: // wait for the transform to be complete and go back to pre-pick
 		IF GroupHandler.P_TransformSet THEN
 			SeqSpookyHalloween := S_ADDPREPICKPATH;
-		END_IF
-	
-	S_DISABLEGROUPTCP2: //
-		// go back to enable mcs 1 and on to pre pick and wait for pick trigger
-		IF GroupHandler.M_DisableGroup() THEN
-			SeqSpookyHalloween := S_ENABLEGROUPUCS1;
-		ELSE
-			//
 		END_IF
 	
 END_CASE
@@ -1375,6 +1338,8 @@ IF AddPrePickPaths THEN
 		fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
 		fbMoveLinPrep.Jerk							:= MC_DEFAULT;
 		
+		// no need to do this here since we are using the group handler function block.
+		// leaving here for example documentation.
 		// set ucs frame
 		//fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.Ucs1CoordRef);
 		//MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
@@ -1414,6 +1379,8 @@ IF AddPrePlacePaths THEN
 		fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
 		fbMoveLinPrep.Jerk							:= MC_DEFAULT;
 		
+		// no need to do this here since we are using the group handler function block.
+		// leaving here for example documentation.
 		// set ucs frame
 		//fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.Ucs1CoordRef);
 		//MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
@@ -1456,7 +1423,8 @@ IF AddPickPaths THEN
 		fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
 		fbMoveLinPrep.Jerk							:= MC_DEFAULT;
 		
-		//
+		// no need to do this here since we are using the group handler function block.
+		// leaving here for example documentation.
 		//fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.TcpCoordRef);
 		//MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
 		
@@ -1531,7 +1499,8 @@ IF AddPlacePaths THEN
 		fbMoveLinPrep.Deceleration					:= MC_DEFAULT;
 		fbMoveLinPrep.Jerk							:= MC_DEFAULT;
 		
-		//
+		// no need to do this here since we are using the group handler function block.
+		// leaving here for example documentation.
 		//fbSetCoordTransPrep(PathData:=path, CoordTransform:=GVL.TcpCoordRef);
 		//MovePrepError := MovePrepError OR fbSetCoordTransPrep.Error;
 		
