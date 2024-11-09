@@ -14,7 +14,7 @@ VAR
     // https://infosys.beckhoff.com/content/1033/tf5420_tc3_advanced_pick_and_place/8893733771.html?id=5942709046194342427
 	GroupHandler: FB_GroupHandler;
 	fbGroupSetOvr: MC_GroupSetOverride;
-	GroupVelocityFactor: LREAL:=1.0;
+	GroupVelocityFactor: LREAL:=0.75;
     stAxesConfig: ST_KinAxes;
     stGroupRef : AXES_GROUP_REF;
 	ACS: ARRAY[1..NumberOfAxes] OF AXIS_REF;
@@ -860,8 +860,8 @@ VAR_STAT
 	
 	_x, _y, _z, _a, _b, _c: MC_LREAL;
 	
-	GrossVelocity: LREAL:=60.0; // mm/s
-	FineVelocity: LREAL:=40.0; // mm/s
+	GrossVelocity: LREAL:=100.0; // mm/s
+	FineVelocity: LREAL:=60.0; // mm/s
 	
 	// rotation is din9000 standard evaluated in the order z, then y, then x
 	// this is how we want the end effector to be rotated in relation to the nest

@@ -327,8 +327,8 @@
 */
 
 //#define SpiSpeed        50000
-#define SpiSpeed        8000000
-//#define SpiSpeed        25000000
+//#define SpiSpeed        8000000 // this value was causing jitter in the PTO
+#define SpiSpeed        25000000
 
 
 //---- typedef ------------------------------------------------------------------------------------

@@ -72,15 +72,17 @@ const int DigitalInputPin2 = 41; // D41 | A17
 //const int  = 15; // D15 | A1 | PWM | RX3
 //const int  = 16; // D16 | A2 | SCL1 | RX4
 
+const int AxisCount = 6;
+
 union u_pto {
   uint8_t b[2];
   int16_t ival;
-} Frequency[6];
+} Frequency[AxisCount];
 
 union u_enc {
   uint8_t b[4];
   long lval;
-} EncPosition[6];
+} EncPosition[AxisCount];
 
 union u_crc {
   uint8_t b[2];
@@ -92,10 +94,10 @@ struct s_ctrl {
 	bool Minus;
 	bool Plus;
 	bool Stop;
-} DriveControl[6];
+} DriveControl[AxisCount];
 
-byte Control1[6];
-byte Control2[6];
+byte Control1[AxisCount];
+byte Control2[AxisCount];
 
 // dirPin, pulsePin, enablePin = -1
 PTO Drive[] = {	PTO(J1_DirPin, J1_PulsePin),
@@ -148,13 +150,13 @@ void setup() {
                                                                   // chip select choosen on the board doesn't 
                                                                   // match the one choosen by the firmware
                                                                   
-    pinMode(13, OUTPUT);                                          // stay in loop for ever
+    pinMode(StatusLed, OUTPUT);                                   // stay in loop for ever
                                                                   // with the Arduino led blinking
     while(1)                                                      //
     {                                                             //   
-      digitalWrite (13, LOW);                                     // 
+      digitalWrite (StatusLed, LOW);                              // 
       delay(300);                                                 //   
-      digitalWrite (13, HIGH);                                    //  
+      digitalWrite (StatusLed, HIGH);                             //  
       delay(300);                                                 // 
     }                                                             // 
   }
@@ -164,7 +166,7 @@ void setup() {
   SerialOutputTimer_last = SerialOutputTimer;
 
   //
-	for(int i=0;i<=5;i++){
+	for(int i=0;i<AxisCount;i++){
 		Drive[i].init();
 		Limit[i].init();
 	}
@@ -180,7 +182,7 @@ void setup() {
   
 }
 
-bool LimitState[6];
+bool LimitState[AxisCount];
 bool DigitalInputState1, DigitalInputState2;
 bool DigitalOutputState1, DigitalOutputState2;
 bool DriveIsEnabled;
@@ -193,7 +195,6 @@ void loop() {
   // ESM_SAFEOP                 0x04          // safe-operational
   // ESM_OP                     0x08          // operational
   unsigned char Status = EASYCAT.MainTask();
-  //EASYCAT.MainTask();
 
   if (Status & WATCHDOG || !(Status & ESM_OP)){
     CommsOK = false;
@@ -207,7 +208,7 @@ void loop() {
   handleOutputs();
   
   DriveIsEnabled = false;
-	for (int i=0;i<=5;i++){
+	for (int i=0;i<AxisCount;i++){
 		if (DriveControl[i].Enable) {
 			Drive[i].turnON();
       DriveIsEnabled = true; // turn on led to warn at least one drive is enabled
@@ -222,11 +223,11 @@ void loop() {
 		}
 	}
 
-	SerialOutputTimer = millis();
-	if (SerialOutputTimer - SerialOutputTimer_last > 1000) {
-		SerialOutputTimer_last = SerialOutputTimer;
+	//SerialOutputTimer = millis();
+	//if (SerialOutputTimer - SerialOutputTimer_last > 1000) {
+		//SerialOutputTimer_last = SerialOutputTimer;
 		//handleSerial();
-	}
+	//}
 }
 
 void handleTx(){
@@ -243,11 +244,11 @@ void handleTx(){
   //TxBuffer[0] = TxBuffer[0] | (tx_ ? B10000000 : B00000000);
 
   // bytes 1 through 24 are used for the encoders
-  for (int i=0;i<=5;i++){
+  for (int i=0;i<AxisCount;i++){
 	  EncPosition[i].lval = Position[i].read();
   }
   int k=1;
-  for (int i=0;i<=5;i++){
+  for (int i=0;i<AxisCount;i++){
     for (int j=0;j<=3;j++){
       TxBuffer[k++] = EncPosition[i].b[j];
     }
@@ -301,18 +302,18 @@ void handleRx(){
 
 	// bytes 1 through 12 are used for frequency
 	int k=1;
-	for (int i=0;i<=5;i++){
+	for (int i=0;i<AxisCount;i++){
 		for (int j=0;j<=1;j++){
 		  Frequency[i].b[j]=RxBuffer[k++];
 		}
 	}
-	for (int i=0;i<=5;i++){
+	for (int i=0;i<AxisCount;i++){
 		Drive[i].run(Frequency[i].ival);
 	}
 	
 	// bytes 13 through 24 are used for control from NC
 	k=13;
-	for (int i=0;i<=5;i++){
+	for (int i=0;i<AxisCount;i++){
 		// get nctrl1
 		DriveControl[i].Enable = RxBuffer[k] & B00001000;
 		k++;
@@ -337,7 +338,7 @@ void handleRx(){
 void handleInputs(){
 
   // read limit inputs
-	for (int i=0;i<=5;i++){
+	for (int i=0;i<AxisCount;i++){
 		LimitState[i] = !Limit[i].read();
 	}
 

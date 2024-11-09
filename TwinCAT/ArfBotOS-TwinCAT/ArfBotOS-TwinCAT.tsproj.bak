@@ -2898,9 +2898,8 @@ and will return to Group State Standby when the situation permits.
 					<Name>ACS 1</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Dynamic Acceleration="33.3333" Deceleration="33.3333" Jerk="44.4444"/>
-						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="25"/>
-						<BacklashCompensation Range="1"/>
+						<Dynamic Acceleration="40" Deceleration="40" Jerk="40"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="40"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
@@ -3037,9 +3036,10 @@ and will return to Group State Standby when the situation permits.
 							</Var>
 						</Vars>
 					</Drive>
-					<Controller Name="Ctrl" CtrType="1">
-						<CtrPara PriorControlFactor="1.15">
-							<PID PosKp="20"/>
+					<Controller Name="Ctrl" CtrType="3">
+						<CtrPara PriorControlFactor="1">
+							<PID PosKp="30" PosTv="2" PosTd="2" PosDOutputLimit="1" PosExtKp="40" CtrlOutputLimit="1"/>
+							<AutoOffset Range="1"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -3062,8 +3062,8 @@ and will return to Group State Standby when the situation permits.
 					<Name>ACS 2</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Dynamic Acceleration="13.3333" Deceleration="13.3333" Jerk="17.7778"/>
-						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="10"/>
+						<Dynamic Acceleration="34.2105" Deceleration="34.2105" Jerk="45.0139"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="26"/>
 						<BacklashCompensation Range="0.5"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
@@ -3201,9 +3201,9 @@ and will return to Group State Standby when the situation permits.
 							</Var>
 						</Vars>
 					</Drive>
-					<Controller Name="Ctrl" CtrType="1">
+					<Controller Name="Ctrl" CtrType="3">
 						<CtrPara PriorControlFactor="1.1">
-							<PID PosKp="60"/>
+							<PID PosKp="30" PosTv="2" PosTd="2" PosDOutputLimit="1"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -3226,8 +3226,8 @@ and will return to Group State Standby when the situation permits.
 					<Name>ACS 3</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Dynamic Acceleration="26.6666" Deceleration="26.6666" Jerk="35.5556"/>
-						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="20"/>
+						<Dynamic Acceleration="66.6667" Deceleration="66.6667" Jerk="88.8889"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="50"/>
 						<BacklashCompensation Range="2.5"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
@@ -3365,9 +3365,9 @@ and will return to Group State Standby when the situation permits.
 							</Var>
 						</Vars>
 					</Drive>
-					<Controller Name="Ctrl" CtrType="1">
+					<Controller Name="Ctrl" CtrType="3">
 						<CtrPara PriorControlFactor="1.05">
-							<PID PosKp="90"/>
+							<PID PosKp="30" PosTv="3" PosTd="2" PosDOutputLimit="1" PosExtKp="90"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -3390,8 +3390,8 @@ and will return to Group State Standby when the situation permits.
 					<Name>ACS 4</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Dynamic Acceleration="49.2138" Deceleration="49.2138" Jerk="121.1"/>
-						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="20"/>
+						<Dynamic Acceleration="53.3331" Deceleration="53.3331" Jerk="71.1111"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="40"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
@@ -3528,10 +3528,9 @@ and will return to Group State Standby when the situation permits.
 							</Var>
 						</Vars>
 					</Drive>
-					<Controller Name="Ctrl" CtrType="1">
-						<CtrPara PriorControlFactor="1">
-							<PosDiffControl Enable="false"/>
-							<PID PosKp="35"/>
+					<Controller Name="Ctrl" CtrType="3">
+						<CtrPara PriorControlFactor="0.9">
+							<PID PosKp="30" PosTv="3" PosTd="2" PosDOutputLimit="1"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -3554,8 +3553,8 @@ and will return to Group State Standby when the situation permits.
 					<Name>ACS 5</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Dynamic Acceleration="165.138" Deceleration="165.138" Jerk="454.507"/>
-						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="60"/>
+						<Dynamic Acceleration="123.853" Deceleration="123.853" Jerk="511.321"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="80"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
@@ -3692,10 +3691,9 @@ and will return to Group State Standby when the situation permits.
 							</Var>
 						</Vars>
 					</Drive>
-					<Controller Name="Ctrl" CtrType="1">
-						<CtrPara PriorControlFactor="1">
-							<PosDiffControl Enable="false"/>
-							<PID PosKp="55"/>
+					<Controller Name="Ctrl" CtrType="3">
+						<CtrPara PriorControlFactor="1.1">
+							<PID PosKp="30" PosTv="2" PosTd="2" PosDOutputLimit="1"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -3718,8 +3716,8 @@ and will return to Group State Standby when the situation permits.
 					<Name>ACS 6</Name>
 					<AxisPara>
 						<General UnitName="Degree"/>
-						<Dynamic Acceleration="165.138" Deceleration="165.138" Jerk="454.507"/>
-						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="60"/>
+						<Dynamic Acceleration="360" Deceleration="360" Jerk="1440"/>
+						<Velo RefSearch="5" RefSync="10" SlowManual="5" FastManual="20" Fast="10" Maximum="90"/>
 						<OtherSettings AllowMotionCmdToSlave="true"/>
 					</AxisPara>
 					<Encoder Name="Enc" EncType="16">
@@ -3856,10 +3854,9 @@ and will return to Group State Standby when the situation permits.
 							</Var>
 						</Vars>
 					</Drive>
-					<Controller Name="Ctrl" CtrType="1">
-						<CtrPara PriorControlFactor="1">
-							<PosDiffControl Enable="false"/>
-							<PID PosKp="50"/>
+					<Controller Name="Ctrl" CtrType="3">
+						<CtrPara PriorControlFactor="1.1">
+							<PID PosKp="30" PosTv="2" PosTd="2" PosDOutputLimit="1" PosExtKp="50"/>
 							<Observer BandWidth="20"/>
 						</CtrPara>
 					</Controller>
@@ -5956,7 +5953,7 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{55DFBA43-1DDC-1167-C017-B611D44AF0BE}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{BC8E4D42-EBE9-6CFC-173E-799EC116E788}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
