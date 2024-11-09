@@ -1,33 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1">
   <GVL Name="PersistentVars" Id="{3ec4e751-fd63-4486-9e96-20e1d2f269ab}">
-    <Declaration><![CDATA[(*
-
-this is what was imported in. commenting out for now and copying from codesys manually
-
-{attribute 'qualified_only' := ''}
-{attribute 'checksumnoinit_override' := '4109224359'}
-{attribute 'init_related_code' := 'bac351e4-1440-4031-887f-c3d65d99e6dc'}
-VAR_GLOBAL RETAIN PERSISTENT
-	{attribute 'order_in_persistent_editor' := '0'}
-	Programs: ARRAY[GVL.PROG_ARR_BEG..GVL.PROG_ARR_END] OF DUT_Program;
-	{attribute 'order_in_persistent_editor' := '1'}
-	StoredPositions: ARRAY[GVL.POS_ARR_BEG..GVL.POS_ARR_END] OF DUT_StoredPosition;
-	{attribute 'order_in_persistent_editor' := '2'}
-	VisionRegisters: ARRAY[GVL.VIS_ARR_BEG..GVL.VIS_ARR_END] OF DUT_VisionRegister;
-	{attribute 'order_in_persistent_editor' := '3'}
-	Flags: ARRAY[GVL.FLG_ARR_BEG..GVL.FLG_ARR_END] OF DUT_Flags;
-	{attribute 'order_in_persistent_editor' := '4'}
-	PositionControllers: ARRAY[GVL.POSCONT_ARR_BEG..GVL.POSCONT_ARR_END] OF DUT_PositionController;
-	/// vision
-	{attribute 'order_in_persistent_editor' := '5'}
-	VisionSystemIpAddress: STRING(19) := '127.0.0.1';
-	{attribute 'order_in_persistent_editor' := '6'}
-	VisionSystemPort: UINT := 50011;
-END_VAR
-*)
-
-{attribute 'qualified_only'}
+    <Declaration><![CDATA[{attribute 'qualified_only'}
 VAR_GLOBAL PERSISTENT RETAIN
 	//
 	Programs: ARRAY [GVL.PROG_ARR_BEG..GVL.PROG_ARR_END] OF DUT_Program;
@@ -43,8 +17,6 @@ VAR_GLOBAL PERSISTENT RETAIN
 	// vision
 	VisionSystemIpAddress: STRING(19):='127.0.0.1';
 	VisionSystemPort: UINT:=50011;
-	
-	// dh parameters
 	
 END_VAR]]></Declaration>
   </GVL>

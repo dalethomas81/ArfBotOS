@@ -827,15 +827,8 @@ VAR_STAT
 	SeqReset: INT;
 	ResetSeq: BOOL;
 	SeqSpookyHalloween: INT;
-	SeqSetUcs1, SeqSetTcp: INT;
-	SeqEnableMcs, SeqEnableUcs1, SeqEnableTcp: INT;
 	CurrentRow: INT:=0;
 	CurrentColumn: INT:=0;
-	TcpCoordinateFrame, Ucs1CoordinateFrame: FB_CoordinateFrame;
-	TcpOffsetFrame, Ucs1OffsetFrame: DUT_CoordFrame;
-	NestHomePosition: DUT_COORD_REF:=(X:=350.0, Y:=-100.0, Z:=172.0, A:=0.0, B:=0.0, C:=130.0); // This will be the position of the first part in the nest in the MCS frame.
-	SetUcs1, Ucs1Set: BOOL;
-	SetTcp, TcpSet: BOOL;
 	PreparePick, PickGlowStick: BOOL;
 	AddPrePickPaths, AddPickPaths, AddPrePlacePaths, AddPlacePaths, movePrepError: BOOL;
 	
@@ -894,49 +887,34 @@ VAR_STAT CONSTANT
 	S_MOVEHOMEACS: INT:=0030;
 	S_WAITMOVEHOMEACS: INT:=0040;
 	S_DISABLEGROUPACS: INT:=0045;
-	S_SETUCS1: INT:=0050;
-	S_WAITUCS1SET: INT:=0060;
+	S_WAITFORDISABLEACS: INT:=0046;
 	S_ENABLEGROUPUCS1: INT:=0070;
 	S_WAITENABLEGROUPUCS1: INT:=0080;
 	S_ADDPREPICKPATH: INT:=0090;
 	S_PREPICK: INT:=0100;
 	S_WAITFORPREPICKDONE: INT:=0110;
-	S_DISABLEGROUPUCS1: INT:=0120;
 	S_WAITFORPICKTRIGGER: INT:=0130;
-	S_SETTCP1: INT:=0140;
-	S_WAITTCPSET1: INT:=0150;
 	S_ENABLEGROUPTCP1: INT:=0160;
 	S_WAITENABLETCP1: INT:=0170;
 	S_ADDPICKPATH: INT:=0180;
 	S_PICK: INT:=0190;
 	S_GRIP: INT:=0200;
 	S_WAITFORPICKDONE: INT:=0210;
-	S_DISABLEGROUPTCP1: INT:=0220;
 	S_ENABLEGROUPUCS2: INT:=0230;
 	S_WAITENABLEGROUPUCS2: INT:=0240;
 	S_ADDPREPLACEPATHS: INT:=0250;
 	S_PREPLACE: INT:=0260;
 	S_WAITFORPREPLACEDONE: INT:=0270;
-	S_DISABLEGROUPUCS2: INT:=0280;
-	S_SETTCP2: INT:=0290;
-	S_WAITTCPSET2: INT:=0300;
 	S_ENABLEGROUPTCP2: INT:=0310;
 	S_WAITENABLEGROUPTCP2: INT:=0320;
 	S_ADDPLACEPATHS: INT:=0330;
 	S_PLACE: INT:=0340;
 	S_UNGRIP: INT:=0350;
 	S_WAITFROPLACEDONE: INT:=0360;
-	S_DISABLEGROUPTCP2: INT:=0370;
-	S_WAITFORGRIP: INT:=0380;
-	S_WAITFORUNGRIP: INT:=0390;
-	S_WAITFORPICKBLOCK: INT:=0400;
-	S_SETTRANSFORMUCS1: INT:=0410;
-	S_WAITENABLEGROUPUCS3: INT:=0420;
 
 	//
 	GRIPBLOCKERID: UDINT:=100;
 	UNGRIPBLOCKERID: UDINT:=200;
-	PICKBLOCKERID: UDINT:=300;
 	
 	// Nest Dimensions
 	TOTALROWS: INT:=11;
@@ -992,14 +970,14 @@ END_IF
 
 // handy variables
 GroupVelocityFactor;
-GVL.Reset;
-GVL.PowerOn;
-GVL.StartHome;
-CurrentRow;
-CurrentColumn;
-ResetSeq;
-PreparePick;
-PickGlowStick;
+GVL.Reset; GVL.PowerOn; GVL.StartHome; ResetSeq;
+CurrentRow; CurrentColumn;
+PreparePick; PickGlowStick;
+PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Position;
+PersistentVars.StoredPositions[GVL.UC1_POS_IDX].Position;
+PersistentVars.StoredPositions[GVL.UC2_POS_IDX].Position;
+PersistentVars.Flags[GVL.HOME_COMPLETE].Value;
+	
 {endregion}
 
 CASE SeqReset OF
@@ -1064,16 +1042,29 @@ CASE SeqSpookyHalloween OF
 		
 	S_DISABLEGROUPACS: // disable the group so that we can reenable in a cartesian coordinate system
 		IF GroupHandler.M_DisableGroup() THEN
+			SeqSpookyHalloween := S_WAITFORDISABLEACS;
+		END_IF
+		
+	S_WAITFORDISABLEACS: // wait for the ACS to be disabled and move to the next step
+		IF NOT GroupHandler.P_GroupReady THEN
+			SeqSpookyHalloween := S_WAITFORPICKTRIGGER;
+		ELSE
+			//
+		END_IF
+		
+	S_WAITFORPICKTRIGGER: // stay here until triggered to pick a glowstick
+		IF PickGlowStick THEN
+			PickGlowStick := FALSE;
+			Smoke.On();
+			Laser.On();
 			SeqSpookyHalloween := S_ENABLEGROUPUCS1;
 		END_IF
 		
 	S_ENABLEGROUPUCS1: // enable the group in a cartesian coordinate system
-		IF NOT GroupHandler.P_GroupReady THEN
-			IF GroupHandler.M_EnableGroup(DUT_CoordSystem.UCS1) THEN
-				SeqSpookyHalloween := S_WAITENABLEGROUPUCS1;
-			ELSE
-				//
-			END_IF
+		IF GroupHandler.M_EnableGroup(DUT_CoordSystem.UCS1) THEN
+			SeqSpookyHalloween := S_WAITENABLEGROUPUCS1;
+		ELSE
+			//
 		END_IF
 		
 	S_WAITENABLEGROUPUCS1: // wait for the group to be ready
@@ -1100,14 +1091,6 @@ CASE SeqSpookyHalloween OF
 			//
 		ELSIF fbMovePath.Done THEN
 			fbMovePath.Execute := FALSE;
-			SeqSpookyHalloween := S_WAITFORPICKTRIGGER;
-		END_IF
-		
-	S_WAITFORPICKTRIGGER: // stay here until triggered to pick a glowstick
-		IF PickGlowStick THEN
-			PickGlowStick := FALSE;
-			Smoke.On();
-			Laser.On();
 			SeqSpookyHalloween := S_ENABLEGROUPTCP1;
 		END_IF
 	
@@ -1233,29 +1216,17 @@ CASE SeqSpookyHalloween OF
 		
 	S_UNGRIP: // open the gripper and release the blocker
 		Gripper.On(); // TODO may need to wait for a time here or add inputs to the gripper
-		Laser.Off();
 		fbReleaseBlocker.BlockerId:=UNGRIPBLOCKERID;
 		fbReleaseBlocker.Execute:=TRUE;
 		SeqSpookyHalloween := S_WAITFROPLACEDONE;
 	
-	S_WAITFROPLACEDONE: // wait for the motion to be complete
+	S_WAITFROPLACEDONE: // wait for the motion to be complete and go back to wait for trigger
 		IF fbMovePath.Error THEN
 			//
 		ELSIF fbMovePath.Done THEN
+			Laser.Off();
 			fbMovePath.Execute := FALSE;
-			SeqSpookyHalloween := S_SETTRANSFORMUCS1;
-		END_IF
-		
-	S_SETTRANSFORMUCS1: // change the coordinate system back to the UCS1
-		IF GroupHandler.M_SetTransform(DUT_CoordSystem.UCS1) THEN
-			SeqSpookyHalloween := S_WAITENABLEGROUPUCS3;
-		ELSE
-			//
-		END_IF
-	
-	S_WAITENABLEGROUPUCS3: // wait for the transform to be complete and go back to pre-pick
-		IF GroupHandler.P_TransformSet THEN
-			SeqSpookyHalloween := S_ADDPREPICKPATH;
+			SeqSpookyHalloween := S_DISABLEGROUPACS;
 		END_IF
 	
 END_CASE
@@ -1976,8 +1947,8 @@ PersistentVars.StoredPositions[GVL.SPEEDS_IDX].Comment := 'vel, acc, jerk, vel f
 PersistentVars.StoredPositions[GVL.HOM_POS_IDX].Comment := 'Home Offsets J1, J2, J3, J4, J5, J6';
 PersistentVars.StoredPositions[GVL.DEC_START_POS].Comment := 'NC Decoder Start Position';
 PersistentVars.StoredPositions[GVL.TCP_POS_IDX].Comment := 'TCP Offset';
-PersistentVars.StoredPositions[GVL.UC2_POS_IDX].Comment := 'PCS 2 Offset';
-PersistentVars.StoredPositions[GVL.UC1_POS_IDX].Comment := 'PCS 1 Offset';
+PersistentVars.StoredPositions[GVL.UC2_POS_IDX].Comment := 'UCS 2 Offset';
+PersistentVars.StoredPositions[GVL.UC1_POS_IDX].Comment := 'UCS 1 Offset';
 PersistentVars.StoredPositions[GVL.MCS_POS_IDX].Comment := 'MCS Offset';
 
 //	 
