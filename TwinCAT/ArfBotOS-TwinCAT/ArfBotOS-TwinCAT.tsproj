@@ -2549,7 +2549,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{C830A277-8CBC-2487-E030-9239EF048808}" AutoDeleteType="true">DUT_CommandType</Name>
+			<Name GUID="{11103DE4-ED65-49B0-BA22-ED7393E3E4D3}" AutoDeleteType="true">DUT_CommandType</Name>
 			<BitSize>16</BitSize>
 			<BaseType GUID="{18071995-0000-0000-0000-000000000006}">INT</BaseType>
 			<EnumInfo>
@@ -2603,11 +2603,11 @@ and will return to Group State Standby when the situation permits.
 				</Property>
 				<Property>
 					<Name>to_string_function</Name>
-					<Value>__TO_STRING__1635</Value>
+					<Value>__TO_STRING__1647</Value>
 				</Property>
 				<Property>
 					<Name>to_wstring_function</Name>
-					<Value>__TO_WSTRING__1635</Value>
+					<Value>__TO_WSTRING__1647</Value>
 				</Property>
 				<Property>
 					<Name>generate_implicit_init_function</Name>
@@ -2615,11 +2615,11 @@ and will return to Group State Standby when the situation permits.
 			</Properties>
 		</DataType>
 		<DataType>
-			<Name GUID="{AF69B211-641B-EB5E-ED14-55D5AB1D42B3}" AutoDeleteType="true">DUT_Command</Name>
+			<Name GUID="{B4464B2F-1170-4EDE-B840-0AEE0B22C150}" AutoDeleteType="true">DUT_Command</Name>
 			<BitSize>2720</BitSize>
 			<SubItem>
 				<Name>CommandType</Name>
-				<Type GUID="{C830A277-8CBC-2487-E030-9239EF048808}">DUT_CommandType</Type>
+				<Type GUID="{11103DE4-ED65-49B0-BA22-ED7393E3E4D3}">DUT_CommandType</Type>
 				<BitSize>16</BitSize>
 				<BitOffs>0</BitOffs>
 			</SubItem>
@@ -2637,7 +2637,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{0D984A04-251F-ABF2-3DB9-B89492C8DB95}" AutoDeleteType="true">DUT_Program</Name>
+			<Name GUID="{6C6965E8-019B-CA59-606A-6147B7BFDF9B}" AutoDeleteType="true">DUT_Program</Name>
 			<BitSize>136656</BitSize>
 			<SubItem>
 				<Name>ProgramName</Name>
@@ -2647,7 +2647,7 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 			<SubItem>
 				<Name>Commands</Name>
-				<Type GUID="{AF69B211-641B-EB5E-ED14-55D5AB1D42B3}">DUT_Command</Type>
+				<Type GUID="{B4464B2F-1170-4EDE-B840-0AEE0B22C150}">DUT_Command</Type>
 				<ArrayInfo>
 					<LBound>0</LBound>
 					<Elements>50</Elements>
@@ -2657,9 +2657,9 @@ and will return to Group State Standby when the situation permits.
 			</SubItem>
 		</DataType>
 		<DataType>
-			<Name GUID="{3BF2C477-3BCD-1489-A279-6AD2911E9A61}" IecBaseType="true" AutoDeleteType="true">ARRAY [0..19] OF DUT_Program</Name>
+			<Name IecBaseType="true">ARRAY [0..19] OF DUT_Program</Name>
 			<BitSize>2733120</BitSize>
-			<BaseType GUID="{0D984A04-251F-ABF2-3DB9-B89492C8DB95}">DUT_Program</BaseType>
+			<BaseType GUID="{6C6965E8-019B-CA59-606A-6147B7BFDF9B}">DUT_Program</BaseType>
 			<ArrayInfo>
 				<LBound>0</LBound>
 				<Elements>20</Elements>
@@ -5953,14 +5953,14 @@ and will return to Group State Standby when the situation permits.
 		</Motion>
 		<Plc>
 			<Project GUID="{9B493A07-0AB4-425E-B9EF-C63E4AB00EEE}" Name="Main" PrjFilePath="Main\Main.plcproj" TmcFilePath="Main\Main.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" CopyTmcToTarget="true" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{F804B551-96E4-4F73-C144-EC5174DA8A3B}" TmcPath="Main\Main.tmc">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcHash="{E4C27AF3-BBE3-9761-20C1-93ECDB42B592}" TmcPath="Main\Main.tmc">
 					<Name>Main Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="8" AreaNo="4">
 						<Name>PlcTask Retains</Name>
 						<Var>
 							<Name>PersistentVars.Programs</Name>
-							<Type GUID="{3BF2C477-3BCD-1489-A279-6AD2911E9A61}">ARRAY [0..19] OF DUT_Program</Type>
+							<Type GUID="{ADAAE126-8315-61A1-7EB3-3CFAB542373D}">ARRAY [0..19] OF DUT_Program</Type>
 							<InOut>7</InOut>
 						</Var>
 						<Var>
