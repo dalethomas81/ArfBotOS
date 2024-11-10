@@ -136,6 +136,7 @@ Laser();
 Smoke();
 Beeper();
 Beacon();
+//UVLight();
 
 (*
 // dont get sleepy
@@ -892,8 +893,8 @@ VAR_STAT
 	SmokeTimer: TON;
 	LaserTime: TIME:=T#30S;
 	LaserTimer: TON;
-	BeeperPulseTime: TIME:=T#250MS;
-	BeeperDwellTime: TIME:=T#750S;
+	BeeperPulseTime: TIME:=T#100MS;
+	BeeperDwellTime: TIME:=T#750MS;
 	BeeperPulseHighTimer, BeeperPulseLowTimer: TON;
 	BeeperDwellTimer: TON;
 	BeeperTotalPulseCount: WORD:=2;
@@ -920,6 +921,7 @@ VAR_STAT CONSTANT
 	S_PREPICK: INT:=0100;
 	S_WAITFORPREPICKDONE: INT:=0110;
 	S_WAITFORPICKTRIGGER: INT:=0130;
+	S_WAITFORMOVEMENTWARNING: INT:=0140;
 	S_ENABLEGROUPTCP1: INT:=0160;
 	S_WAITENABLETCP1: INT:=0170;
 	S_ADDPICKPATH: INT:=0180;
