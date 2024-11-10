@@ -92,10 +92,10 @@ END_VAR]]></Declaration>
 	GVL.StorePersist := FALSE;
 	
 	//
-	GVL.DecadeTimer(IN:=TRUE, PT:=GVL.DecadeTimerTime);
-	IF GVL.DecadeTimer.Q THEN
-		GVL.DecadeTimer(IN:=FALSE);
-		GVL.DecadeTime:=GVL.DecadeTime+1;
+	GVL.BlinkingBitsTimer(IN:=TRUE, PT:=GVL.BlinkingBitsTimerTime);
+	IF GVL.BlinkingBitsTimer.Q THEN
+		GVL.BlinkingBitsTimer(IN:=FALSE);
+		GVL.BlinkingBitsTime:=GVL.BlinkingBitsTime+1;
 	END_IF
 {endregion}
      
@@ -892,17 +892,17 @@ VAR_STAT
 	SmokeTimer: TON;
 	LaserTime: TIME:=T#30S;
 	LaserTimer: TON;
-	BeeperContinuousTimer: TON;
-	BeeperContinuousTime: TIME:=T#2S;
-	BeeperPulseTime: TIME:=T#500MS;
-	BeeperDwellTime: TIME:=T#1S;
-	BeeperPulseTimer: TP;
+	BeeperPulseTime: TIME:=T#250MS;
+	BeeperDwellTime: TIME:=T#750S;
+	BeeperPulseHighTimer, BeeperPulseLowTimer: TON;
 	BeeperDwellTimer: TON;
 	BeeperTotalPulseCount: WORD:=2;
-	BeeperCurrentPulseCount: CTU;
-	EnableBeeper, PulseBeeper, ContinuousBeeper: BOOL;
+    BeeperTotalPulseGroups: WORD:=3;
+	BeeperCurrentPulseCount, BeeperCurrentPulseGroupsCount: CTU;
+    EnableBeeperRtrig: R_TRIG;
+    EnableBeeperFtrig: F_TRIG;
+	EnableBeeper: BOOL;
 	BeeperSequence: INT;
-	
 	
 END_VAR
 VAR_STAT CONSTANT
@@ -1018,6 +1018,11 @@ CASE SeqReset OF
 			SeqSpookyHalloween := 0;
 			GroupHandler.M_DisableGroup();
             Gripper.On(); // open the gripper
+            EnableBeeper := FALSE;
+            Beacon.Off();
+            Smoke.Off();
+            Laser.Off();
+            //UVLight.Off();
 			SeqReset := SeqReset + 1;
 		END_IF
 	1:
@@ -1085,10 +1090,19 @@ CASE SeqSpookyHalloween OF
 		
 	S_WAITFORPICKTRIGGER: // stay here until triggered to pick a glowstick
 		IF PickGlowStickRtrig.Q THEN
-			Smoke.On();
-			Laser.On();
-			SeqSpookyHalloween := S_ENABLEGROUPUCS1;
+            // give an audiable and visual warning that movement is about to happen
+            EnableBeeper := TRUE;
+            Beacon.On();
+			SeqSpookyHalloween := S_WAITFORMOVEMENTWARNING;
 		END_IF
+        
+    S_WAITFORMOVEMENTWARNING:
+        IF NOT EnableBeeper THEN
+            Beacon.Off();
+			Smoke.On();
+            Laser.On();
+			SeqSpookyHalloween := S_ENABLEGROUPUCS1;
+        END_IF
 		
 	S_ENABLEGROUPUCS1: // enable the group in a cartesian coordinate system
 		IF GroupHandler.M_EnableGroup(DUT_CoordSystem.UCS1) THEN
@@ -1145,6 +1159,7 @@ CASE SeqSpookyHalloween OF
 	
 	S_PICK: // after all paths have been added, execute motion
 		IF NOT movePrepError AND NOT AddPickPaths THEN
+            //UVLight.On();
 			fbMovePath.Execute := TRUE;
 			// wait for gripper to be open and tool in position
 			IF fbGroupReadBlockerStatus.Blocked AND fbGroupReadBlockerStatus.BlockerId = GRIPBLOCKERID THEN
@@ -1164,6 +1179,7 @@ CASE SeqSpookyHalloween OF
 		IF fbMovePath.Error THEN
 			//
 		ELSIF fbMovePath.Done THEN
+            //UVLight.Off();
 			fbMovePath.Execute := FALSE;
             // increment the column and row so that we pick the next glow stick on the next try.
 			// roll back over to start once we reach the last glow stick.
@@ -1317,41 +1333,56 @@ IF LaserTimer.Q THEN
     Laser.Off();
 END_IF
 //
+    EnableBeeperRtrig(CLK:=EnableBeeper);
+    EnableBeeperFtrig(CLK:=EnableBeeper);
+    IF EnableBeeperFtrig.Q THEN
+        BeeperSequence := -1;
+    END_IF
 	CASE BeeperSequence OF
-		0:
-			PulseBeeper:=FALSE;
-			ContinuousBeeper:=FALSE;
-			IF EnableBeeper THEN
-				EnableBeeper:=FALSE;
+        -1: // reset state
+            Beeper.Off();
+            BeeperCurrentPulseCount(RESET:=TRUE, CU:=FALSE);
+            BeeperCurrentPulseGroupsCount(RESET:=TRUE, CU:=FALSE);
+            BeeperPulseHighTimer(IN:=FALSE);
+            BeeperPulseLowTimer(IN:=FALSE);
+            BeeperDwellTimer(IN:=FALSE);
+			BeeperSequence := BeeperSequence + 1;
+		0: // wait for trigger
+			IF EnableBeeperRtrig.Q THEN
 				BeeperSequence := BeeperSequence + 1;
 			END_IF
-		1:
-			PulseBeeper:=TRUE;
-			IF BeeperPulseTimer.Q THEN
-				Beeper.On();
-			ELSE
-				Beeper.Off();	
-			END_IF
-			IF BeeperCurrentPulseCount.Q THEN
-				PulseBeeper:=FALSE;
-				BeeperCurrentPulseCount.RESET:=TRUE;
+		1: // pulse high
+            Beeper.On();
+            BeeperCurrentPulseCount(PV:=BeeperTotalPulseCount, CU:=TRUE, RESET:=FALSE);
+            BeeperPulseHighTimer(IN:=TRUE, PT:=BeeperPulseTime);
+			IF BeeperPulseHighTimer.Q THEN
+                BeeperPulseHighTimer(IN:=FALSE);
+                BeeperCurrentPulseCount(CU:=FALSE);
 				BeeperSequence := BeeperSequence + 1;
 			END_IF
-		2:
-			ContinuousBeeper:=TRUE;
-			IF BeeperContinuousTimer.Q THEN
-				ContinuousBeeper:=FALSE;
-				BeeperSequence := 0;
-			END_IF
-		
+        2: // pulse low
+            Beeper.Off();
+            BeeperPulseLowTimer(IN:=TRUE, PT:=BeeperPulseTime);
+            IF BeeperCurrentPulseCount.Q THEN // check the counter first so we dont all a tail on the last pulse
+                BeeperCurrentPulseCount(RESET:=TRUE, CU:=FALSE);
+                BeeperPulseLowTimer(IN:=FALSE);
+                BeeperSequence := BeeperSequence + 1;
+            ELSIF BeeperPulseLowTimer.Q THEN
+                BeeperPulseLowTimer(IN:=FALSE);
+                BeeperSequence := BeeperSequence - 1;
+            END_IF
+		3: // dwell
+            BeeperCurrentPulseGroupsCount(PV:=BeeperTotalPulseGroups, CU:=TRUE, RESET:=FALSE);
+            BeeperDwellTimer(IN:=TRUE, PT:=BeeperDwellTime);
+            IF BeeperCurrentPulseGroupsCount.Q THEN // check the counter first so we do wait the dwell time after the last set of pulses
+                EnableBeeper := FALSE;
+                BeeperSequence := -1;
+            ELSIF BeeperDwellTimer.Q THEN
+                BeeperCurrentPulseGroupsCount(CU:=FALSE);
+                BeeperDwellTimer(IN:=FALSE);
+                BeeperSequence := BeeperSequence - 2;
+            END_IF
 	END_CASE
-
-BeeperCurrentPulseCount(PV:=BeeperTotalPulseCount, 
-						CU:=PulseBeeper AND Beeper.P_StateOn,
-						RESET:=NOT PulseBeeper);
-BeeperPulseTimer(IN:=PulseBeeper, PT:=BeeperPulseTime);
-BeeperDwellTimer(IN:=FALSE, PT:=BeeperDwellTime);
-
 	
 {endregion}
 	

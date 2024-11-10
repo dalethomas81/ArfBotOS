@@ -90,9 +90,9 @@ VAR_GLOBAL
 	StartHome: BOOL;
 	ResetRtrig: R_TRIG;
 	StorePersist: BOOL;
-	DecadeTimer: TON;
-	DecadeTimerTime: TIME:=T#10MS;
-	DecadeTime: WORD;
+	BlinkingBitsTimer: TON;
+	BlinkingBitsTimerTime: TIME:=T#100MS;
+	BlinkingBitsTime: WORD;
 	
 	// command IO
 	//DigitalInput: ARRAY [DIG_IN_ARR_BEG..DIG_IN_ARR_END] OF BOOL;
