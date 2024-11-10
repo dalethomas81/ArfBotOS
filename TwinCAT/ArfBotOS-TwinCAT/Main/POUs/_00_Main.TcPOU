@@ -10,6 +10,9 @@ VAR
 	//
 	fbWritePersistentData: FB_WritePersistentData;
 	
+	//
+	TimingBits1Timer: TON;
+	
 	// group handler for all motion fbs
     // https://infosys.beckhoff.com/content/1033/tf5420_tc3_advanced_pick_and_place/8893733771.html?id=5942709046194342427
 	GroupHandler: FB_GroupHandler;
@@ -47,6 +50,8 @@ VAR
 	Gripper: FB_DigitalOutput;
 	Laser: FB_DigitalOutput;
 	Smoke: FB_DigitalOutput;
+	Beeper: FB_DigitalOutput;
+	Beacon: FB_DigitalOutput;
 	
 	// hello world
 	buffer: ARRAY[1..4096] OF BYTE;
@@ -85,6 +90,13 @@ END_VAR]]></Declaration>
 		ERR=> , 
 		ERRID=> );
 	GVL.StorePersist := FALSE;
+	
+	//
+	GVL.DecadeTimer(IN:=TRUE, PT:=GVL.DecadeTimerTime);
+	IF GVL.DecadeTimer.Q THEN
+		GVL.DecadeTimer(IN:=FALSE);
+		GVL.DecadeTime:=GVL.DecadeTime+1;
+	END_IF
 {endregion}
      
 {region "methods"}
@@ -122,6 +134,8 @@ END_VAR
 Gripper();
 Laser();
 Smoke();
+Beeper();
+Beacon();
 
 (*
 // dont get sleepy
@@ -830,6 +844,7 @@ VAR_STAT
 	CurrentRow: INT:=0;
 	CurrentColumn: INT:=0;
 	PreparePick, PickGlowStick: BOOL;
+	PickGlowStickRtrig: R_TRIG;
 	AddPrePickPaths, AddPickPaths, AddPrePlacePaths, AddPlacePaths, movePrepError: BOOL;
 	
 	//
@@ -877,6 +892,17 @@ VAR_STAT
 	SmokeTimer: TON;
 	LaserTime: TIME:=T#30S;
 	LaserTimer: TON;
+	BeeperContinuousTimer: TON;
+	BeeperContinuousTime: TIME:=T#2S;
+	BeeperPulseTime: TIME:=T#500MS;
+	BeeperDwellTime: TIME:=T#1S;
+	BeeperPulseTimer: TP;
+	BeeperDwellTimer: TON;
+	BeeperTotalPulseCount: WORD:=2;
+	BeeperCurrentPulseCount: CTU;
+	EnableBeeper, PulseBeeper, ContinuousBeeper: BOOL;
+	BeeperSequence: INT;
+	
 	
 END_VAR
 VAR_STAT CONSTANT
@@ -980,6 +1006,11 @@ PersistentVars.Flags[GVL.HOME_COMPLETE].Value;
 	
 {endregion}
 
+PickGlowStickRtrig(CLK:=PickGlowStick);
+IF PickGlowStickRtrig.Q THEN
+	PickGlowStick := FALSE;
+END_IF
+
 CASE SeqReset OF
 	0:
 		IF ResetSeq THEN
@@ -1053,8 +1084,7 @@ CASE SeqSpookyHalloween OF
 		END_IF
 		
 	S_WAITFORPICKTRIGGER: // stay here until triggered to pick a glowstick
-		IF PickGlowStick THEN
-			PickGlowStick := FALSE;
+		IF PickGlowStickRtrig.Q THEN
 			Smoke.On();
 			Laser.On();
 			SeqSpookyHalloween := S_ENABLEGROUPUCS1;
@@ -1276,14 +1306,52 @@ FOR _k:= 1 TO NumberOfAxes DO
 		ErrorID=> );
 END_FOR
 
+//
 SmokeTimer(IN:=Smoke.P_StateOn, PT:=SmokeTime);
 IF SmokeTimer.Q THEN
     Smoke.Off();
 END_IF
+//
 LaserTimer(IN:=Laser.P_StateOn, PT:=LaserTime);
 IF LaserTimer.Q THEN
     Laser.Off();
 END_IF
+//
+	CASE BeeperSequence OF
+		0:
+			PulseBeeper:=FALSE;
+			ContinuousBeeper:=FALSE;
+			IF EnableBeeper THEN
+				EnableBeeper:=FALSE;
+				BeeperSequence := BeeperSequence + 1;
+			END_IF
+		1:
+			PulseBeeper:=TRUE;
+			IF BeeperPulseTimer.Q THEN
+				Beeper.On();
+			ELSE
+				Beeper.Off();	
+			END_IF
+			IF BeeperCurrentPulseCount.Q THEN
+				PulseBeeper:=FALSE;
+				BeeperCurrentPulseCount.RESET:=TRUE;
+				BeeperSequence := BeeperSequence + 1;
+			END_IF
+		2:
+			ContinuousBeeper:=TRUE;
+			IF BeeperContinuousTimer.Q THEN
+				ContinuousBeeper:=FALSE;
+				BeeperSequence := 0;
+			END_IF
+		
+	END_CASE
+
+BeeperCurrentPulseCount(PV:=BeeperTotalPulseCount, 
+						CU:=PulseBeeper AND Beeper.P_StateOn,
+						RESET:=NOT PulseBeeper);
+BeeperPulseTimer(IN:=PulseBeeper, PT:=BeeperPulseTime);
+BeeperDwellTimer(IN:=FALSE, PT:=BeeperDwellTime);
+
 	
 {endregion}
 	
