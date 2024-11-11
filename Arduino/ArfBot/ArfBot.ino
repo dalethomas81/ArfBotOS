@@ -196,9 +196,9 @@ void loop() {
     unsigned char Status = EASYCAT.MainTask();
 
     if (Status & WATCHDOG || !(Status & ESM_OP)){
-    CommsOK = false;
+      CommsOK = false;
     } else {
-    CommsOK = true;
+      CommsOK = true;
     }
 
     handleTx();
