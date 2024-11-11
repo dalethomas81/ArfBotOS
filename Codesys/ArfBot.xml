@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-10T17:48:41.0296404" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-10T17:48:06.1337364">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-10T23:44:32.4428839" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-10T23:43:38.3945647">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -29,7 +29,7 @@
     <configurations>
       <configuration name="Device">
         <resource name="Application">
-          <task name="MainTask" interval="PT0.001S" priority="1">
+          <task name="MainTask" interval="PT0.001S" priority="2">
             <pouInstance name="_00_Main" typeName="">
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml" />
@@ -46,7 +46,7 @@
               </data>
             </addData>
           </task>
-          <task name="SoftMotion_PlanningTask" interval="PT0.00005S" priority="2">
+          <task name="SoftMotion_PlanningTask" interval="PT0.00005S" priority="3">
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
                 <TaskSettings KindOfTask="Cyclic" Interval="50" IntervalUnit="µs" WithinSPSTimeSlicing="true">
@@ -97,25 +97,13 @@
               </data>
             </addData>
           </task>
-          <task name="ComsTask" interval="PT0.006S" priority="3">
-            <pouInstance name="_20_Io" typeName="">
+          <task name="EtherCAT_Task" interval="PT0.004S" priority="1">
+            <pouInstance name="_10_Drives" typeName="">
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml" />
               </documentation>
             </pouInstance>
-            <addData>
-              <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
-                <TaskSettings KindOfTask="Cyclic" Interval="6" IntervalUnit="ms" WithinSPSTimeSlicing="true">
-                  <Watchdog Enabled="false" TimeUnit="ms" Sensitivity="1" />
-                </TaskSettings>
-              </data>
-              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                <ObjectId>b33e40e6-7c53-4c2f-a659-c4c38bf08b44</ObjectId>
-              </data>
-            </addData>
-          </task>
-          <task name="EtherCAT_Task" interval="PT0.004S" priority="1">
-            <pouInstance name="_10_Drives" typeName="">
+            <pouInstance name="_20_Io" typeName="">
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml" />
               </documentation>
@@ -4038,13 +4026,21 @@ FirstScan := FALSE;</xhtml>
 HeartbeatOn(in:=NOT HeartbeatOff.Q,PT:=HeartbeatPt);
 HeartbeatOff(in:=HeartbeatOn.Q,PT:=HeartbeatPt);
 
+//
+SetVelocity[0] := LREAL_TO_INT((SM_Drive_PosControl_J1.out.iSetVelocity * VelocityFactor[0]) / 360.0); // 16000.0
+SetVelocity[1] := LREAL_TO_INT((SM_Drive_PosControl_J2.out.iSetVelocity * VelocityFactor[1]) / 360.0); // 20000.0
+SetVelocity[2] := LREAL_TO_INT((SM_Drive_PosControl_J3.out.iSetVelocity * VelocityFactor[2]) / 360.0); // 20000.0
+SetVelocity[3] := LREAL_TO_INT((SM_Drive_PosControl_J4.out.iSetVelocity * VelocityFactor[3]) / 360.0); // 26880.0
+SetVelocity[4] := LREAL_TO_INT((SM_Drive_PosControl_J5.out.iSetVelocity * VelocityFactor[4]) / 360.0); // 7850.0
+SetVelocity[5] := LREAL_TO_INT((SM_Drive_PosControl_J6.out.iSetVelocity * VelocityFactor[5]) / 360.0); // 8081.25
+
 // convert degrees per second to frequency
-SetVelocity[0] := LREAL_TO_INT(SM_Drive_PosControl_J1.out.fSetVelocity / 360.0); 
+(*SetVelocity[0] := LREAL_TO_INT(SM_Drive_PosControl_J1.out.fSetVelocity / 360.0); 
 SetVelocity[1] := LREAL_TO_INT(SM_Drive_PosControl_J2.out.fSetVelocity / 360.0);
 SetVelocity[2] := LREAL_TO_INT(SM_Drive_PosControl_J3.out.fSetVelocity / 360.0);
 SetVelocity[3] := LREAL_TO_INT(SM_Drive_PosControl_J4.out.fSetVelocity / 360.0);
 SetVelocity[4] := LREAL_TO_INT(SM_Drive_PosControl_J5.out.fSetVelocity / 360.0);
-SetVelocity[5] := LREAL_TO_INT(SM_Drive_PosControl_J6.out.fSetVelocity / 360.0);
+SetVelocity[5] := LREAL_TO_INT(SM_Drive_PosControl_J6.out.fSetVelocity / 360.0);*)
 
 //////////////////////////////////////////////////
 // Output
@@ -4069,9 +4065,15 @@ FOR jointIdx := 0 TO 5 BY 1 DO
 END_FOR
 
 // bytes 13 through 24 are used for control from NC
+DriveEnable[0] := NOT (SM_Drive_PosControl_J1.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (SM_Drive_PosControl_J1.nAxisState = SMC_AXIS_STATE.power_off);
+DriveEnable[1] := NOT (SM_Drive_PosControl_J2.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (SM_Drive_PosControl_J2.nAxisState = SMC_AXIS_STATE.power_off);
+DriveEnable[2] := NOT (SM_Drive_PosControl_J3.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (SM_Drive_PosControl_J3.nAxisState = SMC_AXIS_STATE.power_off);
+DriveEnable[3] := NOT (SM_Drive_PosControl_J4.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (SM_Drive_PosControl_J4.nAxisState = SMC_AXIS_STATE.power_off);
+DriveEnable[4] := NOT (SM_Drive_PosControl_J5.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (SM_Drive_PosControl_J5.nAxisState = SMC_AXIS_STATE.power_off);
+DriveEnable[5] := NOT (SM_Drive_PosControl_J6.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (SM_Drive_PosControl_J6.nAxisState = SMC_AXIS_STATE.power_off);
 bufferIdx := 13;
 FOR jointIdx := 0 TO 5 BY 1 DO
-	AR4Outputs[bufferIdx].3 := GVL.PowerOn;
+	AR4Outputs[bufferIdx].3 := GVL.PowerOn AND DriveEnable[jointIdx];
 	bufferIdx := bufferIdx + 1;
 	// these are currently not used
 	//AR4Outputs[bufferIdx].0 := Minus;
@@ -4156,7 +4158,24 @@ IF RxCrc = F_Checksum(ADR(AR4Inputs), 30) THEN
 	// := AR4Inputs[26].6;
 	// := AR4Inputs[26].7;
 	
-	//rx_ := AR4Inputs[27];
+	// byte 27 will be used to indicate drive is enabled
+	SM_Drive_PosControl_J1.in.bDriveStartRealState := AR4Inputs[27].0;
+	SM_Drive_PosControl_J1.in.bRegulatorRealState := AR4Inputs[27].0;
+	SM_Drive_PosControl_J2.in.bDriveStartRealState := AR4Inputs[27].1;
+	SM_Drive_PosControl_J2.in.bRegulatorRealState := AR4Inputs[27].1;
+	SM_Drive_PosControl_J3.in.bDriveStartRealState := AR4Inputs[27].2;
+	SM_Drive_PosControl_J3.in.bRegulatorRealState := AR4Inputs[27].2;
+	SM_Drive_PosControl_J4.in.bDriveStartRealState := AR4Inputs[27].3;
+	SM_Drive_PosControl_J4.in.bRegulatorRealState := AR4Inputs[27].3;
+	SM_Drive_PosControl_J5.in.bDriveStartRealState := AR4Inputs[27].4;
+	SM_Drive_PosControl_J5.in.bRegulatorRealState := AR4Inputs[27].4;
+	SM_Drive_PosControl_J6.in.bDriveStartRealState := AR4Inputs[27].5;
+	SM_Drive_PosControl_J6.in.bRegulatorRealState := AR4Inputs[27].5;
+	// all drives are enabled
+	rx_en := AR4Inputs[27].0 AND AR4Inputs[27].1 AND AR4Inputs[27].2
+			AND AR4Inputs[27].3 AND AR4Inputs[27].4 AND AR4Inputs[27].5;
+	
+	// bytes 28 and 29 are unused
 	//rx_ := AR4Inputs[28];
 	//rx_ := AR4Inputs[29];
 	
@@ -4199,18 +4218,20 @@ SM_Drive_PosControl_J4.in.bLimitPos := TRUE;
 SM_Drive_PosControl_J5.in.bLimitPos := rx_j5_limit;
 SM_Drive_PosControl_J6.in.bLimitPos := rx_j6_limit;
 
-SM_Drive_PosControl_J1.in.bDriveStartRealState := rx_en;
-SM_Drive_PosControl_J1.in.bRegulatorRealState := rx_en;
-SM_Drive_PosControl_J2.in.bDriveStartRealState := rx_en;
-SM_Drive_PosControl_J2.in.bRegulatorRealState := rx_en;
-SM_Drive_PosControl_J3.in.bDriveStartRealState := rx_en;
-SM_Drive_PosControl_J3.in.bRegulatorRealState := rx_en;
-SM_Drive_PosControl_J4.in.bDriveStartRealState := rx_en;
-SM_Drive_PosControl_J4.in.bRegulatorRealState := rx_en;
-SM_Drive_PosControl_J5.in.bDriveStartRealState := rx_en;
-SM_Drive_PosControl_J5.in.bRegulatorRealState := rx_en;
-SM_Drive_PosControl_J6.in.bDriveStartRealState := rx_en;
-SM_Drive_PosControl_J6.in.bRegulatorRealState := rx_en;
+// TODO get actual feedback from the drive
+//rx_en := GVL.PowerOn;
+(*SM_Drive_PosControl_J1.in.bDriveStartRealState := SM_Drive_PosControl_J1.out.bDriveStart; //rx_en;
+SM_Drive_PosControl_J1.in.bRegulatorRealState := SM_Drive_PosControl_J1.out.bRegulatorOn; //rx_en;
+SM_Drive_PosControl_J2.in.bDriveStartRealState := SM_Drive_PosControl_J2.out.bDriveStart; //rx_en;
+SM_Drive_PosControl_J2.in.bRegulatorRealState := SM_Drive_PosControl_J2.out.bRegulatorOn; //rx_en;
+SM_Drive_PosControl_J3.in.bDriveStartRealState := SM_Drive_PosControl_J3.out.bDriveStart; //rx_en;
+SM_Drive_PosControl_J3.in.bRegulatorRealState := SM_Drive_PosControl_J3.out.bRegulatorOn; //rx_en;
+SM_Drive_PosControl_J4.in.bDriveStartRealState := SM_Drive_PosControl_J4.out.bDriveStart; //rx_en;
+SM_Drive_PosControl_J4.in.bRegulatorRealState := SM_Drive_PosControl_J4.out.bRegulatorOn; //rx_en;
+SM_Drive_PosControl_J5.in.bDriveStartRealState := SM_Drive_PosControl_J5.out.bDriveStart; //rx_en;
+SM_Drive_PosControl_J5.in.bRegulatorRealState := SM_Drive_PosControl_J5.out.bRegulatorOn; //rx_en;
+SM_Drive_PosControl_J6.in.bDriveStartRealState := SM_Drive_PosControl_J6.out.bDriveStart; //rx_en;
+SM_Drive_PosControl_J6.in.bRegulatorRealState := SM_Drive_PosControl_J6.out.bRegulatorOn; //rx_en;*)
 
 FirstScan := FALSE;</xhtml>
                         </ST>
@@ -27274,7 +27295,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
                                         <Attributes />
-                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">1.0</Value>
+                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5.0</Value>
                                         <Name>fMaxPositionLag</Name>
                                         <Description>Maximum position lag (magnitude) [u]</Description>
                                       </Parameter>
@@ -27539,7 +27560,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
                                         <Attributes />
-                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">1.0</Value>
+                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5.0</Value>
                                         <Name>fMaxPositionLag</Name>
                                         <Description>Maximum position lag (magnitude) [u]</Description>
                                       </Parameter>
@@ -27799,7 +27820,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
                                         <Attributes />
-                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">1.0</Value>
+                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5.0</Value>
                                         <Name>fMaxPositionLag</Name>
                                         <Description>Maximum position lag (magnitude) [u]</Description>
                                       </Parameter>
@@ -28059,7 +28080,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
                                         <Attributes />
-                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">1.0</Value>
+                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5.0</Value>
                                         <Name>fMaxPositionLag</Name>
                                         <Description>Maximum position lag (magnitude) [u]</Description>
                                       </Parameter>
@@ -28319,7 +28340,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
                                         <Attributes />
-                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">1.0</Value>
+                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5.0</Value>
                                         <Name>fMaxPositionLag</Name>
                                         <Description>Maximum position lag (magnitude) [u]</Description>
                                       </Parameter>
@@ -28579,7 +28600,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
                                         <Attributes />
-                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">1.0</Value>
+                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5.0</Value>
                                         <Name>fMaxPositionLag</Name>
                                         <Description>Maximum position lag (magnitude) [u]</Description>
                                       </Parameter>
@@ -28935,7 +28956,6 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
             <Object Name="SoftMotion_PlanningTask" ObjectId="5a42e1b4-5f13-4f3e-9a38-abed03da7807" />
             <Object Name="VISU_TASK" ObjectId="7d686a67-c501-4ade-ac77-336899e42115" />
             <Object Name="VisionTask" ObjectId="38fa2b4a-d999-444c-83ca-1f85ed269224" />
-            <Object Name="ComsTask" ObjectId="b33e40e6-7c53-4c2f-a659-c4c38bf08b44" />
             <Object Name="EtherCAT_Task" ObjectId="ea09100e-839b-4071-804c-d88dc427910c" />
             <Folder Name="FUN">
               <Folder Name="move">

@@ -11,7 +11,6 @@ class PTO {
   private:
     bool Direction, Direction_Last;
     uint32_t _SysTime, _SysTime_Last;
-    bool DriveEnabled;
     int dirPin;
     int pulsePin;
     int enablePin;
@@ -23,6 +22,7 @@ class PTO {
     void run(int16_t Frequency);
     int turnON();
     int turnOFF();
+    bool DriveEnabled;
 };
 
 #endif

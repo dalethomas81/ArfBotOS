@@ -99,7 +99,7 @@ byte Control1[AxisCount];
 byte Control2[AxisCount];
 
 // dirPin, pulsePin, enablePin = -1
-PTO Drive[] = {    PTO(J1_DirPin, J1_PulsePin),
+PTO Drive[] = { PTO(J1_DirPin, J1_PulsePin),
                 PTO(J2_DirPin, J2_PulsePin), 
                 PTO(J3_DirPin, J3_PulsePin), 
                 PTO(J4_DirPin, J4_PulsePin), 
@@ -274,6 +274,19 @@ void handleTx(){
     //TxBuffer[26] = TxBuffer[26] | (tx_ ? B00100000 : B00000000);
     //TxBuffer[26] = TxBuffer[26] | (tx_ ? B01000000 : B00000000);
     //TxBuffer[26] = TxBuffer[26] | (tx_ ? B10000000 : B00000000);
+
+    // byte 27 is used to indicate the drive is enabled
+    TxBuffer[27] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
+    TxBuffer[27] = TxBuffer[27] | (Drive[0].DriveEnabled ? B00000001 : B00000000);
+    TxBuffer[27] = TxBuffer[27] | (Drive[1].DriveEnabled ? B00000010 : B00000000);
+    TxBuffer[27] = TxBuffer[27] | (Drive[2].DriveEnabled ? B00000100 : B00000000);
+    TxBuffer[27] = TxBuffer[27] | (Drive[3].DriveEnabled ? B00001000 : B00000000);
+    TxBuffer[27] = TxBuffer[27] | (Drive[4].DriveEnabled ? B00010000 : B00000000);
+    TxBuffer[27] = TxBuffer[27] | (Drive[5].DriveEnabled ? B00100000 : B00000000);
+    //TxBuffer[27] = TxBuffer[27] | (tx_ ? B01000000 : B00000000);
+    //TxBuffer[27] = TxBuffer[27] | (tx_ ? B10000000 : B00000000);
+
+    // bytes 28 and 29 are unused
 
     // bytes 30 and 31 will be for crc
     // calculate checksum and append to tx buffer
