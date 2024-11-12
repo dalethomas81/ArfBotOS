@@ -184,57 +184,57 @@ void setup() {
 bool LimitState[AxisCount];
 bool DigitalInputState1, DigitalInputState2;
 bool DigitalOutputState1, DigitalOutputState2;
-bool DriveIsEnabled;
+bool DriveIsEnabled, ControllerEnable;
+bool Heartbeat, HeartbeatLast, HeartbeatLost;
+unsigned long HeartbeatWatchDog, HeartbeatWatchDogLast;
 void loop() {
 
-    // WATCHDOG                   0x80
-    // ESM_INIT                   0x01          // state machine control
-    // ESM_PREOP                  0x02          // (state request)
-    // ESM_BOOT                   0x03          // 
-    // ESM_SAFEOP                 0x04          // safe-operational
-    // ESM_OP                     0x08          // operational
-    unsigned char Status = EASYCAT.MainTask();
-
-    if (Status & WATCHDOG || !(Status & ESM_OP)){
-      CommsOK = false;
-    } else {
-      CommsOK = true;
-    }
-
+    handleEtherCAT();
+    checkHeartbeat();
     handleTx();
     handleRx();
     handleInputs();
     handleOutputs();
+    handleDrives();
+    handleSerial();
 
-    DriveIsEnabled = false;
-    for (int i=0;i<AxisCount;i++){
-        if (DriveControl[i].Enable) {
-            Drive[i].turnON();
-            DriveIsEnabled = true; // turn on led to warn at least one drive is enabled
-        } else {
-            Drive[i].turnOFF();
-        }
-        if (DriveControl[i].Minus) {
-        }
-        if (DriveControl[i].Plus) {
-        }
-        if (DriveControl[i].Stop) {
-        }
-    }
+}
 
-    //SerialOutputTimer = millis();
-    //if (SerialOutputTimer - SerialOutputTimer_last > 1000) {
-        //SerialOutputTimer_last = SerialOutputTimer;
-        //handleSerial();
-    //}
+void handleEtherCAT(){
+  // WATCHDOG                   0x80
+  // ESM_INIT                   0x01          // state machine control
+  // ESM_PREOP                  0x02          // (state request)
+  // ESM_BOOT                   0x03          // 
+  // ESM_SAFEOP                 0x04          // safe-operational
+  // ESM_OP                     0x08          // operational
+  unsigned char Status = EASYCAT.MainTask();
+  if (Status & WATCHDOG || !(Status & ESM_OP)){
+    CommsOK = false;
+  } else {
+    CommsOK = true;
+  }
+}
+
+void checkHeartbeat(){
+  HeartbeatWatchDog = millis();
+  if (Heartbeat != HeartbeatLast) {
+    // reset watchdog timer
+    HeartbeatLast = Heartbeat;
+    HeartbeatWatchDogLast = HeartbeatWatchDog;
+    HeartbeatLost = false;
+  }
+  if (HeartbeatWatchDog - HeartbeatWatchDogLast > 2000){
+    // heartbeat from master controller was lost
+    HeartbeatLost = true;
+  }
 }
 
 void handleTx(){
 
     // reserved for future control use
-    //TxBuffer[0] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
-    //TxBuffer[0] = TxBuffer[0] | (tx_ ? B00000001 : B00000000);
-    //TxBuffer[0] = TxBuffer[0] | (tx_ ? B00000010 : B00000000);
+    TxBuffer[0] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
+    TxBuffer[0] = TxBuffer[0] | (Heartbeat ? B00000001 : B00000000);
+    TxBuffer[0] = TxBuffer[0] | (ControllerEnable ? B00000010 : B00000000);
     //TxBuffer[0] = TxBuffer[0] | (tx_ ? B00000100 : B00000000);
     //TxBuffer[0] = TxBuffer[0] | (tx_ ? B00001000 : B00000000);
     //TxBuffer[0] = TxBuffer[0] | (tx_ ? B00010000 : B00000000);
@@ -315,8 +315,8 @@ void handleRx(){
     if (RxCrc.b[0] == RxBuffer[30] && RxCrc.b[1] == RxBuffer[31]) {
           
         // reserved for future control use
-        //rx_ = RxBuffer[0] & B00000001;
-        //rx_ = RxBuffer[0] & B00000010;
+        Heartbeat         = RxBuffer[0] & B00000001;
+        ControllerEnable  = RxBuffer[0] & B00000010;
         //rx_ = RxBuffer[0] & B00000100;
         //rx_ = RxBuffer[0] & B00001000;
         //rx_ = RxBuffer[0] & B00010000;
@@ -363,9 +363,9 @@ void handleRx(){
 void handleInputs(){
 
   // read limit inputs
-    for (int i=0;i<AxisCount;i++){
-        LimitState[i] = !Limit[i].read();
-    }
+  for (int i=0;i<AxisCount;i++){
+      LimitState[i] = !Limit[i].read();
+  }
 
   // read auxillary digital inputs
   DigitalInputState1 = !DigitalInput1.read();
@@ -379,7 +379,7 @@ void handleOutputs(){
 
   digitalWriteFast(StatusLed, DriveIsEnabled);
 
-  if (CommsOK){
+  if (CommsOK && !HeartbeatLost){
     DigitalOutputState1 ? DigitalOutput1.on() : DigitalOutput1.off();
     DigitalOutputState2 ? DigitalOutput2.on() : DigitalOutput2.off();
   } else {
@@ -390,11 +390,36 @@ void handleOutputs(){
 }
 
 void handleSerial(){
-  //Serial.print(Frequency[0].ival);
-  //Serial.print(" ");
-  //Serial.print(rx_heartbeat);
-  //Serial.print(" ");
-  //Serial.println();
+  //SerialOutputTimer = millis();
+  //if (SerialOutputTimer - SerialOutputTimer_last > 1000) {
+    //SerialOutputTimer_last = SerialOutputTimer;
+
+    //Serial.print(Frequency[0].ival);
+    //Serial.print(" ");
+    //Serial.print(rx_heartbeat);
+    //Serial.print(" ");
+    //Serial.println();
+  //}
+
+}
+
+void handleDrives(){
+  DriveIsEnabled = false;
+  for (int i=0;i<AxisCount;i++){
+      //if (DriveControl[i].Enable && CommsOK && !HeartbeatLost) { // not sure if we are good enough for this yet :)
+      if (DriveControl[i].Enable) {
+          Drive[i].turnON();
+          DriveIsEnabled = true; // turn on led to warn at least one drive is enabled
+      } else {
+          Drive[i].turnOFF();
+      }
+      if (DriveControl[i].Minus) {
+      }
+      if (DriveControl[i].Plus) {
+      }
+      if (DriveControl[i].Stop) {
+      }
+  }
 }
 
 // https://www.tutorialspoint.com/cyclic-redundancy-check-crc-in-arduino

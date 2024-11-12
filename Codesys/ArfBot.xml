@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-10T23:44:32.4428839" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-10T23:43:38.3945647">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-11T21:32:56.52914" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-11T21:28:33.4277464">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -103,11 +103,6 @@
                 <xhtml xmlns="http://www.w3.org/1999/xhtml" />
               </documentation>
             </pouInstance>
-            <pouInstance name="_20_Io" typeName="">
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
-              </documentation>
-            </pouInstance>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
                 <TaskSettings KindOfTask="Cyclic" Interval="t#4ms" IntervalUnit="ms" WithinSPSTimeSlicing="true">
@@ -180,7 +175,7 @@
                 <INT />
               </type>
               <initialValue>
-                <simpleValue value="11" />
+                <simpleValue value="15" />
               </initialValue>
             </variable>
             <variable name="DIG_OUT_ARR_BEG">
@@ -196,7 +191,7 @@
                 <INT />
               </type>
               <initialValue>
-                <simpleValue value="11" />
+                <simpleValue value="15" />
               </initialValue>
             </variable>
             <variable name="PWM_OUT_ARR_BEG">
@@ -212,7 +207,7 @@
                 <INT />
               </type>
               <initialValue>
-                <simpleValue value="11" />
+                <simpleValue value="15" />
               </initialValue>
             </variable>
             <variable name="PROG_CMDS_ARR_BEG">
@@ -562,9 +557,7 @@ RESERVED: INT:=46;</xhtml>
                 <derived name="ST_LogicCmdIO" />
               </type>
               <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> command IO
-DigitalInput: ARRAY [DIG_IN_ARR_BEG..DIG_IN_ARR_END] OF BOOL;
-DigitalOutput: ARRAY [DIG_OUT_ARR_BEG..DIG_OUT_ARR_END] OF BOOL;</xhtml>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> command IO</xhtml>
               </documentation>
             </variable>
             <variable name="g_x">
@@ -671,7 +664,7 @@ DigitalOutput: ARRAY [DIG_OUT_ARR_BEG..DIG_OUT_ARR_END] OF BOOL;</xhtml>
                         <INT />
                       </type>
                       <initialValue>
-                        <simpleValue value="11" />
+                        <simpleValue value="15" />
                       </initialValue>
                     </variable>
                     <variable name="DIG_OUT_ARR_BEG">
@@ -687,7 +680,7 @@ DigitalOutput: ARRAY [DIG_OUT_ARR_BEG..DIG_OUT_ARR_END] OF BOOL;</xhtml>
                         <INT />
                       </type>
                       <initialValue>
-                        <simpleValue value="11" />
+                        <simpleValue value="15" />
                       </initialValue>
                     </variable>
                     <variable name="PWM_OUT_ARR_BEG">
@@ -703,7 +696,7 @@ DigitalOutput: ARRAY [DIG_OUT_ARR_BEG..DIG_OUT_ARR_END] OF BOOL;</xhtml>
                         <INT />
                       </type>
                       <initialValue>
-                        <simpleValue value="11" />
+                        <simpleValue value="15" />
                       </initialValue>
                     </variable>
                     <variable name="PROG_CMDS_ARR_BEG">
@@ -1055,9 +1048,7 @@ RESERVED: INT:=46;</xhtml>
                         <derived name="ST_LogicCmdIO" />
                       </type>
                       <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> command IO
-DigitalInput: ARRAY [DIG_IN_ARR_BEG..DIG_IN_ARR_END] OF BOOL;
-DigitalOutput: ARRAY [DIG_OUT_ARR_BEG..DIG_OUT_ARR_END] OF BOOL;</xhtml>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> command IO</xhtml>
                       </documentation>
                     </variable>
                     <variable name="g_x">
@@ -4026,7 +4017,8 @@ FirstScan := FALSE;</xhtml>
 HeartbeatOn(in:=NOT HeartbeatOff.Q,PT:=HeartbeatPt);
 HeartbeatOff(in:=HeartbeatOn.Q,PT:=HeartbeatPt);
 
-//
+// apply velocity factor and convert degrees per second to frequency
+// TODO add velocity factor to configuration
 SetVelocity[0] := LREAL_TO_INT((SM_Drive_PosControl_J1.out.iSetVelocity * VelocityFactor[0]) / 360.0); // 16000.0
 SetVelocity[1] := LREAL_TO_INT((SM_Drive_PosControl_J2.out.iSetVelocity * VelocityFactor[1]) / 360.0); // 20000.0
 SetVelocity[2] := LREAL_TO_INT((SM_Drive_PosControl_J3.out.iSetVelocity * VelocityFactor[2]) / 360.0); // 20000.0
@@ -4034,20 +4026,12 @@ SetVelocity[3] := LREAL_TO_INT((SM_Drive_PosControl_J4.out.iSetVelocity * Veloci
 SetVelocity[4] := LREAL_TO_INT((SM_Drive_PosControl_J5.out.iSetVelocity * VelocityFactor[4]) / 360.0); // 7850.0
 SetVelocity[5] := LREAL_TO_INT((SM_Drive_PosControl_J6.out.iSetVelocity * VelocityFactor[5]) / 360.0); // 8081.25
 
-// convert degrees per second to frequency
-(*SetVelocity[0] := LREAL_TO_INT(SM_Drive_PosControl_J1.out.fSetVelocity / 360.0); 
-SetVelocity[1] := LREAL_TO_INT(SM_Drive_PosControl_J2.out.fSetVelocity / 360.0);
-SetVelocity[2] := LREAL_TO_INT(SM_Drive_PosControl_J3.out.fSetVelocity / 360.0);
-SetVelocity[3] := LREAL_TO_INT(SM_Drive_PosControl_J4.out.fSetVelocity / 360.0);
-SetVelocity[4] := LREAL_TO_INT(SM_Drive_PosControl_J5.out.fSetVelocity / 360.0);
-SetVelocity[5] := LREAL_TO_INT(SM_Drive_PosControl_J6.out.fSetVelocity / 360.0);*)
-
 //////////////////////////////////////////////////
 // Output
 //////////////////////////////////////////////////
 // index 0 is for system outputs
-// AR4Outputs[0].0:=; //
-// AR4Outputs[0].1:=; //
+AR4Outputs[0].0:=HeartbeatOn.Q; // send a heartbeat to the drive
+AR4Outputs[0].1:=GVL.PowerOn; //
 // AR4Outputs[0].2:=; //
 // AR4Outputs[0].3:=; //
 // AR4Outputs[0].4:=; //
@@ -4087,8 +4071,8 @@ END_FOR
 //AR4Outputs[25]:=;
 
 // byte 26 will be for gpio byte (bits 0 through 7)
-AR4Outputs[26].0 := GVL.CmdIO.Output[0];
-AR4Outputs[26].1 := GVL.CmdIO.Output[1];
+//AR4Outputs[26].0 := ;
+//AR4Outputs[26].1 := ;
 //AR4Outputs[26].2 := ;
 //AR4Outputs[26].3 := ;
 //AR4Outputs[26].4 := ;
@@ -4120,8 +4104,8 @@ MEMUtils.MemCpy(pbyDest:=ADR(RxCrc),
 // compare calc crc with rx crc
 IF RxCrc = F_Checksum(ADR(AR4Inputs), 30) THEN
 	// byte 0 is for system inputs
-	//rx_		 		:= AR4Inputs[0].0;
-	//rx_ 				:= AR4Inputs[0].1;
+	rx_heartbeat	:= AR4Inputs[0].0; // receive the heartbeat back
+	rx_en 			:= AR4Inputs[0].1; // receive the enable back
 	//rx_	 			:= AR4Inputs[0].2;
 	//rx_ 				:= AR4Inputs[0].3;
 	//rx_ 				:= AR4Inputs[0].4;
@@ -4149,8 +4133,8 @@ IF RxCrc = F_Checksum(ADR(AR4Inputs), 30) THEN
 	//rx_ := AR4Inputs[25].7;
 	
 	// byte 26 will be for gpio byte (bits 0 through 7)
-	GVL.CmdIO.Input[0] := AR4Inputs[26].0;
-	GVL.CmdIO.Input[1] := AR4Inputs[26].1;
+	// := AR4Inputs[26].0;
+	// := AR4Inputs[26].1;
 	// := AR4Inputs[26].2;
 	// := AR4Inputs[26].3;
 	// := AR4Inputs[26].4;
@@ -4172,8 +4156,8 @@ IF RxCrc = F_Checksum(ADR(AR4Inputs), 30) THEN
 	SM_Drive_PosControl_J6.in.bDriveStartRealState := AR4Inputs[27].5;
 	SM_Drive_PosControl_J6.in.bRegulatorRealState := AR4Inputs[27].5;
 	// all drives are enabled
-	rx_en := AR4Inputs[27].0 AND AR4Inputs[27].1 AND AR4Inputs[27].2
-			AND AR4Inputs[27].3 AND AR4Inputs[27].4 AND AR4Inputs[27].5;
+	AllDrivesEnabled := AR4Inputs[27].0 AND AR4Inputs[27].1 AND AR4Inputs[27].2
+						AND AR4Inputs[27].3 AND AR4Inputs[27].4 AND AR4Inputs[27].5;
 	
 	// bytes 28 and 29 are unused
 	//rx_ := AR4Inputs[28];
@@ -4217,21 +4201,6 @@ SM_Drive_PosControl_J3.in.bLimitPos := TRUE;
 SM_Drive_PosControl_J4.in.bLimitPos := TRUE;
 SM_Drive_PosControl_J5.in.bLimitPos := rx_j5_limit;
 SM_Drive_PosControl_J6.in.bLimitPos := rx_j6_limit;
-
-// TODO get actual feedback from the drive
-//rx_en := GVL.PowerOn;
-(*SM_Drive_PosControl_J1.in.bDriveStartRealState := SM_Drive_PosControl_J1.out.bDriveStart; //rx_en;
-SM_Drive_PosControl_J1.in.bRegulatorRealState := SM_Drive_PosControl_J1.out.bRegulatorOn; //rx_en;
-SM_Drive_PosControl_J2.in.bDriveStartRealState := SM_Drive_PosControl_J2.out.bDriveStart; //rx_en;
-SM_Drive_PosControl_J2.in.bRegulatorRealState := SM_Drive_PosControl_J2.out.bRegulatorOn; //rx_en;
-SM_Drive_PosControl_J3.in.bDriveStartRealState := SM_Drive_PosControl_J3.out.bDriveStart; //rx_en;
-SM_Drive_PosControl_J3.in.bRegulatorRealState := SM_Drive_PosControl_J3.out.bRegulatorOn; //rx_en;
-SM_Drive_PosControl_J4.in.bDriveStartRealState := SM_Drive_PosControl_J4.out.bDriveStart; //rx_en;
-SM_Drive_PosControl_J4.in.bRegulatorRealState := SM_Drive_PosControl_J4.out.bRegulatorOn; //rx_en;
-SM_Drive_PosControl_J5.in.bDriveStartRealState := SM_Drive_PosControl_J5.out.bDriveStart; //rx_en;
-SM_Drive_PosControl_J5.in.bRegulatorRealState := SM_Drive_PosControl_J5.out.bRegulatorOn; //rx_en;
-SM_Drive_PosControl_J6.in.bDriveStartRealState := SM_Drive_PosControl_J6.out.bDriveStart; //rx_en;
-SM_Drive_PosControl_J6.in.bRegulatorRealState := SM_Drive_PosControl_J6.out.bRegulatorOn; //rx_en;*)
 
 FirstScan := FALSE;</xhtml>
                         </ST>
@@ -6971,137 +6940,6 @@ END_CASE</xhtml>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>35e49e9e-292d-48d5-910d-e69db317cc55</ObjectId>
-                  </data>
-                </addData>
-              </pou>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="_20_Io" pouType="program">
-                <interface>
-                  <localVars>
-                    <variable name="PowerOn">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                  </localVars>
-                </interface>
-                <body>
-                  <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">//
-PowerOn := GVL.PowerOn;
-
-//
-_M_HandleRemoteIO();</xhtml>
-                  </ST>
-                </body>
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="_M_HandleRemoteIO" ObjectId="95e27eb3-1cc7-4783-8f9f-46fca05a221d">
-                      <interface>
-                        <addData>
-                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
-                            <AccessModifiers Private="true" />
-                          </data>
-                        </addData>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">//
-HeartbeatOn(in:=NOT HeartbeatOff.Q,PT:=HeartbeatPt);
-HeartbeatOff(in:=HeartbeatOn.Q,PT:=HeartbeatPt);
-
-// need to use system time to transfer faster than 1ms
-SysLTime := LTIME();
-IF SysLTime - SysLTimeLast &gt; TransferTime THEN
-	SysLTimeLast := SysLTime;
-	TransferTrigger := NOT TransferTrigger;
-END_IF
-
-// handle outputs
-// index 0 is for system outputs
-pabyTxBuffer[0].0:=HeartbeatOn.Q; 	// heartbeat
-pabyTxBuffer[0].1:=GVL.PowerOn; 			// enable
-// pabyTxBuffer[0].2:=;
-// pabyTxBuffer[0].3:=;
-// pabyTxBuffer[0].4:=;
-// pabyTxBuffer[0].5:=;
-// pabyTxBuffer[0].6:=;
-// pabyTxBuffer[0].7:=;
-
-//
-pabyTxBuffer[1].0 := GVL.CmdIO.Output[4];
-pabyTxBuffer[1].1 := GVL.CmdIO.Output[5];
-pabyTxBuffer[1].2 := GVL.CmdIO.Output[6];
-pabyTxBuffer[1].3 := GVL.CmdIO.Output[7];
-//pabyTxBuffer[1].4 := ;
-//pabyTxBuffer[1].5 := ;
-//pabyTxBuffer[1].6 := ;
-//pabyTxBuffer[1].7 := ;
-
-//
-pabyTxBuffer[2] := GVL.CmdIO.Pwm[0];
-pabyTxBuffer[3] := GVL.CmdIO.Pwm[1];
-pabyTxBuffer[4] := GVL.CmdIO.Pwm[2];
-pabyTxBuffer[5] := GVL.CmdIO.Pwm[3];
-
-// Tx buffer index 30 and 31 will be for crc
-// calc crc here
-TxCrc := F_Checksum(ADR(pabyTxBuffer), 30);
-// append calc crc to tx buffer
-MEMUtils.MemCpy(pbyDest:=ADR(pabyTxBuffer[30]), 
-				pbySrc:=ADR(TxCrc), 
-				dwSize:=2);
-
-// read and write to i2c bus
-//IF TransferTrigger THEN
-	(*I2C_master_Bus2.write(usiAddress:=i2caddress,
-					pbyBuffer:=ADR(pabyTxBuffer),
-					nBufferLen:=transferlentx);
-	I2C_master_Bus2.read(usiAddress:=i2caddress,
-					pbyBuffer:=ADR(pabyRxBuffer),
-					nBufferLen:=transferlenrx);*)
-//END_IF
-
-// copy crc from rx buffer
-MEMUtils.MemCpy(pbyDest:=ADR(RxCrc), 
-				pbySrc:=ADR(pabyRxBuffer[30]), 
-				dwSize:=2);
-
-// compare calc crc with rx crc
-IF RxCrc = F_Checksum(ADR(pabyRxBuffer), 30) THEN
-	// handle inputs
-	// index 0 is for system inputs
-	rx_heartbeat 		:= pabyRxBuffer[0].0;
-	rx_en 				:= pabyRxBuffer[0].1;
-	//rx_   			:= pabyRxBuffer[0].2;
-	//rx_ 				:= pabyRxBuffer[0].3;
-	//rx_ 				:= pabyRxBuffer[0].4;
-	//rx_ 				:= pabyRxBuffer[0].5;
-	//rx_ 				:= pabyRxBuffer[0].6;
-	//rx_ 				:= pabyRxBuffer[0].7;
-	
-	// index 1 will be for gpio byte (bits 0 through 7)
-	GVL.CmdIO.Input[4] := pabyRxBuffer[1].0;
-	GVL.CmdIO.Input[5] := pabyRxBuffer[1].1;
-	GVL.CmdIO.Input[6] := pabyRxBuffer[1].2;
-	GVL.CmdIO.Input[7] := pabyRxBuffer[1].3;
-	// := pabyRxBuffer[1].4;
-	// := pabyRxBuffer[1].5;
-	// := pabyRxBuffer[1].6;
-	// := pabyRxBuffer[1].7;
-	
-ELSE
-	// increment crc mismatch counter
-	ChecksumMisCount := ChecksumMisCount + 1;
-END_IF</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>c3b19a06-6020-44bc-8c83-cb31670bfa1a</ObjectId>
                   </data>
                 </addData>
               </pou>
@@ -20876,6 +20714,155 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                 </addData>
               </pou>
             </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="FB_DigitalOutput" pouType="functionBlock">
+                <interface>
+                  <localVars>
+                    <variable name="Output" address="%Q*">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> https://infosys.beckhoff.com/content/1033/tc3_plc_intro/11948825611.html?id=1756449079294237528</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="_Output">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_FirstScan">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">IF _FirstScan THEN
+	//
+END_IF
+
+// do some things?
+Output :=_Output;
+
+// do not put anything below this
+_FirstScan := FALSE;</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="Off" ObjectId="f8b6fdb2-6544-4607-9a19-3594027652d2">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">_Output := FALSE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="On" ObjectId="8d32d062-36c2-487a-8ff3-0192a0a033a4">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">_Output := TRUE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="Toggle" ObjectId="acfd7b5d-3f2d-4ece-8bee-8a0616bd626e">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">_Output := NOT _Output;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/property" handleUnknown="implementation">
+                    <Property name="P_StateOff" ObjectId="e6661ae8-a7e9-466d-aa33-4575a19f892b">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <Attributes>
+                          <Attribute Name="monitoring" Value="variable" />
+                        </Attributes>
+                      </interface>
+                      <GetAccessor>
+                        <interface>
+                          <addData>
+                            <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                              <Attributes>
+                                <Attribute Name="monitoring" Value="variable" />
+                              </Attributes>
+                            </data>
+                          </addData>
+                        </interface>
+                        <body>
+                          <ST>
+                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_StateOff := NOT _Output;</xhtml>
+                          </ST>
+                        </body>
+                        <addData />
+                      </GetAccessor>
+                      <addData />
+                    </Property>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/property" handleUnknown="implementation">
+                    <Property name="P_StateOn" ObjectId="15ab277e-c978-4e7b-9e52-7a854e0469dd">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <Attributes>
+                          <Attribute Name="monitoring" Value="variable" />
+                        </Attributes>
+                      </interface>
+                      <GetAccessor>
+                        <interface>
+                          <addData>
+                            <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                              <Attributes>
+                                <Attribute Name="monitoring" Value="variable" />
+                              </Attributes>
+                            </data>
+                          </addData>
+                        </interface>
+                        <body>
+                          <ST>
+                            <xhtml xmlns="http://www.w3.org/1999/xhtml">P_StateOn := _Output;</xhtml>
+                          </ST>
+                        </body>
+                        <addData />
+                      </GetAccessor>
+                      <addData />
+                    </Property>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>9ccb68c3-5dd7-4441-a68d-8f407a5bbf39</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/union" handleUnknown="implementation">
               <union name="StringByteArray">
                 <variable name="bArray">
@@ -25773,6 +25760,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554434" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[0]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -25783,6 +25771,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554435" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[1]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -25793,6 +25782,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554436" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[2]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -25803,6 +25793,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554437" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[3]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -25813,6 +25804,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554438" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[4]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -25823,6 +25815,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554439" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[5]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -25833,6 +25826,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554440" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[6]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -25843,6 +25837,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554441" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[7]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -25853,6 +25848,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554442" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[8]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -25863,6 +25859,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554443" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[9]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -25873,6 +25870,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554444" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[10]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -25883,6 +25881,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554445" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[11]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -25893,6 +25892,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554446" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[12]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -25903,6 +25903,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554447" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[13]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -25913,6 +25914,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554448" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[14]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -25923,6 +25925,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0033_3554449" visiblename="Input" desc="Input">0</Value>
                                                 <Name>Input</Name>
                                                 <Description>Input</Description>
+                                                <Mapping>Application.GVL.CmdIO.Input[15]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                           </HostParameterSet>
@@ -27004,6 +27007,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777218" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[0]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -27014,6 +27018,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777219" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[1]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -27024,6 +27029,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777220" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[2]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -27034,6 +27040,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777221" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[3]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -27044,6 +27051,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777222" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[4]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -27054,6 +27062,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777223" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[5]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -27064,6 +27073,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777224" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[6]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -27074,6 +27084,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777225" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[7]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -27084,6 +27095,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777226" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[8]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -27094,6 +27106,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777227" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[9]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -27104,6 +27117,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777228" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[10]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -27114,6 +27128,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777229" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[11]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -27124,6 +27139,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777230" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[12]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -27134,6 +27150,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777231" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[13]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -27144,6 +27161,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777232" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[14]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                             <ParameterSection>
@@ -27154,6 +27172,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                                 <Value name="_x0031_6777233" visiblename="Output" desc="Output">0</Value>
                                                 <Name>Output</Name>
                                                 <Description>Output</Description>
+                                                <Mapping>Application.GVL.CmdIO.Output[15]</Mapping>
                                               </Parameter>
                                             </ParameterSection>
                                           </HostParameterSet>
@@ -27289,13 +27308,13 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1207" type="std:INT" IndexInDevDesc="13">
                                         <Attributes />
-                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">0</Value>
+                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">1</Value>
                                         <Name>eCheckPositionLag</Name>
                                         <Description>Position lag mode</Description>
                                       </Parameter>
                                       <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
                                         <Attributes />
-                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5.0</Value>
+                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5</Value>
                                         <Name>fMaxPositionLag</Name>
                                         <Description>Maximum position lag (magnitude) [u]</Description>
                                       </Parameter>
@@ -27429,7 +27448,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="10205" type="std:LREAL" IndexInDevDesc="37">
                                         <Attributes />
-                                        <Value name="_x0031_0205" visiblename="DeadTime" desc="Time lag in cycles between fSetPosition and fActPosition">1200</Value>
+                                        <Value name="_x0031_0205" visiblename="DeadTime" desc="Time lag in cycles between fSetPosition and fActPosition">25</Value>
                                         <Name>DeadTime</Name>
                                         <Description>Time lag in cycles between fSetPosition and fActPosition</Description>
                                       </Parameter>
@@ -27554,13 +27573,13 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1207" type="std:INT" IndexInDevDesc="13">
                                         <Attributes />
-                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">0</Value>
+                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">1</Value>
                                         <Name>eCheckPositionLag</Name>
                                         <Description>Position lag mode</Description>
                                       </Parameter>
                                       <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
                                         <Attributes />
-                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5.0</Value>
+                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5</Value>
                                         <Name>fMaxPositionLag</Name>
                                         <Description>Maximum position lag (magnitude) [u]</Description>
                                       </Parameter>
@@ -27694,7 +27713,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="10205" type="std:LREAL" IndexInDevDesc="37">
                                         <Attributes />
-                                        <Value name="_x0031_0205" visiblename="DeadTime" desc="Time lag in cycles between fSetPosition and fActPosition">1000</Value>
+                                        <Value name="_x0031_0205" visiblename="DeadTime" desc="Time lag in cycles between fSetPosition and fActPosition">25</Value>
                                         <Name>DeadTime</Name>
                                         <Description>Time lag in cycles between fSetPosition and fActPosition</Description>
                                       </Parameter>
@@ -27814,13 +27833,13 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1207" type="std:INT" IndexInDevDesc="13">
                                         <Attributes />
-                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">0</Value>
+                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">1</Value>
                                         <Name>eCheckPositionLag</Name>
                                         <Description>Position lag mode</Description>
                                       </Parameter>
                                       <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
                                         <Attributes />
-                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5.0</Value>
+                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5</Value>
                                         <Name>fMaxPositionLag</Name>
                                         <Description>Maximum position lag (magnitude) [u]</Description>
                                       </Parameter>
@@ -27954,7 +27973,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="10205" type="std:LREAL" IndexInDevDesc="37">
                                         <Attributes />
-                                        <Value name="_x0031_0205" visiblename="DeadTime" desc="Time lag in cycles between fSetPosition and fActPosition">1200</Value>
+                                        <Value name="_x0031_0205" visiblename="DeadTime" desc="Time lag in cycles between fSetPosition and fActPosition">25</Value>
                                         <Name>DeadTime</Name>
                                         <Description>Time lag in cycles between fSetPosition and fActPosition</Description>
                                       </Parameter>
@@ -28074,13 +28093,13 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1207" type="std:INT" IndexInDevDesc="13">
                                         <Attributes />
-                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">0</Value>
+                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">1</Value>
                                         <Name>eCheckPositionLag</Name>
                                         <Description>Position lag mode</Description>
                                       </Parameter>
                                       <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
                                         <Attributes />
-                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5.0</Value>
+                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5</Value>
                                         <Name>fMaxPositionLag</Name>
                                         <Description>Maximum position lag (magnitude) [u]</Description>
                                       </Parameter>
@@ -28214,7 +28233,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="10205" type="std:LREAL" IndexInDevDesc="37">
                                         <Attributes />
-                                        <Value name="_x0031_0205" visiblename="DeadTime" desc="Time lag in cycles between fSetPosition and fActPosition">1500</Value>
+                                        <Value name="_x0031_0205" visiblename="DeadTime" desc="Time lag in cycles between fSetPosition and fActPosition">25</Value>
                                         <Name>DeadTime</Name>
                                         <Description>Time lag in cycles between fSetPosition and fActPosition</Description>
                                       </Parameter>
@@ -28334,13 +28353,13 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1207" type="std:INT" IndexInDevDesc="13">
                                         <Attributes />
-                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">0</Value>
+                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">1</Value>
                                         <Name>eCheckPositionLag</Name>
                                         <Description>Position lag mode</Description>
                                       </Parameter>
                                       <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
                                         <Attributes />
-                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5.0</Value>
+                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5</Value>
                                         <Name>fMaxPositionLag</Name>
                                         <Description>Maximum position lag (magnitude) [u]</Description>
                                       </Parameter>
@@ -28474,7 +28493,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="10205" type="std:LREAL" IndexInDevDesc="37">
                                         <Attributes />
-                                        <Value name="_x0031_0205" visiblename="DeadTime" desc="Time lag in cycles between fSetPosition and fActPosition">750</Value>
+                                        <Value name="_x0031_0205" visiblename="DeadTime" desc="Time lag in cycles between fSetPosition and fActPosition">25</Value>
                                         <Name>DeadTime</Name>
                                         <Description>Time lag in cycles between fSetPosition and fActPosition</Description>
                                       </Parameter>
@@ -28594,13 +28613,13 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1207" type="std:INT" IndexInDevDesc="13">
                                         <Attributes />
-                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">0</Value>
+                                        <Value name="_x0031_207" visiblename="eCheckPositionLag" desc="Position lag mode">1</Value>
                                         <Name>eCheckPositionLag</Name>
                                         <Description>Position lag mode</Description>
                                       </Parameter>
                                       <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
                                         <Attributes />
-                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5.0</Value>
+                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5</Value>
                                         <Name>fMaxPositionLag</Name>
                                         <Description>Maximum position lag (magnitude) [u]</Description>
                                       </Parameter>
@@ -28734,7 +28753,7 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="10205" type="std:LREAL" IndexInDevDesc="37">
                                         <Attributes />
-                                        <Value name="_x0031_0205" visiblename="DeadTime" desc="Time lag in cycles between fSetPosition and fActPosition">1500</Value>
+                                        <Value name="_x0031_0205" visiblename="DeadTime" desc="Time lag in cycles between fSetPosition and fActPosition">25</Value>
                                         <Name>DeadTime</Name>
                                         <Description>Time lag in cycles between fSetPosition and fActPosition</Description>
                                       </Parameter>
@@ -28942,11 +28961,6 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                 </Folder>
                 <Folder Name="public">
                   <Object Name="M_Init" ObjectId="aea6e4c3-5f5a-4eff-ae8a-2de4fd010b88" />
-                </Folder>
-              </Object>
-              <Object Name="_20_Io" ObjectId="c3b19a06-6020-44bc-8c83-cb31670bfa1a">
-                <Folder Name="private">
-                  <Object Name="_M_HandleRemoteIO" ObjectId="95e27eb3-1cc7-4783-8f9f-46fca05a221d" />
                 </Folder>
               </Object>
               <Object Name="_30_Visu" ObjectId="9462f316-faa5-42b7-be46-708f3ef2e1f0" />
@@ -29320,6 +29334,17 @@ F_Checksum := SHL(sum2, 8) OR sum1;</xhtml>
                 <Object Name="DUT_GroupStatus" ObjectId="8da24330-28fc-457b-af4f-78411d1da7e7" />
               </Folder>
               <Object Name="F_Checksum" ObjectId="8c4a2130-c24f-42dc-952f-31bdbb96ab6c" />
+              <Folder Name="digital">
+                <Object Name="FB_DigitalOutput" ObjectId="9ccb68c3-5dd7-4441-a68d-8f407a5bbf39">
+                  <Folder Name="public">
+                    <Object Name="Off" ObjectId="f8b6fdb2-6544-4607-9a19-3594027652d2" />
+                    <Object Name="On" ObjectId="8d32d062-36c2-487a-8ff3-0192a0a033a4" />
+                    <Object Name="Toggle" ObjectId="acfd7b5d-3f2d-4ece-8bee-8a0616bd626e" />
+                  </Folder>
+                  <Object Name="P_StateOff" ObjectId="e6661ae8-a7e9-466d-aa33-4575a19f892b" />
+                  <Object Name="P_StateOn" ObjectId="15ab277e-c978-4e7b-9e52-7a854e0469dd" />
+                </Object>
+              </Folder>
             </Folder>
             <Folder Name="GVL">
               <Object Name="GVL" ObjectId="1430d1bd-aa92-442c-bf72-190d0e907494" />
