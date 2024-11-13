@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-11T22:17:22.6470203" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-11T22:04:52.484741">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-12T19:00:10.2560363" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-12T18:51:08.1832009">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -65,6 +65,11 @@
               </documentation>
             </pouInstance>
             <pouInstance name="_30_Visu" typeName="">
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+              </documentation>
+            </pouInstance>
+            <pouInstance name="_50_Retains" typeName="">
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml" />
               </documentation>
@@ -20863,6 +20868,81 @@ _FirstScan := FALSE;</xhtml>
                 </addData>
               </pou>
             </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="_50_Retains" pouType="program">
+                <interface>
+                  <localVars>
+                    <variable name="SaveRetain">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="RestoreRetain">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="pApplication">
+                      <type>
+                        <pointer>
+                          <baseType>
+                            <derived name="CmpApp.APPLICATION" />
+                          </baseType>
+                        </pointer>
+                      </type>
+                    </variable>
+                    <variable name="ResultFind">
+                      <type>
+                        <UDINT />
+                      </type>
+                    </variable>
+                    <variable name="ResultStore">
+                      <type>
+                        <UDINT />
+                      </type>
+                    </variable>
+                    <variable name="ResultRestore">
+                      <type>
+                        <UDINT />
+                      </type>
+                    </variable>
+                    <variable name="FirstScan">
+                      <type>
+                        <BOOL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="TRUE" />
+                      </initialValue>
+                    </variable>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">
+IF RestoreRetain THEN
+	pApplication := CmpApp.AppFindApplicationByName('Application', ADR(ResultFind));
+	ResultRestore := CmpApp.AppRestoreRetainsFromFile(pApplication, './Application/BackupRetain.ret');
+	RestoreRetain := FALSE;
+END_IF
+   
+IF SaveRetain THEN
+	pApplication := CmpApp.AppFindApplicationByName('Application', ADR(ResultFind));
+   	ResultStore := AppStoreRetainsInFile(pApplication, './Application/BackupRetain.ret');
+   	ResultStore := AppStoreRetainsInFile(pApplication, './Application/Application.ret');
+   	SaveRetain := FALSE;
+END_IF
+
+// do not put anything below this
+FirstScan := FALSE;</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>cbf25141-ef0a-49e9-8310-f4845a1e4f3b</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/union" handleUnknown="implementation">
               <union name="StringByteArray">
                 <variable name="bArray">
@@ -20937,6 +21017,7 @@ _FirstScan := FALSE;</xhtml>
                 <Library Name="#CmpDynamicText" Namespace="CmpDynamicText" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CmpDynamicText" />
                 <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.19.10 (CAA Technical Workgroup)" />
                 <Library Name="#IODrvEtherCAT" Namespace="IoDrvEthercatLib" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="IoDrvEtherCAT, 4.1.0.0 (3S - Smart Software Solutions GmbH)" />
+                <Library Name="#CmpApp" Namespace="CmpApp" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="CmpApp, * (System)" />
                 <PlaceholderRedirections>
                   <PlaceholderRedirection Placeholder="System_VisuElemsAlarm" Redirection="VisuElemsAlarm, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="NetBaseSrv" Redirection="Net Base Services, 3.5.20.0 (CODESYS)" />
@@ -28965,6 +29046,7 @@ _FirstScan := FALSE;</xhtml>
               </Object>
               <Object Name="_30_Visu" ObjectId="9462f316-faa5-42b7-be46-708f3ef2e1f0" />
               <Object Name="_40_Vision" ObjectId="168c2bce-5a06-487a-a077-28448e10fa0d" />
+              <Object Name="_50_Retains" ObjectId="cbf25141-ef0a-49e9-8310-f4845a1e4f3b" />
             </Folder>
             <Object Name="MainTask" ObjectId="eafe4677-fa00-4970-b015-251c89fffd79" />
             <Object Name="SoftMotion_PlanningTask" ObjectId="5a42e1b4-5f13-4f3e-9a38-abed03da7807" />
