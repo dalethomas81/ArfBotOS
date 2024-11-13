@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-12T19:00:10.2560363" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-12T18:51:08.1832009">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-12T21:16:54.8319797" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-12T21:16:31.9686878">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -1850,6 +1850,36 @@ RESERVED: INT:=46;</xhtml>
                     <variable name="Coordinates">
                       <type>
                         <derived name="MC_COORD_REF" />
+                      </type>
+                    </variable>
+                    <variable name="XOperType">
+                      <type>
+                        <derived name="DUT_VarSetCmd_OperType" />
+                      </type>
+                    </variable>
+                    <variable name="YOperType">
+                      <type>
+                        <derived name="DUT_VarSetCmd_OperType" />
+                      </type>
+                    </variable>
+                    <variable name="ZOperType">
+                      <type>
+                        <derived name="DUT_VarSetCmd_OperType" />
+                      </type>
+                    </variable>
+                    <variable name="AOperType">
+                      <type>
+                        <derived name="DUT_VarSetCmd_OperType" />
+                      </type>
+                    </variable>
+                    <variable name="BOperType">
+                      <type>
+                        <derived name="DUT_VarSetCmd_OperType" />
+                      </type>
+                    </variable>
+                    <variable name="COperType">
+                      <type>
+                        <derived name="DUT_VarSetCmd_OperType" />
                       </type>
                     </variable>
                   </struct>
@@ -10794,6 +10824,11 @@ _Vision.M_Reconnect();</xhtml>
                     </variable>
                   </outputVars>
                   <localVars>
+                    <variable name="_i">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
                     <variable name="_CmdParams">
                       <type>
                         <array>
@@ -10806,6 +10841,14 @@ _Vision.M_Reconnect();</xhtml>
                     </variable>
                   </localVars>
                   <localVars constant="true">
+                    <variable name="_Delimiter">
+                      <type>
+                        <string />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="' '" />
+                      </initialValue>
+                    </variable>
                     <variable name="_ArrayTypeS">
                       <type>
                         <string length="3" />
@@ -10830,27 +10873,68 @@ _Vision.M_Reconnect();</xhtml>
                         <simpleValue value="'FLG'" />
                       </initialValue>
                     </variable>
+                    <variable name="_OperationTypeE">
+                      <type>
+                        <string length="1" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'E'" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_OperationTypeA">
+                      <type>
+                        <string length="1" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'A'" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_OperationTypeS">
+                      <type>
+                        <string length="1" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'S'" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_OperationTypeM">
+                      <type>
+                        <string length="1" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'M'" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_OperationTypeD">
+                      <type>
+                        <string length="1" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'D'" />
+                      </initialValue>
+                    </variable>
                   </localVars>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// S|V|F index x y z a b c
-// S 0000 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 
-// V 0000 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// S|V|F index E|A|S|M|D x E|A|S|M|D yE|A|S|M|D z E|A|S|M|D a E|A|S|M|D b E|A|S|M|D c
+// S 0000 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 
+// V 0000 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00
 // F 0000 1
 
 Error:=FALSE;
 ErrorDescription:='';
 
 // split command string into commands
-_CmdParams:=F_SplitCmd(Command:=Command);
+_CmdParams:=F_SplitCmd(Command:=Command, _Delimiter);
 
 //
-IF _CmdParams[0] = _ArrayTypeS  THEN
+_i:=0;
+IF _CmdParams[_i] = _ArrayTypeS  THEN
 	stCommand.ArrayType := DUT_Command_ArrayType.StoredPosition;
-ELSIF _CmdParams[0] = _ArrayTypeV THEN
+ELSIF _CmdParams[_i] = _ArrayTypeV THEN
 	stCommand.ArrayType := DUT_Command_ArrayType.VisionRegister;
-ELSIF _CmdParams[0] = _ArrayTypeF THEN
+ELSIF _CmdParams[_i] = _ArrayTypeF THEN
 	stCommand.ArrayType := DUT_Command_ArrayType.Flag;
 ELSE
 	Error:=TRUE;
@@ -10858,7 +10942,8 @@ ELSE
 END_IF
 
 //
-stCommand.ArrayIndex := STRING_TO_INT(_CmdParams[1]);
+_i := _i + 1;
+stCommand.ArrayIndex := STRING_TO_INT(_CmdParams[_i]);
 IF ((stCommand.ArrayIndex &lt; GVL.POS_ARR_BEG OR stCommand.ArrayIndex &gt; GVL.POS_ARR_END) AND stCommand.ArrayType = DUT_Command_ArrayType.StoredPosition)
 	OR ((stCommand.ArrayIndex &lt; GVL.VIS_ARR_BEG OR stCommand.ArrayIndex &gt; GVL.VIS_ARR_END) AND stCommand.ArrayType = DUT_Command_ArrayType.VisionRegister)
 	OR ((stCommand.ArrayIndex &lt; GVL.FLG_ARR_BEG OR stCommand.ArrayIndex &gt; GVL.FLG_ARR_END) AND stCommand.ArrayType = DUT_Command_ArrayType.Flag) THEN
@@ -10867,12 +10952,95 @@ IF ((stCommand.ArrayIndex &lt; GVL.POS_ARR_BEG OR stCommand.ArrayIndex &gt; GVL.
 END_IF
 
 //
-stCommand.Coordinates.X := STRING_TO_LREAL(_CmdParams[2]);
-stCommand.Coordinates.Y := STRING_TO_LREAL(_CmdParams[3]);
-stCommand.Coordinates.Z := STRING_TO_LREAL(_CmdParams[4]);
-stCommand.Coordinates.A := STRING_TO_LREAL(_CmdParams[5]);
-stCommand.Coordinates.B := STRING_TO_LREAL(_CmdParams[6]);
-stCommand.Coordinates.C := STRING_TO_LREAL(_CmdParams[7]);</xhtml>
+_i := _i + 1;
+IF _CmdParams[_i] = _OperationTypeE THEN
+	stCommand.XOperType := DUT_VarSetCmd_OperType.EQUALS;
+ELSIF _CmdParams[_i] = _OperationTypeA THEN
+	stCommand.XOperType := DUT_VarSetCmd_OperType.PLUS;
+ELSIF _CmdParams[_i] = _OperationTypeS THEN
+	stCommand.XOperType := DUT_VarSetCmd_OperType.MINUS;
+ELSIF _CmdParams[_i] = _OperationTypeM THEN
+	stCommand.XOperType := DUT_VarSetCmd_OperType.TIMES;
+ELSIF _CmdParams[_i] = _OperationTypeD THEN
+	stCommand.XOperType := DUT_VarSetCmd_OperType.DIVIDED_BY;
+END_IF
+_i := _i + 1;
+stCommand.Coordinates.X := STRING_TO_LREAL(_CmdParams[_i]);
+
+_i := _i + 1;
+IF _CmdParams[_i] = _OperationTypeE THEN
+	stCommand.YOperType := DUT_VarSetCmd_OperType.EQUALS;
+ELSIF _CmdParams[_i] = _OperationTypeA THEN
+	stCommand.YOperType := DUT_VarSetCmd_OperType.PLUS;
+ELSIF _CmdParams[_i] = _OperationTypeS THEN
+	stCommand.YOperType := DUT_VarSetCmd_OperType.MINUS;
+ELSIF _CmdParams[_i] = _OperationTypeM THEN
+	stCommand.YOperType := DUT_VarSetCmd_OperType.TIMES;
+ELSIF _CmdParams[_i] = _OperationTypeD THEN
+	stCommand.YOperType := DUT_VarSetCmd_OperType.DIVIDED_BY;
+END_IF
+_i := _i + 1;
+stCommand.Coordinates.Y := STRING_TO_LREAL(_CmdParams[_i]);
+
+_i := _i + 1;
+IF _CmdParams[_i] = _OperationTypeE THEN
+	stCommand.ZOperType := DUT_VarSetCmd_OperType.EQUALS;
+ELSIF _CmdParams[_i] = _OperationTypeA THEN
+	stCommand.ZOperType := DUT_VarSetCmd_OperType.PLUS;
+ELSIF _CmdParams[_i] = _OperationTypeS THEN
+	stCommand.ZOperType := DUT_VarSetCmd_OperType.MINUS;
+ELSIF _CmdParams[_i] = _OperationTypeM THEN
+	stCommand.ZOperType := DUT_VarSetCmd_OperType.TIMES;
+ELSIF _CmdParams[_i] = _OperationTypeD THEN
+	stCommand.ZOperType := DUT_VarSetCmd_OperType.DIVIDED_BY;
+END_IF
+_i := _i + 1;
+stCommand.Coordinates.Z := STRING_TO_LREAL(_CmdParams[_i]);
+
+_i := _i + 1;
+IF _CmdParams[_i] = _OperationTypeE THEN
+	stCommand.AOperType := DUT_VarSetCmd_OperType.EQUALS;
+ELSIF _CmdParams[_i] = _OperationTypeA THEN
+	stCommand.AOperType := DUT_VarSetCmd_OperType.PLUS;
+ELSIF _CmdParams[_i] = _OperationTypeS THEN
+	stCommand.AOperType := DUT_VarSetCmd_OperType.MINUS;
+ELSIF _CmdParams[_i] = _OperationTypeM THEN
+	stCommand.AOperType := DUT_VarSetCmd_OperType.TIMES;
+ELSIF _CmdParams[_i] = _OperationTypeD THEN
+	stCommand.AOperType := DUT_VarSetCmd_OperType.DIVIDED_BY;
+END_IF
+_i := _i + 1;
+stCommand.Coordinates.A := STRING_TO_LREAL(_CmdParams[_i]);
+
+_i := _i + 1;
+IF _CmdParams[_i] = _OperationTypeE THEN
+	stCommand.BOperType := DUT_VarSetCmd_OperType.EQUALS;
+ELSIF _CmdParams[_i] = _OperationTypeA THEN
+	stCommand.BOperType := DUT_VarSetCmd_OperType.PLUS;
+ELSIF _CmdParams[_i] = _OperationTypeS THEN
+	stCommand.BOperType := DUT_VarSetCmd_OperType.MINUS;
+ELSIF _CmdParams[_i] = _OperationTypeM THEN
+	stCommand.BOperType := DUT_VarSetCmd_OperType.TIMES;
+ELSIF _CmdParams[_i] = _OperationTypeD THEN
+	stCommand.BOperType := DUT_VarSetCmd_OperType.DIVIDED_BY;
+END_IF
+_i := _i + 1;
+stCommand.Coordinates.B := STRING_TO_LREAL(_CmdParams[_i]);
+
+_i := _i + 1;
+IF _CmdParams[_i] = _OperationTypeE THEN
+	stCommand.COperType := DUT_VarSetCmd_OperType.EQUALS;
+ELSIF _CmdParams[_i] = _OperationTypeA THEN
+	stCommand.COperType := DUT_VarSetCmd_OperType.PLUS;
+ELSIF _CmdParams[_i] = _OperationTypeS THEN
+	stCommand.COperType := DUT_VarSetCmd_OperType.MINUS;
+ELSIF _CmdParams[_i] = _OperationTypeM THEN
+	stCommand.COperType := DUT_VarSetCmd_OperType.TIMES;
+ELSIF _CmdParams[_i] = _OperationTypeD THEN
+	stCommand.COperType := DUT_VarSetCmd_OperType.DIVIDED_BY;
+END_IF
+_i := _i + 1;
+stCommand.Coordinates.C := STRING_TO_LREAL(_CmdParams[_i]);</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -12032,12 +12200,72 @@ CASE SUPER^._SeqMain OF
 		ELSE
 			//
 			IF _VarSetCmdParser.stCommand.ArrayType = DUT_Command_ArrayType.StoredPosition THEN
-				SUPER^.StoredPositions[_VarSetCmdParser.stCommand.ArrayIndex].Position := _VarSetCmdParser.stCommand.Coordinates;
+				SUPER^.StoredPositions[_VarSetCmdParser.stCommand.ArrayIndex].Position.X := 
+												F_VarSetCmdOperate(SUPER^.StoredPositions[_VarSetCmdParser.stCommand.ArrayIndex].Position.X, 
+																	_VarSetCmdParser.stCommand.XOperType, 
+																	_VarSetCmdParser.stCommand.Coordinates.X);
+																	
+				SUPER^.StoredPositions[_VarSetCmdParser.stCommand.ArrayIndex].Position.Y := 
+												F_VarSetCmdOperate(SUPER^.StoredPositions[_VarSetCmdParser.stCommand.ArrayIndex].Position.Y, 
+																	_VarSetCmdParser.stCommand.YOperType, 
+																	_VarSetCmdParser.stCommand.Coordinates.Y);
+																	
+				SUPER^.StoredPositions[_VarSetCmdParser.stCommand.ArrayIndex].Position.Z := 
+												F_VarSetCmdOperate(SUPER^.StoredPositions[_VarSetCmdParser.stCommand.ArrayIndex].Position.Z, 
+																	_VarSetCmdParser.stCommand.ZOperType, 
+																	_VarSetCmdParser.stCommand.Coordinates.Z);
+																	
+				SUPER^.StoredPositions[_VarSetCmdParser.stCommand.ArrayIndex].Position.A := 
+												F_VarSetCmdOperate(SUPER^.StoredPositions[_VarSetCmdParser.stCommand.ArrayIndex].Position.A, 
+																	_VarSetCmdParser.stCommand.AOperType, 
+																	_VarSetCmdParser.stCommand.Coordinates.A);
+																	
+				SUPER^.StoredPositions[_VarSetCmdParser.stCommand.ArrayIndex].Position.B := 
+												F_VarSetCmdOperate(SUPER^.StoredPositions[_VarSetCmdParser.stCommand.ArrayIndex].Position.B, 
+																	_VarSetCmdParser.stCommand.BOperType, 
+																	_VarSetCmdParser.stCommand.Coordinates.B);
+																	
+				SUPER^.StoredPositions[_VarSetCmdParser.stCommand.ArrayIndex].Position.C := 
+												F_VarSetCmdOperate(SUPER^.StoredPositions[_VarSetCmdParser.stCommand.ArrayIndex].Position.C, 
+																	_VarSetCmdParser.stCommand.COperType, 
+																	_VarSetCmdParser.stCommand.Coordinates.C);
+				
+				
 			ELSIF _VarSetCmdParser.stCommand.ArrayType = DUT_Command_ArrayType.VisionRegister THEN
-				SUPER^.VisionRegisters[_VarSetCmdParser.stCommand.ArrayIndex].Position := _VarSetCmdParser.stCommand.Coordinates;
+				SUPER^.VisionRegisters[_VarSetCmdParser.stCommand.ArrayIndex].Position.X := 
+												F_VarSetCmdOperate(SUPER^.VisionRegisters[_VarSetCmdParser.stCommand.ArrayIndex].Position.X, 
+																	_VarSetCmdParser.stCommand.XOperType, 
+																	_VarSetCmdParser.stCommand.Coordinates.X);
+																	
+				SUPER^.VisionRegisters[_VarSetCmdParser.stCommand.ArrayIndex].Position.Y := 
+												F_VarSetCmdOperate(SUPER^.VisionRegisters[_VarSetCmdParser.stCommand.ArrayIndex].Position.Y, 
+																	_VarSetCmdParser.stCommand.YOperType, 
+																	_VarSetCmdParser.stCommand.Coordinates.Y);
+																	
+				SUPER^.VisionRegisters[_VarSetCmdParser.stCommand.ArrayIndex].Position.Z := 
+												F_VarSetCmdOperate(SUPER^.VisionRegisters[_VarSetCmdParser.stCommand.ArrayIndex].Position.Z, 
+																	_VarSetCmdParser.stCommand.ZOperType, 
+																	_VarSetCmdParser.stCommand.Coordinates.Z);
+																	
+				SUPER^.VisionRegisters[_VarSetCmdParser.stCommand.ArrayIndex].Position.A := 
+												F_VarSetCmdOperate(SUPER^.VisionRegisters[_VarSetCmdParser.stCommand.ArrayIndex].Position.A, 
+																	_VarSetCmdParser.stCommand.AOperType, 
+																	_VarSetCmdParser.stCommand.Coordinates.A);
+																	
+				SUPER^.VisionRegisters[_VarSetCmdParser.stCommand.ArrayIndex].Position.B := 
+												F_VarSetCmdOperate(SUPER^.VisionRegisters[_VarSetCmdParser.stCommand.ArrayIndex].Position.B, 
+																	_VarSetCmdParser.stCommand.BOperType, 
+																	_VarSetCmdParser.stCommand.Coordinates.B);
+																	
+				SUPER^.VisionRegisters[_VarSetCmdParser.stCommand.ArrayIndex].Position.C := 
+												F_VarSetCmdOperate(SUPER^.VisionRegisters[_VarSetCmdParser.stCommand.ArrayIndex].Position.C, 
+																	_VarSetCmdParser.stCommand.COperType, 
+																	_VarSetCmdParser.stCommand.Coordinates.C);
+				
 			ELSIF _VarSetCmdParser.stCommand.ArrayType = DUT_Command_ArrayType.Flag THEN
 				// will just let the flag take on the value of X
 				SUPER^.Flags[_VarSetCmdParser.stCommand.ArrayIndex].Value := LREAL_TO_BOOL(_VarSetCmdParser.stCommand.Coordinates.X);
+				
 			END_IF
 			// next, please
 			SUPER^._SeqMain := _STEP_DONE;
@@ -14647,13 +14875,53 @@ END_WHILE</xhtml>
                         <simpleValue value="'FLG'" />
                       </initialValue>
                     </variable>
+                    <variable name="_OperationTypeE">
+                      <type>
+                        <string length="1" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'E'" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_OperationTypeA">
+                      <type>
+                        <string length="1" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'A'" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_OperationTypeS">
+                      <type>
+                        <string length="1" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'S'" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_OperationTypeM">
+                      <type>
+                        <string length="1" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'M'" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_OperationTypeD">
+                      <type>
+                        <string length="1" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'D'" />
+                      </initialValue>
+                    </variable>
                   </localVars>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// S|V|F index x y z a b c
-// S 0000 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 
-// V 0000 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 +0000.00 
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// S|V|F index E|A|S|M|D x E|A|S|M|D yE|A|S|M|D z E|A|S|M|D a E|A|S|M|D b E|A|S|M|D c
+// S 0000 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 
+// V 0000 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00 E|A|S|M|D +0000.00
 // F 0000 1
 
 // clear the command
@@ -14675,11 +14943,89 @@ F_AddElement(_Command, _Delimiter, INT_TO_STRING(stCommand.ArrayIndex));
 // add the coordinates
 IF stCommand.ArrayType = DUT_Command_ArrayType.StoredPosition 
 	OR stCommand.ArrayType = DUT_Command_ArrayType.VisionRegister THEN
+	
+		CASE stCommand.XOperType OF
+			DUT_VarSetCmd_OperType.EQUALS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeE);
+			DUT_VarSetCmd_OperType.PLUS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeA);
+			DUT_VarSetCmd_OperType.MINUS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeS);
+			DUT_VarSetCmd_OperType.TIMES:
+				F_AddElement(_Command, _Delimiter, _OperationTypeM);
+			DUT_VarSetCmd_OperType.DIVIDED_BY:
+				F_AddElement(_Command, _Delimiter, _OperationTypeD);
+		END_CASE
 		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.X));
+		
+		CASE stCommand.YOperType OF
+			DUT_VarSetCmd_OperType.EQUALS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeE);
+			DUT_VarSetCmd_OperType.PLUS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeA);
+			DUT_VarSetCmd_OperType.MINUS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeS);
+			DUT_VarSetCmd_OperType.TIMES:
+				F_AddElement(_Command, _Delimiter, _OperationTypeM);
+			DUT_VarSetCmd_OperType.DIVIDED_BY:
+				F_AddElement(_Command, _Delimiter, _OperationTypeD);
+		END_CASE
 		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.Y));
+		
+		CASE stCommand.ZOperType OF
+			DUT_VarSetCmd_OperType.EQUALS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeE);
+			DUT_VarSetCmd_OperType.PLUS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeA);
+			DUT_VarSetCmd_OperType.MINUS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeS);
+			DUT_VarSetCmd_OperType.TIMES:
+				F_AddElement(_Command, _Delimiter, _OperationTypeM);
+			DUT_VarSetCmd_OperType.DIVIDED_BY:
+				F_AddElement(_Command, _Delimiter, _OperationTypeD);
+		END_CASE;
 		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.Z));
+		
+		CASE stCommand.AOperType OF
+			DUT_VarSetCmd_OperType.EQUALS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeE);
+			DUT_VarSetCmd_OperType.PLUS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeA);
+			DUT_VarSetCmd_OperType.MINUS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeS);
+			DUT_VarSetCmd_OperType.TIMES:
+				F_AddElement(_Command, _Delimiter, _OperationTypeM);
+			DUT_VarSetCmd_OperType.DIVIDED_BY:
+				F_AddElement(_Command, _Delimiter, _OperationTypeD);
+		END_CASE
 		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.A));
+		
+		CASE stCommand.BOperType OF
+			DUT_VarSetCmd_OperType.EQUALS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeE);
+			DUT_VarSetCmd_OperType.PLUS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeA);
+			DUT_VarSetCmd_OperType.MINUS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeS);
+			DUT_VarSetCmd_OperType.TIMES:
+				F_AddElement(_Command, _Delimiter, _OperationTypeM);
+			DUT_VarSetCmd_OperType.DIVIDED_BY:
+				F_AddElement(_Command, _Delimiter, _OperationTypeD);
+		END_CASE
 		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.B));
+		
+		CASE stCommand.COperType OF
+			DUT_VarSetCmd_OperType.EQUALS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeE);
+			DUT_VarSetCmd_OperType.PLUS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeA);
+			DUT_VarSetCmd_OperType.MINUS:
+				F_AddElement(_Command, _Delimiter, _OperationTypeS);
+			DUT_VarSetCmd_OperType.TIMES:
+				F_AddElement(_Command, _Delimiter, _OperationTypeM);
+			DUT_VarSetCmd_OperType.DIVIDED_BY:
+				F_AddElement(_Command, _Delimiter, _OperationTypeD);
+		END_CASE
 		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.C));
 		
 ELSIF stCommand.ArrayType = DUT_Command_ArrayType.Flag THEN
@@ -20939,6 +21285,72 @@ FirstScan := FALSE;</xhtml>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>cbf25141-ef0a-49e9-8310-f4845a1e4f3b</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="F_VarSetCmdOperate" pouType="function">
+                <interface>
+                  <returnType>
+                    <LREAL />
+                  </returnType>
+                  <inputVars>
+                    <variable name="Operand1">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <variable name="Operation">
+                      <type>
+                        <derived name="DUT_VarSetCmd_OperType" />
+                      </type>
+                    </variable>
+                    <variable name="Operand2">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                  </inputVars>
+                  <localVars>
+                    <variable name="_epsilon">
+                      <type>
+                        <REAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="1E-08" />
+                      </initialValue>
+                    </variable>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">CASE Operation OF
+	DUT_VarSetCmd_OperType.EQUALS:
+		F_VarSetCmdOperate := Operand2;
+		
+	DUT_VarSetCmd_OperType.PLUS:
+		F_VarSetCmdOperate := Operand1 + Operand2;
+		
+	DUT_VarSetCmd_OperType.MINUS:
+		F_VarSetCmdOperate := Operand1 - Operand2;
+		
+	DUT_VarSetCmd_OperType.TIMES:
+		F_VarSetCmdOperate := Operand1 * Operand2;
+		
+	DUT_VarSetCmd_OperType.DIVIDED_BY:
+		IF Operand2 &lt;&gt; 0 THEN
+			F_VarSetCmdOperate := Operand1 / Operand2;
+		ELSE
+			F_VarSetCmdOperate := Operand1 / _epsilon;
+		END_IF
+		
+END_CASE</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>4a4ec279-6d88-4f3c-a9ff-f801c2546a48</ObjectId>
                   </data>
                 </addData>
               </pou>
@@ -29353,6 +29765,7 @@ FirstScan := FALSE;</xhtml>
                 </Object>
                 <Object Name="BuildVarSetCmd" ObjectId="464f3abe-fbad-44ed-ab93-0358a4edadad" />
                 <Object Name="ST_VarSetCmd" ObjectId="0b1a37a4-4123-4a33-84fb-db1ab5afd1a7" />
+                <Object Name="F_VarSetCmdOperate" ObjectId="4a4ec279-6d88-4f3c-a9ff-f801c2546a48" />
               </Folder>
               <Object Name="F_SplitCmd" ObjectId="4ffeb092-e2fe-4508-9822-2d3197400b13" />
               <Folder Name="logic">
