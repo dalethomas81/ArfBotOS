@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-12T21:16:54.8319797" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-12T21:16:31.9686878">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-12T23:14:29.7058192" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-12T22:57:12.5145718">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -10873,6 +10873,14 @@ _Vision.M_Reconnect();</xhtml>
                         <simpleValue value="'FLG'" />
                       </initialValue>
                     </variable>
+                    <variable name="_OperationTypeN">
+                      <type>
+                        <string length="1" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'N'" />
+                      </initialValue>
+                    </variable>
                     <variable name="_OperationTypeE">
                       <type>
                         <string length="1" />
@@ -10953,7 +10961,9 @@ END_IF
 
 //
 _i := _i + 1;
-IF _CmdParams[_i] = _OperationTypeE THEN
+IF _CmdParams[_i] = _OperationTypeN THEN
+	stCommand.XOperType := DUT_VarSetCmd_OperType.NOP;
+ELSIF _CmdParams[_i] = _OperationTypeE THEN
 	stCommand.XOperType := DUT_VarSetCmd_OperType.EQUALS;
 ELSIF _CmdParams[_i] = _OperationTypeA THEN
 	stCommand.XOperType := DUT_VarSetCmd_OperType.PLUS;
@@ -10968,7 +10978,9 @@ _i := _i + 1;
 stCommand.Coordinates.X := STRING_TO_LREAL(_CmdParams[_i]);
 
 _i := _i + 1;
-IF _CmdParams[_i] = _OperationTypeE THEN
+IF _CmdParams[_i] = _OperationTypeN THEN
+	stCommand.YOperType := DUT_VarSetCmd_OperType.NOP;
+ELSIF _CmdParams[_i] = _OperationTypeE THEN
 	stCommand.YOperType := DUT_VarSetCmd_OperType.EQUALS;
 ELSIF _CmdParams[_i] = _OperationTypeA THEN
 	stCommand.YOperType := DUT_VarSetCmd_OperType.PLUS;
@@ -10983,7 +10995,9 @@ _i := _i + 1;
 stCommand.Coordinates.Y := STRING_TO_LREAL(_CmdParams[_i]);
 
 _i := _i + 1;
-IF _CmdParams[_i] = _OperationTypeE THEN
+IF _CmdParams[_i] = _OperationTypeN THEN
+	stCommand.ZOperType := DUT_VarSetCmd_OperType.NOP;
+ELSIF _CmdParams[_i] = _OperationTypeE THEN
 	stCommand.ZOperType := DUT_VarSetCmd_OperType.EQUALS;
 ELSIF _CmdParams[_i] = _OperationTypeA THEN
 	stCommand.ZOperType := DUT_VarSetCmd_OperType.PLUS;
@@ -10998,7 +11012,9 @@ _i := _i + 1;
 stCommand.Coordinates.Z := STRING_TO_LREAL(_CmdParams[_i]);
 
 _i := _i + 1;
-IF _CmdParams[_i] = _OperationTypeE THEN
+IF _CmdParams[_i] = _OperationTypeN THEN
+	stCommand.AOperType := DUT_VarSetCmd_OperType.NOP;
+ELSIF _CmdParams[_i] = _OperationTypeE THEN
 	stCommand.AOperType := DUT_VarSetCmd_OperType.EQUALS;
 ELSIF _CmdParams[_i] = _OperationTypeA THEN
 	stCommand.AOperType := DUT_VarSetCmd_OperType.PLUS;
@@ -11013,7 +11029,9 @@ _i := _i + 1;
 stCommand.Coordinates.A := STRING_TO_LREAL(_CmdParams[_i]);
 
 _i := _i + 1;
-IF _CmdParams[_i] = _OperationTypeE THEN
+IF _CmdParams[_i] = _OperationTypeN THEN
+	stCommand.BOperType := DUT_VarSetCmd_OperType.NOP;
+ELSIF _CmdParams[_i] = _OperationTypeE THEN
 	stCommand.BOperType := DUT_VarSetCmd_OperType.EQUALS;
 ELSIF _CmdParams[_i] = _OperationTypeA THEN
 	stCommand.BOperType := DUT_VarSetCmd_OperType.PLUS;
@@ -11028,7 +11046,9 @@ _i := _i + 1;
 stCommand.Coordinates.B := STRING_TO_LREAL(_CmdParams[_i]);
 
 _i := _i + 1;
-IF _CmdParams[_i] = _OperationTypeE THEN
+IF _CmdParams[_i] = _OperationTypeN THEN
+	stCommand.COperType := DUT_VarSetCmd_OperType.NOP;
+ELSIF _CmdParams[_i] = _OperationTypeE THEN
 	stCommand.COperType := DUT_VarSetCmd_OperType.EQUALS;
 ELSIF _CmdParams[_i] = _OperationTypeA THEN
 	stCommand.COperType := DUT_VarSetCmd_OperType.PLUS;
@@ -14875,6 +14895,14 @@ END_WHILE</xhtml>
                         <simpleValue value="'FLG'" />
                       </initialValue>
                     </variable>
+                    <variable name="_OperationTypeN">
+                      <type>
+                        <string length="1" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'N'" />
+                      </initialValue>
+                    </variable>
                     <variable name="_OperationTypeE">
                       <type>
                         <string length="1" />
@@ -14945,6 +14973,8 @@ IF stCommand.ArrayType = DUT_Command_ArrayType.StoredPosition
 	OR stCommand.ArrayType = DUT_Command_ArrayType.VisionRegister THEN
 	
 		CASE stCommand.XOperType OF
+			DUT_VarSetCmd_OperType.NOP:
+				F_AddElement(_Command, _Delimiter, _OperationTypeN);
 			DUT_VarSetCmd_OperType.EQUALS:
 				F_AddElement(_Command, _Delimiter, _OperationTypeE);
 			DUT_VarSetCmd_OperType.PLUS:
@@ -14959,6 +14989,8 @@ IF stCommand.ArrayType = DUT_Command_ArrayType.StoredPosition
 		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.X));
 		
 		CASE stCommand.YOperType OF
+			DUT_VarSetCmd_OperType.NOP:
+				F_AddElement(_Command, _Delimiter, _OperationTypeN);
 			DUT_VarSetCmd_OperType.EQUALS:
 				F_AddElement(_Command, _Delimiter, _OperationTypeE);
 			DUT_VarSetCmd_OperType.PLUS:
@@ -14973,6 +15005,8 @@ IF stCommand.ArrayType = DUT_Command_ArrayType.StoredPosition
 		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.Y));
 		
 		CASE stCommand.ZOperType OF
+			DUT_VarSetCmd_OperType.NOP:
+				F_AddElement(_Command, _Delimiter, _OperationTypeN);
 			DUT_VarSetCmd_OperType.EQUALS:
 				F_AddElement(_Command, _Delimiter, _OperationTypeE);
 			DUT_VarSetCmd_OperType.PLUS:
@@ -14987,6 +15021,8 @@ IF stCommand.ArrayType = DUT_Command_ArrayType.StoredPosition
 		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.Z));
 		
 		CASE stCommand.AOperType OF
+			DUT_VarSetCmd_OperType.NOP:
+				F_AddElement(_Command, _Delimiter, _OperationTypeN);
 			DUT_VarSetCmd_OperType.EQUALS:
 				F_AddElement(_Command, _Delimiter, _OperationTypeE);
 			DUT_VarSetCmd_OperType.PLUS:
@@ -15001,6 +15037,8 @@ IF stCommand.ArrayType = DUT_Command_ArrayType.StoredPosition
 		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.A));
 		
 		CASE stCommand.BOperType OF
+			DUT_VarSetCmd_OperType.NOP:
+				F_AddElement(_Command, _Delimiter, _OperationTypeN);
 			DUT_VarSetCmd_OperType.EQUALS:
 				F_AddElement(_Command, _Delimiter, _OperationTypeE);
 			DUT_VarSetCmd_OperType.PLUS:
@@ -15015,6 +15053,8 @@ IF stCommand.ArrayType = DUT_Command_ArrayType.StoredPosition
 		F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.Coordinates.B));
 		
 		CASE stCommand.COperType OF
+			DUT_VarSetCmd_OperType.NOP:
+				F_AddElement(_Command, _Delimiter, _OperationTypeN);
 			DUT_VarSetCmd_OperType.EQUALS:
 				F_AddElement(_Command, _Delimiter, _OperationTypeE);
 			DUT_VarSetCmd_OperType.PLUS:
@@ -15396,24 +15436,28 @@ CASE SUPER^._SeqMain OF
 		END_CASE;
 				
 	_STEP_PROC_ELSE:
-		CASE _ParseLogicCmd.stCommand.ELSE_Function OF
-			E_LogicFunction.OUTPUT:
-				SUPER^._SeqMain := _STEP_PROC_OUT;
-			E_LogicFunction.REGISTER:
-				SUPER^._SeqMain := _STEP_PROC_REG;
-			E_LogicFunction.CNTUP:
-				SUPER^._SeqMain := _STEP_PROC_CNT;
-			E_LogicFunction.CNTDN:
-				SUPER^._SeqMain := _STEP_PROC_CNT;
-			E_LogicFunction.CNTRST:
-				SUPER^._SeqMain := _STEP_PROC_CNT;
-			E_LogicFunction.JUMP:
-				SUPER^._SeqMain := _STEP_PROC_JMP;
-			E_LogicFunction.CALL:
-				SUPER^._SeqMain := _STEP_PROC_CAL;
-			E_LogicFunction.NOP:
-				SUPER^._SeqMain := _STEP_PROC_NOP;
-		END_CASE;
+		IF _ParseLogicCmd.stCommand.IF_Condition &lt;&gt; E_LogicIfCondition.PASS THEN
+			CASE _ParseLogicCmd.stCommand.ELSE_Function OF
+				E_LogicFunction.OUTPUT:
+					SUPER^._SeqMain := _STEP_PROC_OUT;
+				E_LogicFunction.REGISTER:
+					SUPER^._SeqMain := _STEP_PROC_REG;
+				E_LogicFunction.CNTUP:
+					SUPER^._SeqMain := _STEP_PROC_CNT;
+				E_LogicFunction.CNTDN:
+					SUPER^._SeqMain := _STEP_PROC_CNT;
+				E_LogicFunction.CNTRST:
+					SUPER^._SeqMain := _STEP_PROC_CNT;
+				E_LogicFunction.JUMP:
+					SUPER^._SeqMain := _STEP_PROC_JMP;
+				E_LogicFunction.CALL:
+					SUPER^._SeqMain := _STEP_PROC_CAL;
+				E_LogicFunction.NOP:
+					SUPER^._SeqMain := _STEP_PROC_NOP;
+			END_CASE;
+		ELSE
+			SUPER^._SeqMain := _STEP_DONE;
+		END_IF 
 		
 	_STEP_PROC_OUT:
 		IF _ThenFunctionProcessed THEN
@@ -16325,13 +16369,15 @@ IF stCommand.THEN_Function &lt;&gt; E_LogicFunction.NOP THEN
 			F_AddElement(_Command, _Delimiter, UDINT_TO_STRING(stCommand.THEN_Function_Value));
 	END_IF
 END_IF
-F_AddElement(_Command, _Delimiter, 'ELSE');
-F_AddElement(_Command, _Delimiter, TO_STRING(stCommand.ELSE_Function));
-IF stCommand.ELSE_Function &lt;&gt; E_LogicFunction.NOP THEN
-	F_AddElement(_Command, _Delimiter, INT_TO_STRING(stCommand.ELSE_Function_Idx));
-	IF stCommand.ELSE_Function = E_LogicFunction.OUTPUT 
-		OR stCommand.ELSE_Function = E_LogicFunction.REGISTER THEN
-			F_AddElement(_Command, _Delimiter, UDINT_TO_STRING(stCommand.ELSE_Function_Value));
+IF stCommand.IF_Condition &lt;&gt; E_LogicIfCondition.PASS THEN
+	F_AddElement(_Command, _Delimiter, 'ELSE');
+	F_AddElement(_Command, _Delimiter, TO_STRING(stCommand.ELSE_Function));
+	IF stCommand.ELSE_Function &lt;&gt; E_LogicFunction.NOP THEN
+		F_AddElement(_Command, _Delimiter, INT_TO_STRING(stCommand.ELSE_Function_Idx));
+		IF stCommand.ELSE_Function = E_LogicFunction.OUTPUT 
+			OR stCommand.ELSE_Function = E_LogicFunction.REGISTER THEN
+				F_AddElement(_Command, _Delimiter, UDINT_TO_STRING(stCommand.ELSE_Function_Value));
+		END_IF
 	END_IF
 END_IF
 
@@ -21326,6 +21372,9 @@ FirstScan := FALSE;</xhtml>
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">CASE Operation OF
+	DUT_VarSetCmd_OperType.NOP:
+		F_VarSetCmdOperate := Operand1;
+		
 	DUT_VarSetCmd_OperType.EQUALS:
 		F_VarSetCmdOperate := Operand2;
 		
