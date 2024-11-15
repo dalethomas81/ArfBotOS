@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-13T22:57:42.1238096" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-13T22:57:27.0621448">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-14T22:23:20.2617619" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-14T22:00:55.5252388">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -15257,12 +15257,28 @@ BuildVarSetCmd := _Command;</xhtml>
                         <simpleValue value="320" />
                       </initialValue>
                     </variable>
+                    <variable name="_STEP_PROC_FLG">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="325" />
+                      </initialValue>
+                    </variable>
                     <variable name="_STEP_PROC_REG">
                       <type>
                         <INT />
                       </type>
                       <initialValue>
                         <simpleValue value="330" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_STEP_EVAL_FLG">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="335" />
                       </initialValue>
                     </variable>
                     <variable name="_STEP_PROC_NOP">
@@ -15318,6 +15334,8 @@ CASE SUPER^._SeqMain OF
 				SUPER^._SeqMain := _STEP_EVAL_REG;
 			E_LogicIfCondition.COUNTER:
 				SUPER^._SeqMain := _STEP_EVAL_CNT;
+			E_LogicIfCondition.FLAG:
+				SUPER^._SeqMain := _STEP_EVAL_FLG;
 		END_CASE
 		
 		//
@@ -15440,6 +15458,45 @@ CASE SUPER^._SeqMain OF
 				END_IF
 		END_CASE
 		
+	_STEP_EVAL_FLG:
+		CASE _ParseLogicCmd.stCommand.IF_Condition_Operator OF
+			E_LogicIfConditionOperator.EQU:
+				IF SUPER^.Flags[_ParseLogicCmd.stCommand.IF_Condition_Idx].Value 
+					= UDINT_TO_BOOL(_ParseLogicCmd.stCommand.IF_Condition_Operator_Value) THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.GRE:
+				IF SUPER^.Flags[_ParseLogicCmd.stCommand.IF_Condition_Idx].Value  
+					&gt;= UDINT_TO_BOOL(_ParseLogicCmd.stCommand.IF_Condition_Operator_Value) THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.GRT:
+				IF SUPER^.Flags[_ParseLogicCmd.stCommand.IF_Condition_Idx].Value 
+					&gt; UDINT_TO_BOOL(_ParseLogicCmd.stCommand.IF_Condition_Operator_Value) THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.LEQ:
+				IF SUPER^.Flags[_ParseLogicCmd.stCommand.IF_Condition_Idx].Value  
+					&lt;= UDINT_TO_BOOL(_ParseLogicCmd.stCommand.IF_Condition_Operator_Value) THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+			E_LogicIfConditionOperator.LES:
+				IF SUPER^.Flags[_ParseLogicCmd.stCommand.IF_Condition_Idx].Value 
+					&lt; UDINT_TO_BOOL(_ParseLogicCmd.stCommand.IF_Condition_Operator_Value) THEN
+						SUPER^._SeqMain := _STEP_PROC_THEN;
+				ELSE
+					SUPER^._SeqMain := _STEP_PROC_ELSE;
+				END_IF
+		END_CASE
+		
 	_STEP_PROC_THEN:
 		//
 		_ThenFunctionProcessed := TRUE;
@@ -15449,6 +15506,8 @@ CASE SUPER^._SeqMain OF
 				SUPER^._SeqMain := _STEP_PROC_OUT;
 			E_LogicFunction.REGISTER:
 				SUPER^._SeqMain := _STEP_PROC_REG;
+			E_LogicFunction.FLAG:
+				SUPER^._SeqMain := _STEP_PROC_FLG;
 			E_LogicFunction.CNTUP:
 				SUPER^._SeqMain := _STEP_PROC_CNT;
 			E_LogicFunction.CNTDN:
@@ -15470,6 +15529,8 @@ CASE SUPER^._SeqMain OF
 					SUPER^._SeqMain := _STEP_PROC_OUT;
 				E_LogicFunction.REGISTER:
 					SUPER^._SeqMain := _STEP_PROC_REG;
+				E_LogicFunction.FLAG:
+					SUPER^._SeqMain := _STEP_PROC_FLG;
 				E_LogicFunction.CNTUP:
 					SUPER^._SeqMain := _STEP_PROC_CNT;
 				E_LogicFunction.CNTDN:
@@ -15534,6 +15595,17 @@ CASE SUPER^._SeqMain OF
 					CmdIO.Counter[_ParseLogicCmd.stCommand.ELSE_Function_Idx] 
 						:= 0;
 			END_CASE
+		END_IF
+		// next, please
+		SUPER^._SeqMain := _STEP_DONE;
+		
+	_STEP_PROC_FLG:
+		IF _ThenFunctionProcessed THEN
+			SUPER^.Flags[_ParseLogicCmd.stCommand.THEN_Function_Idx].Value 
+				:= UDINT_TO_BOOL(_ParseLogicCmd.stCommand.THEN_Function_Value);
+		ELSE
+			SUPER^.Flags[_ParseLogicCmd.stCommand.ELSE_Function_Idx].Value
+				:= UDINT_TO_BOOL(_ParseLogicCmd.stCommand.ELSE_Function_Value);
 		END_IF
 		// next, please
 		SUPER^._SeqMain := _STEP_DONE;
@@ -16223,6 +16295,8 @@ ELSIF  _CmdParams[_i] = TO_STRING(E_LogicIfCondition.REGISTER) THEN
 	stCommand.IF_Condition := E_LogicIfCondition.REGISTER;
 ELSIF  _CmdParams[_i] = TO_STRING(E_LogicIfCondition.COUNTER) THEN
 	stCommand.IF_Condition := E_LogicIfCondition.COUNTER;
+ELSIF  _CmdParams[_i] = TO_STRING(E_LogicIfCondition.FLAG) THEN
+	stCommand.IF_Condition := E_LogicIfCondition.FLAG;
 END_IF
 _i := _i + 1;
 
@@ -16271,6 +16345,8 @@ ELSIF _CmdParams[_i] = TO_STRING(E_LogicFunction.CNTRST) THEN
 	stCommand.THEN_Function := E_LogicFunction.CNTRST;
 ELSIF _CmdParams[_i] = TO_STRING(E_LogicFunction.REGISTER) THEN
 	stCommand.THEN_Function := E_LogicFunction.REGISTER;
+ELSIF _CmdParams[_i] = TO_STRING(E_LogicFunction.FLAG) THEN
+	stCommand.THEN_Function := E_LogicFunction.FLAG;
 ELSIF _CmdParams[_i] = TO_STRING(E_LogicFunction.NOP) THEN
 	stCommand.THEN_Function := E_LogicFunction.NOP;
 END_IF
@@ -16280,8 +16356,9 @@ _i := _i + 1;
 IF stCommand.THEN_Function &lt;&gt; E_LogicFunction.NOP THEN
 	stCommand.THEN_Function_Idx := STRING_TO_INT(_CmdParams[_i]);
 	_i := _i + 1;
-	IF stCommand.THEN_Function = E_LogicFunction.OUTPUT 
-		OR stCommand.THEN_Function = E_LogicFunction.REGISTER THEN
+	IF stCommand.THEN_Function = E_LogicFunction.OUTPUT OR
+		stCommand.THEN_Function = E_LogicFunction.REGISTER OR
+		stCommand.THEN_Function = E_LogicFunction.FLAG THEN
 			stCommand.THEN_Function_Value := STRING_TO_UDINT(_CmdParams[_i]);
 			_i := _i + 1;
 	END_IF
@@ -16305,6 +16382,8 @@ ELSIF _CmdParams[_i] = TO_STRING(E_LogicFunction.CNTRST) THEN
 	stCommand.ELSE_Function := E_LogicFunction.CNTRST;
 ELSIF _CmdParams[_i] = TO_STRING(E_LogicFunction.REGISTER) THEN
 	stCommand.ELSE_Function := E_LogicFunction.REGISTER;
+ELSIF _CmdParams[_i] = TO_STRING(E_LogicFunction.FLAG) THEN
+	stCommand.ELSE_Function := E_LogicFunction.FLAG;
 ELSIF _CmdParams[_i] = TO_STRING(E_LogicFunction.NOP) THEN
 	stCommand.ELSE_Function := E_LogicFunction.NOP;
 END_IF
@@ -16314,8 +16393,9 @@ _i := _i + 1;
 IF stCommand.ELSE_Function &lt;&gt; E_LogicFunction.NOP THEN
 	stCommand.ELSE_Function_Idx := STRING_TO_INT(_CmdParams[_i]);
 	_i := _i + 1;
-	IF stCommand.ELSE_Function = E_LogicFunction.OUTPUT 
-		OR stCommand.ELSE_Function = E_LogicFunction.REGISTER THEN
+	IF stCommand.ELSE_Function = E_LogicFunction.OUTPUT OR
+		stCommand.ELSE_Function = E_LogicFunction.REGISTER OR
+		stCommand.ELSE_Function = E_LogicFunction.FLAG THEN
 			stCommand.ELSE_Function_Value := STRING_TO_UDINT(_CmdParams[_i]);
 			_i := _i + 1;
 	END_IF
@@ -16393,7 +16473,8 @@ F_AddElement(_Command, _Delimiter, TO_STRING(stCommand.THEN_Function));
 IF stCommand.THEN_Function &lt;&gt; E_LogicFunction.NOP THEN
 	F_AddElement(_Command, _Delimiter, INT_TO_STRING(stCommand.THEN_Function_Idx));
 	IF stCommand.THEN_Function = E_LogicFunction.OUTPUT OR 
-		stCommand.THEN_Function = E_LogicFunction.REGISTER THEN
+		stCommand.THEN_Function = E_LogicFunction.REGISTER OR 
+		stCommand.THEN_Function = E_LogicFunction.FLAG THEN
 			F_AddElement(_Command, _Delimiter, UDINT_TO_STRING(stCommand.THEN_Function_Value));
 	END_IF
 END_IF
@@ -16402,8 +16483,9 @@ IF stCommand.IF_Condition &lt;&gt; E_LogicIfCondition.PASS THEN
 	F_AddElement(_Command, _Delimiter, TO_STRING(stCommand.ELSE_Function));
 	IF stCommand.ELSE_Function &lt;&gt; E_LogicFunction.NOP THEN
 		F_AddElement(_Command, _Delimiter, INT_TO_STRING(stCommand.ELSE_Function_Idx));
-		IF stCommand.ELSE_Function = E_LogicFunction.OUTPUT 
-			OR stCommand.ELSE_Function = E_LogicFunction.REGISTER THEN
+		IF stCommand.ELSE_Function = E_LogicFunction.OUTPUT OR
+			stCommand.ELSE_Function = E_LogicFunction.REGISTER OR
+			stCommand.ELSE_Function = E_LogicFunction.FLAG THEN
 				F_AddElement(_Command, _Delimiter, UDINT_TO_STRING(stCommand.ELSE_Function_Value));
 		END_IF
 	END_IF
