@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-14T22:23:20.2617619" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-14T22:00:55.5252388">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-15T22:38:06.8468731" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-15T22:34:48.954231">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -552,11 +552,6 @@ RESERVED: INT:=46;</xhtml>
                 <derived name="R_TRIG" />
               </type>
             </variable>
-            <variable name="StorePersist">
-              <type>
-                <BOOL />
-              </type>
-            </variable>
             <variable name="AreYouSure_Home_Yes">
               <type>
                 <BOOL />
@@ -1055,11 +1050,6 @@ RESERVED: INT:=46;</xhtml>
                     <variable name="ResetRtrig">
                       <type>
                         <derived name="R_TRIG" />
-                      </type>
-                    </variable>
-                    <variable name="StorePersist">
-                      <type>
-                        <BOOL />
                       </type>
                     </variable>
                     <variable name="AreYouSure_Home_Yes">
@@ -7066,6 +7056,11 @@ END_CASE</xhtml>
                         <BOOL />
                       </type>
                     </variable>
+                    <variable name="JumpRowChanged">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <variable name="_i">
                       <type>
                         <INT />
@@ -7236,13 +7231,6 @@ END_CASE</xhtml>
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">//
-IF GVL.StorePersist THEN
-	GVL.StorePersist := FALSE;
-	// TODO manually store persistent data here.
-	// not currently a straight forward way of doing this.
-END_IF
-
-//
 IF (InsertLineAbove OR InsertLineBelow) AND RecipeRowSelected THEN
 	//
 	IF InsertLineAbove THEN
@@ -7255,11 +7243,18 @@ IF (InsertLineAbove OR InsertLineBelow) AND RecipeRowSelected THEN
 	//
 	FOR _i := GVL.PROG_CMDS_ARR_END TO _j BY -1 DO
 		// shift all data
-		IF _i &gt;= GVL.PROG_CMDS_ARR_BEG AND _i &lt;= GVL.PROG_CMDS_ARR_END THEN // can never really bo too careful am I right?
-			PersistentVars.Programs[SelectedProgramNumber].Commands[_i].CommandType := PersistentVars.Programs[SelectedProgramNumber].Commands[_i - 1].CommandType;
-			PersistentVars.Programs[SelectedProgramNumber].Commands[_i].CommandString := PersistentVars.Programs[SelectedProgramNumber].Commands[_i - 1].CommandString;
-			PersistentVars.Programs[SelectedProgramNumber].Commands[_i].CommandComment := PersistentVars.Programs[SelectedProgramNumber].Commands[_i - 1].CommandComment;
+		IF _i &gt;= GVL.PROG_CMDS_ARR_BEG AND _i &lt;= GVL.PROG_CMDS_ARR_END THEN // can never really be too careful am I right?
+			//
+			MemUtils.MemCpy(pbyDest:=ADR(PersistentVars.Programs[SelectedProgramNumber].Commands[_i]),
+							pbySrc:=ADR(PersistentVars.Programs[SelectedProgramNumber].Commands[_i - 1]),
+							dwSize:=SIZEOF(PersistentVars.Programs[SelectedProgramNumber].Commands[_i]));
 		END_IF
+	END_FOR
+	FOR _k := GVL.PROG_CMDS_ARR_END TO GVL.PROG_CMDS_ARR_BEG BY -1 DO
+		// check if the command is a logic command with a jump function
+		// if so, we need to move the jump row automatically so it doesnt point to an invalid command.
+		// otherwise, the user would have to manually change this each time they move rows.
+		JumpRowChanged := F_ChangeJumpRow(Command:=PersistentVars.Programs[SelectedProgramNumber].Commands[_k], BeginningRow:= _j-1, Change:= 1);
 	END_FOR
 	//
 	PersistentVars.Programs[SelectedProgramNumber].Commands[_j - 1].CommandType := DUT_CommandType.Disabled;
@@ -7271,11 +7266,18 @@ END_IF
 IF DeleteLine AND RecipeRowSelected THEN
 	DeleteLine := FALSE;
 	FOR _i := SelectedRecipeRowIndex TO GVL.PROG_CMDS_ARR_END - 1 BY 1 DO
-		IF _i &gt;= GVL.PROG_CMDS_ARR_BEG AND _i &lt;= GVL.PROG_CMDS_ARR_END THEN // can never really bo too careful am I right?
-			PersistentVars.Programs[SelectedProgramNumber].Commands[_i].CommandType := PersistentVars.Programs[SelectedProgramNumber].Commands[_i + 1].CommandType;
-			PersistentVars.Programs[SelectedProgramNumber].Commands[_i].CommandString := PersistentVars.Programs[SelectedProgramNumber].Commands[_i + 1].CommandString;
-			PersistentVars.Programs[SelectedProgramNumber].Commands[_i].CommandComment := PersistentVars.Programs[SelectedProgramNumber].Commands[_i + 1].CommandComment;
+		IF _i &gt;= GVL.PROG_CMDS_ARR_BEG AND _i &lt;= GVL.PROG_CMDS_ARR_END THEN // can never really be too careful am I right?
+			//
+			MemUtils.MemCpy(pbyDest:=ADR(PersistentVars.Programs[SelectedProgramNumber].Commands[_i]),
+							pbySrc:=ADR(PersistentVars.Programs[SelectedProgramNumber].Commands[_i + 1]),
+							dwSize:=SIZEOF(PersistentVars.Programs[SelectedProgramNumber].Commands[_i]));
 		END_IF
+	END_FOR
+	FOR _k := GVL.PROG_CMDS_ARR_END TO GVL.PROG_CMDS_ARR_BEG BY -1 DO
+		// check if the command is a logic command with a jump function
+		// if so, we need to move the jump row automatically so it doesnt point to an invalid command.
+		// otherwise, the user would have to manually change this each time they move rows.
+		JumpRowChanged := F_ChangeJumpRow(Command:=PersistentVars.Programs[SelectedProgramNumber].Commands[_k], BeginningRow:= SelectedRecipeRowIndex, Change:= -1);
 	END_FOR
 END_IF
 
@@ -21514,6 +21516,82 @@ _FirstScan := FALSE;</xhtml>
                 </addData>
               </pou>
             </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="F_ChangeJumpRow" pouType="function">
+                <interface>
+                  <returnType>
+                    <BOOL />
+                  </returnType>
+                  <inOutVars>
+                    <variable name="Command">
+                      <type>
+                        <derived name="DUT_Command" />
+                      </type>
+                    </variable>
+                  </inOutVars>
+                  <inputVars>
+                    <variable name="BeginningRow">
+                      <type>
+                        <DINT />
+                      </type>
+                    </variable>
+                    <variable name="Change">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                  </inputVars>
+                  <localVars>
+                    <variable name="_LogicCmdParser">
+                      <type>
+                        <derived name="ParseLogicCmd" />
+                      </type>
+                    </variable>
+                    <variable name="_stLogicCmd">
+                      <type>
+                        <derived name="ST_LogicCmd" />
+                      </type>
+                    </variable>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// change the row that the jump function will jump to by the amount of the change
+F_ChangeJumpRow := FALSE;
+IF Command.CommandType = DUT_CommandType.LogicCommand THEN
+	// parse the command string
+	_LogicCmdParser(Command:=Command.CommandString, stCommand=&gt;_stLogicCmd);
+	
+	// check the THEN function
+	IF _stLogicCmd.THEN_Function = E_LogicFunction.JUMP AND_THEN _stLogicCmd.THEN_Function_Idx &gt;= BeginningRow THEN
+		_stLogicCmd.THEN_Function_Idx := _stLogicCmd.THEN_Function_Idx + Change;
+		F_ChangeJumpRow := TRUE;
+	END_IF
+	
+	// check the ELSE function
+	IF _stLogicCmd.ELSE_Function = E_LogicFunction.JUMP AND_THEN _stLogicCmd.ELSE_Function_Idx &gt;= BeginningRow  THEN
+		_stLogicCmd.ELSE_Function_Idx := _stLogicCmd.ELSE_Function_Idx + Change;
+		F_ChangeJumpRow := TRUE;
+	END_IF
+	
+	// set the command
+	IF F_ChangeJumpRow THEN
+		Command.CommandString := BuildLogicCmd(stCommand:=_stLogicCmd);
+	END_IF
+	
+ELSE
+	F_ChangeJumpRow := FALSE;
+	
+END_IF</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>38b68f93-b03b-4e6d-b291-89cec4400a06</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/union" handleUnknown="implementation">
               <union name="StringByteArray">
                 <variable name="bArray">
@@ -29940,6 +30018,7 @@ _FirstScan := FALSE;</xhtml>
                 <Object Name="ParseLogicCmd" ObjectId="94719e33-3b96-48b6-b30b-137cf4b2830f" />
                 <Object Name="BuildLogicCmd" ObjectId="c913c794-b56e-4d94-b465-42dec1dfd0be" />
                 <Object Name="ST_LogicCmd" ObjectId="c4e12c65-0b92-43d3-a6f5-ab4569642ec6" />
+                <Object Name="F_ChangeJumpRow" ObjectId="38b68f93-b03b-4e6d-b291-89cec4400a06" />
               </Folder>
               <Object Name="F_AddElement" ObjectId="40f6ab40-9306-42a3-9cf6-d7249218b202" />
               <Object Name="FB_ProgramProcessor" ObjectId="efd5aca7-63df-4cd7-9f44-51095df5f331">
