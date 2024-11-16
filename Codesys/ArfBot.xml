@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-15T22:38:06.8468731" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-15T22:34:48.954231">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-16T15:35:52.2007032" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-16T15:35:33.8126635">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -4069,6 +4069,12 @@ FirstScan := FALSE;</xhtml>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">//
 HeartbeatOn(in:=NOT HeartbeatOff.Q,PT:=HeartbeatPt);
 HeartbeatOff(in:=HeartbeatOn.Q,PT:=HeartbeatPt);
+
+// if ethercat coms drop, clear the axes home status
+AR4OperationalFtrig(CLK:=AR4.wState = ETC_SLAVE_STATE.ETC_SLAVE_OPERATIONAL);
+IF AR4OperationalFtrig.Q THEN
+	PersistentVars.Flags[GVL.HOME_COMPLETE].Value := FALSE;
+END_IF
 
 // apply velocity factor and convert degrees per second to frequency
 // TODO add velocity factor to configuration
