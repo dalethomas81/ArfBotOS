@@ -42,8 +42,8 @@ const int J4_CalPin = 29; // D29 | PWM | TX7
 const int J5_CalPin = 30; // D30 | 
 const int J6_CalPin = 31; // D31 | 
 
-const int J1_EncPinA = 32; // D32 | 
-const int J1_EncPinB = 35; // D35 | TX8
+const int J1_EncPinA = 14; // D14 | A0 | PWM | TX3
+const int J1_EncPinB = 15; // D15 | A1 | PWM | RX3
 const int J2_EncPinA = 38; // D38 | A14
 const int J2_EncPinB = 39; // D39 | A15
 const int J3_EncPinA = 36; // D36 | PWM
@@ -67,9 +67,9 @@ const int DigitalInputPin2 = 41; // D41 | A17
 //const int  = 11; // D11 | PWM | MOSI | RESERVED FOR SPI
 //const int  = 12; // D12 | PWM | MISO | RESERVED FOR SPI
 //const int  = 13; // D13 | PWM | LED | SCK | RESERVED FOR SPI
-//const int  = 14; // D14 | A0 | PWM | TX3
-//const int  = 15; // D15 | A1 | PWM | RX3
 //const int  = 16; // D16 | A2 | SCL1 | RX4
+//const int  = 32; // D32 | 
+//const int  = 35; // D35 | TX8
 
 const int AxisCount=6;
 
