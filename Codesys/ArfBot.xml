@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-16T16:53:00.9281781" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-16T16:45:00.5921464">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-17T15:22:21.9048657" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-17T15:15:55.1041672">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -3244,12 +3244,12 @@ PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';<
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">
 ProcessHome(
-	J1:= SM_Drive_PosControl_J1, 
-	J2:= SM_Drive_PosControl_J2, 
-	J3:= SM_Drive_PosControl_J3, 
-	J4:= SM_Drive_PosControl_J4, 
-	J5:= SM_Drive_PosControl_J5, 
-	J6:= SM_Drive_PosControl_J6, 
+	J1:= J1, 
+	J2:= J2, 
+	J3:= J3, 
+	J4:= J4, 
+	J5:= J5, 
+	J6:= J6, 
 	AxisGroup:= ArfBotAxisGroup,
 	GroupHandler:= GroupHandler, 
 	Controller:= Controller, 
@@ -3307,6 +3307,7 @@ ProcessPrograms(
 	StoredPositions:=PersistentVars.StoredPositions,
 	VisionRegisters:=PersistentVars.VisionRegisters,
 	Flags:=PersistentVars.Flags,
+	J1:=J1, J2:=J2, J3:=J3, J4:=J4, J5:=J5, J6:=J6,
 	AxisGroup:= ArfBotAxisGroup,
 	GroupHandler:= GroupHandler,
 	CmdIO:=GVL.CmdIO,
@@ -3357,12 +3358,12 @@ END_IF</xhtml>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">// track position of robot end effector to display on hmi
 TrackPosition(
 	AxisGroup:=ArfBotAxisGroup,
-	SM3_Drive_PosControl_J1:=SM_Drive_PosControl_J1,
-	SM3_Drive_PosControl_J2:=SM_Drive_PosControl_J2,
-	SM3_Drive_PosControl_J3:=SM_Drive_PosControl_J3,
-	SM3_Drive_PosControl_J4:=SM_Drive_PosControl_J4,
-	SM3_Drive_PosControl_J5:=SM_Drive_PosControl_J5,
-	SM3_Drive_PosControl_J6:=SM_Drive_PosControl_J6,
+	SM3_Drive_PosControl_J1:=J1,
+	SM3_Drive_PosControl_J2:=J2,
+	SM3_Drive_PosControl_J3:=J3,
+	SM3_Drive_PosControl_J4:=J4,
+	SM3_Drive_PosControl_J5:=J5,
+	SM3_Drive_PosControl_J6:=J6,
 	VisuStruct3DTrack=&gt;,
 	Arm=&gt;,
 	Elbow=&gt;,
@@ -3833,40 +3834,40 @@ END_IF</xhtml>
 IF SetTuningMoveValues AND_THEN PersistentVars.Flags[GVL.INIT_DRV_IDX].Value THEN
 	SetTuningMoveValues := FALSE;
 	
-	MoveRelative[0].Velocity := SM_Drive_PosControl_J1.fSWMaxVelocity;
-	MoveRelative[0].Acceleration := SM_Drive_PosControl_J1.fSWMaxAcceleration;
-	MoveRelative[0].Deceleration := SM_Drive_PosControl_J1.fSWMaxDeceleration;
-	MoveRelative[0].Jerk := SM_Drive_PosControl_J1.fSWMaxJerk;
+	MoveRelative[0].Velocity := J1.fSWMaxVelocity;
+	MoveRelative[0].Acceleration := J1.fSWMaxAcceleration;
+	MoveRelative[0].Deceleration := J1.fSWMaxDeceleration;
+	MoveRelative[0].Jerk := J1.fSWMaxJerk;
 	MoveRelative[0].Distance := MoveDistance;
 	
-	MoveRelative[1].Velocity := SM_Drive_PosControl_J2.fSWMaxVelocity;
-	MoveRelative[1].Acceleration := SM_Drive_PosControl_J2.fSWMaxAcceleration;
-	MoveRelative[1].Deceleration := SM_Drive_PosControl_J2.fSWMaxDeceleration;
-	MoveRelative[1].Jerk := SM_Drive_PosControl_J2.fSWMaxJerk;
+	MoveRelative[1].Velocity := J2.fSWMaxVelocity;
+	MoveRelative[1].Acceleration := J2.fSWMaxAcceleration;
+	MoveRelative[1].Deceleration := J2.fSWMaxDeceleration;
+	MoveRelative[1].Jerk := J2.fSWMaxJerk;
 	MoveRelative[1].Distance := MoveDistance;
 	
-	MoveRelative[2].Velocity := SM_Drive_PosControl_J3.fSWMaxVelocity;
-	MoveRelative[2].Acceleration := SM_Drive_PosControl_J3.fSWMaxAcceleration;
-	MoveRelative[2].Deceleration := SM_Drive_PosControl_J3.fSWMaxDeceleration;
-	MoveRelative[2].Jerk := SM_Drive_PosControl_J3.fSWMaxJerk;
+	MoveRelative[2].Velocity := J3.fSWMaxVelocity;
+	MoveRelative[2].Acceleration := J3.fSWMaxAcceleration;
+	MoveRelative[2].Deceleration := J3.fSWMaxDeceleration;
+	MoveRelative[2].Jerk := J3.fSWMaxJerk;
 	MoveRelative[2].Distance := MoveDistance;
 	
-	MoveRelative[3].Velocity := SM_Drive_PosControl_J4.fSWMaxVelocity;
-	MoveRelative[3].Acceleration := SM_Drive_PosControl_J4.fSWMaxAcceleration;
-	MoveRelative[3].Deceleration := SM_Drive_PosControl_J4.fSWMaxDeceleration;
-	MoveRelative[3].Jerk := SM_Drive_PosControl_J4.fSWMaxJerk;
+	MoveRelative[3].Velocity := J4.fSWMaxVelocity;
+	MoveRelative[3].Acceleration := J4.fSWMaxAcceleration;
+	MoveRelative[3].Deceleration := J4.fSWMaxDeceleration;
+	MoveRelative[3].Jerk := J4.fSWMaxJerk;
 	MoveRelative[3].Distance := MoveDistance;
 	
-	MoveRelative[4].Velocity := SM_Drive_PosControl_J5.fSWMaxVelocity;
-	MoveRelative[4].Acceleration := SM_Drive_PosControl_J5.fSWMaxAcceleration;
-	MoveRelative[4].Deceleration := SM_Drive_PosControl_J5.fSWMaxDeceleration;
-	MoveRelative[4].Jerk := SM_Drive_PosControl_J5.fSWMaxJerk;
+	MoveRelative[4].Velocity := J5.fSWMaxVelocity;
+	MoveRelative[4].Acceleration := J5.fSWMaxAcceleration;
+	MoveRelative[4].Deceleration := J5.fSWMaxDeceleration;
+	MoveRelative[4].Jerk := J5.fSWMaxJerk;
 	MoveRelative[4].Distance := MoveDistance;
 	
-	MoveRelative[5].Velocity := SM_Drive_PosControl_J6.fSWMaxVelocity;
-	MoveRelative[5].Acceleration := SM_Drive_PosControl_J6.fSWMaxAcceleration;
-	MoveRelative[5].Deceleration := SM_Drive_PosControl_J6.fSWMaxDeceleration;
-	MoveRelative[5].Jerk := SM_Drive_PosControl_J6.fSWMaxJerk;
+	MoveRelative[5].Velocity := J6.fSWMaxVelocity;
+	MoveRelative[5].Acceleration := J6.fSWMaxAcceleration;
+	MoveRelative[5].Deceleration := J6.fSWMaxDeceleration;
+	MoveRelative[5].Jerk := J6.fSWMaxJerk;
 	MoveRelative[5].Distance := MoveDistance;
 END_IF
 
@@ -3906,7 +3907,7 @@ END_FOR
 
 // move relative
 MoveRelative[0](
-	Axis:= SM_Drive_PosControl_J1, 
+	Axis:= J1, 
 	Execute:= , 
 	Distance:= , 
 	Velocity:= , 
@@ -3921,7 +3922,7 @@ MoveRelative[0](
 	Error=&gt; , 
 	ErrorID=&gt; );
 MoveRelative[1](
-	Axis:= SM_Drive_PosControl_J2, 
+	Axis:= J2, 
 	Execute:= , 
 	Distance:= , 
 	Velocity:= , 
@@ -3936,7 +3937,7 @@ MoveRelative[1](
 	Error=&gt; , 
 	ErrorID=&gt; );
 MoveRelative[2](
-	Axis:= SM_Drive_PosControl_J3, 
+	Axis:= J3, 
 	Execute:= , 
 	Distance:= , 
 	Velocity:= , 
@@ -3951,7 +3952,7 @@ MoveRelative[2](
 	Error=&gt; , 
 	ErrorID=&gt; );
 MoveRelative[3](
-	Axis:= SM_Drive_PosControl_J4, 
+	Axis:= J4, 
 	Execute:= , 
 	Distance:= , 
 	Velocity:= , 
@@ -3966,7 +3967,7 @@ MoveRelative[3](
 	Error=&gt; , 
 	ErrorID=&gt; );
 MoveRelative[4](
-	Axis:= SM_Drive_PosControl_J5, 
+	Axis:= J5, 
 	Execute:= , 
 	Distance:= , 
 	Velocity:= , 
@@ -3981,7 +3982,7 @@ MoveRelative[4](
 	Error=&gt; , 
 	ErrorID=&gt; );
 MoveRelative[5](
-	Axis:= SM_Drive_PosControl_J6, 
+	Axis:= J6, 
 	Execute:= , 
 	Distance:= , 
 	Velocity:= , 
@@ -4161,12 +4162,12 @@ END_IF
 
 // apply velocity factor and convert degrees per second to frequency
 // TODO add velocity factor to configuration
-SetVelocity[0] := LREAL_TO_INT((SM_Drive_PosControl_J1.out.iSetVelocity * PersistentVars.VelocityFactor[0]) / 360.0); // 16000.0
-SetVelocity[1] := LREAL_TO_INT((SM_Drive_PosControl_J2.out.iSetVelocity * PersistentVars.VelocityFactor[1]) / 360.0); // 20000.0
-SetVelocity[2] := LREAL_TO_INT((SM_Drive_PosControl_J3.out.iSetVelocity * PersistentVars.VelocityFactor[2]) / 360.0); // 20000.0
-SetVelocity[3] := LREAL_TO_INT((SM_Drive_PosControl_J4.out.iSetVelocity * PersistentVars.VelocityFactor[3]) / 360.0); // 26880.0
-SetVelocity[4] := LREAL_TO_INT((SM_Drive_PosControl_J5.out.iSetVelocity * PersistentVars.VelocityFactor[4]) / 360.0); // 7850.0
-SetVelocity[5] := LREAL_TO_INT((SM_Drive_PosControl_J6.out.iSetVelocity * PersistentVars.VelocityFactor[5]) / 360.0); // 8081.25
+SetVelocity[0] := LREAL_TO_INT((J1.out.iSetVelocity * PersistentVars.VelocityFactor[0]) / 360.0); // 16000.0
+SetVelocity[1] := LREAL_TO_INT((J2.out.iSetVelocity * PersistentVars.VelocityFactor[1]) / 360.0); // 20000.0
+SetVelocity[2] := LREAL_TO_INT((J3.out.iSetVelocity * PersistentVars.VelocityFactor[2]) / 360.0); // 20000.0
+SetVelocity[3] := LREAL_TO_INT((J4.out.iSetVelocity * PersistentVars.VelocityFactor[3]) / 360.0); // 26880.0
+SetVelocity[4] := LREAL_TO_INT((J5.out.iSetVelocity * PersistentVars.VelocityFactor[4]) / 360.0); // 7850.0
+SetVelocity[5] := LREAL_TO_INT((J6.out.iSetVelocity * PersistentVars.VelocityFactor[5]) / 360.0); // 8081.25
 
 {region 'Output'}
 // index 0 is for system outputs
@@ -4189,12 +4190,12 @@ FOR jointIdx := 0 TO 5 BY 1 DO
 END_FOR
 
 // bytes 13 through 24 are used for control from NC
-DriveEnable[0] := NOT (SM_Drive_PosControl_J1.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (SM_Drive_PosControl_J1.nAxisState = SMC_AXIS_STATE.power_off);
-DriveEnable[1] := NOT (SM_Drive_PosControl_J2.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (SM_Drive_PosControl_J2.nAxisState = SMC_AXIS_STATE.power_off);
-DriveEnable[2] := NOT (SM_Drive_PosControl_J3.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (SM_Drive_PosControl_J3.nAxisState = SMC_AXIS_STATE.power_off);
-DriveEnable[3] := NOT (SM_Drive_PosControl_J4.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (SM_Drive_PosControl_J4.nAxisState = SMC_AXIS_STATE.power_off);
-DriveEnable[4] := NOT (SM_Drive_PosControl_J5.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (SM_Drive_PosControl_J5.nAxisState = SMC_AXIS_STATE.power_off);
-DriveEnable[5] := NOT (SM_Drive_PosControl_J6.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (SM_Drive_PosControl_J6.nAxisState = SMC_AXIS_STATE.power_off);
+DriveEnable[0] := NOT (J1.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (J1.nAxisState = SMC_AXIS_STATE.power_off);
+DriveEnable[1] := NOT (J2.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (J2.nAxisState = SMC_AXIS_STATE.power_off);
+DriveEnable[2] := NOT (J3.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (J3.nAxisState = SMC_AXIS_STATE.power_off);
+DriveEnable[3] := NOT (J4.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (J4.nAxisState = SMC_AXIS_STATE.power_off);
+DriveEnable[4] := NOT (J5.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (J5.nAxisState = SMC_AXIS_STATE.power_off);
+DriveEnable[5] := NOT (J6.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (J6.nAxisState = SMC_AXIS_STATE.power_off);
 bufferIdx := 13;
 FOR jointIdx := 0 TO 5 BY 1 DO
 	AR4Outputs[bufferIdx].3 := GVL.Enable AND DriveEnable[jointIdx];
@@ -4282,18 +4283,18 @@ IF RxCrc = F_Checksum(ADR(AR4Inputs), 30) THEN
 	// := AR4Inputs[26].7;
 	
 	// byte 27 will be used to indicate drive is enabled
-	SM_Drive_PosControl_J1.in.bDriveStartRealState := AR4Inputs[27].0;
-	SM_Drive_PosControl_J1.in.bRegulatorRealState := AR4Inputs[27].0;
-	SM_Drive_PosControl_J2.in.bDriveStartRealState := AR4Inputs[27].1;
-	SM_Drive_PosControl_J2.in.bRegulatorRealState := AR4Inputs[27].1;
-	SM_Drive_PosControl_J3.in.bDriveStartRealState := AR4Inputs[27].2;
-	SM_Drive_PosControl_J3.in.bRegulatorRealState := AR4Inputs[27].2;
-	SM_Drive_PosControl_J4.in.bDriveStartRealState := AR4Inputs[27].3;
-	SM_Drive_PosControl_J4.in.bRegulatorRealState := AR4Inputs[27].3;
-	SM_Drive_PosControl_J5.in.bDriveStartRealState := AR4Inputs[27].4;
-	SM_Drive_PosControl_J5.in.bRegulatorRealState := AR4Inputs[27].4;
-	SM_Drive_PosControl_J6.in.bDriveStartRealState := AR4Inputs[27].5;
-	SM_Drive_PosControl_J6.in.bRegulatorRealState := AR4Inputs[27].5;
+	J1.in.bDriveStartRealState := AR4Inputs[27].0;
+	J1.in.bRegulatorRealState := AR4Inputs[27].0;
+	J2.in.bDriveStartRealState := AR4Inputs[27].1;
+	J2.in.bRegulatorRealState := AR4Inputs[27].1;
+	J3.in.bDriveStartRealState := AR4Inputs[27].2;
+	J3.in.bRegulatorRealState := AR4Inputs[27].2;
+	J4.in.bDriveStartRealState := AR4Inputs[27].3;
+	J4.in.bRegulatorRealState := AR4Inputs[27].3;
+	J5.in.bDriveStartRealState := AR4Inputs[27].4;
+	J5.in.bRegulatorRealState := AR4Inputs[27].4;
+	J6.in.bDriveStartRealState := AR4Inputs[27].5;
+	J6.in.bRegulatorRealState := AR4Inputs[27].5;
 	// all drives are enabled
 	AllDrivesEnabled := AR4Inputs[27].0 AND AR4Inputs[27].1 AND AR4Inputs[27].2
 						AND AR4Inputs[27].3 AND AR4Inputs[27].4 AND AR4Inputs[27].5;
@@ -4310,37 +4311,37 @@ END_IF
 {endregion}
 
 // https://docs.google.com/spreadsheets/d/1S5TOxwbAx8pTMUdoWMnyC9WPfphhtUME/edit#gid=595805457
-SM_Drive_PosControl_J1.in.dwActPosition := DINT_TO_DWORD(EncPosition[0]);
-SM_Drive_PosControl_J2.in.dwActPosition := DINT_TO_DWORD(EncPosition[1]);
-SM_Drive_PosControl_J3.in.dwActPosition := DINT_TO_DWORD(EncPosition[2]);
-SM_Drive_PosControl_J4.in.dwActPosition := DINT_TO_DWORD(EncPosition[3]);
-SM_Drive_PosControl_J5.in.dwActPosition := DINT_TO_DWORD(EncPosition[4]);
-SM_Drive_PosControl_J6.in.dwActPosition := DINT_TO_DWORD(EncPosition[5]);
+J1.in.dwActPosition := DINT_TO_DWORD(EncPosition[0]);
+J2.in.dwActPosition := DINT_TO_DWORD(EncPosition[1]);
+J3.in.dwActPosition := DINT_TO_DWORD(EncPosition[2]);
+J4.in.dwActPosition := DINT_TO_DWORD(EncPosition[3]);
+J5.in.dwActPosition := DINT_TO_DWORD(EncPosition[4]);
+J6.in.dwActPosition := DINT_TO_DWORD(EncPosition[5]);
 
 //
 IF FirstScan THEN
-	SM_Drive_PosControl_J1.bHWLimitEnable := TRUE;
-	SM_Drive_PosControl_J2.bHWLimitEnable := TRUE;
-	SM_Drive_PosControl_J3.bHWLimitEnable := TRUE;
-	SM_Drive_PosControl_J4.bHWLimitEnable := TRUE;
-	SM_Drive_PosControl_J5.bHWLimitEnable := TRUE;
-	SM_Drive_PosControl_J6.bHWLimitEnable := TRUE;
+	J1.bHWLimitEnable := TRUE;
+	J2.bHWLimitEnable := TRUE;
+	J3.bHWLimitEnable := TRUE;
+	J4.bHWLimitEnable := TRUE;
+	J5.bHWLimitEnable := TRUE;
+	J6.bHWLimitEnable := TRUE;
 END_IF
 
 //
-SM_Drive_PosControl_J1.in.bLimitNeg := TRUE;
-SM_Drive_PosControl_J2.in.bLimitNeg := TRUE;
-SM_Drive_PosControl_J3.in.bLimitNeg := rx_j3_limit;
-SM_Drive_PosControl_J4.in.bLimitNeg := rx_j4_limit;
-SM_Drive_PosControl_J5.in.bLimitNeg := TRUE;
-SM_Drive_PosControl_J6.in.bLimitNeg := TRUE;
+J1.in.bLimitNeg := TRUE;
+J2.in.bLimitNeg := TRUE;
+J3.in.bLimitNeg := rx_j3_limit;
+J4.in.bLimitNeg := rx_j4_limit;
+J5.in.bLimitNeg := TRUE;
+J6.in.bLimitNeg := TRUE;
 
-SM_Drive_PosControl_J1.in.bLimitPos := rx_j1_limit;
-SM_Drive_PosControl_J2.in.bLimitPos := rx_j2_limit;
-SM_Drive_PosControl_J3.in.bLimitPos := TRUE;
-SM_Drive_PosControl_J4.in.bLimitPos := TRUE;
-SM_Drive_PosControl_J5.in.bLimitPos := rx_j5_limit;
-SM_Drive_PosControl_J6.in.bLimitPos := rx_j6_limit;
+J1.in.bLimitPos := rx_j1_limit;
+J2.in.bLimitPos := rx_j2_limit;
+J3.in.bLimitPos := TRUE;
+J4.in.bLimitPos := TRUE;
+J5.in.bLimitPos := rx_j5_limit;
+J6.in.bLimitPos := rx_j6_limit;
 
 // do not put anything below this
 FirstScan := FALSE;</xhtml>
@@ -4497,7 +4498,7 @@ END_CASE
 
 //
 _SMC_SetPosControlParams[0](
-	Axis:= SM_Drive_PosControl_J1, 
+	Axis:= J1, 
 	bExecute:= , 
 	fKp:= PersistentVars.PositionControllers[0].fKp, 
 	fPartVelPilotControl:= PersistentVars.PositionControllers[0].fPartVelPilotControl, 
@@ -4507,15 +4508,15 @@ _SMC_SetPosControlParams[0](
 	bError=&gt; , 
 	ErrorID=&gt; );
 IF _SMC_SetPosControlParams[0].bDone AND NOT _SMC_SetPosControlParams[0].bError THEN
-	SM_Drive_PosControl_J1.fSWMaxVelocity 			:= PersistentVars.PositionControllers[0].fSWMaxVelocity; // 30
-	SM_Drive_PosControl_J1.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[0].fSWMaxAcceleration; // 1000
-	SM_Drive_PosControl_J1.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[0].fSWMaxDeceleration; // 1000
-	SM_Drive_PosControl_J1.fSWMaxJerk 				:= PersistentVars.PositionControllers[0].fSWMaxJerk; // 10000
+	J1.fSWMaxVelocity 			:= PersistentVars.PositionControllers[0].fSWMaxVelocity; // 30
+	J1.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[0].fSWMaxAcceleration; // 1000
+	J1.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[0].fSWMaxDeceleration; // 1000
+	J1.fSWMaxJerk 				:= PersistentVars.PositionControllers[0].fSWMaxJerk; // 10000
 END_IF
 
 //
 _SMC_SetPosControlParams[1](
-	Axis:= SM_Drive_PosControl_J2, 
+	Axis:= J2, 
 	bExecute:= , 
 	fKp:= PersistentVars.PositionControllers[1].fKp, 
 	fPartVelPilotControl:= PersistentVars.PositionControllers[1].fPartVelPilotControl, 
@@ -4525,15 +4526,15 @@ _SMC_SetPosControlParams[1](
 	bError=&gt; , 
 	ErrorID=&gt; );
 IF _SMC_SetPosControlParams[1].bDone AND NOT _SMC_SetPosControlParams[1].bError THEN
-	SM_Drive_PosControl_J2.fSWMaxVelocity 			:= PersistentVars.PositionControllers[1].fSWMaxVelocity;
-	SM_Drive_PosControl_J2.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[1].fSWMaxAcceleration;
-	SM_Drive_PosControl_J2.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[1].fSWMaxDeceleration;
-	SM_Drive_PosControl_J2.fSWMaxJerk 				:= PersistentVars.PositionControllers[1].fSWMaxJerk;
+	J2.fSWMaxVelocity 			:= PersistentVars.PositionControllers[1].fSWMaxVelocity;
+	J2.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[1].fSWMaxAcceleration;
+	J2.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[1].fSWMaxDeceleration;
+	J2.fSWMaxJerk 				:= PersistentVars.PositionControllers[1].fSWMaxJerk;
 END_IF
 
 //
 _SMC_SetPosControlParams[2](
-	Axis:= SM_Drive_PosControl_J3, 
+	Axis:= J3, 
 	bExecute:= , 
 	fKp:= PersistentVars.PositionControllers[2].fKp, 
 	fPartVelPilotControl:= PersistentVars.PositionControllers[2].fPartVelPilotControl, 
@@ -4543,15 +4544,15 @@ _SMC_SetPosControlParams[2](
 	bError=&gt; , 
 	ErrorID=&gt; );
 IF _SMC_SetPosControlParams[2].bDone AND NOT _SMC_SetPosControlParams[2].bError THEN
-	SM_Drive_PosControl_J3.fSWMaxVelocity 			:= PersistentVars.PositionControllers[2].fSWMaxVelocity;
-	SM_Drive_PosControl_J3.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[2].fSWMaxAcceleration;
-	SM_Drive_PosControl_J3.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[2].fSWMaxDeceleration;
-	SM_Drive_PosControl_J3.fSWMaxJerk 				:= PersistentVars.PositionControllers[2].fSWMaxJerk;
+	J3.fSWMaxVelocity 			:= PersistentVars.PositionControllers[2].fSWMaxVelocity;
+	J3.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[2].fSWMaxAcceleration;
+	J3.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[2].fSWMaxDeceleration;
+	J3.fSWMaxJerk 				:= PersistentVars.PositionControllers[2].fSWMaxJerk;
 END_IF
 
 //
 _SMC_SetPosControlParams[3](
-	Axis:= SM_Drive_PosControl_J4, 
+	Axis:= J4, 
 	bExecute:= , 
 	fKp:= PersistentVars.PositionControllers[3].fKp, 
 	fPartVelPilotControl:= PersistentVars.PositionControllers[3].fPartVelPilotControl, 
@@ -4561,15 +4562,15 @@ _SMC_SetPosControlParams[3](
 	bError=&gt; , 
 	ErrorID=&gt; );
 IF _SMC_SetPosControlParams[3].bDone AND NOT _SMC_SetPosControlParams[3].bError THEN
-	SM_Drive_PosControl_J4.fSWMaxVelocity 			:= PersistentVars.PositionControllers[3].fSWMaxVelocity;
-	SM_Drive_PosControl_J4.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[3].fSWMaxAcceleration;
-	SM_Drive_PosControl_J4.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[3].fSWMaxDeceleration;
-	SM_Drive_PosControl_J4.fSWMaxJerk 				:= PersistentVars.PositionControllers[3].fSWMaxJerk;
+	J4.fSWMaxVelocity 			:= PersistentVars.PositionControllers[3].fSWMaxVelocity;
+	J4.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[3].fSWMaxAcceleration;
+	J4.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[3].fSWMaxDeceleration;
+	J4.fSWMaxJerk 				:= PersistentVars.PositionControllers[3].fSWMaxJerk;
 END_IF
 
 //
 _SMC_SetPosControlParams[4](
-	Axis:= SM_Drive_PosControl_J5, 
+	Axis:= J5, 
 	bExecute:= , 
 	fKp:= PersistentVars.PositionControllers[4].fKp, 
 	fPartVelPilotControl:= PersistentVars.PositionControllers[4].fPartVelPilotControl, 
@@ -4579,15 +4580,15 @@ _SMC_SetPosControlParams[4](
 	bError=&gt; , 
 	ErrorID=&gt; );
 IF _SMC_SetPosControlParams[4].bDone AND NOT _SMC_SetPosControlParams[4].bError THEN
-	SM_Drive_PosControl_J5.fSWMaxVelocity 			:= PersistentVars.PositionControllers[4].fSWMaxVelocity;
-	SM_Drive_PosControl_J5.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[4].fSWMaxAcceleration;
-	SM_Drive_PosControl_J5.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[4].fSWMaxDeceleration;
-	SM_Drive_PosControl_J5.fSWMaxJerk 				:= PersistentVars.PositionControllers[4].fSWMaxJerk;
+	J5.fSWMaxVelocity 			:= PersistentVars.PositionControllers[4].fSWMaxVelocity;
+	J5.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[4].fSWMaxAcceleration;
+	J5.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[4].fSWMaxDeceleration;
+	J5.fSWMaxJerk 				:= PersistentVars.PositionControllers[4].fSWMaxJerk;
 END_IF
 
 //
 _SMC_SetPosControlParams[5](
-	Axis:= SM_Drive_PosControl_J6, 
+	Axis:= J6, 
 	bExecute:= , 
 	fKp:= PersistentVars.PositionControllers[5].fKp, 
 	fPartVelPilotControl:= PersistentVars.PositionControllers[5].fPartVelPilotControl, 
@@ -4597,10 +4598,10 @@ _SMC_SetPosControlParams[5](
 	bError=&gt; , 
 	ErrorID=&gt; );
 IF _SMC_SetPosControlParams[5].bDone AND NOT _SMC_SetPosControlParams[5].bError THEN
-	SM_Drive_PosControl_J6.fSWMaxVelocity 			:= PersistentVars.PositionControllers[5].fSWMaxVelocity;
-	SM_Drive_PosControl_J6.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[5].fSWMaxAcceleration;
-	SM_Drive_PosControl_J6.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[5].fSWMaxDeceleration;
-	SM_Drive_PosControl_J6.fSWMaxJerk 				:= PersistentVars.PositionControllers[5].fSWMaxJerk;
+	J6.fSWMaxVelocity 			:= PersistentVars.PositionControllers[5].fSWMaxVelocity;
+	J6.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[5].fSWMaxAcceleration;
+	J6.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[5].fSWMaxDeceleration;
+	J6.fSWMaxJerk 				:= PersistentVars.PositionControllers[5].fSWMaxJerk;
 END_IF</xhtml>
                         </ST>
                       </body>
@@ -5537,6 +5538,36 @@ END_IF</xhtml>
               <pou name="FB_CommandProcessor" pouType="functionBlock">
                 <interface>
                   <inOutVars>
+                    <variable name="J1">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J2">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J3">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J4">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J5">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J6">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
                     <variable name="AxisGroup">
                       <type>
                         <derived name="AXIS_GROUP_REF_SM3" />
@@ -5846,13 +5877,8 @@ _ProcessCncCommand(
 	StoredPositions:= SUPER^.StoredPositions,
 	VisionRegisters:= SUPER^.VisionRegisters,
 	Flags:= SUPER^.Flags,
+	J1:=J1, J2:=J2, J3:=J3, J4:=J4, J5:=J5, J6:=J6,
 	AxisGroup:= AxisGroup, 
-	SM3_Drive_PosControl_J1:=SM_Drive_PosControl_J1,
-	SM3_Drive_PosControl_J2:=SM_Drive_PosControl_J2,
-	SM3_Drive_PosControl_J3:=SM_Drive_PosControl_J3,
-	SM3_Drive_PosControl_J4:=SM_Drive_PosControl_J4,
-	SM3_Drive_PosControl_J5:=SM_Drive_PosControl_J5,
-	SM3_Drive_PosControl_J6:=SM_Drive_PosControl_J6,
 	GapVelocity:= , 
 	AvoidGaps:= , 
 	GapAccel:= , 
@@ -13917,39 +13943,39 @@ END_IF</xhtml>
                     </variable>
                   </inputVars>
                   <inOutVars>
+                    <variable name="J1">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J2">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J3">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J4">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J5">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J6">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
                     <variable name="AxisGroup">
                       <type>
                         <derived name="AXIS_GROUP_REF_SM3" />
-                      </type>
-                    </variable>
-                    <variable name="SM3_Drive_PosControl_J1">
-                      <type>
-                        <derived name="SM3_Drive_PosControl.AXIS_REF_POSCONTROL" />
-                      </type>
-                    </variable>
-                    <variable name="SM3_Drive_PosControl_J2">
-                      <type>
-                        <derived name="SM3_Drive_PosControl.AXIS_REF_POSCONTROL" />
-                      </type>
-                    </variable>
-                    <variable name="SM3_Drive_PosControl_J3">
-                      <type>
-                        <derived name="SM3_Drive_PosControl.AXIS_REF_POSCONTROL" />
-                      </type>
-                    </variable>
-                    <variable name="SM3_Drive_PosControl_J4">
-                      <type>
-                        <derived name="SM3_Drive_PosControl.AXIS_REF_POSCONTROL" />
-                      </type>
-                    </variable>
-                    <variable name="SM3_Drive_PosControl_J5">
-                      <type>
-                        <derived name="SM3_Drive_PosControl.AXIS_REF_POSCONTROL" />
-                      </type>
-                    </variable>
-                    <variable name="SM3_Drive_PosControl_J6">
-                      <type>
-                        <derived name="SM3_Drive_PosControl.AXIS_REF_POSCONTROL" />
                       </type>
                     </variable>
                   </inOutVars>
@@ -14266,12 +14292,12 @@ END_CASE
 _SMC_Trafo_ArticulatedRobot_6DOF(
 	config:= _SMC_TrafoConfig_ArticulatedRobot_6DOF, 
 	pi:= _SMC_Interpolator.piSetPosition, 
-	dQ0_old:= SM_Drive_PosControl_J1.fActPosition, 
-	dQ1_old:= SM_Drive_PosControl_J2.fActPosition, 
-	dQ2_old:= SM_Drive_PosControl_J3.fActPosition, 
-	dQ3_old:= SM_Drive_PosControl_J4.fActPosition, 
-	dQ4_old:= SM_Drive_PosControl_J5.fActPosition, 
-	dQ5_old:= SM_Drive_PosControl_J6.fActPosition, 
+	dQ0_old:= J1.fActPosition, 
+	dQ1_old:= J2.fActPosition, 
+	dQ2_old:= J3.fActPosition, 
+	dQ3_old:= J4.fActPosition, 
+	dQ4_old:= J5.fActPosition, 
+	dQ5_old:= J6.fActPosition, 
 	armState:= , 
 	elbowState:= , 
 	handState:= , 
@@ -14285,7 +14311,7 @@ _SMC_Trafo_ArticulatedRobot_6DOF(
 	result=&gt; );
 	
 _SMC_ControlAxisByPos_J1(
-	Axis:= SM3_Drive_PosControl_J1, 
+	Axis:= J1, 
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
@@ -14301,7 +14327,7 @@ _SMC_ControlAxisByPos_J1(
 	bStopIpo=&gt; );
 	
 _SMC_ControlAxisByPos_J2(
-	Axis:= SM3_Drive_PosControl_J2, 
+	Axis:= J2, 
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
@@ -14317,7 +14343,7 @@ _SMC_ControlAxisByPos_J2(
 	bStopIpo=&gt; );
 	
 _SMC_ControlAxisByPos_J3(
-	Axis:= SM3_Drive_PosControl_J3, 
+	Axis:= J3, 
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
@@ -14333,7 +14359,7 @@ _SMC_ControlAxisByPos_J3(
 	bStopIpo=&gt; );
 	
 _SMC_ControlAxisByPos_J4(
-	Axis:= SM3_Drive_PosControl_J4, 
+	Axis:= J4, 
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
@@ -14349,7 +14375,7 @@ _SMC_ControlAxisByPos_J4(
 	bStopIpo=&gt; );
 	
 _SMC_ControlAxisByPos_J5(
-	Axis:= SM3_Drive_PosControl_J5, 
+	Axis:= J5, 
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
@@ -14365,7 +14391,7 @@ _SMC_ControlAxisByPos_J5(
 	bStopIpo=&gt; );
 	
 _SMC_ControlAxisByPos_J6(
-	Axis:= SM3_Drive_PosControl_J6, 
+	Axis:= J6, 
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
@@ -16651,6 +16677,36 @@ END_IF</xhtml>
                         </array>
                       </type>
                     </variable>
+                    <variable name="J1">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J2">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J3">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J4">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J5">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <variable name="J6">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
                     <variable name="AxisGroup">
                       <type>
                         <derived name="AXIS_GROUP_REF_SM3" />
@@ -16890,6 +16946,7 @@ _ProcessCommands(
 	StoredPositions:=SUPER^.StoredPositions,
 	VisionRegisters:=SUPER^.VisionRegisters,
 	Flags:=SUPER^.Flags,
+	J1:=J1, J2:=J2, J3:=J3, J4:=J4, J5:=J5, J6:=J6,
 	AxisGroup:= AxisGroup,
 	GroupHandler:= GroupHandler,
 	CmdIO:=CmdIO,
@@ -28025,7 +28082,7 @@ END_IF</xhtml>
                   </data>
                   <data name="configurations" handleUnknown="discard">
                     <configurations>
-                      <configuration name="SM_Drive_PosControl_J1">
+                      <configuration name="J1">
                         <addData>
                           <data name="Device" handleUnknown="discard">
                             <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
@@ -28290,7 +28347,7 @@ END_IF</xhtml>
                           </data>
                         </addData>
                       </configuration>
-                      <configuration name="SM_Drive_PosControl_J2">
+                      <configuration name="J2">
                         <addData>
                           <data name="Device" handleUnknown="discard">
                             <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
@@ -28550,7 +28607,7 @@ END_IF</xhtml>
                           </data>
                         </addData>
                       </configuration>
-                      <configuration name="SM_Drive_PosControl_J3">
+                      <configuration name="J3">
                         <addData>
                           <data name="Device" handleUnknown="discard">
                             <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
@@ -28810,7 +28867,7 @@ END_IF</xhtml>
                           </data>
                         </addData>
                       </configuration>
-                      <configuration name="SM_Drive_PosControl_J4">
+                      <configuration name="J4">
                         <addData>
                           <data name="Device" handleUnknown="discard">
                             <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
@@ -29070,7 +29127,7 @@ END_IF</xhtml>
                           </data>
                         </addData>
                       </configuration>
-                      <configuration name="SM_Drive_PosControl_J5">
+                      <configuration name="J5">
                         <addData>
                           <data name="Device" handleUnknown="discard">
                             <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
@@ -29330,7 +29387,7 @@ END_IF</xhtml>
                           </data>
                         </addData>
                       </configuration>
-                      <configuration name="SM_Drive_PosControl_J6">
+                      <configuration name="J6">
                         <addData>
                           <data name="Device" handleUnknown="discard">
                             <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
@@ -30181,12 +30238,12 @@ END_IF</xhtml>
             </Folder>
           </Object>
           <Object Name="SoftMotion General Axis Pool" ObjectId="fc630667-0317-4bc3-b02d-1f3af074bcd7">
-            <Object Name="SM_Drive_PosControl_J1" ObjectId="ea5425f8-6865-4929-8ce6-5dc4d6d3dc5e" />
-            <Object Name="SM_Drive_PosControl_J2" ObjectId="f766e900-5390-4dbe-b5d5-456b0a97d174" />
-            <Object Name="SM_Drive_PosControl_J3" ObjectId="fac32d5d-3aea-4666-a5e5-5873ea0cd436" />
-            <Object Name="SM_Drive_PosControl_J4" ObjectId="da228668-0441-4fbf-bc36-c60a4adec10a" />
-            <Object Name="SM_Drive_PosControl_J5" ObjectId="8e6e96ef-66e6-4d72-a717-6ed80b7f1646" />
-            <Object Name="SM_Drive_PosControl_J6" ObjectId="90c3ab61-cd9a-4b37-bdc1-631c2a20f394" />
+            <Object Name="J1" ObjectId="ea5425f8-6865-4929-8ce6-5dc4d6d3dc5e" />
+            <Object Name="J2" ObjectId="f766e900-5390-4dbe-b5d5-456b0a97d174" />
+            <Object Name="J3" ObjectId="fac32d5d-3aea-4666-a5e5-5873ea0cd436" />
+            <Object Name="J4" ObjectId="da228668-0441-4fbf-bc36-c60a4adec10a" />
+            <Object Name="J5" ObjectId="8e6e96ef-66e6-4d72-a717-6ed80b7f1646" />
+            <Object Name="J6" ObjectId="90c3ab61-cd9a-4b37-bdc1-631c2a20f394" />
           </Object>
           <Object Name="&lt;Empty&gt;" ObjectId="1d76930d-dbe3-4129-812f-57306b665b04" />
           <Object Name="Onewire" ObjectId="aeb0c6fd-1757-44be-b1c8-b73c4e8df34b" />
