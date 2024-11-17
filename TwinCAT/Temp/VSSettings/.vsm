@@ -5,7 +5,7 @@
   <Children>
     <Node>
       <Title>YT Scope Project</Title>
-      <Expanded>True</Expanded>
+      <Expanded>False</Expanded>
       <FileName>F:\GitHub\ArfBotOS\TwinCAT\Temp\YT Scope Project.tcscopex</FileName>
       <Children>
         <Node>
@@ -23,12 +23,12 @@
         </Node>
         <Node>
           <Title>YT Chart (1)</Title>
-          <Expanded>True</Expanded>
+          <Expanded>False</Expanded>
           <FileName></FileName>
           <Children>
             <Node>
               <Title>Axis Group (1)</Title>
-              <Expanded>True</Expanded>
+              <Expanded>False</Expanded>
               <FileName></FileName>
               <Children>
                 <Node>
