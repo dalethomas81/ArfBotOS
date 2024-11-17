@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-16T15:35:52.2007032" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-16T15:35:33.8126635">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-16T16:03:19.2540813" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-16T16:01:11.92554">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -3001,6 +3001,11 @@ RESERVED: INT:=46;</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> controller</xhtml>
                       </documentation>
                     </variable>
+                    <variable name="EnableFtrig">
+                      <type>
+                        <derived name="F_TRIG" />
+                      </type>
+                    </variable>
                     <variable name="_i">
                       <type>
                         <INT />
@@ -3050,6 +3055,8 @@ RESERVED: INT:=46;</xhtml>
 		BuildTests := FALSE;
 		M_BuildTests();
 	END_IF
+	
+	EnableFtrig(CLK:=GVL.PowerOn);
 {endregion}
      
 {region "methods"}
@@ -3252,7 +3259,17 @@ ActiveCommandDetails := CONCAT(ActiveCommandDetails, TO_STRING(ProcessPrograms.P
 ActiveCommandDetails := CONCAT(ActiveCommandDetails, ': ');
 ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandString);
 ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' Comment: ');
-ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandComment);</xhtml>
+ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandComment);
+
+// disable all IO when enable drops
+IF EnableFtrig.Q THEN
+	FOR _i:=GVL.DIG_OUT_ARR_BEG TO GVL.DIG_OUT_ARR_END BY 1 DO
+		GVL.CmdIO.Output[_i] := 0;
+	END_FOR
+	FOR _i:=GVL.PWM_OUT_ARR_BEG TO GVL.PWM_OUT_ARR_END BY 1 DO
+		GVL.CmdIO.Pwm[_i] := 0;
+	END_FOR
+END_IF</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -4085,9 +4102,7 @@ SetVelocity[3] := LREAL_TO_INT((SM_Drive_PosControl_J4.out.iSetVelocity * Veloci
 SetVelocity[4] := LREAL_TO_INT((SM_Drive_PosControl_J5.out.iSetVelocity * VelocityFactor[4]) / 360.0); // 7850.0
 SetVelocity[5] := LREAL_TO_INT((SM_Drive_PosControl_J6.out.iSetVelocity * VelocityFactor[5]) / 360.0); // 8081.25
 
-//////////////////////////////////////////////////
-// Output
-//////////////////////////////////////////////////
+{region 'Output'}
 // index 0 is for system outputs
 AR4Outputs[0].0:=HeartbeatOn.Q; // send a heartbeat to the drive
 AR4Outputs[0].1:=GVL.PowerOn; //
@@ -4151,10 +4166,9 @@ TxCrc := F_Checksum(ADR(AR4Outputs), 30);
 MEMUtils.MemCpy(pbyDest:=ADR(AR4Outputs[30]), 
 				pbySrc:=ADR(TxCrc), 
 				dwSize:=2);
-
-//////////////////////////////////////////////////
-// Inputs
-//////////////////////////////////////////////////
+{endregion}
+	
+{region 'Input'}
 // copy crc from rx buffer
 MEMUtils.MemCpy(pbyDest:=ADR(RxCrc), 
 				pbySrc:=ADR(AR4Inputs[30]), 
@@ -4227,14 +4241,15 @@ ELSE
 	// increment crc mismatch counter
 	ChecksumMisCount := ChecksumMisCount + 1;
 END_IF
+{endregion}
 
 // https://docs.google.com/spreadsheets/d/1S5TOxwbAx8pTMUdoWMnyC9WPfphhtUME/edit#gid=595805457
 SM_Drive_PosControl_J1.in.dwActPosition := DINT_TO_DWORD(EncPosition[0]);
 SM_Drive_PosControl_J2.in.dwActPosition := DINT_TO_DWORD(EncPosition[1]);
 SM_Drive_PosControl_J3.in.dwActPosition := DINT_TO_DWORD(EncPosition[2]);
-SM_Drive_PosControl_J4.in.dwActPosition := DINT_TO_DWORD(EncPosition[3]); // spec sheet is wrong. ratio is 16:1
+SM_Drive_PosControl_J4.in.dwActPosition := DINT_TO_DWORD(EncPosition[3]);
 SM_Drive_PosControl_J5.in.dwActPosition := DINT_TO_DWORD(EncPosition[4]);
-SM_Drive_PosControl_J6.in.dwActPosition := DINT_TO_DWORD(EncPosition[5]); // spec sheet for ratio is wrong its not 19+38/187 it is 20+38/187
+SM_Drive_PosControl_J6.in.dwActPosition := DINT_TO_DWORD(EncPosition[5]);
 
 //
 IF FirstScan THEN
@@ -4261,6 +4276,7 @@ SM_Drive_PosControl_J4.in.bLimitPos := TRUE;
 SM_Drive_PosControl_J5.in.bLimitPos := rx_j5_limit;
 SM_Drive_PosControl_J6.in.bLimitPos := rx_j6_limit;
 
+// do not put anything below this
 FirstScan := FALSE;</xhtml>
                         </ST>
                       </body>
