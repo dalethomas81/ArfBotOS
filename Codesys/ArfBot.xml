@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-17T15:22:21.9048657" />
-  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-17T15:15:55.1041672">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20" creationDateTime="2024-11-17T16:49:25.9613789" />
+  <contentHeader name="ArfBot.project" modificationDateTime="2024-11-17T16:45:35.2968377">
     <coordinateInfo>
       <fbd>
         <scaling x="1" y="1" />
@@ -1283,11 +1283,116 @@ RESERVED: INT:=46;</xhtml>
  axis params</xhtml>
               </documentation>
             </variable>
+            <variable name="HomingGroupOne">
+              <type>
+                <derived name="DUT_AxisEnabled" />
+              </type>
+              <initialValue>
+                <structValue>
+                  <value member="J1">
+                    <simpleValue value="TRUE" />
+                  </value>
+                  <value member="J2">
+                    <simpleValue value="TRUE" />
+                  </value>
+                  <value member="J3">
+                    <simpleValue value="TRUE" />
+                  </value>
+                  <value member="J4">
+                    <simpleValue value="FALSE" />
+                  </value>
+                  <value member="J5">
+                    <simpleValue value="FALSE" />
+                  </value>
+                  <value member="J6">
+                    <simpleValue value="FALSE" />
+                  </value>
+                </structValue>
+              </initialValue>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="order_in_persistent_editor" Value="8" />
+                  </Attributes>
+                </data>
+              </addData>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> homing</xhtml>
+              </documentation>
+            </variable>
+            <variable name="HomingGroupTwo">
+              <type>
+                <derived name="DUT_AxisEnabled" />
+              </type>
+              <initialValue>
+                <structValue>
+                  <value member="J1">
+                    <simpleValue value="FALSE" />
+                  </value>
+                  <value member="J2">
+                    <simpleValue value="FALSE" />
+                  </value>
+                  <value member="J3">
+                    <simpleValue value="FALSE" />
+                  </value>
+                  <value member="J4">
+                    <simpleValue value="TRUE" />
+                  </value>
+                  <value member="J5">
+                    <simpleValue value="TRUE" />
+                  </value>
+                  <value member="J6">
+                    <simpleValue value="FALSE" />
+                  </value>
+                </structValue>
+              </initialValue>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="order_in_persistent_editor" Value="9" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
+            <variable name="HomingGroupThree">
+              <type>
+                <derived name="DUT_AxisEnabled" />
+              </type>
+              <initialValue>
+                <structValue>
+                  <value member="J1">
+                    <simpleValue value="FALSE" />
+                  </value>
+                  <value member="J2">
+                    <simpleValue value="FALSE" />
+                  </value>
+                  <value member="J3">
+                    <simpleValue value="FALSE" />
+                  </value>
+                  <value member="J4">
+                    <simpleValue value="FALSE" />
+                  </value>
+                  <value member="J5">
+                    <simpleValue value="FALSE" />
+                  </value>
+                  <value member="J6">
+                    <simpleValue value="TRUE" />
+                  </value>
+                </structValue>
+              </initialValue>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="order_in_persistent_editor" Value="10" />
+                  </Attributes>
+                </data>
+              </addData>
+            </variable>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                 <Attributes>
                   <Attribute Name="qualified_only" Value="" />
-                  <Attribute Name="checksumnoinit_override" Value="3384394090" />
+                  <Attribute Name="checksumnoinit_override" Value="2535357554" />
                   <Attribute Name="init_related_code" Value="bac351e4-1440-4031-887f-c3d65d99e6dc" />
                 </Attributes>
               </data>
@@ -2823,6 +2928,49 @@ RESERVED: INT:=46;</xhtml>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>b79aef52-6212-478e-b00a-eac3efda95a0</ObjectId>
+                  </data>
+                </addData>
+              </dataType>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/datatype" handleUnknown="implementation">
+              <dataType name="DUT_AxisEnabled">
+                <baseType>
+                  <struct>
+                    <variable name="J1">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="J2">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="J3">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="J4">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="J5">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="J6">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </struct>
+                </baseType>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>6f4bcd56-657b-4601-af50-5b73fde27e36</ObjectId>
                   </data>
                 </addData>
               </dataType>
@@ -20724,7 +20872,9 @@ END_CASE</xhtml>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">_ExecuteRtrig(CLK:=);
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// TODO refactor all the code in the FB to use arrays and for loops ... whenever you get bored...
+
+_ExecuteRtrig(CLK:=);
 _ExecuteFtrig(CLK:=);
 _ResetRtrig(CLK:=Reset);
 
@@ -20745,6 +20895,7 @@ CASE _SequenceMain OF
 		_SMC_Homing_J4.bExecute := FALSE;
 		_SMC_Homing_J5.bExecute := FALSE;
 		_SMC_Homing_J6.bExecute := FALSE;
+		
 		J1.bSWLimitEnable := TRUE;
 		J2.bSWLimitEnable := TRUE;
 		J3.bSWLimitEnable := TRUE;
@@ -20777,116 +20928,261 @@ CASE _SequenceMain OF
 		END_IF;
 		
 	STEP_FAST_HOME_G1:	
-		_SMC_Homing_J1.bExecute := TRUE;
-		_SMC_Homing_J2.bExecute := TRUE;
-		_SMC_Homing_J3.bExecute := TRUE;
+		_SMC_Homing_J1.bExecute := SEL(PersistentVars.HomingGroupOne.J1, FALSE, TRUE);
+		_SMC_Homing_J2.bExecute := SEL(PersistentVars.HomingGroupOne.J2, FALSE, TRUE);
+		_SMC_Homing_J3.bExecute := SEL(PersistentVars.HomingGroupOne.J3, FALSE, TRUE);
+		_SMC_Homing_J4.bExecute := SEL(PersistentVars.HomingGroupOne.J4, FALSE, TRUE);
+		_SMC_Homing_J5.bExecute := SEL(PersistentVars.HomingGroupOne.J5, FALSE, TRUE);
+		_SMC_Homing_J6.bExecute := SEL(PersistentVars.HomingGroupOne.J6, FALSE, TRUE);
+		
 		_SMC_Homing_J1.bReturnToZero := FALSE;
 		_SMC_Homing_J2.bReturnToZero := FALSE;
 		_SMC_Homing_J3.bReturnToZero := FALSE;
+		_SMC_Homing_J4.bReturnToZero := FALSE;
+		_SMC_Homing_J5.bReturnToZero := FALSE;
+		_SMC_Homing_J6.bReturnToZero := FALSE;
+		
 		_SMC_Homing_J1.fVelocitySlow := _HomingVelocitySlow;
 		_SMC_Homing_J2.fVelocitySlow := _HomingVelocitySlow;
 		_SMC_Homing_J3.fVelocitySlow := _HomingVelocitySlow;
+		_SMC_Homing_J4.fVelocitySlow := _HomingVelocitySlow;
+		_SMC_Homing_J5.fVelocitySlow := _HomingVelocitySlow;
+		_SMC_Homing_J6.fVelocitySlow := _HomingVelocitySlow;
+		
 		J1.bSWLimitEnable := FALSE;
 		J2.bSWLimitEnable := FALSE;
 		J3.bSWLimitEnable := FALSE;
+		J4.bSWLimitEnable := FALSE;
+		J5.bSWLimitEnable := FALSE;
+		J6.bSWLimitEnable := FALSE;
+		
 		_SequenceMain := STEP_WAIT_FAST_HOME_G1;
 		
 	STEP_WAIT_FAST_HOME_G1: // wait fast home group 1
-		IF _SMC_Homing_J1.bDone
-			AND _SMC_Homing_J2.bDone
-			AND _SMC_Homing_J3.bDone THEN
+		IF SEL(PersistentVars.HomingGroupOne.J1, TRUE, _SMC_Homing_J1.bDone)
+			AND SEL(PersistentVars.HomingGroupOne.J2, TRUE, _SMC_Homing_J2.bDone)
+			AND SEL(PersistentVars.HomingGroupOne.J3, TRUE, _SMC_Homing_J3.bDone) 
+			AND SEL(PersistentVars.HomingGroupOne.J4, TRUE, _SMC_Homing_J4.bDone) 
+			AND SEL(PersistentVars.HomingGroupOne.J5, TRUE, _SMC_Homing_J5.bDone) 
+			AND SEL(PersistentVars.HomingGroupOne.J6, TRUE, _SMC_Homing_J6.bDone) THEN
 				_SMC_Homing_J1.bExecute := FALSE;
 				_SMC_Homing_J2.bExecute := FALSE;
 				_SMC_Homing_J3.bExecute := FALSE;
+				_SMC_Homing_J4.bExecute := FALSE;
+				_SMC_Homing_J5.bExecute := FALSE;
+				_SMC_Homing_J6.bExecute := FALSE;
+				
 				_SequenceMain := STEP_SLOW_HOME_G1;
 		END_IF
 		
 	STEP_SLOW_HOME_G1: // slow home group 1
-		_SMC_Homing_J1.bExecute := TRUE;
-		_SMC_Homing_J2.bExecute := TRUE;
-		_SMC_Homing_J3.bExecute := TRUE;
+		_SMC_Homing_J1.bExecute := SEL(PersistentVars.HomingGroupOne.J1, FALSE, TRUE);
+		_SMC_Homing_J2.bExecute := SEL(PersistentVars.HomingGroupOne.J2, FALSE, TRUE);
+		_SMC_Homing_J3.bExecute := SEL(PersistentVars.HomingGroupOne.J3, FALSE, TRUE);
+		_SMC_Homing_J4.bExecute := SEL(PersistentVars.HomingGroupOne.J4, FALSE, TRUE);
+		_SMC_Homing_J5.bExecute := SEL(PersistentVars.HomingGroupOne.J5, FALSE, TRUE);
+		_SMC_Homing_J6.bExecute := SEL(PersistentVars.HomingGroupOne.J6, FALSE, TRUE);
+		
 		_SMC_Homing_J1.bReturnToZero := TRUE;
 		_SMC_Homing_J2.bReturnToZero := TRUE;
 		_SMC_Homing_J3.bReturnToZero := TRUE;
+		_SMC_Homing_J4.bReturnToZero := TRUE;
+		_SMC_Homing_J5.bReturnToZero := TRUE;
+		_SMC_Homing_J6.bReturnToZero := TRUE;
+		
 		_SMC_Homing_J1.fVelocitySlow := _HomingVelocitySlowSlow;
 		_SMC_Homing_J2.fVelocitySlow := _HomingVelocitySlowSlow;
 		_SMC_Homing_J3.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J4.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J5.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J6.fVelocitySlow := _HomingVelocitySlowSlow;
+		
 		_SequenceMain := STEP_WAIT_SLOW_HOME_G1;
 		
 	STEP_WAIT_SLOW_HOME_G1:
-		IF _SMC_Homing_J1.bDone
-			AND _SMC_Homing_J2.bDone
-			AND _SMC_Homing_J3.bDone THEN
+		IF SEL(PersistentVars.HomingGroupOne.J1, TRUE, _SMC_Homing_J1.bDone)
+			AND SEL(PersistentVars.HomingGroupOne.J2, TRUE, _SMC_Homing_J2.bDone)
+			AND SEL(PersistentVars.HomingGroupOne.J3, TRUE, _SMC_Homing_J3.bDone) 
+			AND SEL(PersistentVars.HomingGroupOne.J4, TRUE, _SMC_Homing_J4.bDone) 
+			AND SEL(PersistentVars.HomingGroupOne.J5, TRUE, _SMC_Homing_J5.bDone) 
+			AND SEL(PersistentVars.HomingGroupOne.J6, TRUE, _SMC_Homing_J6.bDone) THEN
 				_SMC_Homing_J1.bExecute := FALSE;
 				_SMC_Homing_J2.bExecute := FALSE;
 				_SMC_Homing_J3.bExecute := FALSE;
+				_SMC_Homing_J4.bExecute := FALSE;
+				_SMC_Homing_J5.bExecute := FALSE;
+				_SMC_Homing_J6.bExecute := FALSE;
+				
 				_SequenceMain := STEP_FAST_HOME_G2;
 		END_IF
 		
-	STEP_FAST_HOME_G2:		
-		_SMC_Homing_J4.bExecute := TRUE;
-		_SMC_Homing_J5.bExecute := TRUE;
+	STEP_FAST_HOME_G2:
+		_SMC_Homing_J1.bExecute := SEL(PersistentVars.HomingGroupTwo.J1, FALSE, TRUE);
+		_SMC_Homing_J2.bExecute := SEL(PersistentVars.HomingGroupTwo.J2, FALSE, TRUE);
+		_SMC_Homing_J3.bExecute := SEL(PersistentVars.HomingGroupTwo.J3, FALSE, TRUE);
+		_SMC_Homing_J4.bExecute := SEL(PersistentVars.HomingGroupTwo.J4, FALSE, TRUE);
+		_SMC_Homing_J5.bExecute := SEL(PersistentVars.HomingGroupTwo.J5, FALSE, TRUE);
+		_SMC_Homing_J6.bExecute := SEL(PersistentVars.HomingGroupTwo.J6, FALSE, TRUE);
+		
+		_SMC_Homing_J1.bReturnToZero := FALSE;
+		_SMC_Homing_J2.bReturnToZero := FALSE;
+		_SMC_Homing_J3.bReturnToZero := FALSE;
 		_SMC_Homing_J4.bReturnToZero := FALSE;
 		_SMC_Homing_J5.bReturnToZero := FALSE;
+		_SMC_Homing_J6.bReturnToZero := FALSE;
+		
+		_SMC_Homing_J1.fVelocitySlow := _HomingVelocitySlow;
+		_SMC_Homing_J2.fVelocitySlow := _HomingVelocitySlow;
+		_SMC_Homing_J3.fVelocitySlow := _HomingVelocitySlow;
 		_SMC_Homing_J4.fVelocitySlow := _HomingVelocitySlow;
 		_SMC_Homing_J5.fVelocitySlow := _HomingVelocitySlow;
-		J4.bSWLimitEnable := FALSE;
-		J5.bSWLimitEnable := FALSE;
+		_SMC_Homing_J6.fVelocitySlow := _HomingVelocitySlow;
+
 		_SequenceMain := STEP_WAIT_FAST_HOME_G2;
 		
 	STEP_WAIT_FAST_HOME_G2:
-		IF _SMC_Homing_J4.bDone
-			AND _SMC_Homing_J5.bDone THEN
+		IF SEL(PersistentVars.HomingGroupTwo.J1, TRUE, _SMC_Homing_J1.bDone)
+			AND SEL(PersistentVars.HomingGroupTwo.J2, TRUE, _SMC_Homing_J2.bDone)
+			AND SEL(PersistentVars.HomingGroupTwo.J3, TRUE, _SMC_Homing_J3.bDone) 
+			AND SEL(PersistentVars.HomingGroupTwo.J4, TRUE, _SMC_Homing_J4.bDone) 
+			AND SEL(PersistentVars.HomingGroupTwo.J5, TRUE, _SMC_Homing_J5.bDone) 
+			AND SEL(PersistentVars.HomingGroupTwo.J6, TRUE, _SMC_Homing_J6.bDone) THEN
+				_SMC_Homing_J1.bExecute := FALSE;
+				_SMC_Homing_J2.bExecute := FALSE;
+				_SMC_Homing_J3.bExecute := FALSE;
 				_SMC_Homing_J4.bExecute := FALSE;
 				_SMC_Homing_J5.bExecute := FALSE;
+				_SMC_Homing_J6.bExecute := FALSE;
+				
 				_SequenceMain := STEP_SLOW_HOME_G2;
 		END_IF
 		
 	STEP_SLOW_HOME_G2:
-		_SMC_Homing_J4.bExecute := TRUE;
-		_SMC_Homing_J5.bExecute := TRUE;
+		_SMC_Homing_J1.bExecute := SEL(PersistentVars.HomingGroupTwo.J1, FALSE, TRUE);
+		_SMC_Homing_J2.bExecute := SEL(PersistentVars.HomingGroupTwo.J2, FALSE, TRUE);
+		_SMC_Homing_J3.bExecute := SEL(PersistentVars.HomingGroupTwo.J3, FALSE, TRUE);
+		_SMC_Homing_J4.bExecute := SEL(PersistentVars.HomingGroupTwo.J4, FALSE, TRUE);
+		_SMC_Homing_J5.bExecute := SEL(PersistentVars.HomingGroupTwo.J5, FALSE, TRUE);
+		_SMC_Homing_J6.bExecute := SEL(PersistentVars.HomingGroupTwo.J6, FALSE, TRUE);
+		
+		_SMC_Homing_J1.bReturnToZero := TRUE;
+		_SMC_Homing_J2.bReturnToZero := TRUE;
+		_SMC_Homing_J3.bReturnToZero := TRUE;
 		_SMC_Homing_J4.bReturnToZero := TRUE;
 		_SMC_Homing_J5.bReturnToZero := TRUE;
+		_SMC_Homing_J6.bReturnToZero := TRUE;
+		
+		_SMC_Homing_J1.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J2.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J3.fVelocitySlow := _HomingVelocitySlowSlow;
 		_SMC_Homing_J4.fVelocitySlow := _HomingVelocitySlowSlow;
 		_SMC_Homing_J5.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J6.fVelocitySlow := _HomingVelocitySlowSlow;
+		
 		_SequenceMain := STEP_WAIT_SLOW_HOME_G2;
 		
 	STEP_WAIT_SLOW_HOME_G2:
-		IF _SMC_Homing_J4.bDone
-			AND _SMC_Homing_J5.bDone THEN
+		IF SEL(PersistentVars.HomingGroupTwo.J1, TRUE, _SMC_Homing_J1.bDone)
+			AND SEL(PersistentVars.HomingGroupTwo.J2, TRUE, _SMC_Homing_J2.bDone)
+			AND SEL(PersistentVars.HomingGroupTwo.J3, TRUE, _SMC_Homing_J3.bDone) 
+			AND SEL(PersistentVars.HomingGroupTwo.J4, TRUE, _SMC_Homing_J4.bDone) 
+			AND SEL(PersistentVars.HomingGroupTwo.J5, TRUE, _SMC_Homing_J5.bDone) 
+			AND SEL(PersistentVars.HomingGroupTwo.J6, TRUE, _SMC_Homing_J6.bDone) THEN
+				_SMC_Homing_J1.bExecute := FALSE;
+				_SMC_Homing_J2.bExecute := FALSE;
+				_SMC_Homing_J3.bExecute := FALSE;
 				_SMC_Homing_J4.bExecute := FALSE;
 				_SMC_Homing_J5.bExecute := FALSE;
+				_SMC_Homing_J6.bExecute := FALSE;
+				
 				_SequenceMain := STEP_FAST_HOME_G3;
 		END_IF
 		
 	STEP_FAST_HOME_G3:
-		_SMC_Homing_J6.bExecute := TRUE;
+		_SMC_Homing_J1.bExecute := SEL(PersistentVars.HomingGroupThree.J1, FALSE, TRUE);
+		_SMC_Homing_J2.bExecute := SEL(PersistentVars.HomingGroupThree.J2, FALSE, TRUE);
+		_SMC_Homing_J3.bExecute := SEL(PersistentVars.HomingGroupThree.J3, FALSE, TRUE);
+		_SMC_Homing_J4.bExecute := SEL(PersistentVars.HomingGroupThree.J4, FALSE, TRUE);
+		_SMC_Homing_J5.bExecute := SEL(PersistentVars.HomingGroupThree.J5, FALSE, TRUE);
+		_SMC_Homing_J6.bExecute := SEL(PersistentVars.HomingGroupThree.J6, FALSE, TRUE);
+		
+		_SMC_Homing_J1.bReturnToZero := FALSE;
+		_SMC_Homing_J2.bReturnToZero := FALSE;
+		_SMC_Homing_J3.bReturnToZero := FALSE;
+		_SMC_Homing_J4.bReturnToZero := FALSE;
+		_SMC_Homing_J5.bReturnToZero := FALSE;
 		_SMC_Homing_J6.bReturnToZero := FALSE;
+		
+		_SMC_Homing_J1.fVelocitySlow := _HomingVelocitySlow;
+		_SMC_Homing_J2.fVelocitySlow := _HomingVelocitySlow;
+		_SMC_Homing_J3.fVelocitySlow := _HomingVelocitySlow;
+		_SMC_Homing_J4.fVelocitySlow := _HomingVelocitySlow;
+		_SMC_Homing_J5.fVelocitySlow := _HomingVelocitySlow;
 		_SMC_Homing_J6.fVelocitySlow := _HomingVelocitySlow;
-		J6.bSWLimitEnable := FALSE;
+		
 		_SequenceMain := STEP_WAIT_FAST_HOME_G3;
 		
 	STEP_WAIT_FAST_HOME_G3:
-		IF _SMC_Homing_J6.bDone THEN
-			_SMC_Homing_J6.bExecute := FALSE;
-			_SequenceMain := STEP_SLOW_HOME_G3;
+		IF SEL(PersistentVars.HomingGroupThree.J1, TRUE, _SMC_Homing_J1.bDone)
+			AND SEL(PersistentVars.HomingGroupThree.J2, TRUE, _SMC_Homing_J2.bDone)
+			AND SEL(PersistentVars.HomingGroupThree.J3, TRUE, _SMC_Homing_J3.bDone) 
+			AND SEL(PersistentVars.HomingGroupThree.J4, TRUE, _SMC_Homing_J4.bDone) 
+			AND SEL(PersistentVars.HomingGroupThree.J5, TRUE, _SMC_Homing_J5.bDone) 
+			AND SEL(PersistentVars.HomingGroupThree.J6, TRUE, _SMC_Homing_J6.bDone) THEN
+				_SMC_Homing_J1.bExecute := FALSE;
+				_SMC_Homing_J2.bExecute := FALSE;
+				_SMC_Homing_J3.bExecute := FALSE;
+				_SMC_Homing_J4.bExecute := FALSE;
+				_SMC_Homing_J5.bExecute := FALSE;
+				_SMC_Homing_J6.bExecute := FALSE;
+				
+				_SequenceMain := STEP_SLOW_HOME_G3;
 		END_IF
 		
 	STEP_SLOW_HOME_G3:
-		_SMC_Homing_J6.bExecute := TRUE;
+		_SMC_Homing_J1.bExecute := SEL(PersistentVars.HomingGroupThree.J1, FALSE, TRUE);
+		_SMC_Homing_J2.bExecute := SEL(PersistentVars.HomingGroupThree.J2, FALSE, TRUE);
+		_SMC_Homing_J3.bExecute := SEL(PersistentVars.HomingGroupThree.J3, FALSE, TRUE);
+		_SMC_Homing_J4.bExecute := SEL(PersistentVars.HomingGroupThree.J4, FALSE, TRUE);
+		_SMC_Homing_J5.bExecute := SEL(PersistentVars.HomingGroupThree.J5, FALSE, TRUE);
+		_SMC_Homing_J6.bExecute := SEL(PersistentVars.HomingGroupThree.J6, FALSE, TRUE);
+		
+		_SMC_Homing_J1.bReturnToZero := TRUE;
+		_SMC_Homing_J2.bReturnToZero := TRUE;
+		_SMC_Homing_J3.bReturnToZero := TRUE;
+		_SMC_Homing_J4.bReturnToZero := TRUE;
+		_SMC_Homing_J5.bReturnToZero := TRUE;
 		_SMC_Homing_J6.bReturnToZero := TRUE;
+		
+		_SMC_Homing_J1.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J2.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J3.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J4.fVelocitySlow := _HomingVelocitySlowSlow;
+		_SMC_Homing_J5.fVelocitySlow := _HomingVelocitySlowSlow;
 		_SMC_Homing_J6.fVelocitySlow := _HomingVelocitySlowSlow;
+		
 		_SequenceMain := STEP_WAIT_SLOW_HOME_G3;
 		
 	STEP_WAIT_SLOW_HOME_G3:
-		IF _SMC_Homing_J6.bDone THEN
-			_SMC_Homing_J6.bExecute := FALSE;
-			Flags[GVL.HOME_COMPLETE].Value := TRUE;
-			IF NOT Flags[GVL.HOM_TO_POSE_IDX].Value THEN
-				_SequenceMain := STEP_DONE;
-			ELSE
-				_SequenceMain := STEP_MOVE_TO_POSE;
-			END_IF
+		IF SEL(PersistentVars.HomingGroupThree.J1, TRUE, _SMC_Homing_J1.bDone)
+			AND SEL(PersistentVars.HomingGroupThree.J2, TRUE, _SMC_Homing_J2.bDone)
+			AND SEL(PersistentVars.HomingGroupThree.J3, TRUE, _SMC_Homing_J3.bDone) 
+			AND SEL(PersistentVars.HomingGroupThree.J4, TRUE, _SMC_Homing_J4.bDone) 
+			AND SEL(PersistentVars.HomingGroupThree.J5, TRUE, _SMC_Homing_J5.bDone) 
+			AND SEL(PersistentVars.HomingGroupThree.J6, TRUE, _SMC_Homing_J6.bDone) THEN
+				_SMC_Homing_J1.bExecute := FALSE;
+				_SMC_Homing_J2.bExecute := FALSE;
+				_SMC_Homing_J3.bExecute := FALSE;
+				_SMC_Homing_J4.bExecute := FALSE;
+				_SMC_Homing_J5.bExecute := FALSE;
+				_SMC_Homing_J6.bExecute := FALSE;
+				
+				Flags[GVL.HOME_COMPLETE].Value := TRUE;
+				IF NOT Flags[GVL.HOM_TO_POSE_IDX].Value THEN
+					_SequenceMain := STEP_DONE;
+				ELSE
+					_SequenceMain := STEP_MOVE_TO_POSE;
+				END_IF
 		END_IF;
 		
 	STEP_MOVE_TO_POSE:
@@ -29878,6 +30174,7 @@ END_IF</xhtml>
                   </Folder>
                 </Object>
                 <Object Name="F_HomeOffsetCalc" ObjectId="ad8953b8-d17f-41b2-83c9-9901a22a0b46" />
+                <Object Name="DUT_AxisEnabled" ObjectId="6f4bcd56-657b-4601-af50-5b73fde27e36" />
               </Folder>
               <Folder Name="jog">
                 <Object Name="FB_JogProcessor" ObjectId="9ad0dd5a-e160-4345-8eee-ad9cf9bfb3eb">
