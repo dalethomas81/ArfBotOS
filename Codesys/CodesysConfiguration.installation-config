@@ -1,0 +1,442 @@
+[
+  {
+    "Key": {
+      "Id2": "CODESYS.Application Composer",
+      "Id": "68d4dade-c077-4640-8947-403028a81dcd"
+    },
+    "Version": "4.3.2.0",
+    "Name": "CODESYS Application Composer"
+  },
+  {
+    "Key": {
+      "Id2": "f078ec17-9021-4efb-85e0-e664479709f4",
+      "Id": "f078ec17-9021-4efb-85e0-e664479709f4"
+    },
+    "Version": "1.34.0.0",
+    "Name": "CODESYS Automation Server Connector"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.C Code Integration",
+      "Id": "81c63d04-3a4b-4faa-bc46-fc3733c51fcb"
+    },
+    "Version": "4.0.0.0",
+    "Name": "CODESYS C Code Integration"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.CANopen",
+      "Id": "4eb68064-2cbc-4bb0-8280-3c503b2fd9fd"
+    },
+    "Version": "4.2.0.0",
+    "Name": "CODESYS CANopen"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.CFC",
+      "Id": "d1ba94e0-9823-4a49-9ce6-7b424a652307"
+    },
+    "Version": "4.4.0.0",
+    "Name": "CODESYS CFC"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Code Generator ARM",
+      "Id": "a80f6c84-de9c-4a0d-b60a-c1d5be61dca5"
+    },
+    "Version": "4.0.3.0",
+    "Name": "CODESYS Code Generator ARM"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Code Generator ARM64",
+      "Id": "321a0a09-ab7e-4e6c-a6d1-2a20ad241809"
+    },
+    "Version": "4.0.1.0",
+    "Name": "CODESYS Code Generator ARM64"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Code Generator Blackfin",
+      "Id": "f907fa0a-a4a8-41a1-9e7a-07c55861102a"
+    },
+    "Version": "4.0.0.0",
+    "Name": "CODESYS Code Generator Blackfin"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Code Generator ColdFire",
+      "Id": "ca31983e-dc4b-47d2-8d4d-c7dd01c210b5"
+    },
+    "Version": "4.0.0.0",
+    "Name": "CODESYS Code Generator ColdFire"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Code Generator Cortex M3",
+      "Id": "82f960f6-a039-4977-a069-d10db21d88ab"
+    },
+    "Version": "4.0.1.0",
+    "Name": "CODESYS Code Generator Cortex M3"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Code Generator PowerPC",
+      "Id": "658cc18b-6907-42bc-b314-2dc818ed1e8c"
+    },
+    "Version": "4.0.1.0",
+    "Name": "CODESYS Code Generator PowerPC"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Code Generator RX",
+      "Id": "6fed3822-77df-4314-ac94-35bcac97d7a0"
+    },
+    "Version": "4.0.0.0",
+    "Name": "CODESYS Code Generator RX"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Code Generator SH",
+      "Id": "2bc8bcb0-4854-45e5-acbe-165c36e767ee"
+    },
+    "Version": "4.0.0.0",
+    "Name": "CODESYS Code Generator SH"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Code Generator TIC28x",
+      "Id": "6b0d448b-1767-4ce5-a7c1-b0ae907f4872"
+    },
+    "Version": "4.0.0.0",
+    "Name": "CODESYS Code Generator TIC28x"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Code Generator TriCore",
+      "Id": "cd9371df-4162-40ee-8835-3bbc38341166"
+    },
+    "Version": "4.0.1.0",
+    "Name": "CODESYS Code Generator TriCore"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Communication",
+      "Id": "fe851b02-f348-4b9c-ba56-79f30fc3af71"
+    },
+    "Version": "4.5.2.0",
+    "Name": "CODESYS Communication"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Compatibility Package",
+      "Id": "2aa2ae82-3af4-4b69-81f1-02ff88eb8867"
+    },
+    "Version": "3.5.17.20",
+    "Name": "CODESYS Compatibility Package"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Compiler Versions Archive",
+      "Id": "a4871fa6-ae33-4652-9761-5efcdbd9de9b"
+    },
+    "Version": "4.0.0.0",
+    "Name": "CODESYS Compiler Versions Archive"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Control for Raspberry PI",
+      "Id": "93cdb226-849f-47ae-ac18-4b8fa69b6b5c"
+    },
+    "Version": "4.13.0.0",
+    "Name": "CODESYS Control for Raspberry PI"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Control SL Deploy Tool",
+      "Id": "1f12e67e-75a0-4e86-ae26-12511f2dd589"
+    },
+    "Version": "4.13.0.0",
+    "Name": "CODESYS Control SL Deploy Tool"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Control SL Extension Package",
+      "Id": "1876dd82-4af9-429e-9e61-18793b7fecc3"
+    },
+    "Version": "4.13.0.0",
+    "Name": "CODESYS Control SL Extension Package"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Core Dump",
+      "Id": "9b110c8c-1946-458f-8c70-8da16e69106b"
+    },
+    "Version": "4.2.0.0",
+    "Name": "CODESYS Core Dump"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Device Reader",
+      "Id": "fe2f91ba-ad5f-42af-b0ea-47d240bdf1d8"
+    },
+    "Version": "4.0.0.0",
+    "Name": "CODESYS Device Reader"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Edge Gateway for Linux",
+      "Id": "b5ed008b-99f4-4667-92be-ddd842c4302e"
+    },
+    "Version": "4.13.0.0",
+    "Name": "CODESYS Edge Gateway for Linux"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.EDS Import",
+      "Id": "63f22c84-8a21-4ee5-a25b-07f1147b98d0"
+    },
+    "Version": "4.2.0.0",
+    "Name": "CODESYS EDS Import"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Embedded Runtime Extension",
+      "Id": "949080c3-ef20-4000-94b5-c111adbb9292"
+    },
+    "Version": "4.1.0.0",
+    "Name": "CODESYS Embedded Runtime Extension"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.EtherCAT",
+      "Id": "ff2121bc-be05-4eed-8485-04f308ac918d"
+    },
+    "Version": "4.7.0.0",
+    "Name": "CODESYS EtherCAT"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Ethernet Adapter",
+      "Id": "076e79dd-7266-43b1-8b2b-364189798398"
+    },
+    "Version": "4.2.0.0",
+    "Name": "CODESYS Ethernet Adapter"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.EtherNet/IP",
+      "Id": "3c3a98d4-ac96-4df9-844a-605ebbce72d4"
+    },
+    "Version": "4.6.0.0",
+    "Name": "CODESYS EtherNet/IP"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.IO-Link",
+      "Id": "ad26ff6e-62d0-4b5e-842e-73a326d1d5de"
+    },
+    "Version": "4.3.0.0",
+    "Name": "CODESYS IO-Link"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Ladder",
+      "Id": "36d40cf1-6a25-41eb-8274-8f01bbd5f55f"
+    },
+    "Version": "1.0.0.0",
+    "Name": "CODESYS Ladder"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.LD/FBD",
+      "Id": "fd6546bb-607e-4c88-80c7-eae44fac6413"
+    },
+    "Version": "4.5.0.0",
+    "Name": "CODESYS LD/FBD"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.LibraryDependencyInspection",
+      "Id": "9c7fd7c3-98fd-403d-89a1-d904570a7198"
+    },
+    "Version": "1.0.0.0",
+    "Name": "CODESYS Library Dependency Inspection"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Memory Tools",
+      "Id": "a65ac0dd-86eb-48e8-abc5-0150986511cf"
+    },
+    "Version": "4.1.0.0",
+    "Name": "CODESYS Memory Tools"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Modbus",
+      "Id": "3fe8c89e-4186-4119-89f3-e224aff8a996"
+    },
+    "Version": "4.4.0.0",
+    "Name": "CODESYS Modbus"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.NetX",
+      "Id": "31a11244-0196-4ce8-becd-ae9e9c68b93f"
+    },
+    "Version": "4.0.0.0",
+    "Name": "CODESYS NetX"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.PROFIBUS",
+      "Id": "69cb8213-fd11-40cb-90ae-884d6476997b"
+    },
+    "Version": "4.1.1.0",
+    "Name": "CODESYS PROFIBUS"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.PROFINET",
+      "Id": "78827b20-3243-403f-81e4-2972a7319d91"
+    },
+    "Version": "4.5.2.0",
+    "Name": "CODESYS PROFINET"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Recipes",
+      "Id": "a3b3e93f-7e07-435a-ab1d-9f4f8d472e57"
+    },
+    "Version": "4.5.0.0",
+    "Name": "CODESYS Recipes"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Redundancy",
+      "Id": "3887d1f7-3de4-40f5-88e4-39411f37c5c9"
+    },
+    "Version": "4.1.0.0",
+    "Name": "CODESYS Redundancy"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.RISC Front End",
+      "Id": "4c62d173-c9e2-4d58-b633-6521b5a9eaab"
+    },
+    "Version": "4.0.2.0",
+    "Name": "CODESYS RISC Front End"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.SAE J1939",
+      "Id": "58166f1c-df4f-4db8-bbc2-6e3bb3f4d958"
+    },
+    "Version": "4.2.0.0",
+    "Name": "CODESYS SAE J1939"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Safety Support",
+      "Id": "a1db90be-6ec2-46a3-9113-52bd89ac1371"
+    },
+    "Version": "4.0.0.0",
+    "Name": "CODESYS Safety Support"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Scripting",
+      "Id": "bd131967-3a89-4e22-a845-79b0be0a3ce1"
+    },
+    "Version": "4.1.0.0",
+    "Name": "CODESYS Scripting"
+  },
+  {
+    "Key": {
+      "Id2": "65c7e382-6e78-4315-bb25-b0726a9d7070",
+      "Id": "65c7e382-6e78-4315-bb25-b0726a9d7070"
+    },
+    "Version": "1.3.0.0",
+    "Name": "CODESYS Security Agent"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Sercos III",
+      "Id": "d438299b-3c27-44ff-b45b-1012914aad1c"
+    },
+    "Version": "4.0.0.0",
+    "Name": "CODESYS Sercos III"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.SFC",
+      "Id": "39c4804e-d000-4f42-8774-cba1c1401aea"
+    },
+    "Version": "4.4.0.0",
+    "Name": "CODESYS SFC"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.SoftMotion",
+      "Id": "a0b407cf-58e0-4a6b-861a-7b44d938257a"
+    },
+    "Version": "4.17.0.0",
+    "Name": "CODESYS SoftMotion"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.String Libraries",
+      "Id": "364ad069-cce2-4abc-9eed-2234b09041ee"
+    },
+    "Version": "4.0.0.0",
+    "Name": "CODESYS String Libraries"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Target Settings Export",
+      "Id": "0913b13f-1c9f-4bc7-be7c-1befa3427935"
+    },
+    "Version": "4.0.0.0",
+    "Name": "CODESYS Target Settings Export"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Trace",
+      "Id": "4e530ec4-2e4e-4639-b965-5b6267572c9b"
+    },
+    "Version": "4.2.0.0",
+    "Name": "CODESYS Trace"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.UserSurvey",
+      "Id": "55c98a23-1128-4d94-97c1-efc9658b47da"
+    },
+    "Version": "1.1.0.0",
+    "Name": "CODESYS Usage Analysis"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Visualization",
+      "Id": "3328f7bd-a81c-4f41-8ee9-4d5a588a4882"
+    },
+    "Version": "4.6.0.0",
+    "Name": "CODESYS Visualization"
+  },
+  {
+    "Key": {
+      "Id2": "CODESYS.Visualization Support",
+      "Id": "871b622c-b4bd-4ae3-b33c-d8f18aa656d7"
+    },
+    "Version": "4.4.0.0",
+    "Name": "CODESYS Visualization Support"
+  },
+  {
+    "Key": {
+      "Id2": "99f026b9-1352-4416-a8c8-5165ed4142d0",
+      "Id": "99f026b9-1352-4416-a8c8-5165ed4142d0"
+    },
+    "Version": "1.0.0.1",
+    "Name": "OMAC PackML State Machine"
+  }
+]
