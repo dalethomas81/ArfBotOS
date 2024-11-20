@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg1"
+   width="963"
+   height="465"
+   viewBox="0 0 963 465"
+   sodipodi:docname="EVB-LAN9252-SPI_pcb.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <linearGradient
+       id="swatch1"
+       inkscape:swatch="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop1" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#999999"
+     borderopacity="1"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="1.15"
+     inkscape:cx="516.52174"
+     inkscape:cy="249.56522"
+     inkscape:window-width="1600"
+     inkscape:window-height="1104"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g1" />
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="EVB-LAN9252-SPI"
+     id="g1">
+    <g
+       id="g3"
+       inkscape:label="g1">
+      <ellipse
+         style="fill:#d4aa00;stroke-width:1.0015748;stroke-dasharray:none"
+         id="path1"
+         cx="822.22388"
+         cy="148.18298"
+         rx="14.42038"
+         ry="15.123813"
+         inkscape:label="CS" />
+      <ellipse
+         style="display:inline;fill:#d4aa00;stroke-width:1.00157;stroke-dasharray:none"
+         id="path1-8"
+         cx="821.42035"
+         cy="198.12381"
+         rx="14.42038"
+         ry="15.123813"
+         inkscape:label="SCK" />
+      <ellipse
+         style="display:inline;fill:#d4aa00;stroke-width:1.00157;stroke-dasharray:none"
+         id="path1-8-7"
+         cx="820.52551"
+         cy="249.04565"
+         rx="14.42038"
+         ry="15.123813"
+         inkscape:label="MOSI" />
+      <ellipse
+         style="display:inline;fill:#d4aa00;stroke-width:1.00157;stroke-dasharray:none"
+         id="path1-8-6"
+         cx="821.64093"
+         cy="294.26114"
+         rx="14.42038"
+         ry="15.123813"
+         inkscape:label="MISO" />
+      <ellipse
+         style="display:inline;fill:#d4aa00;stroke-width:1.00157;stroke-dasharray:none"
+         id="path1-8-2"
+         cx="938.40576"
+         cy="82.375824"
+         rx="14.42038"
+         ry="15.123813"
+         inkscape:label="3V3" />
+      <ellipse
+         style="display:inline;fill:#d4aa00;stroke-width:1.00157;stroke-dasharray:none"
+         id="path1-8-61"
+         cx="937.08948"
+         cy="163.91782"
+         rx="14.42038"
+         ry="15.123813"
+         inkscape:label="GND" />
+      <rect
+         style="fill:#d4aa00;fill-opacity:1;stroke:none;stroke-width:1.00157;stroke-dasharray:none"
+         id="rect3"
+         width="262.38058"
+         height="194.14755"
+         x="2.1102996"
+         y="16.178963"
+         inkscape:label="EtherCAT-In" />
+      <rect
+         style="fill:#d4aa00;fill-opacity:1;stroke:none;stroke-width:1.00157;stroke-dasharray:none"
+         id="rect3-9"
+         width="262.38058"
+         height="194.14755"
+         x="2"
+         y="267"
+         inkscape:label="EtherCAT-Out" />
+    </g>
+  </g>
+</svg>
