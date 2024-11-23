@@ -12,5 +12,7 @@ The schematic detailing all of the electrical connections can be found [here](ht
 
 The EtherCAT slave board (EVB-LAN9252-SPI) communicates with the Teensy 4.1 microcontroller using SPI. For this reason, the SPI pins 10, 11, 12, and 13 on the Teensy needed to be freed up opposed to the stock connections of the AR4.  
 
-1. Solder short wires to the 6 connections for `gnd`, `3v3`, `miso`, `mosi`, `sck`, and `cs` on the bottom side of the EtherCAT Slave Controller.
+1. Solder short wires to the 6 connections for `gnd`, `3v3`, `miso`, `mosi`, `sck`, and `cs` on the bottom side of the EtherCAT Slave Controller.  
+<img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Robots/AR4/Media/EtherCAT-Solder-Underside.png" alt="menu" width="600"/> 
 2. Keeping the wires as short as possible to reduce EMI - connect them each to the appropriate terminal on the Teensy controller.  
+<img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Robots/AR4/Media/EtherCAT-Wired.png" alt="menu" width="600"/> 
