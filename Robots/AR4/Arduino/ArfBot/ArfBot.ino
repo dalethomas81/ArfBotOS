@@ -7,7 +7,6 @@
 // It must be defined before Encoder.h is included.
 #define ENCODER_OPTIMIZE_INTERRUPTS
 #include <Encoder.h>
-#include <Servo.h>
 
 #include "EasyCAT.h"
 #include <SPI.h>

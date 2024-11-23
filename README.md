@@ -16,4 +16,6 @@ Disclaimer: The cost of the hardware in this project has been kept at a minimum 
 If you already have ArfBotOS running and have it connected to a robot, you will want to create your first program. I have put together a Hello World project that will help you do that. You can find it in the wiki. Otherwise, please follow the installation and configuration instructions below to get started.
 
 ## The Robot
-In theory, you can use any 6 axis robot that you would like with ArfBotOS. However, you will need to integrate the connections to the servos and limit switches. Additionally, you will need recompile ArfBotOS with the Denavit-Hartenburg (DH) parmeters for the bot of your choice. I chose to use the fantastic open source AR4 robot designed and developed by Chris Annin of [Annin Robotics](https://www.anninrobotics.com/)
+In theory, you can use any 6 axis robot that you would like with ArfBotOS. However, you will need to integrate the connections to the servos and limit switches. Additionally, you will need recompile ArfBotOS with the Denavit-Hartenburg (DH) parmeters for the bot of your choice. I chose to use the fantastic open source AR4 robot designed and developed by Chris Annin of [Annin Robotics](https://www.anninrobotics.com/)  
+
+Instructions on how to integrate the AR4 with ArfBotOS can be found [here](https://github.com/dalethomas81/ArfBotOS/blob/main/Robots/AR4/README.MD).
