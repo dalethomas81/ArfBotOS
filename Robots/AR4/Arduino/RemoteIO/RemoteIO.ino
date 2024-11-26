@@ -1,4 +1,4 @@
-#include <PWMServo.h>
+//#include <PWMServo.h>
 #include "DigitalInput.h"
 #include "DigitalOutput.h"
 #include "R_TRIG.h"
@@ -23,38 +23,38 @@ const int input2Pin = 2; // D2 | PWM
 const int input3Pin = 3; // D3 | PWM
 const int input4Pin = 4; // D4 | PWM
 const int input5Pin = 5; // D5 | PWM
-const int output0Pin = 6; // D6 | PWM
-const int output1Pin = 7; // D7 | PWM | RX2
-const int output2Pin = 8; // D8 | PWM | TX2
-const int output3Pin = 9; // D9 | PWM
-const int output4Pin = 14; // D14 | A0 | PWM | TX3
-const int output5Pin = 15; // D15 | A1 | PWM | RX3
-//const int  = 16; // D16 | A2 | SCL1 | RX4
+const int input6Pin = 6; // D6 | PWM
+const int input7Pin = 7; // D7 | PWM | RX2
+const int input8Pin = 8; // D8 | PWM | TX2
+const int input9Pin = 9; // D9 | PWM
+const int output8Pin = 14; // D14 | A0 | PWM | TX3
+const int output7Pin = 15; // D15 | A1 | PWM | RX3
+const int output6Pin = 16; // D16 | A2 | SCL1 | RX4
 const int StatusLed = 17; // D17 | A3 | SDA1 | TX4
-const int pwm0Pin = 18; // D18 | A4 | PWM | SDA
-const int pwm1Pin = 19; // D19 | A5 | PWM | SCL
-//const int  = 20; // D20 | A6 | TX5
-//const int  = 21; // D21 | A7 | RX5
-const int pwm2Pin = 22; // D22 | A8 | PWM
-const int pwm3Pin = 23; // D23 | A9 | PWM
-const int pwm4Pin = 24; // D24 | A10 | PWM | SCL2 | TX6
-const int pwm5Pin = 25; // D25 | A11 | PWM | SDA2 | RX6
-//const int  = 26; // D26 | A12 |
-//const int  = 27; // D27 | A13 | 
-//const int  = 28; // D28 | PWM | RX7
-//const int  = 29; // D29 | PWM | TX7
+const int output5Pin = 18; // D18 | A4 | PWM | SDA
+const int output4Pin = 19; // D19 | A5 | PWM | SCL
+const int output3Pin = 20; // D20 | A6 | TX5
+const int output2Pin = 21; // D21 | A7 | RX5
+const int output1Pin = 22; // D22 | A8 | PWM
+const int output0Pin = 23; // D23 | A9 | PWM
+const int input10Pin = 24; // D24 | A10 | PWM | SCL2 | TX6
+const int input11Pin = 25; // D25 | A11 | PWM | SDA2 | RX6
+const int input12Pin = 26; // D26 | A12 |
+const int input13Pin = 27; // D27 | A13 | 
+const int input14Pin = 28; // D28 | PWM | RX7
+const int input15Pin = 29; // D29 | PWM | TX7
 //const int  = 30; // D30 | 
 //const int  = 31; // D31 | 
 //const int  = 32; // D32 | 
 //const int  = 33; // D33 | PWM
 //const int  = 34; // D34 | RX8
-//const int  = 35; // D35 | TX8
-//const int  = 36; // D36 | PWM
-//const int  = 37; // D37 | PWM
-//const int  = 38; // D38 | A14
-//const int  = 39; // D39 | A15
-//const int  = 40; // D40 | A16
-//const int  = 41; // D41 | A17
+const int output15Pin = 35; // D35 | TX8
+const int output14Pin = 36; // D36 | PWM
+const int output13Pin = 37; // D37 | PWM
+const int output12Pin = 38; // D38 | A14
+const int output11Pin = 39; // D39 | A15
+const int output10Pin = 40; // D40 | A16
+const int output9Pin = 41; // D41 | A17
 
 // UNUSED / SPARES / RESERVED
 //const int  = 10; // D10 | PWM | CS | RESERVED FOR SPI
@@ -73,18 +73,38 @@ DigitalInput DIn[] = {    DigitalInput(input0Pin, INPUT_PULLUP, 1),
                           DigitalInput(input2Pin, INPUT_PULLUP, 1),
                           DigitalInput(input3Pin, INPUT_PULLUP, 1),
                           DigitalInput(input4Pin, INPUT_PULLUP, 1),
-                          DigitalInput(input5Pin, INPUT_PULLUP, 1)};
+                          DigitalInput(input5Pin, INPUT_PULLUP, 1),
+                          DigitalInput(input6Pin, INPUT_PULLUP, 1),
+                          DigitalInput(input7Pin, INPUT_PULLUP, 1),
+                          DigitalInput(input8Pin, INPUT_PULLUP, 1),
+                          DigitalInput(input9Pin, INPUT_PULLUP, 1),
+                          DigitalInput(input10Pin, INPUT_PULLUP, 1),
+                          DigitalInput(input11Pin, INPUT_PULLUP, 1),
+                          DigitalInput(input12Pin, INPUT_PULLUP, 1),
+                          DigitalInput(input13Pin, INPUT_PULLUP, 1),
+                          DigitalInput(input14Pin, INPUT_PULLUP, 1),
+                          DigitalInput(input15Pin, INPUT_PULLUP, 1)};
 // 
 DigitalOutput DOut[] = {  DigitalOutput(output0Pin, OUTPUT, HOLD_LAST),
                           DigitalOutput(output1Pin, OUTPUT, HOLD_LAST),
                           DigitalOutput(output2Pin, OUTPUT, HOLD_LAST),
                           DigitalOutput(output3Pin, OUTPUT, HOLD_LAST),
                           DigitalOutput(output4Pin, OUTPUT, HOLD_LAST),
-                          DigitalOutput(output5Pin, OUTPUT, HOLD_LAST)};
+                          DigitalOutput(output5Pin, OUTPUT, HOLD_LAST),
+                          DigitalOutput(output6Pin, OUTPUT, HOLD_LAST),
+                          DigitalOutput(output7Pin, OUTPUT, HOLD_LAST),
+                          DigitalOutput(output8Pin, OUTPUT, HOLD_LAST),
+                          DigitalOutput(output9Pin, OUTPUT, HOLD_LAST),
+                          DigitalOutput(output10Pin, OUTPUT, HOLD_LAST),
+                          DigitalOutput(output11Pin, OUTPUT, HOLD_LAST),
+                          DigitalOutput(output12Pin, OUTPUT, HOLD_LAST),
+                          DigitalOutput(output13Pin, OUTPUT, HOLD_LAST),
+                          DigitalOutput(output14Pin, OUTPUT, HOLD_LAST),
+                          DigitalOutput(output15Pin, OUTPUT, HOLD_LAST)};
 						  
 //
-PWMServo Pwm[6];
-int PwmPin[6];
+//PWMServo Pwm[6];
+//int PwmPin[6];
 
 //
 void setup() {
@@ -123,16 +143,16 @@ void setup() {
   SerialOutputTimer_last = SerialOutputTimer;
 
   // initialize i/o
-  PwmPin[0] = pwm0Pin;
+  /*PwmPin[0] = pwm0Pin;
   PwmPin[1] = pwm1Pin;
   PwmPin[2] = pwm2Pin;
   PwmPin[3] = pwm3Pin;
   PwmPin[4] = pwm4Pin;
-  PwmPin[5] = pwm5Pin;
-  for(int i=0;i<6;i++){
-	DIn[i].init();
-	DOut[i].init();
-    Pwm[i].attach(PwmPin[i]);
+  PwmPin[5] = pwm5Pin;*/
+  for(int i=0;i<=15;i++){
+	  DIn[i].init();
+    DOut[i].init();
+    //Pwm[i].attach(PwmPin[i]);
   }
 
   //
@@ -140,12 +160,13 @@ void setup() {
   
 }
 
-bool InputState[6];
-bool OutputState[6];
-uint8_t PwmState[6];
+bool InputState[16];
+bool OutputState[16];
+//uint8_t PwmState[6];
 bool Enable;
 bool Heartbeat, HeartbeatLast, HeartbeatLost;
 unsigned long HeartbeatWatchDog, HeartbeatWatchDogLast;
+uint8_t ExpectedDeviceType;
 void loop() {
 
     handleEtherCAT();
@@ -202,16 +223,27 @@ void handleTx(){
   
     // byte 1 is used for inputs
     TxBuffer[1] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
-    TxBuffer[1] = TxBuffer[1] | (InputState[0] ? B00000001 : B00000000);
-    TxBuffer[1] = TxBuffer[1] | (InputState[1] ? B00000010 : B00000000);
-    TxBuffer[1] = TxBuffer[1] | (InputState[2] ? B00000100 : B00000000);
-    TxBuffer[1] = TxBuffer[1] | (InputState[3] ? B00001000 : B00000000);
-    TxBuffer[1] = TxBuffer[1] | (InputState[4] ? B00010000 : B00000000);
-    TxBuffer[1] = TxBuffer[1] | (InputState[5] ? B00100000 : B00000000);
-    //TxBuffer[1] = TxBuffer[1] | (tx_ ? B01000000 : B00000000);
-    //TxBuffer[1] = TxBuffer[1] | (tx_ ? B10000000 : B00000000);
+    TxBuffer[1] = TxBuffer[1] | (!InputState[0] ? B00000001 : B00000000); // we use NOT(!) here because we use INPUT_PULLUP
+    TxBuffer[1] = TxBuffer[1] | (!InputState[1] ? B00000010 : B00000000);
+    TxBuffer[1] = TxBuffer[1] | (!InputState[2] ? B00000100 : B00000000);
+    TxBuffer[1] = TxBuffer[1] | (!InputState[3] ? B00001000 : B00000000);
+    TxBuffer[1] = TxBuffer[1] | (!InputState[4] ? B00010000 : B00000000);
+    TxBuffer[1] = TxBuffer[1] | (!InputState[5] ? B00100000 : B00000000);
+    TxBuffer[1] = TxBuffer[1] | (!InputState[6] ? B01000000 : B00000000);
+    TxBuffer[1] = TxBuffer[1] | (!InputState[7] ? B10000000 : B00000000);
+  
+    // byte 2 is used for inputs
+    TxBuffer[2] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
+    TxBuffer[2] = TxBuffer[2] | (!InputState[8] ? B00000001 : B00000000);
+    TxBuffer[2] = TxBuffer[2] | (!InputState[9] ? B00000010 : B00000000);
+    TxBuffer[2] = TxBuffer[2] | (!InputState[10] ? B00000100 : B00000000);
+    TxBuffer[2] = TxBuffer[2] | (!InputState[11] ? B00001000 : B00000000);
+    TxBuffer[2] = TxBuffer[2] | (!InputState[12] ? B00010000 : B00000000);
+    TxBuffer[2] = TxBuffer[2] | (!InputState[13] ? B00100000 : B00000000);
+    TxBuffer[2] = TxBuffer[2] | (!InputState[14] ? B01000000 : B00000000);
+    TxBuffer[2] = TxBuffer[2] | (!InputState[15] ? B10000000 : B00000000);
 
-    // bytes 2 through 28 are unused
+    // bytes 3 through 28 are unused
 	  //
 
     // byte 29 will be used to transmit the device type
@@ -260,20 +292,39 @@ void handleRx(){
         OutputState[3] = RxBuffer[1] & B00001000;
         OutputState[4] = RxBuffer[1] & B00010000;
         OutputState[5] = RxBuffer[1] & B00100000;
-        //rx_ = RxBuffer[1] & B01000000;
-        //rx_ = RxBuffer[1] & B10000000;
+        OutputState[6] = RxBuffer[1] & B01000000;
+        OutputState[7] = RxBuffer[1] & B10000000;
+
+        // byte 2 is used for digital outputs
+        OutputState[8] = RxBuffer[2] & B00000001;
+        OutputState[9] = RxBuffer[2] & B00000010;
+        OutputState[10] = RxBuffer[2] & B00000100;
+        OutputState[11] = RxBuffer[2] & B00001000;
+        OutputState[12] = RxBuffer[2] & B00010000;
+        OutputState[13] = RxBuffer[2] & B00100000;
+        OutputState[14] = RxBuffer[2] & B01000000;
+        OutputState[15] = RxBuffer[2] & B10000000;
 
         // bytes 2 through 7 will be for pwm
-        for(int i=0; i<6; i++){
-              PwmState[i] = constrain(RxBuffer[2 + i], 0 , 180); // start at index 2
-        }
+        //for(int i=0; i<6; i++){
+        //      PwmState[i] = constrain(RxBuffer[2 + i], 0 , 180); // start at index 2
+        //}
+
+        // bytes 3 through 28 are unused
+        //
+
+        // byte 29 will be for the expected device type
+        ExpectedDeviceType = RxBuffer[29];
+
+        // bytes 30 and 31 will be reserved for checksum
+        //
     }
 }
 
 void handleInputs(){
 
   // read inputs
-  for (int i=0;i<6;i++){
+  for (int i=0;i<=15;i++){
       InputState[i] = DIn[i].read();
   }
 
@@ -284,15 +335,17 @@ void handleOutputs(){
   // write digital outputs
   digitalWriteFast(StatusLed, Enable);
 
-  if (Enable && CommsOK && !HeartbeatLost){
-    for (int i=0;i<6;i++){
+  if (Enable && (DEVICE_TYPE == ExpectedDeviceType) && CommsOK && !HeartbeatLost){
+    for (int i=0;i<=15;i++){
       OutputState[i] ? DOut[i].on() : DOut[i].off();
-      Pwm[i].attach(PwmPin[i]); 
-      Pwm[i].write(PwmState[i]);
+      /*if (!Pwm[i].attached()){
+        Pwm[i].attach(PwmPin[i]); 
+      }
+      Pwm[i].write(PwmState[i]);*/
     }
   } else {
 	// todo flash led when coms fail or heartbeat lost
-    for (int i=0;i<6;i++){
+    for (int i=0;i<=15;i++){
       DOut[i].fail();
       //Pwm[i].detach(); // for some reason this throws an "undefined reference" compiler error.
     }

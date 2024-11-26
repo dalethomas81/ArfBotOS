@@ -187,6 +187,7 @@ bool DigitalOutputState1, DigitalOutputState2;
 bool DriveIsEnabled, Enable;
 bool Heartbeat, HeartbeatLast, HeartbeatLost;
 unsigned long HeartbeatWatchDog, HeartbeatWatchDogLast;
+uint8_t ExpectedDeviceType;
 void loop() {
 
     handleEtherCAT();
@@ -345,7 +346,7 @@ void handleRx(){
             // get nctrl1
             DriveControl[i].Enable = RxBuffer[k] & B00001000; 
             // TODO test evaluating Enable here as well like:
-            //DriveControl[i].Enable = Enable && (RxBuffer[k] & B00001000);
+            //DriveControl[i].Enable = Enable && (DEVICE_TYPE == ExpectedDeviceType) && (RxBuffer[k] & B00001000);
             k++;
             // get nctrl2
             DriveControl[i].Minus = RxBuffer[k] & B01000001;
@@ -364,11 +365,15 @@ void handleRx(){
         //rx_ = RxBuffer[26] & B01000000;
         //rx_ = RxBuffer[26] & B10000000;
 
-        // bytes 27, 28, and 29 are unused
+        // bytes 27 and 28 are unused
         //
 
-        // bytes 30 and 31 will be used for checksum
+        // byte 29 will be for the expected device type
+        ExpectedDeviceType = RxBuffer[29];
+
+        // bytes 30 and 31 will be reserved for checksum
         //
+
     }
 }
 
@@ -391,7 +396,7 @@ void handleOutputs(){
 
   digitalWriteFast(StatusLed, DriveIsEnabled);
 
-  if (Enable && CommsOK && !HeartbeatLost){
+  if (Enable && (DEVICE_TYPE == ExpectedDeviceType) && CommsOK && !HeartbeatLost){
     DigitalOutputState1 ? DigitalOutput1.on() : DigitalOutput1.off();
     DigitalOutputState2 ? DigitalOutput2.on() : DigitalOutput2.off();
   } else {
