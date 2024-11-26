@@ -18,4 +18,9 @@ If you already have ArfBotOS running and have it connected to a robot, you will 
 ## The Robot
 In theory, you can use any 6 axis robot that you would like with ArfBotOS. However, you will need to integrate the connections to the servos and limit switches. Additionally, you will need recompile ArfBotOS with the Denavit-Hartenburg (DH) parmeters for the bot of your choice. I chose to use the fantastic open source AR4 robot designed and developed by Chris Annin of [Annin Robotics](https://www.anninrobotics.com/)  
 
-Instructions on how to integrate the AR4 with ArfBotOS can be found [here](https://github.com/dalethomas81/ArfBotOS/blob/main/Robots/AR4/README.MD).
+Instructions on how to integrate the AR4 with ArfBotOS can be found [here](https://github.com/dalethomas81/ArfBotOS/blob/main/Robots/AR4/README.MD).  
+
+<img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Robots/AR4/Media/MyRobot.png" alt="menu" width="600"/>  
+
+Fun video of the AR4 handing out glow sticks for halloween:  
+https://www.youtube.com/watch?v=ciDyWyDrXTQ

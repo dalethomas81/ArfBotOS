@@ -11,17 +11,18 @@ class PTO {
   private:
     bool Direction, Direction_Last;
     uint32_t _SysTime, _SysTime_Last;
-    bool DriveEnabled;
     int dirPin;
     int pulsePin;
+    int enablePin;
     bool bOffOneshot;
 
   public:
-    PTO(int In_DirPin, int In_PulsePin);
+    PTO(int In_DirPin, int In_PulsePin, int In_EnablePin = -1);
     void init();
-    void run(float RevolutionsPerSecond, float StepsPerRevolution);
+    void run(int16_t Frequency);
     int turnON();
     int turnOFF();
+    bool DriveEnabled;
 };
 
 #endif
