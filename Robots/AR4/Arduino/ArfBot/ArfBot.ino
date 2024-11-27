@@ -15,6 +15,7 @@ EasyCAT EASYCAT(10);
 bool CommsOK;
 #define WATCHDOG 0x80 // this value is returned from EasyCAT.MainTask(). for some reason they dont define it there. i wont fox with it.
 
+uint8_t DEVICE_TYPE = 1; // 1-Robot 2-IO
 
 unsigned long SerialOutputTimer, SerialOutputTimer_last;
 uint8_t TxBuffer[32];
@@ -183,9 +184,10 @@ void setup() {
 bool LimitState[AxisCount];
 bool DigitalInputState1, DigitalInputState2;
 bool DigitalOutputState1, DigitalOutputState2;
-bool DriveIsEnabled, ControllerEnable;
+bool DriveIsEnabled, Enable;
 bool Heartbeat, HeartbeatLast, HeartbeatLost;
 unsigned long HeartbeatWatchDog, HeartbeatWatchDogLast;
+uint8_t ExpectedDeviceType;
 void loop() {
 
     handleEtherCAT();
@@ -233,7 +235,7 @@ void handleTx(){
     // reserved for future control use
     TxBuffer[0] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
     TxBuffer[0] = TxBuffer[0] | (Heartbeat ? B00000001 : B00000000);
-    TxBuffer[0] = TxBuffer[0] | (ControllerEnable ? B00000010 : B00000000);
+    TxBuffer[0] = TxBuffer[0] | (Enable ? B00000010 : B00000000);
     //TxBuffer[0] = TxBuffer[0] | (tx_ ? B00000100 : B00000000);
     //TxBuffer[0] = TxBuffer[0] | (tx_ ? B00001000 : B00000000);
     //TxBuffer[0] = TxBuffer[0] | (tx_ ? B00010000 : B00000000);
@@ -285,9 +287,13 @@ void handleTx(){
     //TxBuffer[27] = TxBuffer[27] | (tx_ ? B01000000 : B00000000);
     //TxBuffer[27] = TxBuffer[27] | (tx_ ? B10000000 : B00000000);
 
-    // bytes 28 and 29 are unused
+    // byte 28 is unused
+    //
 
-    // bytes 30 and 31 will be for crc
+    // byte 29 will be used to transmit the device type
+    TxBuffer[29] = DEVICE_TYPE;
+
+    // bytes 30 and 31 will be used for checksum
     // calculate checksum and append to tx buffer
     TxCrc.u = calculateChecksum(TxBuffer,30);
     TxBuffer[30] = TxCrc.b[0];
@@ -314,8 +320,8 @@ void handleRx(){
     if (RxCrc.b[0] == RxBuffer[30] && RxCrc.b[1] == RxBuffer[31]) {
           
         // reserved for future control use
-        Heartbeat         = RxBuffer[0] & B00000001;
-        ControllerEnable  = RxBuffer[0] & B00000010;
+        Heartbeat   = RxBuffer[0] & B00000001;
+        Enable      = RxBuffer[0] & B00000010;
         //rx_ = RxBuffer[0] & B00000100;
         //rx_ = RxBuffer[0] & B00001000;
         //rx_ = RxBuffer[0] & B00010000;
@@ -338,7 +344,9 @@ void handleRx(){
         k=13;
         for (int i=0;i<AxisCount;i++){
             // get nctrl1
-            DriveControl[i].Enable = RxBuffer[k] & B00001000;
+            DriveControl[i].Enable = RxBuffer[k] & B00001000; 
+            // TODO test evaluating Enable here as well like:
+            //DriveControl[i].Enable = Enable && (DEVICE_TYPE == ExpectedDeviceType) && (RxBuffer[k] & B00001000);
             k++;
             // get nctrl2
             DriveControl[i].Minus = RxBuffer[k] & B01000001;
@@ -356,6 +364,16 @@ void handleRx(){
         //rx_ = RxBuffer[26] & B00100000;
         //rx_ = RxBuffer[26] & B01000000;
         //rx_ = RxBuffer[26] & B10000000;
+
+        // bytes 27 and 28 are unused
+        //
+
+        // byte 29 will be for the expected device type
+        ExpectedDeviceType = RxBuffer[29];
+
+        // bytes 30 and 31 will be reserved for checksum
+        //
+
     }
 }
 
@@ -378,7 +396,7 @@ void handleOutputs(){
 
   digitalWriteFast(StatusLed, DriveIsEnabled);
 
-  if (CommsOK && !HeartbeatLost){
+  if (Enable && (DEVICE_TYPE == ExpectedDeviceType) && CommsOK && !HeartbeatLost){
     DigitalOutputState1 ? DigitalOutput1.on() : DigitalOutput1.off();
     DigitalOutputState2 ? DigitalOutput2.on() : DigitalOutput2.off();
   } else {
@@ -405,7 +423,7 @@ void handleSerial(){
 void handleDrives(){
   DriveIsEnabled = false;
   for (int i=0;i<AxisCount;i++){
-      //if (DriveControl[i].Enable && CommsOK && !HeartbeatLost) { // not sure if we are good enough for this yet :)
+      //if (DriveControl[i].Enable && Enable && CommsOK && !HeartbeatLost) { // not sure if we are good enough for this yet :)
       if (DriveControl[i].Enable) {
           Drive[i].turnON();
           DriveIsEnabled = true; // turn on led to warn at least one drive is enabled

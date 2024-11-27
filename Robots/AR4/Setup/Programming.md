@@ -29,5 +29,8 @@ _note: if you are not using the EK1100, EL1809, and EL2809 (remote input and out
 3. Right-click and select Disable (this will not show if you are online with the PLC).  
 <img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Robots/AR4/Media/EtherCAT-Disable-Unused.png" alt="menu" width="600"/> 
 4. Download the project by selecting Online->Multiple Download and following the prompts. The EtherCAT chain will now be restored working with only the AR4 robot connected.  
-<img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Robots/AR4/Media/EtherCAT-Running-After-Disable-Unused.png" alt="menu" width="600"/> 
+<img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Robots/AR4/Media/EtherCAT-Running-After-Disable-Unused.png" alt="menu" width="600"/>  
+
+ArfBotOS will automatically map the IO of the device that is enabled in the Device tree. You can select `IoOption1` or `IoOption2` or neither. Simply right-click on the devices and enable/disable them according to how you will use it then download to the PLC.  
+<img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Resources/images/readme/IoOption.png" alt="menu" width="600"/>  
  
