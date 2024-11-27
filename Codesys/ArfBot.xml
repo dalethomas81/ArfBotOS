@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-11-26T18:02:28.2696383" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-11-26T14:16:06.4598131" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-11-27T14:22:15.0814188" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-11-27T13:52:20.9324947" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -4483,7 +4483,14 @@ END_VAR
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">//
+PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.X := 283.23;
+PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.Y := -66.77;
+PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.Z := 195.00;
+PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.A := -127.52;
+PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.B := 179.00;
+PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.C := 102.00;
+
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[1].Commands[_i].CommandType := DUT_CommandType.Disabled;
@@ -5309,7 +5316,11 @@ HeartbeatOn(in:=NOT HeartbeatOff.Q,PT:=HeartbeatPt);
 HeartbeatOff(in:=HeartbeatOn.Q,PT:=HeartbeatPt);
 
 // if ethercat coms drop, clear the axes home status
+{IF defined (IsSimulationMode)}
+AR4OperationalFtrig(CLK:=TRUE);
+{ELSE}
 AR4OperationalFtrig(CLK:=AR4.wState = ETC_SLAVE_STATE.ETC_SLAVE_OPERATIONAL);
+{END_IF}
 IF AR4OperationalFtrig.Q THEN
 	PersistentVars.Flags[GVL.HOME_COMPLETE].Value := FALSE;
 	GVL.PowerOn := FALSE;
@@ -5403,6 +5414,37 @@ MEMUtils.MemCpy(pbyDest:=ADR(RxCrc),
 				dwSize:=2);
 
 // compare calc crc with rx crc
+{IF defined (IsSimulationMode)}
+    PersistentVars.Flags[GVL.HOME_COMPLETE].Value := TRUE;
+	rx_heartbeat := HeartbeatOn.Q;
+	rx_en := GVL.Enable;
+    EncPosition[0] := J1.diSetPosition;
+    EncPosition[1] := J2.diSetPosition;
+    EncPosition[2] := J3.diSetPosition;
+    EncPosition[3] := J4.diSetPosition;
+    EncPosition[4] := J5.diSetPosition;
+    EncPosition[5] := J6.diSetPosition;
+    rx_j1_limit :=
+	rx_j2_limit :=
+	rx_j3_limit :=
+	rx_j4_limit :=
+	rx_j5_limit :=
+	rx_j6_limit :=
+    J1.in.bDriveStartRealState :=
+	J1.in.bRegulatorRealState :=
+	J2.in.bDriveStartRealState :=
+	J2.in.bRegulatorRealState :=
+	J3.in.bDriveStartRealState :=
+	J3.in.bRegulatorRealState :=
+	J4.in.bDriveStartRealState :=
+	J4.in.bRegulatorRealState :=
+	J5.in.bDriveStartRealState :=
+	J5.in.bRegulatorRealState :=
+	J6.in.bDriveStartRealState :=
+	J6.in.bRegulatorRealState :=
+    AllDrivesEnabled := GVL.Enable;
+    DeviceID := RobotDeviceID;
+{ELSE}
 IF RxCrc = F_Checksum(ADR(AR4Inputs), 30) THEN
 	// byte 0 is for system inputs
 	rx_heartbeat	:= AR4Inputs[0].0; // receive the heartbeat back
@@ -5471,6 +5513,7 @@ ELSE
 	// increment crc mismatch counter
 	ChecksumMisCount := ChecksumMisCount + 1;
 END_IF
+{END_IF}
 {endregion}
 
 // https://docs.google.com/spreadsheets/d/1S5TOxwbAx8pTMUdoWMnyC9WPfphhtUME/edit#gid=595805457
@@ -19317,8 +19360,8 @@ END_VAR
                       <addData>
                         <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                           <Attributes>
-                            <Attribute Name="instance-path" Value="" />
                             <Attribute Name="noinit" />
+                            <Attribute Name="instance-path" Value="" />
                           </Attributes>
                         </data>
                       </addData>
@@ -31666,7 +31709,7 @@ END_IF
    
 IF SaveRetain THEN
 	pApplication := CmpApp.AppFindApplicationByName('Application', ADR(ResultFind));
-   	ResultStore := AppStoreRetainsInFile(pApplication, './Application/BackupRetain.ret');
+    ResultStore := AppStoreRetainsInFile(pApplication, './Application/BackupRetain.ret');
    	ResultStore := AppStoreRetainsInFile(pApplication, './Application/Application.ret');
    	SaveRetain := FALSE;
 END_IF
@@ -32460,7 +32503,6 @@ END_TYPE
                 <Library Name="#SysShm" Namespace="SysShm" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="SysShm, * (System)" />
                 <Library Name="#Util" Namespace="Util" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="Util, * (System)" />
                 <Library Name="SysTypes Interfaces, * (System)" Namespace="SysTypes" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
-                <Library Name="RaspberryPiCamera, 4.6.0.0 (3S - Smart Software Solutions GmbH)" Namespace="Camera" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" />
                 <Library Name="#SysFile" Namespace="SysFile" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="SysFile, * (System)" />
                 <Library Name="#SysProcess" Namespace="SysProcess" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="SysProcess, * (System)" />
                 <Library Name="#CmpBitmapPool" Namespace="CmpBitmapPool" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="CmpBitmapPool, * (System)" />
@@ -32481,7 +32523,6 @@ END_TYPE
                 <Library Name="#CmpDynamicText" Namespace="CmpDynamicText" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CmpDynamicText" />
                 <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.19.10 (CAA Technical Workgroup)" />
                 <Library Name="#IODrvEtherCAT" Namespace="IoDrvEthercatLib" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="IoDrvEtherCAT, 4.1.0.0 (3S - Smart Software Solutions GmbH)" />
-                <Library Name="#CmpApp" Namespace="CmpApp" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="CmpApp, * (System)" />
                 <Library Name="#System_VisuElems" Namespace="VisuElems" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElems, 4.6.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
                 <Library Name="#System_VisuElemMeter" Namespace="VisuElemMeter" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemMeter, 4.6.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
                 <Library Name="#System_VisuElemsSpecialControls" Namespace="VisuElemsSpecialControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsSpecialControls, 4.6.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
@@ -32495,6 +32536,7 @@ END_TYPE
                 <Library Name="#System_VisuElemsDateTime" Namespace="VisuElemsDateTime" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsDateTime, 4.6.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
                 <Library Name="#System_VisuElemXYChart" Namespace="VisuElemXYChart" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemXYChart, 4.6.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
                 <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.6.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+                <Library Name="#CmpApp" Namespace="CmpApp" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="CmpApp, * (System)" />
                 <PlaceholderRedirections>
                   <PlaceholderRedirection Placeholder="System_VisuElemsAlarm" Redirection="VisuElemsAlarm, 4.6.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="NetBaseSrv" Redirection="Net Base Services, 3.5.20.0 (CODESYS)" />
@@ -44063,12 +44105,12 @@ END_TYPE
           <Object Name="SPI" ObjectId="ab0b7e43-88f3-412a-8ad5-c024c7dfcf48" />
           <Object Name="I²C" ObjectId="c2edcee5-4e0d-445e-b13d-3228dc92e777" />
           <Object Name="EtherCAT_Master_SoftMotion" ObjectId="5baf5aca-506c-4624-bd34-f9ffff5de5f0">
-            <Object Name="AR4" ObjectId="9ce283bb-dc9d-4f2e-83ce-5338bc68274b" />
-            <Object Name="IoOption2" ObjectId="4cfb6cee-b109-45e7-a4c1-858602c281c7" />
             <Object Name="IoOption1" ObjectId="146460d5-5c14-4c4e-bb38-f6ba5d8988ed">
               <Object Name="EL1809" ObjectId="374e4a00-29ac-438a-9e3a-d54b72b9f8a9" />
               <Object Name="EL2809" ObjectId="c21000ab-cb42-426a-8126-5cd2cfddcecd" />
             </Object>
+            <Object Name="AR4" ObjectId="9ce283bb-dc9d-4f2e-83ce-5338bc68274b" />
+            <Object Name="IoOption2" ObjectId="4cfb6cee-b109-45e7-a4c1-858602c281c7" />
           </Object>
         </Object>
         <Object Name="Library Manager" ObjectId="7947b9f0-2ec0-46cb-a7e5-f8f763be16e6" />
