@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-11-28T19:43:11.532202" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-11-28T19:42:57.167476" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-11-29T14:07:48.6878977" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-11-29T14:07:31.8175211" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -140,6 +140,14 @@
             </addData>
           </task>
           <globalVars name="GVL" constant="true">
+            <variable name="pi">
+              <type>
+                <LREAL />
+              </type>
+              <initialValue>
+                <simpleValue value="3.1415926535897931" />
+              </initialValue>
+            </variable>
             <variable name="DIG_IN_ARR_BEG">
               <type>
                 <INT />
@@ -626,6 +634,9 @@ RESERVED: INT:=46;</xhtml>
                   <xhtml xmlns="http://www.w3.org/1999/xhtml">{attribute 'qualified_only'}
 
 VAR_GLOBAL CONSTANT
+    
+    //
+    pi: LREAL:=3.14159265358979323846;
 	
 	// array sizes
 	DIG_IN_ARR_BEG: INT:=0;
@@ -726,6 +737,14 @@ END_VAR</xhtml>
               <data name="http://www.3s-software.com/plcopenxml/mixedattrsvarlist" handleUnknown="implementation">
                 <MixedAttrsVarList>
                   <globalVars name="GVL" constant="true">
+                    <variable name="pi">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="3.1415926535897931" />
+                      </initialValue>
+                    </variable>
                     <variable name="DIG_IN_ARR_BEG">
                       <type>
                         <INT />
@@ -4045,9 +4064,13 @@ END_VAR</xhtml>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">{region "utility"}
     (* Get the current task info *)
-    TaskHandle := CmpIecTask.IecTaskGetCurrent(Result);
-    TaskInfo := CmpIecTask.IecTaskGetInfo3(TaskHandle, Result);
-    GVL.dwMainInterval := TaskInfo^.dwInterval;
+    {IF defined (IsSimulationMode)}
+        GVL.dwMainInterval := 1000;
+    {ELSE}
+        TaskHandle := CmpIecTask.IecTaskGetCurrent(Result);
+        TaskInfo := CmpIecTask.IecTaskGetInfo3(TaskHandle, Result);
+        GVL.dwMainInterval := TaskInfo^.dwInterval;
+    {END_IF}
     
 	GVL.ResetRtrig(CLK:=GVL.Reset);
 	IF GVL.ResetRtrig.Q THEN
@@ -5541,14 +5564,14 @@ J1.in.bLimitNeg := TRUE;
 J2.in.bLimitNeg := TRUE;
 J3.in.bLimitNeg := rx_j3_limit;
 J4.in.bLimitNeg := rx_j4_limit;
-J5.in.bLimitNeg := TRUE;
+J5.in.bLimitNeg := rx_j5_limit;
 J6.in.bLimitNeg := TRUE;
 
 J1.in.bLimitPos := rx_j1_limit;
 J2.in.bLimitPos := rx_j2_limit;
 J3.in.bLimitPos := TRUE;
 J4.in.bLimitPos := TRUE;
-J5.in.bLimitPos := rx_j5_limit;
+J5.in.bLimitPos := TRUE;
 J6.in.bLimitPos := rx_j6_limit;</xhtml>
                         </ST>
                       </body>
@@ -20238,7 +20261,11 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
+    GapJerk: LREAL := 1000;
+    _Degrees: ARRAY[0..5] OF LREAL;
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
+	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
@@ -20250,6 +20277,7 @@ VAR
 	_SMC_Interpolator: SMC_Interpolator;
 	_PlanPath: CncPathPlanner;
 	_ErrorRtrig: R_TRIG;
+    _i, _j, _k: INT;
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
@@ -20330,7 +20358,11 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
+    GapJerk: LREAL := 1000;
+    _Degrees: ARRAY[0..5] OF LREAL;
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
+	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
@@ -20342,6 +20374,7 @@ VAR
 	_SMC_Interpolator: SMC_Interpolator;
 	_PlanPath: CncPathPlanner;
 	_ErrorRtrig: R_TRIG;
+    _i, _j, _k: INT;
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
@@ -20370,7 +20403,38 @@ END_VAR
                     </addData>
                   </inOutVars>
                   <localVars>
+                    <variable name="GapJerk">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="1000" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_Degrees">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="5" />
+                          <baseType>
+                            <LREAL />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="_OriConvention">
+                      <type>
+                        <derived name="SMC_ORI_CONVENTION" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="SMC_ORI_CONVENTION.XYZ" />
+                      </initialValue>
+                    </variable>
                     <variable name="_SMC_TrafoConfig_ArticulatedRobot_6DOF">
+                      <type>
+                        <derived name="SMC_TrafoConfig_ArticulatedRobot_6DOF" />
+                      </type>
+                    </variable>
+                    <variable name="_SMC_TrafofConfig_ArticulatedRobot_6DOF">
                       <type>
                         <derived name="SMC_TrafoConfig_ArticulatedRobot_6DOF" />
                       </type>
@@ -20430,6 +20494,21 @@ END_VAR
                         <derived name="R_TRIG" />
                       </type>
                     </variable>
+                    <variable name="_i">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_j">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_k">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
                     <addData>
                       <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
                         <InterfaceAsPlainText>
@@ -20447,7 +20526,11 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
+    GapJerk: LREAL := 1000;
+    _Degrees: ARRAY[0..5] OF LREAL;
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
+	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
@@ -20459,6 +20542,7 @@ VAR
 	_SMC_Interpolator: SMC_Interpolator;
 	_PlanPath: CncPathPlanner;
 	_ErrorRtrig: R_TRIG;
+    _i, _j, _k: INT;
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
@@ -20512,7 +20596,11 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
+    GapJerk: LREAL := 1000;
+    _Degrees: ARRAY[0..5] OF LREAL;
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
+	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
@@ -20524,6 +20612,7 @@ VAR
 	_SMC_Interpolator: SMC_Interpolator;
 	_PlanPath: CncPathPlanner;
 	_ErrorRtrig: R_TRIG;
+    _i, _j, _k: INT;
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
@@ -20619,7 +20708,11 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
+    GapJerk: LREAL := 1000;
+    _Degrees: ARRAY[0..5] OF LREAL;
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
+	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
@@ -20631,6 +20724,7 @@ VAR
 	_SMC_Interpolator: SMC_Interpolator;
 	_PlanPath: CncPathPlanner;
 	_ErrorRtrig: R_TRIG;
+    _i, _j, _k: INT;
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
@@ -20708,7 +20802,11 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
+    GapJerk: LREAL := 1000;
+    _Degrees: ARRAY[0..5] OF LREAL;
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
+	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
@@ -20720,6 +20818,7 @@ VAR
 	_SMC_Interpolator: SMC_Interpolator;
 	_PlanPath: CncPathPlanner;
 	_ErrorRtrig: R_TRIG;
+    _i, _j, _k: INT;
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
@@ -20775,7 +20874,11 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
+    GapJerk: LREAL := 1000;
+    _Degrees: ARRAY[0..5] OF LREAL;
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
+	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
@@ -20787,6 +20890,7 @@ VAR
 	_SMC_Interpolator: SMC_Interpolator;
 	_PlanPath: CncPathPlanner;
 	_ErrorRtrig: R_TRIG;
+    _i, _j, _k: INT;
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
@@ -20857,7 +20961,8 @@ CASE SUPER^._SeqMain OF
 	_STEP_COMMAND:
 		//
 		_CncCmdParser(Command:=Command);	
-		_PlanPath.M_SetOriConvention(OriConvention:=_CncCmdParser.stCommand.OriConvention);
+        _OriConvention := _CncCmdParser.stCommand.OriConvention; 
+		_PlanPath.M_SetOriConvention(OriConvention:=_OriConvention);
 		_PlanPath.M_SetStartPosition(StartPos:=_CncCmdParser.stCommand.StartPos);
 		_PlanPath.M_Execute(Filename:=_CncCmdParser.stCommand.Filename); // TODO I think we should be careful here. May need to sync CheckVelocities with the Interpolator
 		
@@ -20894,7 +20999,6 @@ _SMC_TrafoConfig_ArticulatedRobot_6DOF.q3_min_deg:=-160; // TODO put magic numbe
 _SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_max_deg:=160; // TODO put magic numbers somewhere appropriate
 _SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_min_deg:=-160; // TODO put magic numbers somewhere appropriate
 
-
 // TODO figure out how this var list can be used. for now its just hello world
 _PlanPath(VarList:= stVarList, DataOut=&gt; );
 
@@ -20913,7 +21017,7 @@ _SMC_Interpolator(
 	bWaitAtNextStop:= , 
 	dOverride:= , 
 	iVelMode:= , 
-	dwIpoTime:= GVL.dwMainInterval, // in microseconds and should match the task time
+	dwIpoTime:= GVL.dwMainInterval*3, // in microseconds and should be slower than the task time
 	dLastWayPos:= , 
 	bAbort:= NOT _SMC_Interpolator.bExecute, 
 	bSingleStep:= , 
@@ -20954,6 +21058,41 @@ CASE _SMC_Interpolator.wM OF
 		GVL.Servo0Position := 255; // TODO
 END_CASE
 
+_SMC_Trafof_ArticulatedRobot_6DOF(
+	config:= _SMC_TrafoConfig_ArticulatedRobot_6DOF, 
+	Drive0:= J1, 
+	Drive1:= J2, 
+	Drive2:= J3, 
+	Drive3:= J4, 
+	Drive4:= J5, 
+	Drive5:= J6, 
+	vToolPos=&gt; , 
+	mToolOrientation=&gt; , 
+	armState=&gt; , 
+	elbowState=&gt; , 
+	handState=&gt; );
+_Degrees[0] := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dX;
+_Degrees[1] := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dY;
+_Degrees[2] := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dZ;
+CASE _OriConvention OF
+    SMC_ORI_CONVENTION.ADDAXES:
+        _Degrees[3] := J4.fActPosition;
+        _Degrees[4] := J5.fActPosition;
+        _Degrees[5] := J6.fActPosition;
+    SMC_ORI_CONVENTION.XYZ:
+        SMC_Matrix3_ToRollPitchYaw_deg( mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
+                                        dRoll=&gt; _Degrees[3], dPitch=&gt; _Degrees[4], dYaw=&gt; _Degrees[5]);
+    SMC_ORI_CONVENTION.ZYX:
+        SMC_Matrix3_ToYawPitchRoll( mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
+                                    dRoll_rad=&gt; _Degrees[3], dPitch_rad=&gt; _Degrees[4], dYaw_rad=&gt; _Degrees[5]);
+                                    _Degrees[3] := RAD_TO_DEG(_Degrees[3]);
+                                    _Degrees[4] := RAD_TO_DEG(_Degrees[4]);
+                                    _Degrees[5] := RAD_TO_DEG(_Degrees[5]);
+    SMC_ORI_CONVENTION.ZYZ:
+        SMC_Matrix3_ToZYZ_deg(  mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
+                                dA_deg=&gt; _Degrees[3], dB_deg=&gt; _Degrees[4], dC_deg=&gt; _Degrees[5]);
+END_CASE
+
 _SMC_Trafo_ArticulatedRobot_6DOF(
 	config:= _SMC_TrafoConfig_ArticulatedRobot_6DOF, 
 	pi:= _SMC_Interpolator.piSetPosition, 
@@ -20963,9 +21102,9 @@ _SMC_Trafo_ArticulatedRobot_6DOF(
 	dQ3_old:= J4.fActPosition, 
 	dQ4_old:= J5.fActPosition, 
 	dQ5_old:= J6.fActPosition, 
-	armState:= , 
-	elbowState:= , 
-	handState:= , 
+	armState:= _SMC_Trafof_ArticulatedRobot_6DOF.armState, 
+	elbowState:= _SMC_Trafof_ArticulatedRobot_6DOF.elbowState, 
+	handState:= _SMC_Trafof_ArticulatedRobot_6DOF.handState, 
 	dQ0=&gt; , 
 	dQ1=&gt; , 
 	dQ2=&gt; , 
@@ -20984,7 +21123,7 @@ _SMC_ControlAxisByPos_J1(
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
-	fGapJerk:= , 
+	fGapJerk:= GapJerk, 
 	bBusy=&gt; , 
 	bCommandAborted=&gt; , 
 	bError=&gt; , 
@@ -21000,7 +21139,7 @@ _SMC_ControlAxisByPos_J2(
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
-	fGapJerk:= , 
+	fGapJerk:= GapJerk, 
 	bBusy=&gt; , 
 	bCommandAborted=&gt; , 
 	bError=&gt; , 
@@ -21016,7 +21155,7 @@ _SMC_ControlAxisByPos_J3(
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
-	fGapJerk:= , 
+	fGapJerk:= GapJerk, 
 	bBusy=&gt; , 
 	bCommandAborted=&gt; , 
 	bError=&gt; , 
@@ -21028,11 +21167,11 @@ _SMC_ControlAxisByPos_J4(
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
-	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ3, 
+	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ3,
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
-	fGapJerk:= , 
+	fGapJerk:= GapJerk, 
 	bBusy=&gt; , 
 	bCommandAborted=&gt; , 
 	bError=&gt; , 
@@ -21048,7 +21187,7 @@ _SMC_ControlAxisByPos_J5(
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
-	fGapJerk:= , 
+	fGapJerk:= GapJerk, 
 	bBusy=&gt; , 
 	bCommandAborted=&gt; , 
 	bError=&gt; , 
@@ -21060,11 +21199,11 @@ _SMC_ControlAxisByPos_J6(
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
-	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ5, // please see note in A_CNC POU regarding why this was set to negative
+	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ5,
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
-	fGapJerk:= , 
+	fGapJerk:= GapJerk, 
 	bBusy=&gt; , 
 	bCommandAborted=&gt; , 
 	bError=&gt; , 
@@ -21385,7 +21524,11 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
+    GapJerk: LREAL := 1000;
+    _Degrees: ARRAY[0..5] OF LREAL;
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
+	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
@@ -21397,6 +21540,7 @@ VAR
 	_SMC_Interpolator: SMC_Interpolator;
 	_PlanPath: CncPathPlanner;
 	_ErrorRtrig: R_TRIG;
+    _i, _j, _k: INT;
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
@@ -32454,6 +32598,56 @@ END_VAR
                 </addData>
               </pou>
             </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="RAD_TO_DEG" pouType="function">
+                <interface>
+                  <returnType>
+                    <LREAL />
+                  </returnType>
+                  <inputVars>
+                    <variable name="Radians">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                    <addData>
+                      <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                        <InterfaceAsPlainText>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION RAD_TO_DEG : LREAL
+VAR_INPUT
+    Radians: LREAL;
+END_VAR
+VAR
+END_VAR
+</xhtml>
+                        </InterfaceAsPlainText>
+                      </data>
+                    </addData>
+                  </inputVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">RAD_TO_DEG := Radians * (180 / GVL.pi);</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                    <InterfaceAsPlainText>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION RAD_TO_DEG : LREAL
+VAR_INPUT
+    Radians: LREAL;
+END_VAR
+VAR
+END_VAR
+</xhtml>
+                    </InterfaceAsPlainText>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>5fcdbd79-7ee6-4602-a394-dd4cc360d2d1</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/union" handleUnknown="implementation">
               <union name="StringByteArray">
                 <variable name="bArray">
@@ -32545,12 +32739,12 @@ END_TYPE
                   <PlaceholderRedirection Placeholder="NetBaseSrv" Redirection="Net Base Services, 3.5.20.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="Standard" Redirection="Standard, 3.5.18.0 (System)" />
                   <PlaceholderRedirection Placeholder="Standard64" Redirection="Standard64, 3.5.20.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.6.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="UTF8" Redirection="UTF-8 Encoding Support, 4.0.0.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElem3DPath" Redirection="VisuElem3DPath, 4.6.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemTextEditor" Redirection="VisuElemTextEditor, 4.6.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemCamDisplayer" Redirection="VisuElemCamDisplayer, 4.6.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemBase" Redirection="VisuElemBase, 4.6.0.0 (System)" />
-                  <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="MemoryBlockManager" Redirection="Memory Block Manager, 3.5.20.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemMeter" Redirection="VisuElemMeter, 4.6.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemsSpecialControls" Redirection="VisuElemsSpecialControls, 4.6.0.0 (System)" />
@@ -32566,7 +32760,7 @@ END_TYPE
                   <PlaceholderRedirection Placeholder="System_VisuElemXYChart" Redirection="VisuElemXYChart, 4.6.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="OMAC_PackML_State_Machine" Redirection="OMAC PackML State Machine, 1.0.0.4 (3S - Smart Software Solutions GmbH)" />
                   <PlaceholderRedirection Placeholder="FloatingPointUtils" Redirection="FloatingPointUtils, 3.5.17.0 (System)" />
-                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.6.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="Collections" Redirection="Collections, 3.5.17.0 (System)" />
                   <PlaceholderRedirection Placeholder="StringSegs" Redirection="Immutable String Segments, 3.5.18.0 (3S - Smart Software Solutions GmbH)" />
                   <PlaceholderRedirection Placeholder="CBML" Redirection="Common Behaviour Model, 3.5.17.0 (3S - Smart Software Solutions GmbH)" />
@@ -44078,6 +44272,7 @@ END_TYPE
                   <Object Name="P_StateOn" ObjectId="15ab277e-c978-4e7b-9e52-7a854e0469dd" />
                 </Object>
               </Folder>
+              <Object Name="RAD_TO_DEG" ObjectId="5fcdbd79-7ee6-4602-a394-dd4cc360d2d1" />
             </Folder>
             <Folder Name="GVL">
               <Object Name="GVL" ObjectId="1430d1bd-aa92-442c-bf72-190d0e907494" />

@@ -313,7 +313,7 @@ function onOpen() {
   //writeComment("##########");
   //writeComment("THIS POSTPROCESSOR IS A TEMPLATE FOR DEPOSITION SUPPORT, IT DOES NOT OUTPUT A FUNCTIONAL NC PROGRAM.");
   //writeComment("##########");
-  writeBlock("N" + blockNumber + " G56 X0 Y0 Z0");
+  writeBlock("N" + blockNumber + " G56 X0 Y0 Z0 A0 B0 C0");
   blockNumber = blockNumber + 10;
 }
 
