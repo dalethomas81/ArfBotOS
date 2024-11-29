@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-11-27T22:53:31.9549517" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-11-27T22:53:04.9708497" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-11-28T19:43:11.532202" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-11-28T19:42:57.167476" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -130,7 +130,7 @@
             </pouInstance>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
-                <TaskSettings KindOfTask="Cyclic" Interval="t#4ms" IntervalUnit="ms" WithinSPSTimeSlicing="true">
+                <TaskSettings KindOfTask="Cyclic" Interval="4" IntervalUnit="ms" WithinSPSTimeSlicing="true">
                   <Watchdog Enabled="false" TimeUnit="ms" />
                 </TaskSettings>
               </data>
@@ -140,50 +140,6 @@
             </addData>
           </task>
           <globalVars name="GVL" constant="true">
-            <variable name="dwMainInterval">
-              <type>
-                <DWORD />
-              </type>
-              <initialValue>
-                <simpleValue value="3000" />
-              </initialValue>
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> us TODO reference this in task settings</xhtml>
-              </documentation>
-            </variable>
-            <variable name="dwMotionInterval">
-              <type>
-                <DWORD />
-              </type>
-              <initialValue>
-                <simpleValue value="50" />
-              </initialValue>
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> us TODO reference this in task settings</xhtml>
-              </documentation>
-            </variable>
-            <variable name="dwVisionInterval">
-              <type>
-                <DWORD />
-              </type>
-              <initialValue>
-                <simpleValue value="20000" />
-              </initialValue>
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> us TODO reference this in task settings</xhtml>
-              </documentation>
-            </variable>
-            <variable name="dwVisuInterval">
-              <type>
-                <DWORD />
-              </type>
-              <initialValue>
-                <simpleValue value="100000" />
-              </initialValue>
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> us TODO reference this in task settings</xhtml>
-              </documentation>
-            </variable>
             <variable name="DIG_IN_ARR_BEG">
               <type>
                 <INT />
@@ -557,6 +513,34 @@ RESERVED: INT:=46;</xhtml>
                 <simpleValue value="49" />
               </initialValue>
             </variable>
+            <variable name="dwMainInterval">
+              <type>
+                <DWORD />
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> task scan times</xhtml>
+              </documentation>
+            </variable>
+            <variable name="dwMotionInterval">
+              <type>
+                <DWORD />
+              </type>
+            </variable>
+            <variable name="dwVisionInterval">
+              <type>
+                <DWORD />
+              </type>
+            </variable>
+            <variable name="dwVisuInterval">
+              <type>
+                <DWORD />
+              </type>
+            </variable>
+            <variable name="dwEtherCATInterval">
+              <type>
+                <DWORD />
+              </type>
+            </variable>
             <variable name="PowerOn">
               <type>
                 <BOOL />
@@ -643,12 +627,6 @@ RESERVED: INT:=46;</xhtml>
 
 VAR_GLOBAL CONSTANT
 	
-	// task scan times
-	dwMainInterval: DWORD:=3000; // us TODO reference this in task settings
-	dwMotionInterval: DWORD:=50; // us TODO reference this in task settings
-	dwVisionInterval: DWORD:=20000; // us TODO reference this in task settings
-	dwVisuInterval: DWORD:=100000; // us TODO reference this in task settings
-	
 	// array sizes
 	DIG_IN_ARR_BEG: INT:=0;
 	DIG_IN_ARR_END: INT:=15;
@@ -711,6 +689,14 @@ VAR_GLOBAL CONSTANT
 END_VAR
 
 VAR_GLOBAL
+	
+	// task scan times
+	dwMainInterval: DWORD;
+	dwMotionInterval: DWORD;
+	dwVisionInterval: DWORD;
+	dwVisuInterval: DWORD;
+    dwEtherCATInterval: DWORD;
+    
 	//
 	PowerOn:BOOL;
 	Reset: BOOL;
@@ -740,50 +726,6 @@ END_VAR</xhtml>
               <data name="http://www.3s-software.com/plcopenxml/mixedattrsvarlist" handleUnknown="implementation">
                 <MixedAttrsVarList>
                   <globalVars name="GVL" constant="true">
-                    <variable name="dwMainInterval">
-                      <type>
-                        <DWORD />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="3000" />
-                      </initialValue>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> us TODO reference this in task settings</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="dwMotionInterval">
-                      <type>
-                        <DWORD />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="50" />
-                      </initialValue>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> us TODO reference this in task settings</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="dwVisionInterval">
-                      <type>
-                        <DWORD />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="20000" />
-                      </initialValue>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> us TODO reference this in task settings</xhtml>
-                      </documentation>
-                    </variable>
-                    <variable name="dwVisuInterval">
-                      <type>
-                        <DWORD />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="100000" />
-                      </initialValue>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> us TODO reference this in task settings</xhtml>
-                      </documentation>
-                    </variable>
                     <variable name="DIG_IN_ARR_BEG">
                       <type>
                         <INT />
@@ -1159,6 +1101,34 @@ RESERVED: INT:=46;</xhtml>
                     </variable>
                   </globalVars>
                   <globalVars name="GVL">
+                    <variable name="dwMainInterval">
+                      <type>
+                        <DWORD />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> task scan times</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="dwMotionInterval">
+                      <type>
+                        <DWORD />
+                      </type>
+                    </variable>
+                    <variable name="dwVisionInterval">
+                      <type>
+                        <DWORD />
+                      </type>
+                    </variable>
+                    <variable name="dwVisuInterval">
+                      <type>
+                        <DWORD />
+                      </type>
+                    </variable>
+                    <variable name="dwEtherCATInterval">
+                      <type>
+                        <DWORD />
+                      </type>
+                    </variable>
                     <variable name="PowerOn">
                       <type>
                         <BOOL />
@@ -3810,6 +3780,25 @@ PROPERTY PropErrDescription : STRING</xhtml>
               <pou name="_00_Main" pouType="program">
                 <interface>
                   <localVars>
+                    <variable name="TaskInfo">
+                      <type>
+                        <pointer>
+                          <baseType>
+                            <derived name="CmpIecTask.Task_Info2" />
+                          </baseType>
+                        </pointer>
+                      </type>
+                    </variable>
+                    <variable name="TaskHandle">
+                      <type>
+                        <derived name="CmpIecTask.RTS_IEC_HANDLE" />
+                      </type>
+                    </variable>
+                    <variable name="Result">
+                      <type>
+                        <derived name="CmpIecTask.RTS_IEC_RESULT" />
+                      </type>
+                    </variable>
                     <variable name="GroupHandler">
                       <type>
                         <derived name="FB_GroupHandler" />
@@ -4002,7 +3991,11 @@ PROPERTY PropErrDescription : STRING</xhtml>
                         <InterfaceAsPlainText>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">PROGRAM _00_Main
 VAR
-	
+	//
+    TaskInfo : POINTER TO CmpIecTask.Task_Info2;
+    TaskHandle: CmpIecTask.RTS_IEC_HANDLE;
+    Result: CmpIecTask.RTS_IEC_RESULT;
+    
 	// group handler for all motion fbs
 	GroupHandler: FB_GroupHandler;
 	
@@ -4051,6 +4044,11 @@ END_VAR</xhtml>
                 <body>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">{region "utility"}
+    (* Get the current task info *)
+    TaskHandle := CmpIecTask.IecTaskGetCurrent(Result);
+    TaskInfo := CmpIecTask.IecTaskGetInfo3(TaskHandle, Result);
+    GVL.dwMainInterval := TaskInfo^.dwInterval;
+    
 	GVL.ResetRtrig(CLK:=GVL.Reset);
 	IF GVL.ResetRtrig.Q THEN
 		GVL.Reset := FALSE;
@@ -5132,7 +5130,11 @@ END_VAR
                     <InterfaceAsPlainText>
                       <xhtml xmlns="http://www.w3.org/1999/xhtml">PROGRAM _00_Main
 VAR
-	
+	//
+    TaskInfo : POINTER TO CmpIecTask.Task_Info2;
+    TaskHandle: CmpIecTask.RTS_IEC_HANDLE;
+    Result: CmpIecTask.RTS_IEC_RESULT;
+    
 	// group handler for all motion fbs
 	GroupHandler: FB_GroupHandler;
 	
@@ -11241,7 +11243,7 @@ _ErrorRtrig.CLK:= _SMC_ReadNCFile2.bError
 IF _ErrorRtrig.Q THEN
 	Error := TRUE;
 	IF _SMC_ReadNCFile2.bError THEN
-		ErrorDescription := CONCAT('ReadNCFile Error: ',
+		ErrorDescription := CONCAT(' ReadNCFile Error: ',
                                 CONCAT(TO_STRING(_SMC_ReadNCFile2.ErrorID),
                                 CONCAT(' ', SMC_ErrorString(_SMC_ReadNCFile2.ErrorID,
                                             SMC_Language_Type.english)))) ;
@@ -21026,7 +21028,7 @@ _SMC_ControlAxisByPos_J4(
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
-	fSetPosition:= _SMC_Trafo_ArticulatedRobot_6DOF.dQ3, 
+	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ3, 
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
@@ -32537,6 +32539,7 @@ END_TYPE
                 <Library Name="#System_VisuElemXYChart" Namespace="VisuElemXYChart" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemXYChart, 4.6.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
                 <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.6.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
                 <Library Name="#CmpApp" Namespace="CmpApp" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="CmpApp, * (System)" />
+                <Library Name="#CmpIecTask" Namespace="CmpIecTask" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="CmpIecTask, * (System)" />
                 <PlaceholderRedirections>
                   <PlaceholderRedirection Placeholder="System_VisuElemsAlarm" Redirection="VisuElemsAlarm, 4.6.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="NetBaseSrv" Redirection="Net Base Services, 3.5.20.0 (CODESYS)" />
