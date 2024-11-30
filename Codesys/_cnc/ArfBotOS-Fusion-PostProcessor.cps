@@ -31,6 +31,7 @@ minimumCircularSweep = toRad(0.01);
 maximumCircularSweep = toRad(180);
 allowHelicalMoves = true;
 allowedCircularPlanes = undefined; // allow any circular motion
+//highFeedrate = 10;
 
 var gFormat = createFormat({prefix:"G", decimals:1});
 var mFormat = createFormat({prefix:"M", decimals:0});
@@ -313,7 +314,7 @@ function onOpen() {
   //writeComment("##########");
   //writeComment("THIS POSTPROCESSOR IS A TEMPLATE FOR DEPOSITION SUPPORT, IT DOES NOT OUTPUT A FUNCTIONAL NC PROGRAM.");
   //writeComment("##########");
-  writeBlock("N" + blockNumber + " G56 X0 Y0 Z0 A0 B0 C0");
+  writeBlock("N" + blockNumber + " G56 X0 Y0 Z0 A180 B0 C180");
   blockNumber = blockNumber + 10;
 }
 

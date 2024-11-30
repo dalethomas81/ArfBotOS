@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-11-29T14:07:48.6878977" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-11-29T14:07:31.8175211" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-11-29T20:49:13.6942363" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-11-29T20:48:54.7243208" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -8042,6 +8042,7 @@ _ProcessCncCommand(
 	Flags:= SUPER^.Flags,
 	J1:=J1, J2:=J2, J3:=J3, J4:=J4, J5:=J5, J6:=J6,
 	AxisGroup:= AxisGroup, 
+	GapJerk:= , 
 	GapVelocity:= , 
 	AvoidGaps:= , 
 	GapAccel:= , 
@@ -11668,13 +11669,16 @@ END_VAR
 // file2.cnc ADD A S 025
 // file3.cnc ADD A V 015
 
+// note: the command format will only contain the filename moving forward until the issues with the transformation function blocks gets resolved by CODESYS. See notes in the CncCommandProcessor about this.
+// file3.cnc 
+
 _Command:='';
 
 //
 F_AddElement(_Command, _Delimiter, stCommand.Filename);
 
 //
-CASE stCommand.OriConvention OF
+(*CASE stCommand.OriConvention OF
 	SMC_ORI_CONVENTION.ADDAXES:
 		F_AddElement(_Command, _Delimiter, _AddString);
 	SMC_ORI_CONVENTION.XYZ:
@@ -11708,7 +11712,7 @@ CASE stCommand.CoordinateType OF
 		END_CASE
 		F_AddElement(_Command, _Delimiter, INT_TO_STRING(stCommand.ArrayIndex));
 		
-END_CASE
+END_CASE*)
 
 BuildCncCmd := _Command;
 </xhtml>
@@ -20236,6 +20240,14 @@ END_VAR
                         <simpleValue value="500.0" />
                       </initialValue>
                     </variable>
+                    <variable name="GapJerk">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="1000" />
+                      </initialValue>
+                    </variable>
                     <variable name="Command">
                       <type>
                         <string length="GVL.COMMAND_LEN" />
@@ -20252,6 +20264,7 @@ VAR_INPUT
 	GapVelocity: LREAL := 10;
 	AvoidGaps: BOOL := TRUE;
 	GapAccel: LREAL := 500.0;
+    GapJerk: LREAL := 1000;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -20261,9 +20274,8 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    GapJerk: LREAL := 1000;
     _Degrees: ARRAY[0..5] OF LREAL;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
+	_StartPos: SMC_PosInfo;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
@@ -20349,6 +20361,7 @@ VAR_INPUT
 	GapVelocity: LREAL := 10;
 	AvoidGaps: BOOL := TRUE;
 	GapAccel: LREAL := 500.0;
+    GapJerk: LREAL := 1000;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -20358,9 +20371,8 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    GapJerk: LREAL := 1000;
     _Degrees: ARRAY[0..5] OF LREAL;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
+	_StartPos: SMC_PosInfo;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
@@ -20403,14 +20415,6 @@ END_VAR
                     </addData>
                   </inOutVars>
                   <localVars>
-                    <variable name="GapJerk">
-                      <type>
-                        <LREAL />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="1000" />
-                      </initialValue>
-                    </variable>
                     <variable name="_Degrees">
                       <type>
                         <array>
@@ -20421,13 +20425,10 @@ END_VAR
                         </array>
                       </type>
                     </variable>
-                    <variable name="_OriConvention">
+                    <variable name="_StartPos">
                       <type>
-                        <derived name="SMC_ORI_CONVENTION" />
+                        <derived name="SMC_PosInfo" />
                       </type>
-                      <initialValue>
-                        <simpleValue value="SMC_ORI_CONVENTION.XYZ" />
-                      </initialValue>
                     </variable>
                     <variable name="_SMC_TrafoConfig_ArticulatedRobot_6DOF">
                       <type>
@@ -20517,6 +20518,7 @@ VAR_INPUT
 	GapVelocity: LREAL := 10;
 	AvoidGaps: BOOL := TRUE;
 	GapAccel: LREAL := 500.0;
+    GapJerk: LREAL := 1000;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -20526,9 +20528,8 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    GapJerk: LREAL := 1000;
     _Degrees: ARRAY[0..5] OF LREAL;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
+	_StartPos: SMC_PosInfo;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
@@ -20587,6 +20588,7 @@ VAR_INPUT
 	GapVelocity: LREAL := 10;
 	AvoidGaps: BOOL := TRUE;
 	GapAccel: LREAL := 500.0;
+    GapJerk: LREAL := 1000;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -20596,9 +20598,8 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    GapJerk: LREAL := 1000;
     _Degrees: ARRAY[0..5] OF LREAL;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
+	_StartPos: SMC_PosInfo;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
@@ -20699,6 +20700,7 @@ VAR_INPUT
 	GapVelocity: LREAL := 10;
 	AvoidGaps: BOOL := TRUE;
 	GapAccel: LREAL := 500.0;
+    GapJerk: LREAL := 1000;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -20708,9 +20710,8 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    GapJerk: LREAL := 1000;
     _Degrees: ARRAY[0..5] OF LREAL;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
+	_StartPos: SMC_PosInfo;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
@@ -20793,6 +20794,7 @@ VAR_INPUT
 	GapVelocity: LREAL := 10;
 	AvoidGaps: BOOL := TRUE;
 	GapAccel: LREAL := 500.0;
+    GapJerk: LREAL := 1000;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -20802,9 +20804,8 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    GapJerk: LREAL := 1000;
     _Degrees: ARRAY[0..5] OF LREAL;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
+	_StartPos: SMC_PosInfo;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
@@ -20865,6 +20866,7 @@ VAR_INPUT
 	GapVelocity: LREAL := 10;
 	AvoidGaps: BOOL := TRUE;
 	GapAccel: LREAL := 500.0;
+    GapJerk: LREAL := 1000;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -20874,9 +20876,8 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    GapJerk: LREAL := 1000;
     _Degrees: ARRAY[0..5] OF LREAL;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
+	_StartPos: SMC_PosInfo;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
@@ -20960,10 +20961,9 @@ CASE SUPER^._SeqMain OF
 	
 	_STEP_COMMAND:
 		//
-		_CncCmdParser(Command:=Command);	
-        _OriConvention := _CncCmdParser.stCommand.OriConvention; 
-		_PlanPath.M_SetOriConvention(OriConvention:=_OriConvention);
-		_PlanPath.M_SetStartPosition(StartPos:=_CncCmdParser.stCommand.StartPos);
+		_CncCmdParser(Command:=Command);
+		_PlanPath.M_SetOriConvention(OriConvention:=SMC_ORI_CONVENTION.ZYX);//_CncCmdParser.stCommand.OriConvention);
+		_PlanPath.M_SetStartPosition(StartPos:=_StartPos);//_CncCmdParser.stCommand.StartPos);
 		_PlanPath.M_Execute(Filename:=_CncCmdParser.stCommand.Filename); // TODO I think we should be careful here. May need to sync CheckVelocities with the Interpolator
 		
 		//
@@ -20994,10 +20994,10 @@ _SMC_TrafoConfig_ArticulatedRobot_6DOF.d1:=-ArfBotAxisGroup.Trafo.d1;//-AxisGrou
 _SMC_TrafoConfig_ArticulatedRobot_6DOF.d3:=ArfBotAxisGroup.Trafo.d3;//AxisGroup.Trafo.d3;
 _SMC_TrafoConfig_ArticulatedRobot_6DOF.d4:=ArfBotAxisGroup.Trafo.d4;//AxisGroup.Trafo.d4;
 _SMC_TrafoConfig_ArticulatedRobot_6DOF.d6:=ArfBotAxisGroup.Trafo.d6;//AxisGroup.Trafo.d6;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.q3_max_deg:=160; // TODO put magic numbers somewhere appropriate
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.q3_min_deg:=-160; // TODO put magic numbers somewhere appropriate
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_max_deg:=160; // TODO put magic numbers somewhere appropriate
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_min_deg:=-160; // TODO put magic numbers somewhere appropriate
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.q3_max_deg:=160; // J4 // TODO put magic numbers somewhere appropriate
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.q3_min_deg:=-160; // J4 // TODO put magic numbers somewhere appropriate
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_max_deg:=160; // J6 // TODO put magic numbers somewhere appropriate
+_SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_min_deg:=-160; // J6 // TODO put magic numbers somewhere appropriate
 
 // TODO figure out how this var list can be used. for now its just hello world
 _PlanPath(VarList:= stVarList, DataOut=&gt; );
@@ -21017,7 +21017,7 @@ _SMC_Interpolator(
 	bWaitAtNextStop:= , 
 	dOverride:= , 
 	iVelMode:= , 
-	dwIpoTime:= GVL.dwMainInterval*3, // in microseconds and should be slower than the task time
+	dwIpoTime:= GVL.dwMainInterval * 3, // in microseconds and should be slower than the task time
 	dLastWayPos:= , 
 	bAbort:= NOT _SMC_Interpolator.bExecute, 
 	bSingleStep:= , 
@@ -21048,16 +21048,18 @@ _SMC_Interpolator(
 
 // handle m codes
 CASE _SMC_Interpolator.wM OF
-	0:	// rest acknowledgment
+	0:	// reset acknowledgment
 		_SMC_Interpolator.bAcknM := FALSE;
 	200: // close gripper
 		_SMC_Interpolator.bAcknM := TRUE;
-		GVL.Servo0Position := 0; // TODO
 	201: // open gripper
 		_SMC_Interpolator.bAcknM := TRUE;
-		GVL.Servo0Position := 255; // TODO
 END_CASE
 
+// get the current robot position and tool ori based on what the current config observes
+// this is needed so that we can set the start position of the decoder to the current position.
+// the reason we need to do this is because the trafo config only accepts a negative number for the d1 parameter (see notes above).
+// if this gets worked out, we can go back to setting the start position from the command parameters.
 _SMC_Trafof_ArticulatedRobot_6DOF(
 	config:= _SMC_TrafoConfig_ArticulatedRobot_6DOF, 
 	Drive0:= J1, 
@@ -21071,10 +21073,15 @@ _SMC_Trafof_ArticulatedRobot_6DOF(
 	armState=&gt; , 
 	elbowState=&gt; , 
 	handState=&gt; );
-_Degrees[0] := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dX;
-_Degrees[1] := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dY;
-_Degrees[2] := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dZ;
-CASE _OriConvention OF
+_StartPos.dX := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dX;
+_StartPos.dY := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dY;
+_StartPos.dZ := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dZ;
+SMC_Matrix3_ToYawPitchRoll( mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
+                            dRoll_rad=&gt; _Degrees[3], dPitch_rad=&gt; _Degrees[4], dYaw_rad=&gt; _Degrees[5]);
+                            _StartPos.dA := RAD_TO_DEG(_Degrees[3]);
+                            _StartPos.dB := RAD_TO_DEG(_Degrees[4]);
+                            _StartPos.dC := RAD_TO_DEG(_Degrees[5]);
+(*CASE _OriConvention OF
     SMC_ORI_CONVENTION.ADDAXES:
         _Degrees[3] := J4.fActPosition;
         _Degrees[4] := J5.fActPosition;
@@ -21091,7 +21098,7 @@ CASE _OriConvention OF
     SMC_ORI_CONVENTION.ZYZ:
         SMC_Matrix3_ToZYZ_deg(  mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
                                 dA_deg=&gt; _Degrees[3], dB_deg=&gt; _Degrees[4], dC_deg=&gt; _Degrees[5]);
-END_CASE
+END_CASE*)
 
 _SMC_Trafo_ArticulatedRobot_6DOF(
 	config:= _SMC_TrafoConfig_ArticulatedRobot_6DOF, 
@@ -21167,7 +21174,7 @@ _SMC_ControlAxisByPos_J4(
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
-	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ3,
+	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ3, // this has to be negative for it to work right. the trafo function blocks just arent working right. (see notes above)
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
@@ -21199,7 +21206,7 @@ _SMC_ControlAxisByPos_J6(
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
-	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ5,
+	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ5, // this has to be negative for it to work right. the trafo function blocks just arent working right. (see notes above)
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
@@ -21515,6 +21522,7 @@ VAR_INPUT
 	GapVelocity: LREAL := 10;
 	AvoidGaps: BOOL := TRUE;
 	GapAccel: LREAL := 500.0;
+    GapJerk: LREAL := 1000;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -21524,9 +21532,8 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    GapJerk: LREAL := 1000;
     _Degrees: ARRAY[0..5] OF LREAL;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
+	_StartPos: SMC_PosInfo;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
@@ -21812,6 +21819,9 @@ END_VAR</xhtml>
 // file2.cnc ADD A S 025
 // file3.cnc ADD A V 015
 
+// note: the command format will only contain the filename moving forward until the issues with the transformation function blocks gets resolved by CODESYS. See notes in the CncCommandProcessor about this.
+// file3.cnc 
+
 Error := FALSE;
 ErrorDescription:='';
 
@@ -21824,7 +21834,7 @@ IF _CmdParams[0] &lt;&gt; '' THEN
 	stCommand.Filename:=_CmdParams[0];
 	
 	//
-	IF _CmdParams[1] = _AddString THEN
+	(*IF _CmdParams[1] = _AddString THEN
 		stCommand.OriConvention := SMC_ORI_CONVENTION.ADDAXES;
 	ELSIF _CmdParams[1] = _XYZString THEN
 		stCommand.OriConvention := SMC_ORI_CONVENTION.XYZ;
@@ -21873,7 +21883,7 @@ IF _CmdParams[0] &lt;&gt; '' THEN
 	ELSE
 		Error := TRUE;
 		ErrorDescription:='No variable type provided';
-	END_IF
+	END_IF*)
 	
 ELSE
 	Error := TRUE;
@@ -32787,9 +32797,9 @@ END_TYPE
             <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
               <DeviceType>
                 <DeviceIdentification>
-                  <Type>4102</Type>
-                  <Id>0000 0011</Id>
-                  <Version>4.11.0.0</Version>
+                  <Type>4097</Type>
+                  <Id>0000 000a</Id>
+                  <Version>3.5.20.30</Version>
                 </DeviceIdentification>
                 <Connector moduleType="256" interface="Common.PCI" connectorId="0">
                   <HostParameterSet />
