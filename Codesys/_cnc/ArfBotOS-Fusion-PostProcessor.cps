@@ -311,11 +311,39 @@ function onComment(message) {
 
 var blockNumber = 0;
 function onOpen() {
-  //writeComment("##########");
-  //writeComment("THIS POSTPROCESSOR IS A TEMPLATE FOR DEPOSITION SUPPORT, IT DOES NOT OUTPUT A FUNCTIONAL NC PROGRAM.");
-  //writeComment("##########");
-  writeBlock("N" + blockNumber + " G56 X0 Y0 Z0 A180 B0 C180");
-  blockNumber = blockNumber + 10;
+  writeComment("##########");
+  writeComment("Hello, World.");
+  writeComment("##########");
+  //writeBlock("N" + blockNumber + " G56 X0 Y0 Z0 A180 B0 C180");
+  //blockNumber = blockNumber + 10;
+}
+
+/*function onManualNC(command, value){
+	switch (command){
+		case COMMAND_ACTION:
+			if (String(value).toUpperCase() == "CYCLE_REVERSAL"){
+				cycleReverse = true;
+			} else if (String(value).toUpperCase() == "VFD_LOW"){
+				coolantPressure = "P0";
+			} else if (String(value).toUpperCase() == "VFD_NORMAL"){
+				coolantPressure = "P1";
+			} else if (String(value).toUpperCase() == "VFD_HIGH"){
+				coolantPressure = "P2";
+			}
+			break;
+			
+		case COMMAND_CALL_PROGRAM: 
+			writeBlock(mFormat.format(98), "P" + value); 
+			break;
+	}
+}*/
+
+function onPassThrough(text) {
+  var commands = String(text).split(",");
+  for (text in commands) {
+    writeBlock("N" + blockNumber + " " + commands[text]);
+	blockNumber = blockNumber + 10;
+  }
 }
 
 function onRapid(_x, _y, _z) {
