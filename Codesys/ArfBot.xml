@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-11-30T00:14:33.6900691" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-11-30T00:10:16.8332774" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-11-30T11:28:40.944597" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-11-30T11:20:46.9702404" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -8042,6 +8042,7 @@ _ProcessCncCommand(
 	Flags:= SUPER^.Flags,
 	J1:=J1, J2:=J2, J3:=J3, J4:=J4, J5:=J5, J6:=J6,
 	AxisGroup:= AxisGroup, 
+    CmdIO:= CmdIO,
 	GapJerk:= , 
 	GapVelocity:= , 
 	AvoidGaps:= , 
@@ -20270,6 +20271,7 @@ END_VAR
 VAR_IN_OUT
 	J1, J2, J3, J4, J5, J6: AXIS_REF_SM3;
 	AxisGroup: AXIS_GROUP_REF_SM3;
+	CmdIO: ST_LogicCmdIO;
 END_VAR
 VAR_OUTPUT
 END_VAR
@@ -20293,6 +20295,15 @@ VAR
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
+    MCODE_INPUT_WAIT: INT:=200;
+    MCODE_INPUT_WAIT_START: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_BEG;
+    MCODE_INPUT_WAIT_END: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_END;
+    MCODE_OUTPUT_SET: INT:=300;
+    MCODE_OUTPUT_SET_START: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_SET_END: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_END;
+    MCODE_OUTPUT_CLR: INT:=400;
+    MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
 END_VAR
 VAR
 	lrR1 : LREAL:=30;
@@ -20353,6 +20364,11 @@ END_VAR
                         <derived name="AXIS_GROUP_REF_SM3" />
                       </type>
                     </variable>
+                    <variable name="CmdIO">
+                      <type>
+                        <derived name="ST_LogicCmdIO" />
+                      </type>
+                    </variable>
                     <addData>
                       <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
                         <InterfaceAsPlainText>
@@ -20367,6 +20383,7 @@ END_VAR
 VAR_IN_OUT
 	J1, J2, J3, J4, J5, J6: AXIS_REF_SM3;
 	AxisGroup: AXIS_GROUP_REF_SM3;
+	CmdIO: ST_LogicCmdIO;
 END_VAR
 VAR_OUTPUT
 END_VAR
@@ -20390,6 +20407,15 @@ VAR
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
+    MCODE_INPUT_WAIT: INT:=200;
+    MCODE_INPUT_WAIT_START: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_BEG;
+    MCODE_INPUT_WAIT_END: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_END;
+    MCODE_OUTPUT_SET: INT:=300;
+    MCODE_OUTPUT_SET_START: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_SET_END: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_END;
+    MCODE_OUTPUT_CLR: INT:=400;
+    MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
 END_VAR
 VAR
 	lrR1 : LREAL:=30;
@@ -20524,6 +20550,7 @@ END_VAR
 VAR_IN_OUT
 	J1, J2, J3, J4, J5, J6: AXIS_REF_SM3;
 	AxisGroup: AXIS_GROUP_REF_SM3;
+	CmdIO: ST_LogicCmdIO;
 END_VAR
 VAR_OUTPUT
 END_VAR
@@ -20547,6 +20574,15 @@ VAR
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
+    MCODE_INPUT_WAIT: INT:=200;
+    MCODE_INPUT_WAIT_START: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_BEG;
+    MCODE_INPUT_WAIT_END: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_END;
+    MCODE_OUTPUT_SET: INT:=300;
+    MCODE_OUTPUT_SET_START: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_SET_END: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_END;
+    MCODE_OUTPUT_CLR: INT:=400;
+    MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
 END_VAR
 VAR
 	lrR1 : LREAL:=30;
@@ -20580,6 +20616,78 @@ END_VAR
                         <simpleValue value="1" />
                       </initialValue>
                     </variable>
+                    <variable name="MCODE_INPUT_WAIT">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="200" />
+                      </initialValue>
+                    </variable>
+                    <variable name="MCODE_INPUT_WAIT_START">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="(MCODE_INPUT_WAIT + GVL.DIG_IN_ARR_BEG)" />
+                      </initialValue>
+                    </variable>
+                    <variable name="MCODE_INPUT_WAIT_END">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="(MCODE_INPUT_WAIT + GVL.DIG_IN_ARR_END)" />
+                      </initialValue>
+                    </variable>
+                    <variable name="MCODE_OUTPUT_SET">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="300" />
+                      </initialValue>
+                    </variable>
+                    <variable name="MCODE_OUTPUT_SET_START">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="(MCODE_OUTPUT_SET + GVL.DIG_OUT_ARR_BEG)" />
+                      </initialValue>
+                    </variable>
+                    <variable name="MCODE_OUTPUT_SET_END">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="(MCODE_OUTPUT_SET + GVL.DIG_OUT_ARR_END)" />
+                      </initialValue>
+                    </variable>
+                    <variable name="MCODE_OUTPUT_CLR">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="400" />
+                      </initialValue>
+                    </variable>
+                    <variable name="MCODE_OUTPUT_CLR_START">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="(MCODE_OUTPUT_CLR + GVL.DIG_OUT_ARR_BEG)" />
+                      </initialValue>
+                    </variable>
+                    <variable name="MCODE_OUTPUT_CLR_END">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="(MCODE_OUTPUT_CLR + GVL.DIG_OUT_ARR_END)" />
+                      </initialValue>
+                    </variable>
                     <addData>
                       <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
                         <InterfaceAsPlainText>
@@ -20594,6 +20702,7 @@ END_VAR
 VAR_IN_OUT
 	J1, J2, J3, J4, J5, J6: AXIS_REF_SM3;
 	AxisGroup: AXIS_GROUP_REF_SM3;
+	CmdIO: ST_LogicCmdIO;
 END_VAR
 VAR_OUTPUT
 END_VAR
@@ -20617,6 +20726,15 @@ VAR
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
+    MCODE_INPUT_WAIT: INT:=200;
+    MCODE_INPUT_WAIT_START: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_BEG;
+    MCODE_INPUT_WAIT_END: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_END;
+    MCODE_OUTPUT_SET: INT:=300;
+    MCODE_OUTPUT_SET_START: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_SET_END: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_END;
+    MCODE_OUTPUT_CLR: INT:=400;
+    MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
 END_VAR
 VAR
 	lrR1 : LREAL:=30;
@@ -20706,6 +20824,7 @@ END_VAR
 VAR_IN_OUT
 	J1, J2, J3, J4, J5, J6: AXIS_REF_SM3;
 	AxisGroup: AXIS_GROUP_REF_SM3;
+	CmdIO: ST_LogicCmdIO;
 END_VAR
 VAR_OUTPUT
 END_VAR
@@ -20729,6 +20848,15 @@ VAR
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
+    MCODE_INPUT_WAIT: INT:=200;
+    MCODE_INPUT_WAIT_START: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_BEG;
+    MCODE_INPUT_WAIT_END: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_END;
+    MCODE_OUTPUT_SET: INT:=300;
+    MCODE_OUTPUT_SET_START: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_SET_END: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_END;
+    MCODE_OUTPUT_CLR: INT:=400;
+    MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
 END_VAR
 VAR
 	lrR1 : LREAL:=30;
@@ -20800,6 +20928,7 @@ END_VAR
 VAR_IN_OUT
 	J1, J2, J3, J4, J5, J6: AXIS_REF_SM3;
 	AxisGroup: AXIS_GROUP_REF_SM3;
+	CmdIO: ST_LogicCmdIO;
 END_VAR
 VAR_OUTPUT
 END_VAR
@@ -20823,6 +20952,15 @@ VAR
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
+    MCODE_INPUT_WAIT: INT:=200;
+    MCODE_INPUT_WAIT_START: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_BEG;
+    MCODE_INPUT_WAIT_END: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_END;
+    MCODE_OUTPUT_SET: INT:=300;
+    MCODE_OUTPUT_SET_START: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_SET_END: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_END;
+    MCODE_OUTPUT_CLR: INT:=400;
+    MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
 END_VAR
 VAR
 	lrR1 : LREAL:=30;
@@ -20872,6 +21010,7 @@ END_VAR
 VAR_IN_OUT
 	J1, J2, J3, J4, J5, J6: AXIS_REF_SM3;
 	AxisGroup: AXIS_GROUP_REF_SM3;
+	CmdIO: ST_LogicCmdIO;
 END_VAR
 VAR_OUTPUT
 END_VAR
@@ -20895,6 +21034,15 @@ VAR
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
+    MCODE_INPUT_WAIT: INT:=200;
+    MCODE_INPUT_WAIT_START: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_BEG;
+    MCODE_INPUT_WAIT_END: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_END;
+    MCODE_OUTPUT_SET: INT:=300;
+    MCODE_OUTPUT_SET_START: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_SET_END: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_END;
+    MCODE_OUTPUT_CLR: INT:=400;
+    MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
 END_VAR
 VAR
 	lrR1 : LREAL:=30;
@@ -20944,6 +21092,8 @@ END_VAR
 // UPDATE: Figured out a work around for this issue. In the A_Interpolater POU, I negated the set position in the ControlAxisByPos
 // function block for J6 such that it drives the opposite way. This appears to have resolved the issue. Why this is needed, I do not
 // know. I am sure it is some minor overlooked detail somewhere in the code...
+
+// Fusion 360 Post Processor Guide: https://cam.autodesk.com/posts/posts/guides/Post%20Processor%20Training%20Guide.pdf
 
 SUPER^();
 
@@ -21050,10 +21200,21 @@ _SMC_Interpolator(
 CASE _SMC_Interpolator.wM OF
 	0:	// reset acknowledgment
 		_SMC_Interpolator.bAcknM := FALSE;
-	200: // close gripper
-		_SMC_Interpolator.bAcknM := TRUE;
-	201: // open gripper
-		_SMC_Interpolator.bAcknM := TRUE;
+        
+	MCODE_INPUT_WAIT_START..MCODE_INPUT_WAIT_END: // wait on input
+        // TODO should we put a timeout or bypass here?
+        IF CmdIo.Input[WORD_TO_INT(_SMC_Interpolator.wM) - MCODE_INPUT_WAIT] THEN
+            _SMC_Interpolator.bAcknM := TRUE;
+        END_IF
+        
+	MCODE_OUTPUT_SET_START..MCODE_OUTPUT_SET_END: // set output
+        CmdIo.Output[WORD_TO_INT(_SMC_Interpolator.wM) - MCODE_OUTPUT_SET] := TRUE;
+        _SMC_Interpolator.bAcknM := TRUE;
+        
+	MCODE_OUTPUT_CLR_START..MCODE_OUTPUT_CLR_END: // clear output
+        CmdIo.Output[WORD_TO_INT(_SMC_Interpolator.wM) - MCODE_OUTPUT_CLR] := FALSE;
+        _SMC_Interpolator.bAcknM := TRUE;
+        
 END_CASE
 
 // get the current robot position and tool ori based on what the current config observes
@@ -21076,6 +21237,7 @@ _SMC_Trafof_ArticulatedRobot_6DOF(
 _StartPos.dX := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dX;
 _StartPos.dY := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dY;
 _StartPos.dZ := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dZ;
+// https://content.helpme-codesys.com/en/libs/SM3_Math/4.12.0.0/Matrix3/fld-Matrix3.html
 SMC_Matrix3_ToYawPitchRoll( mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
                             dRoll_rad=&gt; _Degrees[3], dPitch_rad=&gt; _Degrees[4], dYaw_rad=&gt; _Degrees[5]);
                             _StartPos.dA := RAD_TO_DEG(_Degrees[3]);
@@ -21528,6 +21690,7 @@ END_VAR
 VAR_IN_OUT
 	J1, J2, J3, J4, J5, J6: AXIS_REF_SM3;
 	AxisGroup: AXIS_GROUP_REF_SM3;
+	CmdIO: ST_LogicCmdIO;
 END_VAR
 VAR_OUTPUT
 END_VAR
@@ -21551,6 +21714,15 @@ VAR
 END_VAR
 VAR CONSTANT
 	wVarCount : WORD := 1;
+    MCODE_INPUT_WAIT: INT:=200;
+    MCODE_INPUT_WAIT_START: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_BEG;
+    MCODE_INPUT_WAIT_END: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_END;
+    MCODE_OUTPUT_SET: INT:=300;
+    MCODE_OUTPUT_SET_START: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_SET_END: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_END;
+    MCODE_OUTPUT_CLR: INT:=400;
+    MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
 END_VAR
 VAR
 	lrR1 : LREAL:=30;
@@ -32749,12 +32921,12 @@ END_TYPE
                   <PlaceholderRedirection Placeholder="NetBaseSrv" Redirection="Net Base Services, 3.5.20.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="Standard" Redirection="Standard, 3.5.18.0 (System)" />
                   <PlaceholderRedirection Placeholder="Standard64" Redirection="Standard64, 3.5.20.0 (System)" />
-                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.6.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="UTF8" Redirection="UTF-8 Encoding Support, 4.0.0.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElem3DPath" Redirection="VisuElem3DPath, 4.6.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemTextEditor" Redirection="VisuElemTextEditor, 4.6.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemCamDisplayer" Redirection="VisuElemCamDisplayer, 4.6.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemBase" Redirection="VisuElemBase, 4.6.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="MemoryBlockManager" Redirection="Memory Block Manager, 3.5.20.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemMeter" Redirection="VisuElemMeter, 4.6.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemsSpecialControls" Redirection="VisuElemsSpecialControls, 4.6.0.0 (System)" />
@@ -32770,7 +32942,7 @@ END_TYPE
                   <PlaceholderRedirection Placeholder="System_VisuElemXYChart" Redirection="VisuElemXYChart, 4.6.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="OMAC_PackML_State_Machine" Redirection="OMAC PackML State Machine, 1.0.0.4 (3S - Smart Software Solutions GmbH)" />
                   <PlaceholderRedirection Placeholder="FloatingPointUtils" Redirection="FloatingPointUtils, 3.5.17.0 (System)" />
-                  <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.6.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="Collections" Redirection="Collections, 3.5.17.0 (System)" />
                   <PlaceholderRedirection Placeholder="StringSegs" Redirection="Immutable String Segments, 3.5.18.0 (3S - Smart Software Solutions GmbH)" />
                   <PlaceholderRedirection Placeholder="CBML" Redirection="Common Behaviour Model, 3.5.17.0 (3S - Smart Software Solutions GmbH)" />
