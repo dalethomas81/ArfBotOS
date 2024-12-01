@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-11-30T15:00:52.0443894" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-11-30T14:37:54.2647481" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-12-01T14:39:40.6458136" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-12-01T14:36:00.9413969" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -4222,12 +4222,12 @@ END_VAR
                         <ST>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">
 ProcessHome(
-	J1:= J1, 
-	J2:= J2, 
-	J3:= J3, 
-	J4:= J4, 
-	J5:= J5, 
-	J6:= J6, 
+	J1:= IoConfig_Globals.J1, 
+	J2:= IoConfig_Globals.J2, 
+	J3:= IoConfig_Globals.J3, 
+	J4:= IoConfig_Globals.J4, 
+	J5:= IoConfig_Globals.J5, 
+	J6:= IoConfig_Globals.J6, 
 	AxisGroup:= ArfBotAxisGroup,
 	GroupHandler:= GroupHandler, 
 	Controller:= Controller, 
@@ -4291,7 +4291,7 @@ ProcessPrograms(
 	StoredPositions:=PersistentVars.StoredPositions,
 	VisionRegisters:=PersistentVars.VisionRegisters,
 	Flags:=PersistentVars.Flags,
-	J1:=J1, J2:=J2, J3:=J3, J4:=J4, J5:=J5, J6:=J6,
+	J1:=IoConfig_Globals.J1, J2:=IoConfig_Globals.J2, J3:=IoConfig_Globals.J3, J4:=IoConfig_Globals.J4, J5:=IoConfig_Globals.J5, J6:=IoConfig_Globals.J6,
 	AxisGroup:= ArfBotAxisGroup,
 	GroupHandler:= GroupHandler,
 	CmdIO:=GVL.CmdIO,
@@ -4348,12 +4348,12 @@ END_VAR
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">// track position of robot end effector to display on hmi
 TrackPosition(
 	AxisGroup:=ArfBotAxisGroup,
-	SM3_Drive_PosControl_J1:=J1,
-	SM3_Drive_PosControl_J2:=J2,
-	SM3_Drive_PosControl_J3:=J3,
-	SM3_Drive_PosControl_J4:=J4,
-	SM3_Drive_PosControl_J5:=J5,
-	SM3_Drive_PosControl_J6:=J6,
+	J1:=IoConfig_Globals.J1,
+	J2:=IoConfig_Globals.J2,
+	J3:=IoConfig_Globals.J3,
+	J4:=IoConfig_Globals.J4,
+	J5:=IoConfig_Globals.J5,
+	J6:=IoConfig_Globals.J6,
 	VisuStruct3DTrack=&gt;,
 	Arm=&gt;,
 	Elbow=&gt;,
@@ -4364,7 +4364,8 @@ TrackPosition(
                         <xhtml xmlns="http://www.w3.org/1999/xhtml">METHOD PRIVATE _M_Cnc : BOOL
 VAR_INPUT
 END_VAR
-</xhtml>
+VAR
+END_VAR</xhtml>
                       </InterfaceAsPlainText>
                       <addData />
                     </Method>
@@ -4937,40 +4938,40 @@ END_VAR</xhtml>
 IF SetTuningMoveValues AND_THEN PersistentVars.Flags[GVL.INIT_DRV_IDX].Value THEN
 	SetTuningMoveValues := FALSE;
 	
-	MoveRelative[0].Velocity := J1.fSWMaxVelocity;
-	MoveRelative[0].Acceleration := J1.fSWMaxAcceleration;
-	MoveRelative[0].Deceleration := J1.fSWMaxDeceleration;
-	MoveRelative[0].Jerk := J1.fSWMaxJerk;
+	MoveRelative[0].Velocity := IoConfig_Globals.J1.fSWMaxVelocity;
+	MoveRelative[0].Acceleration := IoConfig_Globals.J1.fSWMaxAcceleration;
+	MoveRelative[0].Deceleration := IoConfig_Globals.J1.fSWMaxDeceleration;
+	MoveRelative[0].Jerk := IoConfig_Globals.J1.fSWMaxJerk;
 	MoveRelative[0].Distance := MoveDistance;
 	
-	MoveRelative[1].Velocity := J2.fSWMaxVelocity;
-	MoveRelative[1].Acceleration := J2.fSWMaxAcceleration;
-	MoveRelative[1].Deceleration := J2.fSWMaxDeceleration;
-	MoveRelative[1].Jerk := J2.fSWMaxJerk;
+	MoveRelative[1].Velocity := IoConfig_Globals.J2.fSWMaxVelocity;
+	MoveRelative[1].Acceleration := IoConfig_Globals.J2.fSWMaxAcceleration;
+	MoveRelative[1].Deceleration := IoConfig_Globals.J2.fSWMaxDeceleration;
+	MoveRelative[1].Jerk := IoConfig_Globals.J2.fSWMaxJerk;
 	MoveRelative[1].Distance := MoveDistance;
 	
-	MoveRelative[2].Velocity := J3.fSWMaxVelocity;
-	MoveRelative[2].Acceleration := J3.fSWMaxAcceleration;
-	MoveRelative[2].Deceleration := J3.fSWMaxDeceleration;
-	MoveRelative[2].Jerk := J3.fSWMaxJerk;
+	MoveRelative[2].Velocity := IoConfig_Globals.J3.fSWMaxVelocity;
+	MoveRelative[2].Acceleration := IoConfig_Globals.J3.fSWMaxAcceleration;
+	MoveRelative[2].Deceleration := IoConfig_Globals.J3.fSWMaxDeceleration;
+	MoveRelative[2].Jerk := IoConfig_Globals.J3.fSWMaxJerk;
 	MoveRelative[2].Distance := MoveDistance;
 	
-	MoveRelative[3].Velocity := J4.fSWMaxVelocity;
-	MoveRelative[3].Acceleration := J4.fSWMaxAcceleration;
-	MoveRelative[3].Deceleration := J4.fSWMaxDeceleration;
-	MoveRelative[3].Jerk := J4.fSWMaxJerk;
+	MoveRelative[3].Velocity := IoConfig_Globals.J4.fSWMaxVelocity;
+	MoveRelative[3].Acceleration := IoConfig_Globals.J4.fSWMaxAcceleration;
+	MoveRelative[3].Deceleration := IoConfig_Globals.J4.fSWMaxDeceleration;
+	MoveRelative[3].Jerk := IoConfig_Globals.J4.fSWMaxJerk;
 	MoveRelative[3].Distance := MoveDistance;
 	
-	MoveRelative[4].Velocity := J5.fSWMaxVelocity;
-	MoveRelative[4].Acceleration := J5.fSWMaxAcceleration;
-	MoveRelative[4].Deceleration := J5.fSWMaxDeceleration;
-	MoveRelative[4].Jerk := J5.fSWMaxJerk;
+	MoveRelative[4].Velocity := IoConfig_Globals.J5.fSWMaxVelocity;
+	MoveRelative[4].Acceleration := IoConfig_Globals.J5.fSWMaxAcceleration;
+	MoveRelative[4].Deceleration := IoConfig_Globals.J5.fSWMaxDeceleration;
+	MoveRelative[4].Jerk := IoConfig_Globals.J5.fSWMaxJerk;
 	MoveRelative[4].Distance := MoveDistance;
 	
-	MoveRelative[5].Velocity := J6.fSWMaxVelocity;
-	MoveRelative[5].Acceleration := J6.fSWMaxAcceleration;
-	MoveRelative[5].Deceleration := J6.fSWMaxDeceleration;
-	MoveRelative[5].Jerk := J6.fSWMaxJerk;
+	MoveRelative[5].Velocity := IoConfig_Globals.J6.fSWMaxVelocity;
+	MoveRelative[5].Acceleration := IoConfig_Globals.J6.fSWMaxAcceleration;
+	MoveRelative[5].Deceleration := IoConfig_Globals.J6.fSWMaxDeceleration;
+	MoveRelative[5].Jerk := IoConfig_Globals.J6.fSWMaxJerk;
 	MoveRelative[5].Distance := MoveDistance;
 END_IF
 
@@ -5010,7 +5011,7 @@ END_FOR
 
 // move relative
 MoveRelative[0](
-	Axis:= J1, 
+	Axis:= IoConfig_Globals.J1, 
 	Execute:= , 
 	Distance:= , 
 	Velocity:= , 
@@ -5025,7 +5026,7 @@ MoveRelative[0](
 	Error=&gt; , 
 	ErrorID=&gt; );
 MoveRelative[1](
-	Axis:= J2, 
+	Axis:= IoConfig_Globals.J2, 
 	Execute:= , 
 	Distance:= , 
 	Velocity:= , 
@@ -5040,7 +5041,7 @@ MoveRelative[1](
 	Error=&gt; , 
 	ErrorID=&gt; );
 MoveRelative[2](
-	Axis:= J3, 
+	Axis:= IoConfig_Globals.J3, 
 	Execute:= , 
 	Distance:= , 
 	Velocity:= , 
@@ -5055,7 +5056,7 @@ MoveRelative[2](
 	Error=&gt; , 
 	ErrorID=&gt; );
 MoveRelative[3](
-	Axis:= J4, 
+	Axis:= IoConfig_Globals.J4, 
 	Execute:= , 
 	Distance:= , 
 	Velocity:= , 
@@ -5070,7 +5071,7 @@ MoveRelative[3](
 	Error=&gt; , 
 	ErrorID=&gt; );
 MoveRelative[4](
-	Axis:= J5, 
+	Axis:= IoConfig_Globals.J5, 
 	Execute:= , 
 	Distance:= , 
 	Velocity:= , 
@@ -5085,7 +5086,7 @@ MoveRelative[4](
 	Error=&gt; , 
 	ErrorID=&gt; );
 MoveRelative[5](
-	Axis:= J6, 
+	Axis:= IoConfig_Globals.J6, 
 	Execute:= , 
 	Distance:= , 
 	Velocity:= , 
@@ -5353,12 +5354,12 @@ END_IF
 
 // apply velocity factor and convert degrees per second to frequency
 // velocity factor is how many pulses it takes for 1 revolution of the output side of the mechanical reduction.
-SetVelocity[0] := LREAL_TO_INT((J1.out.iSetVelocity * PersistentVars.VelocityFactor[0]) / 360.0); // AR4 is 16000.0 for J1
-SetVelocity[1] := LREAL_TO_INT((J2.out.iSetVelocity * PersistentVars.VelocityFactor[1]) / 360.0); // AR4 is 20000.0 for J2
-SetVelocity[2] := LREAL_TO_INT((J3.out.iSetVelocity * PersistentVars.VelocityFactor[2]) / 360.0); // AR4 is 20000.0 for J3
-SetVelocity[3] := LREAL_TO_INT((J4.out.iSetVelocity * PersistentVars.VelocityFactor[3]) / 360.0); // AR4 is 26880.0 for J4
-SetVelocity[4] := LREAL_TO_INT((J5.out.iSetVelocity * PersistentVars.VelocityFactor[4]) / 360.0); // AR4 is 07850.0 for J5
-SetVelocity[5] := LREAL_TO_INT((J6.out.iSetVelocity * PersistentVars.VelocityFactor[5]) / 360.0); // AR4 is 8081.25 for J6
+SetVelocity[0] := LREAL_TO_INT((IoConfig_Globals.J1.out.iSetVelocity * PersistentVars.VelocityFactor[0]) / 360.0); // AR4 is 16000.0 for J1
+SetVelocity[1] := LREAL_TO_INT((IoConfig_Globals.J2.out.iSetVelocity * PersistentVars.VelocityFactor[1]) / 360.0); // AR4 is 20000.0 for J2
+SetVelocity[2] := LREAL_TO_INT((IoConfig_Globals.J3.out.iSetVelocity * PersistentVars.VelocityFactor[2]) / 360.0); // AR4 is 20000.0 for J3
+SetVelocity[3] := LREAL_TO_INT((IoConfig_Globals.J4.out.iSetVelocity * PersistentVars.VelocityFactor[3]) / 360.0); // AR4 is 26880.0 for J4
+SetVelocity[4] := LREAL_TO_INT((IoConfig_Globals.J5.out.iSetVelocity * PersistentVars.VelocityFactor[4]) / 360.0); // AR4 is 07850.0 for J5
+SetVelocity[5] := LREAL_TO_INT((IoConfig_Globals.J6.out.iSetVelocity * PersistentVars.VelocityFactor[5]) / 360.0); // AR4 is 8081.25 for J6
 
 {region 'Output'}
 // check that we are talking to the right device type
@@ -5382,12 +5383,12 @@ IF DeviceID = RobotDeviceID THEN// index 0 is for system outputs
     END_FOR
     
     // bytes 13 through 24 are used for control from NC
-    DriveEnable[0] := NOT (J1.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (J1.nAxisState = SMC_AXIS_STATE.power_off);
-    DriveEnable[1] := NOT (J2.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (J2.nAxisState = SMC_AXIS_STATE.power_off);
-    DriveEnable[2] := NOT (J3.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (J3.nAxisState = SMC_AXIS_STATE.power_off);
-    DriveEnable[3] := NOT (J4.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (J4.nAxisState = SMC_AXIS_STATE.power_off);
-    DriveEnable[4] := NOT (J5.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (J5.nAxisState = SMC_AXIS_STATE.power_off);
-    DriveEnable[5] := NOT (J6.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (J6.nAxisState = SMC_AXIS_STATE.power_off);
+    DriveEnable[0] := NOT (IoConfig_Globals.J1.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (IoConfig_Globals.J1.nAxisState = SMC_AXIS_STATE.power_off);
+    DriveEnable[1] := NOT (IoConfig_Globals.J2.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (IoConfig_Globals.J2.nAxisState = SMC_AXIS_STATE.power_off);
+    DriveEnable[2] := NOT (IoConfig_Globals.J3.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (IoConfig_Globals.J3.nAxisState = SMC_AXIS_STATE.power_off);
+    DriveEnable[3] := NOT (IoConfig_Globals.J4.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (IoConfig_Globals.J4.nAxisState = SMC_AXIS_STATE.power_off);
+    DriveEnable[4] := NOT (IoConfig_Globals.J5.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (IoConfig_Globals.J5.nAxisState = SMC_AXIS_STATE.power_off);
+    DriveEnable[5] := NOT (IoConfig_Globals.J6.nAxisState = SMC_AXIS_STATE.errorstop) AND NOT (IoConfig_Globals.J6.nAxisState = SMC_AXIS_STATE.power_off);
     bufferIdx := 13;
     FOR jointIdx := 0 TO 5 BY 1 DO
         AR4Outputs[bufferIdx].3 := GVL.Enable AND DriveEnable[jointIdx];
@@ -5443,30 +5444,30 @@ MEMUtils.MemCpy(pbyDest:=ADR(RxCrc),
     PersistentVars.Flags[GVL.HOME_COMPLETE].Value := TRUE;
 	rx_heartbeat := HeartbeatOn.Q;
 	rx_en := GVL.Enable;
-    EncPosition[0] := J1.diSetPosition;
-    EncPosition[1] := J2.diSetPosition;
-    EncPosition[2] := J3.diSetPosition;
-    EncPosition[3] := J4.diSetPosition;
-    EncPosition[4] := J5.diSetPosition;
-    EncPosition[5] := J6.diSetPosition;
+    EncPosition[0] := IoConfig_Globals.J1.diSetPosition;
+    EncPosition[1] := IoConfig_Globals.J2.diSetPosition;
+    EncPosition[2] := IoConfig_Globals.J3.diSetPosition;
+    EncPosition[3] := IoConfig_Globals.J4.diSetPosition;
+    EncPosition[4] := IoConfig_Globals.J5.diSetPosition;
+    EncPosition[5] := IoConfig_Globals.J6.diSetPosition;
     rx_j1_limit :=
 	rx_j2_limit :=
 	rx_j3_limit :=
 	rx_j4_limit :=
 	rx_j5_limit :=
 	rx_j6_limit :=
-    J1.in.bDriveStartRealState :=
-	J1.in.bRegulatorRealState :=
-	J2.in.bDriveStartRealState :=
-	J2.in.bRegulatorRealState :=
-	J3.in.bDriveStartRealState :=
-	J3.in.bRegulatorRealState :=
-	J4.in.bDriveStartRealState :=
-	J4.in.bRegulatorRealState :=
-	J5.in.bDriveStartRealState :=
-	J5.in.bRegulatorRealState :=
-	J6.in.bDriveStartRealState :=
-	J6.in.bRegulatorRealState :=
+    IoConfig_Globals.J1.in.bDriveStartRealState :=
+	IoConfig_Globals.J1.in.bRegulatorRealState :=
+	IoConfig_Globals.J2.in.bDriveStartRealState :=
+	IoConfig_Globals.J2.in.bRegulatorRealState :=
+	IoConfig_Globals.J3.in.bDriveStartRealState :=
+	IoConfig_Globals.J3.in.bRegulatorRealState :=
+	IoConfig_Globals.J4.in.bDriveStartRealState :=
+	IoConfig_Globals.J4.in.bRegulatorRealState :=
+	IoConfig_Globals.J5.in.bDriveStartRealState :=
+	IoConfig_Globals.J5.in.bRegulatorRealState :=
+	IoConfig_Globals.J6.in.bDriveStartRealState :=
+	IoConfig_Globals.J6.in.bRegulatorRealState :=
     AllDrivesEnabled := GVL.Enable;
     DeviceID := RobotDeviceID;
 {ELSE}
@@ -5511,18 +5512,18 @@ IF RxCrc = F_Checksum(ADR(AR4Inputs), 30) THEN
 	// := AR4Inputs[26].7;
 	
 	// byte 27 will be used to indicate drive is enabled
-	J1.in.bDriveStartRealState := AR4Inputs[27].0;
-	J1.in.bRegulatorRealState := AR4Inputs[27].0;
-	J2.in.bDriveStartRealState := AR4Inputs[27].1;
-	J2.in.bRegulatorRealState := AR4Inputs[27].1;
-	J3.in.bDriveStartRealState := AR4Inputs[27].2;
-	J3.in.bRegulatorRealState := AR4Inputs[27].2;
-	J4.in.bDriveStartRealState := AR4Inputs[27].3;
-	J4.in.bRegulatorRealState := AR4Inputs[27].3;
-	J5.in.bDriveStartRealState := AR4Inputs[27].4;
-	J5.in.bRegulatorRealState := AR4Inputs[27].4;
-	J6.in.bDriveStartRealState := AR4Inputs[27].5;
-	J6.in.bRegulatorRealState := AR4Inputs[27].5;
+	IoConfig_Globals.J1.in.bDriveStartRealState := AR4Inputs[27].0;
+	IoConfig_Globals.J1.in.bRegulatorRealState := AR4Inputs[27].0;
+	IoConfig_Globals.J2.in.bDriveStartRealState := AR4Inputs[27].1;
+	IoConfig_Globals.J2.in.bRegulatorRealState := AR4Inputs[27].1;
+	IoConfig_Globals.J3.in.bDriveStartRealState := AR4Inputs[27].2;
+	IoConfig_Globals.J3.in.bRegulatorRealState := AR4Inputs[27].2;
+	IoConfig_Globals.J4.in.bDriveStartRealState := AR4Inputs[27].3;
+	IoConfig_Globals.J4.in.bRegulatorRealState := AR4Inputs[27].3;
+	IoConfig_Globals.J5.in.bDriveStartRealState := AR4Inputs[27].4;
+	IoConfig_Globals.J5.in.bRegulatorRealState := AR4Inputs[27].4;
+	IoConfig_Globals.J6.in.bDriveStartRealState := AR4Inputs[27].5;
+	IoConfig_Globals.J6.in.bRegulatorRealState := AR4Inputs[27].5;
 	// all drives are enabled
 	AllDrivesEnabled := AR4Inputs[27].0 AND AR4Inputs[27].1 AND AR4Inputs[27].2
 						AND AR4Inputs[27].3 AND AR4Inputs[27].4 AND AR4Inputs[27].5;
@@ -5542,37 +5543,37 @@ END_IF
 {endregion}
 
 // https://docs.google.com/spreadsheets/d/1S5TOxwbAx8pTMUdoWMnyC9WPfphhtUME/edit#gid=595805457
-J1.in.dwActPosition := DINT_TO_DWORD(EncPosition[0]);
-J2.in.dwActPosition := DINT_TO_DWORD(EncPosition[1]);
-J3.in.dwActPosition := DINT_TO_DWORD(EncPosition[2]);
-J4.in.dwActPosition := DINT_TO_DWORD(EncPosition[3]);
-J5.in.dwActPosition := DINT_TO_DWORD(EncPosition[4]);
-J6.in.dwActPosition := DINT_TO_DWORD(EncPosition[5]);
+IoConfig_Globals.J1.in.dwActPosition := DINT_TO_DWORD(EncPosition[0]);
+IoConfig_Globals.J2.in.dwActPosition := DINT_TO_DWORD(EncPosition[1]);
+IoConfig_Globals.J3.in.dwActPosition := DINT_TO_DWORD(EncPosition[2]);
+IoConfig_Globals.J4.in.dwActPosition := DINT_TO_DWORD(EncPosition[3]);
+IoConfig_Globals.J5.in.dwActPosition := DINT_TO_DWORD(EncPosition[4]);
+IoConfig_Globals.J6.in.dwActPosition := DINT_TO_DWORD(EncPosition[5]);
 
 //
 IF FirstScan THEN
-	J1.bHWLimitEnable := TRUE;
-	J2.bHWLimitEnable := TRUE;
-	J3.bHWLimitEnable := TRUE;
-	J4.bHWLimitEnable := TRUE;
-	J5.bHWLimitEnable := TRUE;
-	J6.bHWLimitEnable := TRUE;
+	IoConfig_Globals.J1.bHWLimitEnable := TRUE;
+	IoConfig_Globals.J2.bHWLimitEnable := TRUE;
+	IoConfig_Globals.J3.bHWLimitEnable := TRUE;
+	IoConfig_Globals.J4.bHWLimitEnable := TRUE;
+	IoConfig_Globals.J5.bHWLimitEnable := TRUE;
+	IoConfig_Globals.J6.bHWLimitEnable := TRUE;
 END_IF
 
 //
-J1.in.bLimitNeg := TRUE;
-J2.in.bLimitNeg := TRUE;
-J3.in.bLimitNeg := rx_j3_limit;
-J4.in.bLimitNeg := rx_j4_limit;
-J5.in.bLimitNeg := rx_j5_limit;
-J6.in.bLimitNeg := TRUE;
+IoConfig_Globals.J1.in.bLimitNeg := TRUE;
+IoConfig_Globals.J2.in.bLimitNeg := TRUE;
+IoConfig_Globals.J3.in.bLimitNeg := rx_j3_limit;
+IoConfig_Globals.J4.in.bLimitNeg := rx_j4_limit;
+IoConfig_Globals.J5.in.bLimitNeg := rx_j5_limit;
+IoConfig_Globals.J6.in.bLimitNeg := TRUE;
 
-J1.in.bLimitPos := rx_j1_limit;
-J2.in.bLimitPos := rx_j2_limit;
-J3.in.bLimitPos := TRUE;
-J4.in.bLimitPos := TRUE;
-J5.in.bLimitPos := TRUE;
-J6.in.bLimitPos := rx_j6_limit;</xhtml>
+IoConfig_Globals.J1.in.bLimitPos := rx_j1_limit;
+IoConfig_Globals.J2.in.bLimitPos := rx_j2_limit;
+IoConfig_Globals.J3.in.bLimitPos := TRUE;
+IoConfig_Globals.J4.in.bLimitPos := TRUE;
+IoConfig_Globals.J5.in.bLimitPos := TRUE;
+IoConfig_Globals.J6.in.bLimitPos := rx_j6_limit;</xhtml>
                         </ST>
                       </body>
                       <InterfaceAsPlainText>
@@ -5730,7 +5731,7 @@ CASE _Step OF
 			//
 			IF NOT PersistentVars.Flags[GVL.INIT_DRV_IDX].Value THEN
 				FOR _i:=GVL.POSCONT_ARR_BEG TO GVL.POSCONT_ARR_END BY 1 DO
-					PersistentVars.PositionControllers[_i].fKp := 0.03;
+					PersistentVars.PositionControllers[_i].fKp := 0.1;
 					PersistentVars.PositionControllers[_i].fPartVelPilotControl := 1.0; // 0-1
 					PersistentVars.PositionControllers[_i].fDeadTime := 2.0;
 					PersistentVars.PositionControllers[_i].fMaxPositionDiff := 0.0;
@@ -5788,7 +5789,7 @@ END_CASE
 
 //
 _SMC_SetPosControlParams[0](
-	Axis:= J1, 
+	Axis:= IoConfig_Globals.J1, 
 	bExecute:= , 
 	fKp:= PersistentVars.PositionControllers[0].fKp, 
 	fPartVelPilotControl:= PersistentVars.PositionControllers[0].fPartVelPilotControl, 
@@ -5798,15 +5799,15 @@ _SMC_SetPosControlParams[0](
 	bError=&gt; , 
 	ErrorID=&gt; );
 IF _SMC_SetPosControlParams[0].bDone AND NOT _SMC_SetPosControlParams[0].bError THEN
-	J1.fSWMaxVelocity 			:= PersistentVars.PositionControllers[0].fSWMaxVelocity; // 30
-	J1.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[0].fSWMaxAcceleration; // 1000
-	J1.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[0].fSWMaxDeceleration; // 1000
-	J1.fSWMaxJerk 				:= PersistentVars.PositionControllers[0].fSWMaxJerk; // 10000
+	IoConfig_Globals.J1.fSWMaxVelocity 			:= PersistentVars.PositionControllers[0].fSWMaxVelocity; // 30
+	IoConfig_Globals.J1.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[0].fSWMaxAcceleration; // 1000
+	IoConfig_Globals.J1.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[0].fSWMaxDeceleration; // 1000
+	IoConfig_Globals.J1.fSWMaxJerk 				:= PersistentVars.PositionControllers[0].fSWMaxJerk; // 10000
 END_IF
 
 //
 _SMC_SetPosControlParams[1](
-	Axis:= J2, 
+	Axis:= IoConfig_Globals.J2, 
 	bExecute:= , 
 	fKp:= PersistentVars.PositionControllers[1].fKp, 
 	fPartVelPilotControl:= PersistentVars.PositionControllers[1].fPartVelPilotControl, 
@@ -5816,15 +5817,15 @@ _SMC_SetPosControlParams[1](
 	bError=&gt; , 
 	ErrorID=&gt; );
 IF _SMC_SetPosControlParams[1].bDone AND NOT _SMC_SetPosControlParams[1].bError THEN
-	J2.fSWMaxVelocity 			:= PersistentVars.PositionControllers[1].fSWMaxVelocity;
-	J2.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[1].fSWMaxAcceleration;
-	J2.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[1].fSWMaxDeceleration;
-	J2.fSWMaxJerk 				:= PersistentVars.PositionControllers[1].fSWMaxJerk;
+	IoConfig_Globals.J2.fSWMaxVelocity 			:= PersistentVars.PositionControllers[1].fSWMaxVelocity;
+	IoConfig_Globals.J2.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[1].fSWMaxAcceleration;
+	IoConfig_Globals.J2.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[1].fSWMaxDeceleration;
+	IoConfig_Globals.J2.fSWMaxJerk 				:= PersistentVars.PositionControllers[1].fSWMaxJerk;
 END_IF
 
 //
 _SMC_SetPosControlParams[2](
-	Axis:= J3, 
+	Axis:= IoConfig_Globals.J3, 
 	bExecute:= , 
 	fKp:= PersistentVars.PositionControllers[2].fKp, 
 	fPartVelPilotControl:= PersistentVars.PositionControllers[2].fPartVelPilotControl, 
@@ -5834,15 +5835,15 @@ _SMC_SetPosControlParams[2](
 	bError=&gt; , 
 	ErrorID=&gt; );
 IF _SMC_SetPosControlParams[2].bDone AND NOT _SMC_SetPosControlParams[2].bError THEN
-	J3.fSWMaxVelocity 			:= PersistentVars.PositionControllers[2].fSWMaxVelocity;
-	J3.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[2].fSWMaxAcceleration;
-	J3.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[2].fSWMaxDeceleration;
-	J3.fSWMaxJerk 				:= PersistentVars.PositionControllers[2].fSWMaxJerk;
+	IoConfig_Globals.J3.fSWMaxVelocity 			:= PersistentVars.PositionControllers[2].fSWMaxVelocity;
+	IoConfig_Globals.J3.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[2].fSWMaxAcceleration;
+	IoConfig_Globals.J3.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[2].fSWMaxDeceleration;
+	IoConfig_Globals.J3.fSWMaxJerk 				:= PersistentVars.PositionControllers[2].fSWMaxJerk;
 END_IF
 
 //
 _SMC_SetPosControlParams[3](
-	Axis:= J4, 
+	Axis:= IoConfig_Globals.J4, 
 	bExecute:= , 
 	fKp:= PersistentVars.PositionControllers[3].fKp, 
 	fPartVelPilotControl:= PersistentVars.PositionControllers[3].fPartVelPilotControl, 
@@ -5852,15 +5853,15 @@ _SMC_SetPosControlParams[3](
 	bError=&gt; , 
 	ErrorID=&gt; );
 IF _SMC_SetPosControlParams[3].bDone AND NOT _SMC_SetPosControlParams[3].bError THEN
-	J4.fSWMaxVelocity 			:= PersistentVars.PositionControllers[3].fSWMaxVelocity;
-	J4.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[3].fSWMaxAcceleration;
-	J4.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[3].fSWMaxDeceleration;
-	J4.fSWMaxJerk 				:= PersistentVars.PositionControllers[3].fSWMaxJerk;
+	IoConfig_Globals.J4.fSWMaxVelocity 			:= PersistentVars.PositionControllers[3].fSWMaxVelocity;
+	IoConfig_Globals.J4.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[3].fSWMaxAcceleration;
+	IoConfig_Globals.J4.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[3].fSWMaxDeceleration;
+	IoConfig_Globals.J4.fSWMaxJerk 				:= PersistentVars.PositionControllers[3].fSWMaxJerk;
 END_IF
 
 //
 _SMC_SetPosControlParams[4](
-	Axis:= J5, 
+	Axis:= IoConfig_Globals.J5, 
 	bExecute:= , 
 	fKp:= PersistentVars.PositionControllers[4].fKp, 
 	fPartVelPilotControl:= PersistentVars.PositionControllers[4].fPartVelPilotControl, 
@@ -5870,15 +5871,15 @@ _SMC_SetPosControlParams[4](
 	bError=&gt; , 
 	ErrorID=&gt; );
 IF _SMC_SetPosControlParams[4].bDone AND NOT _SMC_SetPosControlParams[4].bError THEN
-	J5.fSWMaxVelocity 			:= PersistentVars.PositionControllers[4].fSWMaxVelocity;
-	J5.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[4].fSWMaxAcceleration;
-	J5.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[4].fSWMaxDeceleration;
-	J5.fSWMaxJerk 				:= PersistentVars.PositionControllers[4].fSWMaxJerk;
+	IoConfig_Globals.J5.fSWMaxVelocity 			:= PersistentVars.PositionControllers[4].fSWMaxVelocity;
+	IoConfig_Globals.J5.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[4].fSWMaxAcceleration;
+	IoConfig_Globals.J5.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[4].fSWMaxDeceleration;
+	IoConfig_Globals.J5.fSWMaxJerk 				:= PersistentVars.PositionControllers[4].fSWMaxJerk;
 END_IF
 
 //
 _SMC_SetPosControlParams[5](
-	Axis:= J6, 
+	Axis:= IoConfig_Globals.J6, 
 	bExecute:= , 
 	fKp:= PersistentVars.PositionControllers[5].fKp, 
 	fPartVelPilotControl:= PersistentVars.PositionControllers[5].fPartVelPilotControl, 
@@ -5888,10 +5889,10 @@ _SMC_SetPosControlParams[5](
 	bError=&gt; , 
 	ErrorID=&gt; );
 IF _SMC_SetPosControlParams[5].bDone AND NOT _SMC_SetPosControlParams[5].bError THEN
-	J6.fSWMaxVelocity 			:= PersistentVars.PositionControllers[5].fSWMaxVelocity;
-	J6.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[5].fSWMaxAcceleration;
-	J6.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[5].fSWMaxDeceleration;
-	J6.fSWMaxJerk 				:= PersistentVars.PositionControllers[5].fSWMaxJerk;
+	IoConfig_Globals.J6.fSWMaxVelocity 			:= PersistentVars.PositionControllers[5].fSWMaxVelocity;
+	IoConfig_Globals.J6.fSWMaxAcceleration 		:= PersistentVars.PositionControllers[5].fSWMaxAcceleration;
+	IoConfig_Globals.J6.fSWMaxDeceleration 		:= PersistentVars.PositionControllers[5].fSWMaxDeceleration;
+	IoConfig_Globals.J6.fSWMaxJerk 				:= PersistentVars.PositionControllers[5].fSWMaxJerk;
 END_IF</xhtml>
                         </ST>
                       </body>
@@ -10906,9 +10907,9 @@ VAR
 	_SMC_NCInterpreter: SMC_NCInterpreter;
 	_SMC_ReadNCFile2: SMC_ReadNCFile2;
 	_SMC_CheckVelocities: SMC_CheckVelocities;
-	_SMC_GEOINFO: ARRAY[0..49] OF SMC_GEOINFO;
+	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
 	_ExecuteRtrig: R_TRIG;
 	_Execute: BOOL;
 	_ResetRtrig: R_TRIG;
@@ -10975,9 +10976,9 @@ VAR
 	_SMC_NCInterpreter: SMC_NCInterpreter;
 	_SMC_ReadNCFile2: SMC_ReadNCFile2;
 	_SMC_CheckVelocities: SMC_CheckVelocities;
-	_SMC_GEOINFO: ARRAY[0..49] OF SMC_GEOINFO;
+	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
 	_ExecuteRtrig: R_TRIG;
 	_Execute: BOOL;
 	_ResetRtrig: R_TRIG;
@@ -11020,7 +11021,7 @@ END_VAR
                     <variable name="_SMC_GEOINFO">
                       <type>
                         <array>
-                          <dimension lower="0" upper="49" />
+                          <dimension lower="0" upper="50" />
                           <baseType>
                             <derived name="SMC_GEOINFO" />
                           </baseType>
@@ -11037,7 +11038,7 @@ END_VAR
                         <derived name="SMC_ORI_CONVENTION" />
                       </type>
                       <initialValue>
-                        <simpleValue value="SMC_ORI_CONVENTION.XYZ" />
+                        <simpleValue value="SMC_ORI_CONVENTION.ZYX" />
                       </initialValue>
                     </variable>
                     <variable name="_ExecuteRtrig">
@@ -11094,9 +11095,9 @@ VAR
 	_SMC_NCInterpreter: SMC_NCInterpreter;
 	_SMC_ReadNCFile2: SMC_ReadNCFile2;
 	_SMC_CheckVelocities: SMC_CheckVelocities;
-	_SMC_GEOINFO: ARRAY[0..49] OF SMC_GEOINFO;
+	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
 	_ExecuteRtrig: R_TRIG;
 	_Execute: BOOL;
 	_ResetRtrig: R_TRIG;
@@ -11145,9 +11146,9 @@ VAR
 	_SMC_NCInterpreter: SMC_NCInterpreter;
 	_SMC_ReadNCFile2: SMC_ReadNCFile2;
 	_SMC_CheckVelocities: SMC_CheckVelocities;
-	_SMC_GEOINFO: ARRAY[0..49] OF SMC_GEOINFO;
+	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
 	_ExecuteRtrig: R_TRIG;
 	_Execute: BOOL;
 	_ResetRtrig: R_TRIG;
@@ -11223,6 +11224,7 @@ _SMC_ReadNCFile2(
 	adwFileSize=&gt; , 
 	adwPos=&gt; );
 
+// https://content.helpme-codesys.com/en/libs/SM3_CNC/Current/SM_CNC_POUs/NC2/Interpreter/SMC_NCInterpreter.html
 _SMC_NCInterpreter(
 	sentences:= _SMC_ReadNCFile2.sentences, 
 	bExecute:= _SMC_ReadNCFile2.bExecute, 
@@ -11460,9 +11462,9 @@ VAR
 	_SMC_NCInterpreter: SMC_NCInterpreter;
 	_SMC_ReadNCFile2: SMC_ReadNCFile2;
 	_SMC_CheckVelocities: SMC_CheckVelocities;
-	_SMC_GEOINFO: ARRAY[0..49] OF SMC_GEOINFO;
+	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.XYZ;
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
 	_ExecuteRtrig: R_TRIG;
 	_Execute: BOOL;
 	_ResetRtrig: R_TRIG;
@@ -11759,34 +11761,34 @@ END_VAR
                         <derived name="AXIS_GROUP_REF_SM3" />
                       </type>
                     </variable>
-                    <variable name="SM3_Drive_PosControl_J1">
+                    <variable name="J1">
                       <type>
-                        <derived name="SM3_Drive_PosControl.AXIS_REF_POSCONTROL" />
+                        <derived name="AXIS_REF_SM3" />
                       </type>
                     </variable>
-                    <variable name="SM3_Drive_PosControl_J2">
+                    <variable name="J2">
                       <type>
-                        <derived name="SM3_Drive_PosControl.AXIS_REF_POSCONTROL" />
+                        <derived name="AXIS_REF_SM3" />
                       </type>
                     </variable>
-                    <variable name="SM3_Drive_PosControl_J3">
+                    <variable name="J3">
                       <type>
-                        <derived name="SM3_Drive_PosControl.AXIS_REF_POSCONTROL" />
+                        <derived name="AXIS_REF_SM3" />
                       </type>
                     </variable>
-                    <variable name="SM3_Drive_PosControl_J4">
+                    <variable name="J4">
                       <type>
-                        <derived name="SM3_Drive_PosControl.AXIS_REF_POSCONTROL" />
+                        <derived name="AXIS_REF_SM3" />
                       </type>
                     </variable>
-                    <variable name="SM3_Drive_PosControl_J5">
+                    <variable name="J5">
                       <type>
-                        <derived name="SM3_Drive_PosControl.AXIS_REF_POSCONTROL" />
+                        <derived name="AXIS_REF_SM3" />
                       </type>
                     </variable>
-                    <variable name="SM3_Drive_PosControl_J6">
+                    <variable name="J6">
                       <type>
-                        <derived name="SM3_Drive_PosControl.AXIS_REF_POSCONTROL" />
+                        <derived name="AXIS_REF_SM3" />
                       </type>
                     </variable>
                     <addData>
@@ -11795,25 +11797,28 @@ END_VAR
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK PositionTracker
 VAR_IN_OUT
 	AxisGroup: AXIS_GROUP_REF_SM3;
-	SM3_Drive_PosControl_J1: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J2: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J3: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J4: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J5: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J6: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+	J1: AXIS_REF_SM3;
+	J2: AXIS_REF_SM3;
+	J3: AXIS_REF_SM3;
+	J4: AXIS_REF_SM3;
+	J5: AXIS_REF_SM3;
+	J6: AXIS_REF_SM3;
 END_VAR
 VAR_INPUT
+    OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
 END_VAR
 VAR_OUTPUT
 	VisuStruct3DTrack: VisuStruct3DTrack;
+    Position: SMC_PosInfo;
 	Arm: SMC_ArticulatedRobot_6DOF_J0_State;
 	Elbow: SMC_ArticulatedRobot_6DOF_J1_State;
 	Hand: SMC_ArticulatedRobot_6DOF_J4_State;
 END_VAR
 VAR
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_VisuStruct3DPathPoint: ARRAY [0..10000] OF VisuStruct3DPathPoint;
+	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
+	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
+	_VisuStruct3DPathPoint: ARRAY [0..100000] OF VisuStruct3DPathPoint;
 	_SMC_PositionTracker: SMC_PositionTracker;
 	_PositionTrackerClearR_Trig: R_Trig;
 	_Clear: BOOL:=FALSE;
@@ -11823,10 +11828,61 @@ END_VAR
                       </data>
                     </addData>
                   </inOutVars>
+                  <inputVars>
+                    <variable name="OriConvention">
+                      <type>
+                        <derived name="SMC_ORI_CONVENTION" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="SMC_ORI_CONVENTION.ZYX" />
+                      </initialValue>
+                    </variable>
+                    <addData>
+                      <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                        <InterfaceAsPlainText>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK PositionTracker
+VAR_IN_OUT
+	AxisGroup: AXIS_GROUP_REF_SM3;
+	J1: AXIS_REF_SM3;
+	J2: AXIS_REF_SM3;
+	J3: AXIS_REF_SM3;
+	J4: AXIS_REF_SM3;
+	J5: AXIS_REF_SM3;
+	J6: AXIS_REF_SM3;
+END_VAR
+VAR_INPUT
+    OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
+END_VAR
+VAR_OUTPUT
+	VisuStruct3DTrack: VisuStruct3DTrack;
+    Position: SMC_PosInfo;
+	Arm: SMC_ArticulatedRobot_6DOF_J0_State;
+	Elbow: SMC_ArticulatedRobot_6DOF_J1_State;
+	Hand: SMC_ArticulatedRobot_6DOF_J4_State;
+END_VAR
+VAR
+	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
+	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
+	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
+	_VisuStruct3DPathPoint: ARRAY [0..100000] OF VisuStruct3DPathPoint;
+	_SMC_PositionTracker: SMC_PositionTracker;
+	_PositionTrackerClearR_Trig: R_Trig;
+	_Clear: BOOL:=FALSE;
+END_VAR
+</xhtml>
+                        </InterfaceAsPlainText>
+                      </data>
+                    </addData>
+                  </inputVars>
                   <outputVars>
                     <variable name="VisuStruct3DTrack">
                       <type>
                         <derived name="VisuStruct3DTrack" />
+                      </type>
+                    </variable>
+                    <variable name="Position">
+                      <type>
+                        <derived name="SMC_PosInfo" />
                       </type>
                     </variable>
                     <variable name="Arm">
@@ -11850,25 +11906,28 @@ END_VAR
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK PositionTracker
 VAR_IN_OUT
 	AxisGroup: AXIS_GROUP_REF_SM3;
-	SM3_Drive_PosControl_J1: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J2: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J3: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J4: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J5: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J6: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+	J1: AXIS_REF_SM3;
+	J2: AXIS_REF_SM3;
+	J3: AXIS_REF_SM3;
+	J4: AXIS_REF_SM3;
+	J5: AXIS_REF_SM3;
+	J6: AXIS_REF_SM3;
 END_VAR
 VAR_INPUT
+    OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
 END_VAR
 VAR_OUTPUT
 	VisuStruct3DTrack: VisuStruct3DTrack;
+    Position: SMC_PosInfo;
 	Arm: SMC_ArticulatedRobot_6DOF_J0_State;
 	Elbow: SMC_ArticulatedRobot_6DOF_J1_State;
 	Hand: SMC_ArticulatedRobot_6DOF_J4_State;
 END_VAR
 VAR
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_VisuStruct3DPathPoint: ARRAY [0..10000] OF VisuStruct3DPathPoint;
+	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
+	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
+	_VisuStruct3DPathPoint: ARRAY [0..100000] OF VisuStruct3DPathPoint;
 	_SMC_PositionTracker: SMC_PositionTracker;
 	_PositionTrackerClearR_Trig: R_Trig;
 	_Clear: BOOL:=FALSE;
@@ -11879,20 +11938,25 @@ END_VAR
                     </addData>
                   </outputVars>
                   <localVars>
-                    <variable name="_SMC_Trafof_ArticulatedRobot_6DOF">
-                      <type>
-                        <derived name="SMC_Trafof_ArticulatedRobot_6DOF" />
-                      </type>
-                    </variable>
                     <variable name="_SMC_TrafoConfig_ArticulatedRobot_6DOF">
                       <type>
                         <derived name="SMC_TrafoConfig_ArticulatedRobot_6DOF" />
                       </type>
                     </variable>
+                    <variable name="_SMC_Trafo_ArticulatedRobot_6DOF">
+                      <type>
+                        <derived name="SMC_Trafo_ArticulatedRobot_6DOF" />
+                      </type>
+                    </variable>
+                    <variable name="_SMC_Trafof_ArticulatedRobot_6DOF">
+                      <type>
+                        <derived name="SMC_Trafof_ArticulatedRobot_6DOF" />
+                      </type>
+                    </variable>
                     <variable name="_VisuStruct3DPathPoint">
                       <type>
                         <array>
-                          <dimension lower="0" upper="10000" />
+                          <dimension lower="0" upper="100000" />
                           <baseType>
                             <derived name="VisuStruct3DPathPoint" />
                           </baseType>
@@ -11923,25 +11987,28 @@ END_VAR
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK PositionTracker
 VAR_IN_OUT
 	AxisGroup: AXIS_GROUP_REF_SM3;
-	SM3_Drive_PosControl_J1: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J2: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J3: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J4: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J5: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J6: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+	J1: AXIS_REF_SM3;
+	J2: AXIS_REF_SM3;
+	J3: AXIS_REF_SM3;
+	J4: AXIS_REF_SM3;
+	J5: AXIS_REF_SM3;
+	J6: AXIS_REF_SM3;
 END_VAR
 VAR_INPUT
+    OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
 END_VAR
 VAR_OUTPUT
 	VisuStruct3DTrack: VisuStruct3DTrack;
+    Position: SMC_PosInfo;
 	Arm: SMC_ArticulatedRobot_6DOF_J0_State;
 	Elbow: SMC_ArticulatedRobot_6DOF_J1_State;
 	Hand: SMC_ArticulatedRobot_6DOF_J4_State;
 END_VAR
 VAR
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_VisuStruct3DPathPoint: ARRAY [0..10000] OF VisuStruct3DPathPoint;
+	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
+	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
+	_VisuStruct3DPathPoint: ARRAY [0..100000] OF VisuStruct3DPathPoint;
 	_SMC_PositionTracker: SMC_PositionTracker;
 	_PositionTrackerClearR_Trig: R_Trig;
 	_Clear: BOOL:=FALSE;
@@ -11989,17 +12056,41 @@ _SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_min_deg:=-160; // TODO put magic numbe
 
 // track position
 _SMC_Trafof_ArticulatedRobot_6DOF(config:=_SMC_TrafoConfig_ArticulatedRobot_6DOF,
-							Drive0:=SM3_Drive_PosControl_J1,
-							Drive1:=SM3_Drive_PosControl_J2,
-							Drive2:=SM3_Drive_PosControl_J3,
-							Drive3:=SM3_Drive_PosControl_J4,
-							Drive4:=SM3_Drive_PosControl_J5,
-							Drive5:=SM3_Drive_PosControl_J6,
+							Drive0:=J1,
+							Drive1:=J2,
+							Drive2:=J3,
+							Drive3:=J4,
+							Drive4:=J5,
+							Drive5:=J6,
 							vToolPos=&gt;,
 							mToolOrientation=&gt;,
 							armState=&gt;Arm,
 							elbowState=&gt;Elbow,
 							handState=&gt;Hand);
+Position.dX := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dX;
+Position.dY := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dY;
+Position.dZ := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dZ;
+
+// https://content.helpme-codesys.com/en/libs/SM3_Math/4.12.0.0/Matrix3/fld-Matrix3.html
+CASE OriConvention OF
+    SMC_ORI_CONVENTION.ADDAXES:
+        Position.dA := J4.fActPosition;
+        Position.dB := J5.fActPosition;
+        Position.dC := J6.fActPosition;
+    SMC_ORI_CONVENTION.XYZ:
+        SMC_Matrix3_ToRollPitchYaw_deg( mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
+                                        dRoll=&gt; Position.dA, dPitch=&gt; Position.dB, dYaw=&gt; Position.dC);
+    SMC_ORI_CONVENTION.ZYX:
+        // yaw(Z), pitch(Y) and roll(X)
+        SMC_Matrix3_ToYawPitchRoll( mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
+                                    dRoll_rad=&gt; Position.dA, dPitch_rad=&gt; Position.dB, dYaw_rad=&gt; Position.dC);
+                                    Position.dA := RAD_TO_DEG(Position.dA);
+                                    Position.dB := RAD_TO_DEG(Position.dB);
+                                    Position.dC := RAD_TO_DEG(Position.dC);
+    SMC_ORI_CONVENTION.ZYZ:
+        SMC_Matrix3_ToZYZ_deg(  mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
+                                dA_deg=&gt; Position.dA, dB_deg=&gt; Position.dB, dC_deg=&gt; Position.dC);
+END_CASE
 
 _PositionTrackerClearR_Trig(Clk:=_Clear);
 _SMC_PositionTracker(
@@ -12008,7 +12099,7 @@ _SMC_PositionTracker(
 	dX:= _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dX, 
 	dY:= _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dY, 
 	dZ:= _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dZ, 
-	udiNumberOfPointsInArray:= 10001, //SIZEOF(_VisuStruct3DPathPoint), TODO make this dynamic. hint SIZEOF wont work
+	udiNumberOfPointsInArray:= SIZEOF(_VisuStruct3DPathPoint) / SIZEOF(VisuStruct3DPathPoint), 
 	pBuffer:= ADR(_VisuStruct3DPathPoint), 
 	vs3dt=&gt; VisuStruct3DTrack);
 _Clear := FALSE;</xhtml>
@@ -12037,25 +12128,28 @@ END_VAR
                       <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK PositionTracker
 VAR_IN_OUT
 	AxisGroup: AXIS_GROUP_REF_SM3;
-	SM3_Drive_PosControl_J1: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J2: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J3: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J4: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J5: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
-	SM3_Drive_PosControl_J6: SM3_Drive_PosControl.AXIS_REF_POSCONTROL;
+	J1: AXIS_REF_SM3;
+	J2: AXIS_REF_SM3;
+	J3: AXIS_REF_SM3;
+	J4: AXIS_REF_SM3;
+	J5: AXIS_REF_SM3;
+	J6: AXIS_REF_SM3;
 END_VAR
 VAR_INPUT
+    OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
 END_VAR
 VAR_OUTPUT
 	VisuStruct3DTrack: VisuStruct3DTrack;
+    Position: SMC_PosInfo;
 	Arm: SMC_ArticulatedRobot_6DOF_J0_State;
 	Elbow: SMC_ArticulatedRobot_6DOF_J1_State;
 	Hand: SMC_ArticulatedRobot_6DOF_J4_State;
 END_VAR
 VAR
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_VisuStruct3DPathPoint: ARRAY [0..10000] OF VisuStruct3DPathPoint;
+	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
+	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
+	_VisuStruct3DPathPoint: ARRAY [0..100000] OF VisuStruct3DPathPoint;
 	_SMC_PositionTracker: SMC_PositionTracker;
 	_PositionTrackerClearR_Trig: R_Trig;
 	_Clear: BOOL:=FALSE;
@@ -20222,7 +20316,7 @@ END_VAR
                         <LREAL />
                       </type>
                       <initialValue>
-                        <simpleValue value="10" />
+                        <simpleValue value="500.0" />
                       </initialValue>
                     </variable>
                     <variable name="AvoidGaps">
@@ -20238,7 +20332,7 @@ END_VAR
                         <LREAL />
                       </type>
                       <initialValue>
-                        <simpleValue value="500.0" />
+                        <simpleValue value="10000.0" />
                       </initialValue>
                     </variable>
                     <variable name="GapJerk">
@@ -20246,7 +20340,7 @@ END_VAR
                         <LREAL />
                       </type>
                       <initialValue>
-                        <simpleValue value="1000" />
+                        <simpleValue value="1E+16" />
                       </initialValue>
                     </variable>
                     <variable name="Command">
@@ -20262,10 +20356,10 @@ END_VAR
                         <InterfaceAsPlainText>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK CncCmdProcessor EXTENDS Module
 VAR_INPUT
-	GapVelocity: LREAL := 10;
+	GapVelocity: LREAL := 500.0;
 	AvoidGaps: BOOL := TRUE;
-	GapAccel: LREAL := 500.0;
-    GapJerk: LREAL := 1000;
+	GapAccel: LREAL := 10000.0;
+    GapJerk: LREAL := 10000000000000000.0;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -20276,12 +20370,9 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _Degrees: ARRAY[0..5] OF LREAL;
-	_StartPos: SMC_PosInfo;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
@@ -20289,7 +20380,9 @@ VAR
 	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
 	_SMC_Interpolator: SMC_Interpolator;
+	_TrackPosition: PositionTracker;
 	_PlanPath: CncPathPlanner;
+	//_PlanPath: REFERENCE TO CncPathPlanner;
 	_ErrorRtrig: R_TRIG;
     _i, _j, _k: INT;
 END_VAR
@@ -20305,14 +20398,6 @@ VAR CONSTANT
     MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
     MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
 END_VAR
-VAR
-	lrR1 : LREAL:=30;
-	
-	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
-			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
-			
-	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
-END_VAR
 VAR CONSTANT
 	_STEP_DONE: 		INT := 1000;
 	_STEP_IDLE: 		INT := 0000;
@@ -20322,6 +20407,14 @@ END_VAR
 VAR
 	_UnitModeCurrentState: PACK_ML.State;
 	_CncCmdParser: ParseCncCmd;
+END_VAR
+VAR
+	lrR1 : LREAL:=30;
+	
+	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
+			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
+			
+	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
 END_VAR
 </xhtml>
                         </InterfaceAsPlainText>
@@ -20374,10 +20467,10 @@ END_VAR
                         <InterfaceAsPlainText>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK CncCmdProcessor EXTENDS Module
 VAR_INPUT
-	GapVelocity: LREAL := 10;
+	GapVelocity: LREAL := 500.0;
 	AvoidGaps: BOOL := TRUE;
-	GapAccel: LREAL := 500.0;
-    GapJerk: LREAL := 1000;
+	GapAccel: LREAL := 10000.0;
+    GapJerk: LREAL := 10000000000000000.0;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -20388,12 +20481,9 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _Degrees: ARRAY[0..5] OF LREAL;
-	_StartPos: SMC_PosInfo;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
@@ -20401,7 +20491,9 @@ VAR
 	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
 	_SMC_Interpolator: SMC_Interpolator;
+	_TrackPosition: PositionTracker;
 	_PlanPath: CncPathPlanner;
+	//_PlanPath: REFERENCE TO CncPathPlanner;
 	_ErrorRtrig: R_TRIG;
     _i, _j, _k: INT;
 END_VAR
@@ -20417,14 +20509,6 @@ VAR CONSTANT
     MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
     MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
 END_VAR
-VAR
-	lrR1 : LREAL:=30;
-	
-	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
-			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
-			
-	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
-END_VAR
 VAR CONSTANT
 	_STEP_DONE: 		INT := 1000;
 	_STEP_IDLE: 		INT := 0000;
@@ -20435,33 +20519,29 @@ VAR
 	_UnitModeCurrentState: PACK_ML.State;
 	_CncCmdParser: ParseCncCmd;
 END_VAR
+VAR
+	lrR1 : LREAL:=30;
+	
+	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
+			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
+			
+	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
+END_VAR
 </xhtml>
                         </InterfaceAsPlainText>
                       </data>
                     </addData>
                   </inOutVars>
                   <localVars>
-                    <variable name="_Degrees">
+                    <variable name="_OriConvention">
                       <type>
-                        <array>
-                          <dimension lower="0" upper="5" />
-                          <baseType>
-                            <LREAL />
-                          </baseType>
-                        </array>
+                        <derived name="SMC_ORI_CONVENTION" />
                       </type>
-                    </variable>
-                    <variable name="_StartPos">
-                      <type>
-                        <derived name="SMC_PosInfo" />
-                      </type>
+                      <initialValue>
+                        <simpleValue value="SMC_ORI_CONVENTION.ZYX" />
+                      </initialValue>
                     </variable>
                     <variable name="_SMC_TrafoConfig_ArticulatedRobot_6DOF">
-                      <type>
-                        <derived name="SMC_TrafoConfig_ArticulatedRobot_6DOF" />
-                      </type>
-                    </variable>
-                    <variable name="_SMC_TrafofConfig_ArticulatedRobot_6DOF">
                       <type>
                         <derived name="SMC_TrafoConfig_ArticulatedRobot_6DOF" />
                       </type>
@@ -20469,11 +20549,6 @@ END_VAR
                     <variable name="_SMC_Trafo_ArticulatedRobot_6DOF">
                       <type>
                         <derived name="SMC_Trafo_ArticulatedRobot_6DOF" />
-                      </type>
-                    </variable>
-                    <variable name="_SMC_Trafof_ArticulatedRobot_6DOF">
-                      <type>
-                        <derived name="SMC_Trafof_ArticulatedRobot_6DOF" />
                       </type>
                     </variable>
                     <variable name="_SMC_ControlAxisByPos_J1">
@@ -20511,6 +20586,11 @@ END_VAR
                         <derived name="SMC_Interpolator" />
                       </type>
                     </variable>
+                    <variable name="_TrackPosition">
+                      <type>
+                        <derived name="PositionTracker" />
+                      </type>
+                    </variable>
                     <variable name="_PlanPath">
                       <type>
                         <derived name="CncPathPlanner" />
@@ -20520,6 +20600,9 @@ END_VAR
                       <type>
                         <derived name="R_TRIG" />
                       </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml">_PlanPath: REFERENCE TO CncPathPlanner;</xhtml>
+                      </documentation>
                     </variable>
                     <variable name="_i">
                       <type>
@@ -20541,10 +20624,10 @@ END_VAR
                         <InterfaceAsPlainText>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK CncCmdProcessor EXTENDS Module
 VAR_INPUT
-	GapVelocity: LREAL := 10;
+	GapVelocity: LREAL := 500.0;
 	AvoidGaps: BOOL := TRUE;
-	GapAccel: LREAL := 500.0;
-    GapJerk: LREAL := 1000;
+	GapAccel: LREAL := 10000.0;
+    GapJerk: LREAL := 10000000000000000.0;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -20555,12 +20638,9 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _Degrees: ARRAY[0..5] OF LREAL;
-	_StartPos: SMC_PosInfo;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
@@ -20568,7 +20648,9 @@ VAR
 	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
 	_SMC_Interpolator: SMC_Interpolator;
+	_TrackPosition: PositionTracker;
 	_PlanPath: CncPathPlanner;
+	//_PlanPath: REFERENCE TO CncPathPlanner;
 	_ErrorRtrig: R_TRIG;
     _i, _j, _k: INT;
 END_VAR
@@ -20584,14 +20666,6 @@ VAR CONSTANT
     MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
     MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
 END_VAR
-VAR
-	lrR1 : LREAL:=30;
-	
-	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
-			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
-			
-	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
-END_VAR
 VAR CONSTANT
 	_STEP_DONE: 		INT := 1000;
 	_STEP_IDLE: 		INT := 0000;
@@ -20601,6 +20675,14 @@ END_VAR
 VAR
 	_UnitModeCurrentState: PACK_ML.State;
 	_CncCmdParser: ParseCncCmd;
+END_VAR
+VAR
+	lrR1 : LREAL:=30;
+	
+	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
+			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
+			
+	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
 END_VAR
 </xhtml>
                         </InterfaceAsPlainText>
@@ -20688,15 +20770,47 @@ END_VAR
                         <simpleValue value="(MCODE_OUTPUT_CLR + GVL.DIG_OUT_ARR_END)" />
                       </initialValue>
                     </variable>
+                    <variable name="_STEP_DONE">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="1000" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_STEP_IDLE">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="0" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_STEP_COMMAND">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="10" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_STEP_ONE">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="20" />
+                      </initialValue>
+                    </variable>
                     <addData>
                       <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
                         <InterfaceAsPlainText>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK CncCmdProcessor EXTENDS Module
 VAR_INPUT
-	GapVelocity: LREAL := 10;
+	GapVelocity: LREAL := 500.0;
 	AvoidGaps: BOOL := TRUE;
-	GapAccel: LREAL := 500.0;
-    GapJerk: LREAL := 1000;
+	GapAccel: LREAL := 10000.0;
+    GapJerk: LREAL := 10000000000000000.0;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -20707,12 +20821,9 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _Degrees: ARRAY[0..5] OF LREAL;
-	_StartPos: SMC_PosInfo;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
@@ -20720,7 +20831,9 @@ VAR
 	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
 	_SMC_Interpolator: SMC_Interpolator;
+	_TrackPosition: PositionTracker;
 	_PlanPath: CncPathPlanner;
+	//_PlanPath: REFERENCE TO CncPathPlanner;
 	_ErrorRtrig: R_TRIG;
     _i, _j, _k: INT;
 END_VAR
@@ -20736,14 +20849,6 @@ VAR CONSTANT
     MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
     MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
 END_VAR
-VAR
-	lrR1 : LREAL:=30;
-	
-	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
-			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
-			
-	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
-END_VAR
 VAR CONSTANT
 	_STEP_DONE: 		INT := 1000;
 	_STEP_IDLE: 		INT := 0000;
@@ -20754,12 +20859,30 @@ VAR
 	_UnitModeCurrentState: PACK_ML.State;
 	_CncCmdParser: ParseCncCmd;
 END_VAR
+VAR
+	lrR1 : LREAL:=30;
+	
+	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
+			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
+			
+	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
+END_VAR
 </xhtml>
                         </InterfaceAsPlainText>
                       </data>
                     </addData>
                   </localVars>
                   <localVars>
+                    <variable name="_UnitModeCurrentState">
+                      <type>
+                        <derived name="PACK_ML.State" />
+                      </type>
+                    </variable>
+                    <variable name="_CncCmdParser">
+                      <type>
+                        <derived name="ParseCncCmd" />
+                      </type>
+                    </variable>
                     <variable name="lrR1">
                       <type>
                         <LREAL />
@@ -20815,10 +20938,10 @@ END_VAR
                         <InterfaceAsPlainText>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK CncCmdProcessor EXTENDS Module
 VAR_INPUT
-	GapVelocity: LREAL := 10;
+	GapVelocity: LREAL := 500.0;
 	AvoidGaps: BOOL := TRUE;
-	GapAccel: LREAL := 500.0;
-    GapJerk: LREAL := 1000;
+	GapAccel: LREAL := 10000.0;
+    GapJerk: LREAL := 10000000000000000.0;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -20829,12 +20952,9 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _Degrees: ARRAY[0..5] OF LREAL;
-	_StartPos: SMC_PosInfo;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
@@ -20842,7 +20962,9 @@ VAR
 	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
 	_SMC_Interpolator: SMC_Interpolator;
+	_TrackPosition: PositionTracker;
 	_PlanPath: CncPathPlanner;
+	//_PlanPath: REFERENCE TO CncPathPlanner;
 	_ErrorRtrig: R_TRIG;
     _i, _j, _k: INT;
 END_VAR
@@ -20858,14 +20980,6 @@ VAR CONSTANT
     MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
     MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
 END_VAR
-VAR
-	lrR1 : LREAL:=30;
-	
-	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
-			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
-			
-	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
-END_VAR
 VAR CONSTANT
 	_STEP_DONE: 		INT := 1000;
 	_STEP_IDLE: 		INT := 0000;
@@ -20876,92 +20990,6 @@ VAR
 	_UnitModeCurrentState: PACK_ML.State;
 	_CncCmdParser: ParseCncCmd;
 END_VAR
-</xhtml>
-                        </InterfaceAsPlainText>
-                      </data>
-                    </addData>
-                  </localVars>
-                  <localVars constant="true">
-                    <variable name="_STEP_DONE">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="1000" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_STEP_IDLE">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="0" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_STEP_COMMAND">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="10" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_STEP_ONE">
-                      <type>
-                        <INT />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="20" />
-                      </initialValue>
-                    </variable>
-                    <addData>
-                      <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
-                        <InterfaceAsPlainText>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK CncCmdProcessor EXTENDS Module
-VAR_INPUT
-	GapVelocity: LREAL := 10;
-	AvoidGaps: BOOL := TRUE;
-	GapAccel: LREAL := 500.0;
-    GapJerk: LREAL := 1000;
-	Command: STRING(GVL.COMMAND_LEN):='';
-END_VAR
-VAR_IN_OUT
-	J1, J2, J3, J4, J5, J6: AXIS_REF_SM3;
-	AxisGroup: AXIS_GROUP_REF_SM3;
-	CmdIO: ST_LogicCmdIO;
-END_VAR
-VAR_OUTPUT
-END_VAR
-VAR
-    _Degrees: ARRAY[0..5] OF LREAL;
-	_StartPos: SMC_PosInfo;
-	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
-	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
-	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
-	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
-	_SMC_ControlAxisByPos_J4: SMC_ControlAxisByPos;
-	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
-	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
-	_SMC_Interpolator: SMC_Interpolator;
-	_PlanPath: CncPathPlanner;
-	_ErrorRtrig: R_TRIG;
-    _i, _j, _k: INT;
-END_VAR
-VAR CONSTANT
-	wVarCount : WORD := 1;
-    MCODE_INPUT_WAIT: INT:=200;
-    MCODE_INPUT_WAIT_START: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_BEG;
-    MCODE_INPUT_WAIT_END: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_END;
-    MCODE_OUTPUT_SET: INT:=300;
-    MCODE_OUTPUT_SET_START: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_BEG;
-    MCODE_OUTPUT_SET_END: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_END;
-    MCODE_OUTPUT_CLR: INT:=400;
-    MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
-    MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
-END_VAR
 VAR
 	lrR1 : LREAL:=30;
 	
@@ -20969,98 +20997,6 @@ VAR
 			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
 			
 	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
-END_VAR
-VAR CONSTANT
-	_STEP_DONE: 		INT := 1000;
-	_STEP_IDLE: 		INT := 0000;
-	_STEP_COMMAND: 		INT := 0010;
-	_STEP_ONE: 			INT := 0020;
-END_VAR
-VAR
-	_UnitModeCurrentState: PACK_ML.State;
-	_CncCmdParser: ParseCncCmd;
-END_VAR
-</xhtml>
-                        </InterfaceAsPlainText>
-                      </data>
-                    </addData>
-                  </localVars>
-                  <localVars>
-                    <variable name="_UnitModeCurrentState">
-                      <type>
-                        <derived name="PACK_ML.State" />
-                      </type>
-                    </variable>
-                    <variable name="_CncCmdParser">
-                      <type>
-                        <derived name="ParseCncCmd" />
-                      </type>
-                    </variable>
-                    <addData>
-                      <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
-                        <InterfaceAsPlainText>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK CncCmdProcessor EXTENDS Module
-VAR_INPUT
-	GapVelocity: LREAL := 10;
-	AvoidGaps: BOOL := TRUE;
-	GapAccel: LREAL := 500.0;
-    GapJerk: LREAL := 1000;
-	Command: STRING(GVL.COMMAND_LEN):='';
-END_VAR
-VAR_IN_OUT
-	J1, J2, J3, J4, J5, J6: AXIS_REF_SM3;
-	AxisGroup: AXIS_GROUP_REF_SM3;
-	CmdIO: ST_LogicCmdIO;
-END_VAR
-VAR_OUTPUT
-END_VAR
-VAR
-    _Degrees: ARRAY[0..5] OF LREAL;
-	_StartPos: SMC_PosInfo;
-	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
-	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
-	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
-	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
-	_SMC_ControlAxisByPos_J4: SMC_ControlAxisByPos;
-	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
-	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
-	_SMC_Interpolator: SMC_Interpolator;
-	_PlanPath: CncPathPlanner;
-	_ErrorRtrig: R_TRIG;
-    _i, _j, _k: INT;
-END_VAR
-VAR CONSTANT
-	wVarCount : WORD := 1;
-    MCODE_INPUT_WAIT: INT:=200;
-    MCODE_INPUT_WAIT_START: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_BEG;
-    MCODE_INPUT_WAIT_END: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_END;
-    MCODE_OUTPUT_SET: INT:=300;
-    MCODE_OUTPUT_SET_START: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_BEG;
-    MCODE_OUTPUT_SET_END: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_END;
-    MCODE_OUTPUT_CLR: INT:=400;
-    MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
-    MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
-END_VAR
-VAR
-	lrR1 : LREAL:=30;
-	
-	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
-			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
-			
-	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
-END_VAR
-VAR CONSTANT
-	_STEP_DONE: 		INT := 1000;
-	_STEP_IDLE: 		INT := 0000;
-	_STEP_COMMAND: 		INT := 0010;
-	_STEP_ONE: 			INT := 0020;
-END_VAR
-VAR
-	_UnitModeCurrentState: PACK_ML.State;
-	_CncCmdParser: ParseCncCmd;
 END_VAR
 </xhtml>
                         </InterfaceAsPlainText>
@@ -21095,6 +21031,10 @@ END_VAR
 
 // Fusion 360 Post Processor Guide: https://cam.autodesk.com/posts/posts/guides/Post%20Processor%20Training%20Guide.pdf
 
+// path planner has to be called in a separate task with a lower priority
+// https://content.helpme-codesys.com/en/libs/SM3_CNC/Current/SM_CNC_POUs/NC2/Interpreter/SMC_NCInterpreter.html
+//_PlanPath REF= _60_PathPlanner.PlanPath;
+
 SUPER^();
 
 // PackML state machine implementation
@@ -21112,8 +21052,8 @@ CASE SUPER^._SeqMain OF
 	_STEP_COMMAND:
 		//
 		_CncCmdParser(Command:=Command);
-		_PlanPath.M_SetOriConvention(OriConvention:=SMC_ORI_CONVENTION.ZYX);//_CncCmdParser.stCommand.OriConvention);
-		_PlanPath.M_SetStartPosition(StartPos:=_StartPos);//_CncCmdParser.stCommand.StartPos);
+		_PlanPath.M_SetOriConvention(OriConvention:=_OriConvention);//_CncCmdParser.stCommand.OriConvention);
+		_PlanPath.M_SetStartPosition(StartPos:=_TrackPosition.Position);//_CncCmdParser.stCommand.StartPos);
 		_PlanPath.M_Execute(Filename:=_CncCmdParser.stCommand.Filename); // TODO I think we should be careful here. May need to sync CheckVelocities with the Interpolator
 		
 		//
@@ -21150,6 +21090,7 @@ _SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_max_deg:=160; // J6 // TODO put magic 
 _SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_min_deg:=-160; // J6 // TODO put magic numbers somewhere appropriate
 
 // TODO figure out how this var list can be used. for now its just hello world
+// this gets commented out because it has to be called in a separate task with a lower priority.
 _PlanPath(VarList:= stVarList, DataOut=&gt; );
 
 _SMC_Interpolator.bEmergency_Stop := _SMC_ControlAxisByPos_J1.bError OR _SMC_ControlAxisByPos_J1.bStopIpo
@@ -21167,7 +21108,7 @@ _SMC_Interpolator(
 	bWaitAtNextStop:= , 
 	dOverride:= , 
 	iVelMode:= , 
-	dwIpoTime:= GVL.dwMainInterval * 3, // in microseconds and should be slower than the task time
+	dwIpoTime:= GVL.dwMainInterval,
 	dLastWayPos:= , 
 	bAbort:= NOT _SMC_Interpolator.bExecute, 
 	bSingleStep:= , 
@@ -21197,7 +21138,7 @@ _SMC_Interpolator(
 	Act_Object=&gt; );
 
 // handle m codes
-CASE _SMC_Interpolator.wM OF
+CASE WORD_TO_INT(_SMC_Interpolator.wM) OF
 	0:	// reset acknowledgment
 		_SMC_Interpolator.bAcknM := FALSE;
         
@@ -21217,51 +21158,16 @@ CASE _SMC_Interpolator.wM OF
         
 END_CASE
 
-// get the current robot position and tool ori based on what the current config observes
-// this is needed so that we can set the start position of the decoder to the current position.
-// the reason we need to do this is because the trafo config only accepts a negative number for the d1 parameter (see notes above).
-// if this gets worked out, we can go back to setting the start position from the command parameters.
-_SMC_Trafof_ArticulatedRobot_6DOF(
-	config:= _SMC_TrafoConfig_ArticulatedRobot_6DOF, 
-	Drive0:= J1, 
-	Drive1:= J2, 
-	Drive2:= J3, 
-	Drive3:= J4, 
-	Drive4:= J5, 
-	Drive5:= J6, 
-	vToolPos=&gt; , 
-	mToolOrientation=&gt; , 
-	armState=&gt; , 
-	elbowState=&gt; , 
-	handState=&gt; );
-_StartPos.dX := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dX;
-_StartPos.dY := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dY;
-_StartPos.dZ := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dZ;
-// https://content.helpme-codesys.com/en/libs/SM3_Math/4.12.0.0/Matrix3/fld-Matrix3.html
-SMC_Matrix3_ToYawPitchRoll( mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
-                            dRoll_rad=&gt; _Degrees[3], dPitch_rad=&gt; _Degrees[4], dYaw_rad=&gt; _Degrees[5]);
-                            _StartPos.dA := RAD_TO_DEG(_Degrees[3]);
-                            _StartPos.dB := RAD_TO_DEG(_Degrees[4]);
-                            _StartPos.dC := RAD_TO_DEG(_Degrees[5]);
-(*CASE _OriConvention OF
-    SMC_ORI_CONVENTION.ADDAXES:
-        _Degrees[3] := J4.fActPosition;
-        _Degrees[4] := J5.fActPosition;
-        _Degrees[5] := J6.fActPosition;
-    SMC_ORI_CONVENTION.XYZ:
-        SMC_Matrix3_ToRollPitchYaw_deg( mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
-                                        dRoll=&gt; _Degrees[3], dPitch=&gt; _Degrees[4], dYaw=&gt; _Degrees[5]);
-    SMC_ORI_CONVENTION.ZYX:
-        SMC_Matrix3_ToYawPitchRoll( mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
-                                    dRoll_rad=&gt; _Degrees[3], dPitch_rad=&gt; _Degrees[4], dYaw_rad=&gt; _Degrees[5]);
-                                    _Degrees[3] := RAD_TO_DEG(_Degrees[3]);
-                                    _Degrees[4] := RAD_TO_DEG(_Degrees[4]);
-                                    _Degrees[5] := RAD_TO_DEG(_Degrees[5]);
-    SMC_ORI_CONVENTION.ZYZ:
-        SMC_Matrix3_ToZYZ_deg(  mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
-                                dA_deg=&gt; _Degrees[3], dB_deg=&gt; _Degrees[4], dC_deg=&gt; _Degrees[5]);
-END_CASE*)
-
+_TrackPosition(
+    OriConvention:=_OriConvention,
+	AxisGroup:=ArfBotAxisGroup,
+	J1:=J1, J2:=J2, J3:=J3,
+	J4:=J4, J5:=J5, J6:=J6,
+	VisuStruct3DTrack=&gt;,
+	Arm=&gt;,
+	Elbow=&gt;,
+	Hand=&gt;);
+    
 _SMC_Trafo_ArticulatedRobot_6DOF(
 	config:= _SMC_TrafoConfig_ArticulatedRobot_6DOF, 
 	pi:= _SMC_Interpolator.piSetPosition, 
@@ -21271,9 +21177,9 @@ _SMC_Trafo_ArticulatedRobot_6DOF(
 	dQ3_old:= J4.fActPosition, 
 	dQ4_old:= J5.fActPosition, 
 	dQ5_old:= J6.fActPosition, 
-	armState:= _SMC_Trafof_ArticulatedRobot_6DOF.armState, 
-	elbowState:= _SMC_Trafof_ArticulatedRobot_6DOF.elbowState, 
-	handState:= _SMC_Trafof_ArticulatedRobot_6DOF.handState, 
+	armState:= _TrackPosition.Arm, 
+	elbowState:= _TrackPosition.Elbow, 
+	handState:= _TrackPosition.Hand, 
 	dQ0=&gt; , 
 	dQ1=&gt; , 
 	dQ2=&gt; , 
@@ -21681,10 +21587,10 @@ _SMC_Interpolator.bExecute := FALSE;</xhtml>
                     <InterfaceAsPlainText>
                       <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK CncCmdProcessor EXTENDS Module
 VAR_INPUT
-	GapVelocity: LREAL := 10;
+	GapVelocity: LREAL := 500.0;
 	AvoidGaps: BOOL := TRUE;
-	GapAccel: LREAL := 500.0;
-    GapJerk: LREAL := 1000;
+	GapAccel: LREAL := 10000.0;
+    GapJerk: LREAL := 10000000000000000.0;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -21695,12 +21601,9 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _Degrees: ARRAY[0..5] OF LREAL;
-	_StartPos: SMC_PosInfo;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_TrafofConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
@@ -21708,7 +21611,9 @@ VAR
 	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
 	_SMC_Interpolator: SMC_Interpolator;
+	_TrackPosition: PositionTracker;
 	_PlanPath: CncPathPlanner;
+	//_PlanPath: REFERENCE TO CncPathPlanner;
 	_ErrorRtrig: R_TRIG;
     _i, _j, _k: INT;
 END_VAR
@@ -21724,14 +21629,6 @@ VAR CONSTANT
     MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
     MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
 END_VAR
-VAR
-	lrR1 : LREAL:=30;
-	
-	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
-			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
-			
-	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
-END_VAR
 VAR CONSTANT
 	_STEP_DONE: 		INT := 1000;
 	_STEP_IDLE: 		INT := 0000;
@@ -21741,6 +21638,14 @@ END_VAR
 VAR
 	_UnitModeCurrentState: PACK_ML.State;
 	_CncCmdParser: ParseCncCmd;
+END_VAR
+VAR
+	lrR1 : LREAL:=30;
+	
+	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
+			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
+			
+	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
 END_VAR
 </xhtml>
                     </InterfaceAsPlainText>
@@ -32830,6 +32735,179 @@ END_VAR
                 </addData>
               </pou>
             </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="_60_PathPlanner" pouType="program">
+                <interface>
+                  <localVars>
+                    <variable name="PlanPath">
+                      <type>
+                        <derived name="CncPathPlanner" />
+                      </type>
+                    </variable>
+                    <addData>
+                      <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                        <InterfaceAsPlainText>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">PROGRAM _60_PathPlanner
+VAR
+	PlanPath: CncPathPlanner;
+END_VAR
+VAR CONSTANT
+	wVarCount : WORD := 1;
+END_VAR
+VAR
+	lrR1 : LREAL:=30;
+	
+	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
+			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
+			
+	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
+END_VAR
+</xhtml>
+                        </InterfaceAsPlainText>
+                      </data>
+                    </addData>
+                  </localVars>
+                  <localVars constant="true">
+                    <variable name="wVarCount">
+                      <type>
+                        <WORD />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="1" />
+                      </initialValue>
+                    </variable>
+                    <addData>
+                      <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                        <InterfaceAsPlainText>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">PROGRAM _60_PathPlanner
+VAR
+	PlanPath: CncPathPlanner;
+END_VAR
+VAR CONSTANT
+	wVarCount : WORD := 1;
+END_VAR
+VAR
+	lrR1 : LREAL:=30;
+	
+	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
+			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
+			
+	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
+END_VAR
+</xhtml>
+                        </InterfaceAsPlainText>
+                      </data>
+                    </addData>
+                  </localVars>
+                  <localVars>
+                    <variable name="lrR1">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="30" />
+                      </initialValue>
+                    </variable>
+                    <variable name="astVar">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="wVarCount" />
+                          <baseType>
+                            <derived name="SMC_SingleVar" />
+                          </baseType>
+                        </array>
+                      </type>
+                      <initialValue>
+                        <arrayValue>
+                          <value>
+                            <structValue>
+                              <value member="strVarName">
+                                <simpleValue value="'R1'" />
+                              </value>
+                              <value member="pAdr">
+                                <simpleValue value="ADR(lrR1)" />
+                              </value>
+                              <value member="eVarType">
+                                <simpleValue value="SMC_VarType.SMC_TYPE_LREAL" />
+                              </value>
+                            </structValue>
+                          </value>
+                        </arrayValue>
+                      </initialValue>
+                    </variable>
+                    <variable name="stVarList">
+                      <type>
+                        <derived name="SMC_VarList" />
+                      </type>
+                      <initialValue>
+                        <structValue>
+                          <value member="wNumberVars">
+                            <simpleValue value="wVarCount" />
+                          </value>
+                          <value member="psvVarlist">
+                            <simpleValue value="ADR(astVar)" />
+                          </value>
+                        </structValue>
+                      </initialValue>
+                    </variable>
+                    <addData>
+                      <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                        <InterfaceAsPlainText>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">PROGRAM _60_PathPlanner
+VAR
+	PlanPath: CncPathPlanner;
+END_VAR
+VAR CONSTANT
+	wVarCount : WORD := 1;
+END_VAR
+VAR
+	lrR1 : LREAL:=30;
+	
+	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
+			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
+			
+	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
+END_VAR
+</xhtml>
+                        </InterfaceAsPlainText>
+                      </data>
+                    </addData>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// this has to be called in a separate task with lower priority
+// https://content.helpme-codesys.com/en/libs/SM3_CNC/Current/SM_CNC_POUs/NC2/Interpreter/SMC_NCInterpreter.html
+PlanPath(VarList:= stVarList, DataOut=&gt; );</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                    <InterfaceAsPlainText>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml">PROGRAM _60_PathPlanner
+VAR
+	PlanPath: CncPathPlanner;
+END_VAR
+VAR CONSTANT
+	wVarCount : WORD := 1;
+END_VAR
+VAR
+	lrR1 : LREAL:=30;
+	
+	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
+			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
+			
+	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
+END_VAR
+</xhtml>
+                    </InterfaceAsPlainText>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>25d35170-f0c8-4cbe-9a6a-5ff2fac6e186</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/union" handleUnknown="implementation">
               <union name="StringByteArray">
                 <variable name="bArray">
@@ -32969,9 +33047,9 @@ END_TYPE
             <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
               <DeviceType>
                 <DeviceIdentification>
-                  <Type>4102</Type>
-                  <Id>0000 0011</Id>
-                  <Version>4.11.0.0</Version>
+                  <Type>4097</Type>
+                  <Id>0000 000a</Id>
+                  <Version>3.5.20.30</Version>
                 </DeviceIdentification>
                 <Connector moduleType="256" interface="Common.PCI" connectorId="0">
                   <HostParameterSet />
@@ -44071,6 +44149,7 @@ END_TYPE
                   <Object Name="_M_MapIoOption2" ObjectId="0e17a830-e845-4b3c-a5c8-12e0f50412ad" />
                 </Folder>
               </Object>
+              <Object Name="_60_PathPlanner" ObjectId="25d35170-f0c8-4cbe-9a6a-5ff2fac6e186" />
             </Folder>
             <Object Name="MainTask" ObjectId="eafe4677-fa00-4970-b015-251c89fffd79" />
             <Object Name="SoftMotion_PlanningTask" ObjectId="5a42e1b4-5f13-4f3e-9a38-abed03da7807" />
