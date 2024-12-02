@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-12-01T15:18:43.2269847" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-12-01T15:11:21.6820841" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-12-01T20:52:13.4381301" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-12-01T20:51:49.6308969" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -33091,9 +33091,9 @@ END_TYPE
             <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
               <DeviceType>
                 <DeviceIdentification>
-                  <Type>4097</Type>
-                  <Id>0000 000a</Id>
-                  <Version>3.5.20.30</Version>
+                  <Type>4102</Type>
+                  <Id>0000 0011</Id>
+                  <Version>4.11.0.0</Version>
                 </DeviceIdentification>
                 <Connector moduleType="256" interface="Common.PCI" connectorId="0">
                   <HostParameterSet />
