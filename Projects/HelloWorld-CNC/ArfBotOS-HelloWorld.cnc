@@ -13,12 +13,8 @@
 (##########)
 (Hello, World.)
 (##########)
-N0 M300 (set output 0)
-N10 G56 X0 Y0 Z0 A0 B-90 C0 (set current as start)
-(When using Fusion for Personal Use, the feedrate of rapid)
-(moves is reduced to match the feedrate of cutting moves,)
-(which can increase machining time. Unrestricted rapid moves)
-(are available with a Fusion Subscription.)
+(N0 M300 (set output 0))
+N10 G56 X0 Y0 Z0 A0 B90 C0 (set current as start)
 N30 G1 X-1.132 Y-76.713 Z10 F30
 N40  Z5
 N50  Z0
@@ -1253,4 +1249,4 @@ N12330  X7.959 Y72.612
 N12340  X5.163 Y72.606
 N12350  Z5
 N12360  Z10
-N12370 M400 (clear output 0)
+(N12370 M400 (clear output 0))

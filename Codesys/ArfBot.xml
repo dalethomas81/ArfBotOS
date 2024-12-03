@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-12-01T20:52:13.4381301" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-12-01T20:51:49.6308969" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-12-02T22:34:42.3776049" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-12-02T22:34:26.4599291" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -10909,7 +10909,8 @@ VAR
 	_SMC_CheckVelocities: SMC_CheckVelocities;
 	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
+    // ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYZ;
 	_ExecuteRtrig: R_TRIG;
 	_Execute: BOOL;
 	_ResetRtrig: R_TRIG;
@@ -10978,7 +10979,8 @@ VAR
 	_SMC_CheckVelocities: SMC_CheckVelocities;
 	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
+    // ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYZ;
 	_ExecuteRtrig: R_TRIG;
 	_Execute: BOOL;
 	_ResetRtrig: R_TRIG;
@@ -11038,8 +11040,11 @@ END_VAR
                         <derived name="SMC_ORI_CONVENTION" />
                       </type>
                       <initialValue>
-                        <simpleValue value="SMC_ORI_CONVENTION.ZYX" />
+                        <simpleValue value="SMC_ORI_CONVENTION.ZYZ" />
                       </initialValue>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> ATTENTION: ZYZ is the only orientation convention that was reliable during testing.</xhtml>
+                      </documentation>
                     </variable>
                     <variable name="_ExecuteRtrig">
                       <type>
@@ -11097,7 +11102,8 @@ VAR
 	_SMC_CheckVelocities: SMC_CheckVelocities;
 	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
+    // ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYZ;
 	_ExecuteRtrig: R_TRIG;
 	_Execute: BOOL;
 	_ResetRtrig: R_TRIG;
@@ -11148,7 +11154,8 @@ VAR
 	_SMC_CheckVelocities: SMC_CheckVelocities;
 	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
+    // ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYZ;
 	_ExecuteRtrig: R_TRIG;
 	_Execute: BOOL;
 	_ResetRtrig: R_TRIG;
@@ -11235,7 +11242,7 @@ _SMC_NCInterpreter(
 	nSizeOutQueue:= SIZEOF(_SMC_GEOINFO), 
 	pbyBufferOutQueue:= ADR(_SMC_GEOINFO), 
 	bEnableSyntaxChecks:= , 
-	eOriConv:= _OriConvention, // SMC_ORI_CONVENTION 
+	eOriConv:= _OriConvention, // ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
 	dCircleTolerance:= , 
 	pInterpreterStack:= , 
 	nInterpreterStackSizeBytes:= , 
@@ -11464,7 +11471,8 @@ VAR
 	_SMC_CheckVelocities: SMC_CheckVelocities;
 	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
-	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
+    // ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
+	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYZ;
 	_ExecuteRtrig: R_TRIG;
 	_Execute: BOOL;
 	_ResetRtrig: R_TRIG;
@@ -12072,6 +12080,7 @@ Position.dY := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dY;
 Position.dZ := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dZ;
 
 // https://content.helpme-codesys.com/en/libs/SM3_Math/4.12.0.0/Matrix3/fld-Matrix3.html
+// ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
 CASE OriConvention OF
     SMC_ORI_CONVENTION.ADDAXES:
         Position.dA := J4.fActPosition;
@@ -21088,6 +21097,7 @@ CASE SUPER^._SeqMain OF
 	_STEP_COMMAND:
 		//
 		_CncCmdParser(Command:=Command);
+        // ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
 		_PlanPath.M_SetOriConvention(OriConvention:=_OriConvention);//_CncCmdParser.stCommand.OriConvention);
 		_PlanPath.M_SetStartPosition(StartPos:=_TrackPosition.Position);//_CncCmdParser.stCommand.StartPos);
 		_PlanPath.M_Execute(Filename:=_CncCmdParser.stCommand.Filename); // TODO I think we should be careful here. May need to sync CheckVelocities with the Interpolator
@@ -21200,6 +21210,7 @@ CASE WORD_TO_INT(_SMC_Interpolator.wM) OF
         
 END_CASE
 
+// ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
 _TrackPosition(
     OriConvention:=_OriConvention,
 	AxisGroup:=ArfBotAxisGroup,
