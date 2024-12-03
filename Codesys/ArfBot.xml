@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-12-02T22:34:42.3776049" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-12-02T22:34:26.4599291" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-12-02T23:11:55.8134371" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-12-02T22:59:47.1242969" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -11826,7 +11826,7 @@ VAR
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
-	_VisuStruct3DPathPoint: ARRAY [0..100000] OF VisuStruct3DPathPoint;
+	_VisuStruct3DPathPoint: ARRAY [0..10000] OF VisuStruct3DPathPoint;
 	_SMC_PositionTracker: SMC_PositionTracker;
 	_PositionTrackerClearR_Trig: R_Trig;
 	_Clear: BOOL:=FALSE;
@@ -11872,7 +11872,7 @@ VAR
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
-	_VisuStruct3DPathPoint: ARRAY [0..100000] OF VisuStruct3DPathPoint;
+	_VisuStruct3DPathPoint: ARRAY [0..10000] OF VisuStruct3DPathPoint;
 	_SMC_PositionTracker: SMC_PositionTracker;
 	_PositionTrackerClearR_Trig: R_Trig;
 	_Clear: BOOL:=FALSE;
@@ -11935,7 +11935,7 @@ VAR
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
-	_VisuStruct3DPathPoint: ARRAY [0..100000] OF VisuStruct3DPathPoint;
+	_VisuStruct3DPathPoint: ARRAY [0..10000] OF VisuStruct3DPathPoint;
 	_SMC_PositionTracker: SMC_PositionTracker;
 	_PositionTrackerClearR_Trig: R_Trig;
 	_Clear: BOOL:=FALSE;
@@ -11964,7 +11964,7 @@ END_VAR
                     <variable name="_VisuStruct3DPathPoint">
                       <type>
                         <array>
-                          <dimension lower="0" upper="100000" />
+                          <dimension lower="0" upper="10000" />
                           <baseType>
                             <derived name="VisuStruct3DPathPoint" />
                           </baseType>
@@ -12016,7 +12016,7 @@ VAR
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
-	_VisuStruct3DPathPoint: ARRAY [0..100000] OF VisuStruct3DPathPoint;
+	_VisuStruct3DPathPoint: ARRAY [0..10000] OF VisuStruct3DPathPoint;
 	_SMC_PositionTracker: SMC_PositionTracker;
 	_PositionTrackerClearR_Trig: R_Trig;
 	_Clear: BOOL:=FALSE;
@@ -12158,7 +12158,7 @@ VAR
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
-	_VisuStruct3DPathPoint: ARRAY [0..100000] OF VisuStruct3DPathPoint;
+	_VisuStruct3DPathPoint: ARRAY [0..10000] OF VisuStruct3DPathPoint;
 	_SMC_PositionTracker: SMC_PositionTracker;
 	_PositionTrackerClearR_Trig: R_Trig;
 	_Clear: BOOL:=FALSE;
