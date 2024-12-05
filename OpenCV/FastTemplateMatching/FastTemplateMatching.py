@@ -718,16 +718,47 @@ def GetNextMaxLocNoBlockMax(matResult, ptMaxLoc, sizeTemplate, dMaxOverlap):
 
 # https://savvycalculator.com/rotation-calculator-new-coordinates-by-rotation/
 # formula to rotate coordinates around 0,0 counter-clockwise
-# x’ = x * cos(θ) – y * sin(θ) y’ = x * sin(θ) + y * cos(θ)
+# x’ = x * cos(θ) – y * sin(θ) 
+# y’ = x * sin(θ) + y * cos(θ)
 def ptRotatePt2f(ptInput, ptOrg, dAngle):
+    # Calculate width and height based on origin coordinates
     dWidth = ptOrg[0] * 2
     dHeight = ptOrg[1] * 2
+    # Adjust y-coordinates to work with the origin at the bottom left
     dY1 = dHeight - ptInput[1]
     dY2 = dHeight - ptOrg[1]
+    # Apply rotation matrix
     dX = (ptInput[0] - ptOrg[0]) * math.cos(dAngle) - (dY1 - ptOrg[1]) * math.sin(dAngle) + ptOrg[0]
     dY = (ptInput[0] - ptOrg[0]) * math.sin(dAngle) + (dY1 - ptOrg[1]) * math.cos(dAngle) + dY2
+    # Adjust back to the original coordinate system
     dY = -dY + dHeight
-    return numpy.array([dX, dY])
+    # Return new coordinates
+    return numpy.array([dX, dY]) 
+    
+def rotate_coordinates_counterclockwise(CoordinatesToRotate, CoordinatesToRotateAround, AngleToRotateInRadians):
+    # Translate the coordinates to the origin
+    translated_x = CoordinatesToRotate[0] - CoordinatesToRotateAround[0]
+    translated_y = CoordinatesToRotate[1] - CoordinatesToRotateAround[1]
+    # Apply the rotation matrix
+    rotated_x = translated_x * numpy.cos(AngleToRotateInRadians) - translated_y * numpy.sin(AngleToRotateInRadians)
+    rotated_y = translated_x * numpy.sin(AngleToRotateInRadians) + translated_y * numpy.cos(AngleToRotateInRadians)
+    # Translate the coordinates back to the original position
+    new_x = rotated_x + CoordinatesToRotateAround[0]
+    new_y = rotated_y + CoordinatesToRotateAround[1]
+    return numpy.array([new_x, new_y])
+    
+def rotate_coordinates_clockwise(CoordinatesToRotate, CoordinatesToRotateAround, AngleToRotateInRadians):
+    # Translate the coordinates to the origin
+    translated_x = CoordinatesToRotate[0] - CoordinatesToRotateAround[0]
+    translated_y = CoordinatesToRotate[1] - CoordinatesToRotateAround[1]
+    # Apply the clockwise rotation matrix
+    rotated_x = translated_x * numpy.cos(AngleToRotateInRadians) + translated_y * numpy.sin(AngleToRotateInRadians)
+    rotated_y = -translated_x * numpy.sin(AngleToRotateInRadians) + translated_y * numpy.cos(AngleToRotateInRadians)
+    # Translate the coordinates back to the original position
+    new_x = rotated_x + CoordinatesToRotateAround[0]
+    new_y = rotated_y + CoordinatesToRotateAround[1]
+    # Return the new coordinates as a list of floats
+    return [float(new_x), float(new_y)]
 
 def GetRotatedROI(matSrc, size, ptLT, dAngle):
     dAngle_radian = dAngle * math.pi / 180
@@ -1213,7 +1244,8 @@ def main(m_matSrc, m_matDst, savelocation, iMaxPos, dMaxOverlap, dScore, dTolera
         result = result + "obj:" + str(i) + " "
         result = result + "cx:" + str(round(trans_X,floatPrecision)) + " "
         result = result + "cy:" + str(round(trans_Y,floatPrecision)) + " "
-        result = result + "a:" + str(round(-(m_vecSingleTargetData[i].dMatchedAngle+rotation_offset),floatPrecision)) + " "
+        #result = result + "a:" + str(round(-(m_vecSingleTargetData[i].dMatchedAngle + rotation_offset),floatPrecision)) + " "
+        result = result + "a:" + str(round(m_vecSingleTargetData[i].dMatchedAngle,floatPrecision)) + " "
         result = result + "s:" + str(round(m_vecSingleTargetData[i].dMatchScore,floatPrecision)) + " "
         print(result)
     

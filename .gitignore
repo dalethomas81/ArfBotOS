@@ -408,3 +408,4 @@ FodyWeavers.xsd
 *.sln.iml
 Codesys/ArfBot.~u
 Codesys/ArfBot.export
+Codesys/*.ret

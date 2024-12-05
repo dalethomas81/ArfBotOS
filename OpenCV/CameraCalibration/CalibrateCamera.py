@@ -3,7 +3,7 @@
 # https://stackoverflow.com/questions/37310210/camera-calibration-with-opencv-how-to-adjust-chessboard-square-size
 # Import required modules
 import cv2
-import numpy as np
+import numpy
 import os
 import getopt
 import sys
@@ -129,6 +129,34 @@ def get_pixel_average(corners, checkerboard):
     average = abs(total / count)
     return average
     
+def calculate_average_square_size(found, corners, pattern_size):
+    if found:
+        # Calculate the distances between all adjacent corners
+        square_sizes = []
+        
+        for i in range(pattern_size[1] - 1):
+            for j in range(pattern_size[0] - 1):
+                # Horizontal distance
+                dx = corners[i * pattern_size[0] + j + 1][0][0] - corners[i * pattern_size[0] + j][0][0]
+                dy = corners[i * pattern_size[0] + j + 1][0][1] - corners[i * pattern_size[0] + j][0][1]
+                horizontal_distance = numpy.sqrt(dx**2 + dy**2)
+                
+                # Vertical distance
+                dx = corners[(i + 1) * pattern_size[0] + j][0][0] - corners[i * pattern_size[0] + j][0][0]
+                dy = corners[(i + 1) * pattern_size[0] + j][0][1] - corners[i * pattern_size[0] + j][0][1]
+                vertical_distance = numpy.sqrt(dx**2 + dy**2)
+                
+                # Add distances to the list
+                square_sizes.append(horizontal_distance)
+                square_sizes.append(vertical_distance)
+        
+        # Calculate the average square size
+        average_square_size = numpy.mean(square_sizes)
+        
+        return average_square_size
+    else:
+        return None
+    
 def get_index_value(array, x, y, column_count):
     # X + (Y*W)
     value = array[x + (y*column_count)][0]
@@ -185,16 +213,47 @@ def get_bot_right(corners, checkerboard):
 
 # https://savvycalculator.com/rotation-calculator-new-coordinates-by-rotation/
 # formula to rotate coordinates around 0,0 counter-clockwise
-# x’ = x * cos(θ) – y * sin(θ) y’ = x * sin(θ) + y * cos(θ)
-def ptRotatePt2f(ptInput, ptOrg, dAngle): # angle is in radians / rotates ccw for pos vals
+# x’ = x * cos(θ) – y * sin(θ) 
+# y’ = x * sin(θ) + y * cos(θ)
+def ptRotatePt2f(ptInput, ptOrg, dAngle):
+    # Calculate width and height based on origin coordinates
     dWidth = ptOrg[0] * 2
     dHeight = ptOrg[1] * 2
+    # Adjust y-coordinates to work with the origin at the bottom left
     dY1 = dHeight - ptInput[1]
     dY2 = dHeight - ptOrg[1]
+    # Apply rotation matrix
     dX = (ptInput[0] - ptOrg[0]) * math.cos(dAngle) - (dY1 - ptOrg[1]) * math.sin(dAngle) + ptOrg[0]
     dY = (ptInput[0] - ptOrg[0]) * math.sin(dAngle) + (dY1 - ptOrg[1]) * math.cos(dAngle) + dY2
+    # Adjust back to the original coordinate system
     dY = -dY + dHeight
-    return np.array([dX, dY])
+    # Return new coordinates
+    return numpy.array([dX, dY]) 
+    
+def rotate_coordinates_counterclockwise(CoordinatesToRotate, CoordinatesToRotateAround, AngleToRotateInRadians):
+    # Translate the coordinates to the origin
+    translated_x = CoordinatesToRotate[0] - CoordinatesToRotateAround[0]
+    translated_y = CoordinatesToRotate[1] - CoordinatesToRotateAround[1]
+    # Apply the rotation matrix
+    rotated_x = translated_x * numpy.cos(AngleToRotateInRadians) - translated_y * numpy.sin(AngleToRotateInRadians)
+    rotated_y = translated_x * numpy.sin(AngleToRotateInRadians) + translated_y * numpy.cos(AngleToRotateInRadians)
+    # Translate the coordinates back to the original position
+    new_x = rotated_x + CoordinatesToRotateAround[0]
+    new_y = rotated_y + CoordinatesToRotateAround[1]
+    return numpy.array([new_x, new_y])
+    
+def rotate_coordinates_clockwise(CoordinatesToRotate, CoordinatesToRotateAround, AngleToRotateInRadians):
+    # Translate the coordinates to the origin
+    translated_x = CoordinatesToRotate[0] - CoordinatesToRotateAround[0]
+    translated_y = CoordinatesToRotate[1] - CoordinatesToRotateAround[1]
+    # Apply the clockwise rotation matrix
+    rotated_x = translated_x * numpy.cos(AngleToRotateInRadians) + translated_y * numpy.sin(AngleToRotateInRadians)
+    rotated_y = -translated_x * numpy.sin(AngleToRotateInRadians) + translated_y * numpy.cos(AngleToRotateInRadians)
+    # Translate the coordinates back to the original position
+    new_x = rotated_x + CoordinatesToRotateAround[0]
+    new_y = rotated_y + CoordinatesToRotateAround[1]
+    # Return the new coordinates as a list of floats
+    return [float(new_x), float(new_y)]
     
 def drawOrientation(image, origin, rotation):
     # y-green x-red z-blue
@@ -232,10 +291,10 @@ def main(checkerboard, squaresize, resultfile, debug, width, height):
     twodpoints = []
 
     # 3D points real world coordinates
-    objectp3d = np.zeros((1, checkerboard[0]
+    objectp3d = numpy.zeros((1, checkerboard[0]
                         * checkerboard[1],
-                        3), np.float32)
-    objectp3d[0, :, :2] = np.mgrid[0:checkerboard[0],
+                        3), numpy.float32)
+    objectp3d[0, :, :2] = numpy.mgrid[0:checkerboard[0],
                                 0:checkerboard[1]].T.reshape(-1, 2)
     objectp3d = objectp3d * squaresize
     prev_img_shape = None
@@ -256,12 +315,6 @@ def main(checkerboard, squaresize, resultfile, debug, width, height):
     # refine the pixel coordinates and display
     # them on the images of checker board
     if ret == True:
-
-        pixel_average = get_pixel_average(corners, checkerboard)
-        rotation_offset = get_rotation_offset(corners, checkerboard)
-        origin = get_top_left(corners, checkerboard)
-        top_left = origin # leaving for backwards compatibility for now.
-        bot_right = get_bot_right(corners, checkerboard)
         
         threedpoints.append(objectp3d)
 
@@ -269,7 +322,18 @@ def main(checkerboard, squaresize, resultfile, debug, width, height):
         # for given 2d points.
         corners2 = cv2.cornerSubPix(
             grayColor, corners, (11, 11), (-1, -1), criteria)
+        
+        # get pixel average so we can calulate how many pixels per user units
+        #pixel_average = get_pixel_average(corners2, checkerboard)
+        pixel_average = calculate_average_square_size(True, corners2, checkerboard)
+        
+        #
+        rotation_offset = get_rotation_offset(corners2, checkerboard)
+        origin = get_top_left(corners2, checkerboard)
+        top_left = origin # leaving for backwards compatibility for now.
+        bot_right = get_bot_right(corners2, checkerboard)
 
+        #
         twodpoints.append(corners2)
         
         # Draw and display the corners
