@@ -12,6 +12,9 @@ from picamera2.outputs import FileOutput
 import time
 from array import array
 
+import numpy as np
+import io
+
 # https://flask.palletsprojects.com/en/2.3.x/patterns/fileuploads/
 import os
 from werkzeug.utils import secure_filename
@@ -107,6 +110,29 @@ def output():
         'outputimage.jpg',
         as_attachment=False # when True you can click on link and download
     )
+# http://ArfBot:5000/output_sized?width=320&height=200
+@app.route('/output_sized')
+def output_sized():
+    # Get the width and height from the URL parameters
+    width = request.args.get('width', default=640, type=int)
+    height = request.args.get('height', default=400, type=int)
+
+    # Read the image from the directory using OpenCV
+    image_path = '/var/opt/codesys/PlcLogic/visu/outputimage.jpg'
+    image = cv2.imread(image_path)
+
+    # Resize the image using OpenCV
+    resized_image = cv2.resize(image, (width, height))
+
+    # Encode the image to JPEG format
+    _, buffer = cv2.imencode('.jpg', resized_image)
+
+    # Convert the buffer to BytesIO object
+    img_io = io.BytesIO(buffer)
+    
+    # Send the resized image to the client
+    return send_file(img_io, mimetype='image/jpeg')    
+
 
 # index
 '''
