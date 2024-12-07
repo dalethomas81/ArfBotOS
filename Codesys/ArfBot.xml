@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-12-05T21:35:49.7334761" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-12-05T21:33:23.678483" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-12-06T22:57:40.9658588" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-12-06T22:54:49.0514563" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -4299,17 +4299,24 @@ ProcessPrograms(
 	Error=&gt; ,
 	StatusText=&gt;);
 
-// for displaying on the HMI
-// PGM: &lt;number&gt; CMD: &lt;number&gt; Type: &lt;type&gt; Command: &lt;command&gt; Comment: &lt;comment&gt;
-ActiveCommandDetails := CONCAT('PGM: ', UINT_TO_STRING(ProcessPrograms.P_CurrentProgram));
-ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' CMD: ');
-ActiveCommandDetails := CONCAT(ActiveCommandDetails, UINT_TO_STRING(ProcessPrograms.P_CurrentCommandIndex));
-ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' ');
-ActiveCommandDetails := CONCAT(ActiveCommandDetails, TO_STRING(ProcessPrograms.P_CurrentCommand.CommandType));
-ActiveCommandDetails := CONCAT(ActiveCommandDetails, ': ');
-ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandString);
-ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' Comment: ');
-ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandComment);
+IF ProcessPrograms.PropBusy THEN
+    // for displaying on the HMI
+    // PGM: &lt;number&gt; CMD: &lt;number&gt; Type: &lt;type&gt; Command: &lt;command&gt; Comment: &lt;comment&gt;
+    ActiveCommandDetails := CONCAT('PGM: ', UINT_TO_STRING(ProcessPrograms.P_CurrentProgram));
+    ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' CMD: ');
+    ActiveCommandDetails := CONCAT(ActiveCommandDetails,
+                                    // TODO: the "current" index in this case is actually next
+                                    // use a SEL here because I dont want to allways do "index minus 1" because this would show a -1 on the HMI when Idle and thats gross
+                                    UINT_TO_STRING(SEL(ProcessPrograms.P_CurrentCommandIndex &lt;= 0,
+                                                        ProcessPrograms.P_CurrentCommandIndex - 1, // FALSE
+                                                        0))); // TRUE
+    ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' ');
+    ActiveCommandDetails := CONCAT(ActiveCommandDetails, TO_STRING(ProcessPrograms.P_CurrentCommand.CommandType));
+    ActiveCommandDetails := CONCAT(ActiveCommandDetails, ': ');
+    ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandString);
+    ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' Comment: ');
+    ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandComment);
+END_IF
 
 // disable all IO when enable drops
 IF EnableFtrig.Q THEN
@@ -8116,6 +8123,7 @@ SUPER^._UnitMode.Reset();</xhtml>
 		_ProcessVarSetCommand.M_Home();
 		_ProcessCncCommand.M_Home();
 		_ProcessLogicCommand.M_Home();
+        StatusText := 'Resetting';
 		_SeqResetting := _SeqResetting + 1;
 	1:
 		IF _ProcessMoveCommand.PropCurrentState = PACK_ML.State.Idle
@@ -8127,6 +8135,7 @@ SUPER^._UnitMode.Reset();</xhtml>
 			AND _ProcessCncCommand.PropCurrentState = PACK_ML.State.Idle
 			AND _ProcessLogicCommand.PropCurrentState = PACK_ML.State.Idle THEN
 				_SeqResetting := 0;
+                StatusText := 'Idle';
 				SUPER^.M_StateComplete();
 		END_IF
 		
@@ -8331,56 +8340,56 @@ CASE _SeqMain OF
 			ELSE
 				CASE _Commands[_CurrentCmdIdx].CommandType OF
 					DUT_CommandType.MoveCommand: //
-						StatusText := 'Move Command in Progress.';
+						StatusText := 'Move Command in Progress';
 						ItfActiveProcessorUnitMode := _ProcessMoveCommand.ItfUnitMode;
 						ItfActiveModule := _ProcessMoveCommand;
 						_ProcessMoveCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
 						ItfActiveModule.M_Start();
 					
 					DUT_CommandType.PauseCommand: //
-						StatusText := 'Pause Command in Progress.';
+						StatusText := 'Pause Command in Progress';
 						ItfActiveProcessorUnitMode := _ProcessPauseCommand.ItfUnitMode;
 						ItfActiveModule := _ProcessPauseCommand;
 						_ProcessPauseCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
 						ItfActiveModule.M_Start();
 					
 					DUT_CommandType.InputCommand: //
-						StatusText := 'Input Command in Progress.';
+						StatusText := 'Input Command in Progress';
 						//ActiveUnitMode := _ProcessInputCommand.ItfUnitMode;
 						//ItfActiveModule := _ProcessInputCommand;
 						//_ProcessInputCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
 						//ItfActiveModule.M_Start();
 					
 					DUT_CommandType.OutputCommand: //
-						StatusText := 'Output Command in Progress.';
+						StatusText := 'Output Command in Progress';
 						ItfActiveProcessorUnitMode := _ProcessOutputCommand.ItfUnitMode;
 						ItfActiveModule := _ProcessOutputCommand;
 						_ProcessOutputCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
 						ItfActiveModule.M_Start();
 					
 					DUT_CommandType.VisionCommand: //
-						StatusText := 'Vision Command in Progress.';
+						StatusText := 'Vision Command in Progress';
 						ItfActiveProcessorUnitMode := _ProcessVisionCommand.ItfUnitMode;
 						ItfActiveModule := _ProcessVisionCommand;
 						_ProcessVisionCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
 						ItfActiveModule.M_Start();
 					
 					DUT_CommandType.VarSetCommand: //
-						StatusText := 'VarSet Command in Progress.';
+						StatusText := 'VarSet Command in Progress';
 						ItfActiveProcessorUnitMode := _ProcessVarsetCommand.ItfUnitMode;
 						ItfActiveModule := _ProcessVarsetCommand;
 						_ProcessVarsetCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
 						ItfActiveModule.M_Start();
 					
 					DUT_CommandType.CncCommand: //
-						StatusText := 'CNC Command in Progress.';
+						StatusText := 'CNC Command in Progress';
 						ItfActiveProcessorUnitMode := _ProcessCncCommand.ItfUnitMode;
 						ItfActiveModule := _ProcessCncCommand;
 						_ProcessCncCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
 						ItfActiveModule.M_Start();
 					
 					DUT_CommandType.LogicCommand: //
-						StatusText := 'Logic Command in Progress.';
+						StatusText := 'Logic Command in Progress';
 						ItfActiveProcessorUnitMode := _ProcessLogicCommand.ItfUnitMode;
 						ItfActiveModule := _ProcessLogicCommand;
 						_ProcessLogicCommand.Command := _Commands[_CurrentCmdIdx].CommandString;
@@ -43631,7 +43640,7 @@ END_TYPE
                                       </Parameter>
                                       <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
                                         <Attributes />
-                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5</Value>
+                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">10</Value>
                                         <Name>fMaxPositionLag</Name>
                                         <Description>Maximum position lag (magnitude) [u]</Description>
                                       </Parameter>
@@ -43891,7 +43900,7 @@ END_TYPE
                                       </Parameter>
                                       <Parameter ParameterId="1208" type="std:LREAL" IndexInDevDesc="14">
                                         <Attributes />
-                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">5</Value>
+                                        <Value name="_x0031_208" visiblename="fMaxPositionLag" desc="Maximum position lag (magnitude) [u]">20</Value>
                                         <Name>fMaxPositionLag</Name>
                                         <Description>Maximum position lag (magnitude) [u]</Description>
                                       </Parameter>
