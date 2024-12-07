@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-12-06T22:57:40.9658588" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-12-06T22:54:49.0514563" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-12-06T23:20:26.6579927" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-12-06T23:03:46.676117" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -30860,9 +30860,13 @@ END_VAR</xhtml>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">// TODO refactor all the code in the FB to use arrays and for loops ... whenever you get bored...
 
-_ExecuteRtrig(CLK:=);
-_ExecuteFtrig(CLK:=);
+_ExecuteRtrig(CLK:=_StartHoming);
+_ExecuteFtrig(CLK:=_StartHoming);
 _ResetRtrig(CLK:=Reset);
+
+IF _ExecuteRtrig.Q THEN
+    _StartHoming := FALSE;
+END_IF
 
 IF _FirstScan THEN
 	//
@@ -30890,8 +30894,7 @@ CASE _SequenceMain OF
 		J6.bSWLimitEnable := TRUE;
 		
 	STEP_IDLE: // IDLE
-		IF _StartHoming AND Enable THEN
-			_StartHoming := FALSE;
+		IF _ExecuteRtrig.Q AND Enable THEN
 			Busy := TRUE;
 			Done := FALSE;
 			_SequenceMain := STEP_GROUP_ENABLE;
