@@ -278,12 +278,12 @@ void handleTx(){
 
     // byte 27 is used to indicate the drive is enabled
     TxBuffer[27] = 0x00; // clear it out first (maybe there is a better way of setting bools to bits?)
-    TxBuffer[27] = TxBuffer[27] | (Drive[0].DriveEnabled ? B00000001 : B00000000);
-    TxBuffer[27] = TxBuffer[27] | (Drive[1].DriveEnabled ? B00000010 : B00000000);
-    TxBuffer[27] = TxBuffer[27] | (Drive[2].DriveEnabled ? B00000100 : B00000000);
-    TxBuffer[27] = TxBuffer[27] | (Drive[3].DriveEnabled ? B00001000 : B00000000);
-    TxBuffer[27] = TxBuffer[27] | (Drive[4].DriveEnabled ? B00010000 : B00000000);
-    TxBuffer[27] = TxBuffer[27] | (Drive[5].DriveEnabled ? B00100000 : B00000000);
+    TxBuffer[27] = TxBuffer[27] | (Drive[0].enabled ? B00000001 : B00000000);
+    TxBuffer[27] = TxBuffer[27] | (Drive[1].enabled ? B00000010 : B00000000);
+    TxBuffer[27] = TxBuffer[27] | (Drive[2].enabled ? B00000100 : B00000000);
+    TxBuffer[27] = TxBuffer[27] | (Drive[3].enabled ? B00001000 : B00000000);
+    TxBuffer[27] = TxBuffer[27] | (Drive[4].enabled ? B00010000 : B00000000);
+    TxBuffer[27] = TxBuffer[27] | (Drive[5].enabled ? B00100000 : B00000000);
     //TxBuffer[27] = TxBuffer[27] | (tx_ ? B01000000 : B00000000);
     //TxBuffer[27] = TxBuffer[27] | (tx_ ? B10000000 : B00000000);
 
@@ -425,10 +425,10 @@ void handleDrives(){
   for (int i=0;i<AxisCount;i++){
       //if (DriveControl[i].Enable && Enable && CommsOK && !HeartbeatLost) { // not sure if we are good enough for this yet :)
       if (DriveControl[i].Enable) {
-          Drive[i].turnON();
+          Drive[i].enable();
           DriveIsEnabled = true; // turn on led to warn at least one drive is enabled
       } else {
-          Drive[i].turnOFF();
+          Drive[i].disable();
       }
       if (DriveControl[i].Minus) {
       }

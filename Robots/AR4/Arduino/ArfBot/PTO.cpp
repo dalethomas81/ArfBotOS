@@ -1,66 +1,71 @@
-// PTO.cpp
 
 #include "PTO.h"
 
-PTO::PTO(int In_DirPin, int In_PulsePin, int In_EnablePin) {
-  dirPin = In_DirPin;
-  pulsePin = In_PulsePin;
-  enablePin = In_EnablePin;
-}
+PTO::PTO(int dirPin, int pulsePin, int enablePin){
 
-void PTO::run(int16_t Frequency){
-  if (Frequency != 0 && DriveEnabled) {
-
-    bOffOneshot = true;
-
-    float Period, PulseTime;
-    Period = 1 / float(abs(Frequency)); // seconds
-    PulseTime = (Period * 1000 * 1000) / 2; // microseconds divide by 2 for 50% duty cycle
-
-    _SysTime = ARM_DWT_CYCCNT;
-    if (_SysTime - _SysTime_Last > (F_CPU_ACTUAL / 1000000 * PulseTime)) {
-      _SysTime_Last = _SysTime;
-      digitalToggleFast(pulsePin);
-    }
-
-    Direction = (Frequency < 0 ? HIGH : LOW);
-    digitalWriteFast(dirPin, Direction);
-
-  } else {
-    if (bOffOneshot){
-      bOffOneshot = false;
-      digitalWriteFast(dirPin, false);
-      digitalWriteFast(pulsePin, false);
-    }
-  }
+  _dirPin = dirPin;
+  _pulsePin = pulsePin;
+  _enablePin = enablePin;
 }
 
 void PTO::init() {
-  pinModeFast(dirPin, OUTPUT);
-  pinModeFast(pulsePin, OUTPUT);
-  if (enablePin >= 0) {
-    pinModeFast(enablePin, OUTPUT);
+
+  pinModeFast(_dirPin, OUTPUT);
+  pinModeFast(_pulsePin, OUTPUT);
+  if (_enablePin >= 0) {
+    pinModeFast(_enablePin, OUTPUT);
   }
   
-  digitalWriteFast(dirPin, HIGH);
-  digitalWriteFast(pulsePin, HIGH);
-  if (enablePin >= 0) {
-    digitalWriteFast(enablePin, LOW);
+  digitalWriteFast(_dirPin, HIGH);
+  digitalWriteFast(_pulsePin, HIGH);
+  if (_enablePin >= 0) {
+    digitalWriteFast(_enablePin, LOW);
   }
 }
 
-int PTO::turnON() {
-  DriveEnabled = true;
-  if (enablePin >= 0) {
-    digitalWriteFast(enablePin, HIGH);
+void PTO::run(int16_t frequency) {
+
+  if (frequency != 0 && enabled) {
+
+    _offOneshot = true;
+
+    float Period, PulseTime;
+    Period = 1 / float(abs(frequency)); // seconds
+    PulseTime = (Period * 1000 * 1000) / 2; // microseconds divide by 2 for 50% duty cycle
+
+    _sysTime = ARM_DWT_CYCCNT;
+    if (_sysTime - _sysTimeLast > (F_CPU_ACTUAL / 1000000 * PulseTime)) {
+      _sysTimeLast = _sysTime;
+      digitalToggleFast(_pulsePin);
+    }
+
+    _direction = (frequency < 0 ? HIGH : LOW);
+    digitalWriteFast(_dirPin, _direction);
+
+  } else {
+    if (_offOneshot){
+      _offOneshot = false;
+      digitalWriteFast(_dirPin, false);
+      digitalWriteFast(_pulsePin, false);
+    }
   }
-  return DriveEnabled;
 }
 
-int PTO::turnOFF() {
-  DriveEnabled = false;
-  if (enablePin >= 0) {
-    digitalWriteFast(enablePin, LOW);
+int PTO::enable() {
+
+  enabled = true;
+  if (_enablePin >= 0) {
+    digitalWriteFast(_enablePin, HIGH);
   }
-  return DriveEnabled;
+  return enabled;
 }
+
+int PTO::disable() {
+
+  enabled = false;
+  if (_enablePin >= 0) {
+    digitalWriteFast(_enablePin, LOW);
+  }
+  return enabled;
+}
+
