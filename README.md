@@ -2,7 +2,7 @@
 ArfBotOS is an operating system for a 6-axis robot and vision system running on CoDeSys, Arduino, and OpenCV. One of the main intentions of ArfBotOS is to give an example of how a typical industrial control system is programmed in IEC-61131 (structured text). This will give good experience to new Automation and Controls engineers. Please see the wiki [here](https://github.com/dalethomas81/ArfBotOS/wiki) for more.
 
 ArfBotOS has a web-base HMI that is hosted via what is known in CoDeSys as a 'Visu'. From the **Main** HMI screen you can select a program to run and view its movement from the *Process Viewer* group box.  
-<img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Resources/images/readme/hmi-main-pcs-corners.JPG" alt="menu" width="600"/>  
+<img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Resources/images/readme/Vision-Pick-And-Place.png" alt="menu" width="600"/>  
 
 Here's a video showing ArfBotOS pick and place using OpenCV pattern matching:  
 [![Watch the video](http://img.youtube.com/vi/amrEYi4u6vc/0.jpg)](https://www.youtube.com/watch?v=amrEYi4u6vc) 
