@@ -4,6 +4,9 @@ ArfBotOS is an operating system for a 6-axis robot and vision system running on 
 ArfBotOS has a web-base HMI that is hosted via what is known in CoDeSys as a 'Visu'. From the **Main** HMI screen you can select a program to run and view its movement from the *Process Viewer* group box.  
 <img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Resources/images/readme/hmi-main-pcs-corners.JPG" alt="menu" width="600"/> 
 
+Here's a video showing ArfBotOS rotating around TCP offsets.  
+[![Watch the video](http://img.youtube.com/vi/D1Y-siePg9g/0.jpg)](https://www.youtube.com/watch?v=D1Y-siePg9g)  
+
 The architecture of the software implements the idea of *Processors* that handle different types of commands. For example, the *MoveCommandProcessor* parses a move command and moves the robot. Each processor extends a base function block that implements a PackML statemachine. From the **Main** HMI screen, you can view and control the *Orchestrator* and *Active Processor's* state machine.  
 <img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Resources/images/readme/hmi-main-packml.JPG" alt="menu" width="600"/>
 
