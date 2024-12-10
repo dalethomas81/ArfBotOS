@@ -10,6 +10,9 @@ Here's a video showing ArfBotOS pick and place using OpenCV pattern matching:
 Here's a video showing ArfBotOS rotating around TCP offsets:  
 [![Watch the video](http://img.youtube.com/vi/D1Y-siePg9g/0.jpg)](https://www.youtube.com/watch?v=D1Y-siePg9g)  
 
+Here you can see the hardware overview:  
+<img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Resources/images/readme/Hardware-Software-Overview-Dark.png" alt="menu" width="600"/>  
+
 The architecture of the software implements the idea of *Processors* that handle different types of commands. For example, the *MoveCommandProcessor* parses a move command and moves the robot. Each processor extends a base function block that implements a PackML statemachine. From the **Main** HMI screen, you can view and control the *Orchestrator* and *Active Processor's* state machine.  
 <img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Resources/images/readme/hmi-main-packml.JPG" alt="menu" width="600"/>
 
