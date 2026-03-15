@@ -97,9 +97,9 @@ The normalizer (`codesys_xml_normalize.py`) does the following:
 
 ## Customizing noise attributes
 
-Open `codesys_xml_normalize.py` and edit the `NOISE_ATTRIBUTES` set near the
-top to add any project-specific volatile attributes:
+Open `codesys_xml_normalize.py` and edit the two sets near the top:
 
+**`NOISE_ATTRIBUTES`** — strips volatile XML tag-level attributes (e.g. `<fileHeader modificationDateTime="...">`):
 ```python
 NOISE_ATTRIBUTES = {
     "DateOfLastChange",
@@ -109,6 +109,33 @@ NOISE_ATTRIBUTES = {
     # "MyVendorTimestamp",
 }
 ```
+
+**`NOISE_ELEMENT_NAMES`** — strips `<Attribute Name="...">` child elements inside CodeSys `<Attributes>` blocks (e.g. internal checksums and GUIDs):
+```python
+NOISE_ELEMENT_NAMES = {
+    "checksumnoinit_override",
+    "init_related_code",
+    # add your own here
+}
+```
+
+After editing the script, see **Updating the script** below to make the change take effect.
+
+---
+
+## Updating the script
+
+After editing `codesys_xml_normalize.py`, git won't automatically use the new
+version for files it has already processed — it caches the normalized output
+per blob hash in its object store (this cache persists across restarts).
+
+Run this once from inside your repo to clear the cache:
+
+```bat
+git update-ref -d refs/notes/textconv/codesys-xml
+```
+
+Then `git diff` will call the updated script fresh.
 
 ---
 
