@@ -44,6 +44,7 @@ if "%UNINSTALL%"=="1" (
     echo Removing CodeSys XML diff driver from git config [%SCOPE%]...
     git config %SCOPE% --unset diff.codesys-xml.textconv  2>nul
     git config %SCOPE% --unset diff.codesys-xml.cachetextconv 2>nul
+    git config --local --unset core.hooksPath 2>nul
     echo Done.  You can also remove lines from .gitattributes manually.
     goto :eof
 )
@@ -106,6 +107,26 @@ if errorlevel 1 (
 echo [OK] Registered diff driver:
 echo      diff.codesys-xml.textconv  = python "%NORMALIZE_SCRIPT_FWD%"
 echo      diff.codesys-xml.cachetextconv = true
+echo.
+
+REM --- Install pre-commit hook (repo-local only) ---
+REM Resolve repo root by walking up from this script's location
+pushd "%SCRIPT_DIR%"
+for /f "tokens=*" %%r in ('git rev-parse --show-toplevel 2^>nul') do set "REPO_ROOT=%%r"
+popd
+
+if defined REPO_ROOT (
+    REM Point git at the .githooks folder committed in the repo
+    pushd "%REPO_ROOT%"
+    git config --local core.hooksPath .githooks
+    popd
+    echo [OK] Pre-commit hook active:
+    echo      core.hooksPath = .githooks
+    echo      Commits will be blocked if ArfBot.project is staged without ArfBot.xml
+) else (
+    echo [SKIP] Pre-commit hook: could not find repo root, skipping hook setup.
+    echo        Run manually inside the repo:  git config --local core.hooksPath .githooks
+)
 echo.
 
 REM --- .gitattributes guidance ---

@@ -1,0 +1,38 @@
+#!/bin/sh
+# =============================================================================
+# pre-commit hook: keeps ArfBot.project and ArfBot.xml in sync.
+#
+# If ArfBot.project is staged for commit, ArfBot.xml must also be staged.
+# This ensures the readable XML diff always reflects the current project state.
+#
+# To install (one-time, per machine):
+#   git config core.hooksPath .githooks
+# This is done automatically by codesys-git-diff/setup_codesys_git_diff.bat
+# =============================================================================
+
+PROJECT_FILE="Codesys/ArfBot.project"
+XML_FILE="Codesys/ArfBot.xml"
+
+# Check if the project file is among the staged changes
+if git diff --cached --name-only | grep -qF "$PROJECT_FILE"; then
+
+    # Check if the XML export is also staged
+    if ! git diff --cached --name-only | grep -qF "$XML_FILE"; then
+        echo ""
+        echo "  ✗ Commit blocked: $PROJECT_FILE is staged but $XML_FILE is not."
+        echo ""
+        echo "  The XML export must be updated and staged alongside every project change"
+        echo "  so that git diff shows meaningful, readable diffs."
+        echo ""
+        echo "  Steps to fix:"
+        echo "    1. In CODESYS: Tools → Scripting → Execute Script File"
+        echo "       → Codesys/Scripts/PLCOpenExport.py"
+        echo "    2. git add $XML_FILE"
+        echo "    3. git commit"
+        echo ""
+        exit 1
+    fi
+
+fi
+
+exit 0
