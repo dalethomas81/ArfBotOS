@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2024-12-06T23:20:26.6579927" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2024-12-06T23:03:46.676117" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP20 Patch 3" creationDateTime="2026-03-15T17:51:42.0696732" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-03-15T17:44:06.2058087" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -1237,13 +1237,6 @@ RESERVED: INT:=46;</xhtml>
                   </baseType>
                 </array>
               </type>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="0" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <variable name="StoredPositions">
               <type>
@@ -1254,13 +1247,6 @@ RESERVED: INT:=46;</xhtml>
                   </baseType>
                 </array>
               </type>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="1" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <variable name="VisionRegisters">
               <type>
@@ -1271,13 +1257,6 @@ RESERVED: INT:=46;</xhtml>
                   </baseType>
                 </array>
               </type>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="2" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <variable name="Flags">
               <type>
@@ -1288,13 +1267,6 @@ RESERVED: INT:=46;</xhtml>
                   </baseType>
                 </array>
               </type>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="3" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <variable name="PositionControllers">
               <type>
@@ -1305,13 +1277,6 @@ RESERVED: INT:=46;</xhtml>
                   </baseType>
                 </array>
               </type>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="4" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <variable name="VisionSystemIpAddress">
               <type>
@@ -1320,13 +1285,6 @@ RESERVED: INT:=46;</xhtml>
               <initialValue>
                 <simpleValue value="'127.0.0.1'" />
               </initialValue>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="5" />
-                  </Attributes>
-                </data>
-              </addData>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> vision</xhtml>
               </documentation>
@@ -1338,13 +1296,6 @@ RESERVED: INT:=46;</xhtml>
               <initialValue>
                 <simpleValue value="50011" />
               </initialValue>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="6" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <variable name="VelocityFactor">
               <type>
@@ -1377,13 +1328,6 @@ RESERVED: INT:=46;</xhtml>
                   </value>
                 </arrayValue>
               </initialValue>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="7" />
-                  </Attributes>
-                </data>
-              </addData>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> dh parameters
  axis params</xhtml>
@@ -1415,13 +1359,6 @@ RESERVED: INT:=46;</xhtml>
                   </value>
                 </structValue>
               </initialValue>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="8" />
-                  </Attributes>
-                </data>
-              </addData>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> homing</xhtml>
               </documentation>
@@ -1452,13 +1389,6 @@ RESERVED: INT:=46;</xhtml>
                   </value>
                 </structValue>
               </initialValue>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="9" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <variable name="HomingGroupThree">
               <type>
@@ -1486,20 +1416,11 @@ RESERVED: INT:=46;</xhtml>
                   </value>
                 </structValue>
               </initialValue>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="10" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                 <Attributes>
                   <Attribute Name="qualified_only" Value="" />
-                  <Attribute Name="checksumnoinit_override" Value="2535357554" />
-                  <Attribute Name="init_related_code" Value="bac351e4-1440-4031-887f-c3d65d99e6dc" />
                 </Attributes>
               </data>
               <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
@@ -19542,8 +19463,8 @@ END_VAR
                       <addData>
                         <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                           <Attributes>
-                            <Attribute Name="noinit" />
                             <Attribute Name="instance-path" Value="" />
+                            <Attribute Name="noinit" />
                           </Attributes>
                         </data>
                       </addData>

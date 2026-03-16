@@ -16,12 +16,11 @@
 # Adjust the patterns to match exactly how YOUR project names its export files.
 
 # Option A: All XML files in the repo are CodeSys exports
-#*.xml      diff=codesys-xml
+*.xml      diff=codesys-xml
 
 # Option B: Only exports in a specific folder (uncomment & edit as needed)
 # exports/*.xml   diff=codesys-xml
 # plc/src/*.xml   diff=codesys-xml
-Codesys/*.xml   diff=codesys-xml
 
 # CodeSys native export formats (also XML internally)
 *.export   diff=codesys-xml
@@ -32,7 +31,3 @@ Codesys/*.xml   diff=codesys-xml
 *.xml      text eol=lf
 *.export   text eol=lf
 *.expx     text eol=lf
-
-
-# Auto detect text files and perform LF normalization
-#* text=auto
