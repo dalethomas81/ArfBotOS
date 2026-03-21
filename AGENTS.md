@@ -19,7 +19,8 @@ When starting a new session in this repo, read these files first:
 ## Repo Map
 ### `Codesys/`
 - Main PLC project assets, including `ArfBot.project`, XML exports, installation config, and helper scripts.
-- Includes `Codesys/scriptengine/`, a local set of Python stub files for the CODESYS scripting API used for editor/runtime automation.
+- `Codesys/scriptengine/` is intended as a local-only copy of the CODESYS Python stub files for editor/runtime automation; do not commit it.
+- To populate it locally, copy from `C:\Program Files\CODESYS 3.5.20.30\CODESYS\ScriptLib\Stubs\scriptengine`.
 - CODESYS automation scripts for this repo live in `Codesys/Scripts/`; they run through the CODESYS scripting host, optionally launched from terminal via `CODESYS.exe --runscript` or a Python wrapper.
 - Treat this as the core runtime/control logic area.
 

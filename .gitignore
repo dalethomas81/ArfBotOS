@@ -409,4 +409,5 @@ FodyWeavers.xsd
 Codesys/ArfBot.~u
 Codesys/ArfBot.export
 Codesys/*.ret
+Codesys/scriptengine/
 .DS_Store
