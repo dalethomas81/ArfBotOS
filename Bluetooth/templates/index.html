@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }}</title>
+    <style>
+        :root {
+            --bg: #f3f0e8;
+            --panel: #fffdf8;
+            --ink: #1d2a2f;
+            --muted: #687176;
+            --line: #d9d0c0;
+            --accent: #17624f;
+            --accent-2: #b56a2b;
+            --danger: #a53838;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            background:
+                radial-gradient(circle at top left, #ffffff 0, rgba(255,255,255,0.4) 18%, transparent 45%),
+                linear-gradient(180deg, #efe8da 0%, var(--bg) 100%);
+            color: var(--ink);
+        }
+        main {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 28px 18px 40px;
+        }
+        h1, h2 {
+            margin: 0 0 10px;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+        p {
+            color: var(--muted);
+            margin: 0;
+        }
+        .hero {
+            display: grid;
+            gap: 18px;
+            grid-template-columns: 1.2fr 0.8fr;
+            margin-bottom: 20px;
+        }
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 14px 36px rgba(57, 48, 31, 0.08);
+        }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+        button {
+            border: 0;
+            border-radius: 999px;
+            padding: 10px 16px;
+            cursor: pointer;
+            color: white;
+            background: var(--accent);
+            font-weight: 600;
+        }
+        button.secondary { background: var(--accent-2); }
+        button.ghost {
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid var(--line);
+        }
+        button.danger { background: var(--danger); }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .status-card {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 12px;
+            background: #fff;
+        }
+        .label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+        .value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .tables {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 18px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+        th, td {
+            text-align: left;
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: top;
+            font-size: 14px;
+        }
+        th {
+            color: var(--muted);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+        .row-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .device-name {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .device-mac {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+        .device-meta {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+        .row-actions button {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+        pre {
+            margin: 12px 0 0;
+            padding: 12px;
+            border-radius: 12px;
+            background: #182125;
+            color: #e9f3f6;
+            overflow: auto;
+            min-height: 140px;
+        }
+        .empty {
+            color: var(--muted);
+            padding: 18px 4px 8px;
+        }
+        @media (max-width: 900px) {
+            .hero, .tables {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<main>
+    <section class="hero">
+        <div class="panel">
+            <h1>Bluetooth Pairing</h1>
+            <p>Standalone ArfBotOS Bluetooth service MVP for scanning, pairing, trusting, connecting, and removing devices on the Raspberry Pi.</p>
+            <div class="controls">
+                <button id="scan-start">Start Scan</button>
+                <button id="scan-stop" class="secondary">Stop Scan</button>
+                <button id="refresh" class="ghost">Refresh</button>
+            </div>
+            <div class="status-grid">
+                <div class="status-card">
+                    <div class="label">Controller</div>
+                    <div class="value" id="adapter-controller">Unknown</div>
+                </div>
+                <div class="status-card">
+                    <div class="label">Alias</div>
+                    <div class="value" id="adapter-alias">Unknown</div>
+                </div>
+                <div class="status-card">
+                    <div class="label">Powered</div>
+                    <div class="value" id="adapter-powered">Unknown</div>
+                </div>
+                <div class="status-card">
+                    <div class="label">Pairable / Discoverable</div>
+                    <div class="value" id="adapter-flags">Unknown</div>
+                </div>
+            </div>
+        </div>
+        <div class="panel">
+            <h2>Activity</h2>
+            <p>Most recent service response:</p>
+            <pre id="log">Waiting for first refresh...</pre>
+        </div>
+    </section>
+
+    <section class="tables">
+        <div class="panel">
+            <h2>Discovered Devices</h2>
+            <div id="devices-wrap"></div>
+        </div>
+        <div class="panel">
+            <h2>Paired Devices</h2>
+            <div id="paired-wrap"></div>
+        </div>
+    </section>
+</main>
+
+<script>
+    const logEl = document.getElementById("log");
+
+    function setLog(payload) {
+        logEl.textContent = JSON.stringify(payload, null, 2);
+    }
+
+    async function fetchJson(url, options) {
+        const response = await fetch(url, options);
+        const payload = await response.json();
+        setLog(payload);
+        return payload;
+    }
+
+    function yesNoMaybe(value) {
+        if (value === true) return "Yes";
+        if (value === false) return "No";
+        return "Unknown";
+    }
+
+    function renderTable(targetId, devices, pairedView) {
+        const target = document.getElementById(targetId);
+        if (!devices || devices.length === 0) {
+            target.innerHTML = '<div class="empty">No devices to show yet.</div>';
+            return;
+        }
+
+        const rows = devices.map(device => {
+            const preferredName = device.alias || device.name;
+            const displayName = preferredName || "Unknown device";
+            const meta = [];
+            if (device.alias && device.name && device.alias !== device.name) {
+                meta.push(`Name: ${device.name}`);
+            }
+            if (device.icon) {
+                meta.push(`Icon: ${device.icon}`);
+            }
+            if (device.rssi) {
+                meta.push(`RSSI: ${device.rssi}`);
+            }
+            const actions = pairedView
+                ? `
+                    <button onclick="deviceAction('/api/connect', '${device.mac}')">Connect</button>
+                    <button onclick="deviceAction('/api/disconnect', '${device.mac}')" class="secondary">Disconnect</button>
+                    <button onclick="deviceAction('/api/remove', '${device.mac}')" class="danger">Remove</button>
+                  `
+                : `
+                    <button onclick="deviceAction('/api/pair', '${device.mac}')">Pair</button>
+                    <button onclick="deviceAction('/api/trust', '${device.mac}')" class="secondary">Trust</button>
+                    <button onclick="deviceAction('/api/connect', '${device.mac}')" class="ghost">Connect</button>
+                  `;
+
+            return `
+                <tr>
+                    <td>
+                        <div class="device-name">${displayName}</div>
+                        <div class="device-mac">${device.mac}</div>
+                        <div class="device-meta">${meta.length ? meta.join("<br>") : "No device name advertised yet."}</div>
+                    </td>
+                    <td>${yesNoMaybe(device.paired)} / ${yesNoMaybe(device.trusted)}</td>
+                    <td>${yesNoMaybe(device.connected)}</td>
+                    <td><div class="row-actions">${actions}</div></td>
+                </tr>
+            `;
+        }).join("");
+
+        target.innerHTML = `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Device</th>
+                        <th>Paired / Trusted</th>
+                        <th>Connected</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
+        `;
+    }
+
+    async function refreshStatus() {
+        const status = await fetchJson("/api/status");
+        const adapter = status.adapter || {};
+        document.getElementById("adapter-controller").textContent = adapter.controller || "Unknown";
+        document.getElementById("adapter-alias").textContent = adapter.alias || adapter.name || "Unknown";
+        document.getElementById("adapter-powered").textContent = yesNoMaybe(adapter.powered);
+        document.getElementById("adapter-flags").textContent = `${yesNoMaybe(adapter.pairable)} / ${yesNoMaybe(adapter.discoverable)}`;
+    }
+
+    async function refreshLists() {
+        const devices = await fetchJson("/api/devices");
+        renderTable("devices-wrap", devices.devices || [], false);
+
+        const paired = await fetchJson("/api/paired");
+        renderTable("paired-wrap", paired.devices || [], true);
+    }
+
+    async function refreshAll() {
+        await refreshStatus();
+        await refreshLists();
+    }
+
+    async function postAction(url, body = {}) {
+        const payload = await fetchJson(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+        await refreshAll();
+        return payload;
+    }
+
+    async function deviceAction(url, mac) {
+        await postAction(url, { mac });
+    }
+
+    document.getElementById("scan-start").addEventListener("click", async () => {
+        await postAction("/api/scan/start");
+    });
+
+    document.getElementById("scan-stop").addEventListener("click", async () => {
+        await postAction("/api/scan/stop");
+    });
+
+    document.getElementById("refresh").addEventListener("click", refreshAll);
+
+    refreshAll();
+    setInterval(refreshLists, 5000);
+</script>
+</body>
+</html>
