@@ -190,15 +190,28 @@ unsigned long HeartbeatWatchDog, HeartbeatWatchDogLast;
 uint8_t ExpectedDeviceType;
 void loop() {
 
+    // Generate step edges as often as possible so pulse timing is not
+    // held hostage by SPI / EtherCAT / CRC work further down the loop.
+    handlePTO();
     handleEtherCAT();
     checkHeartbeat();
     handleTx();
     handleRx();
+    // Run again after frequency may have been updated from process data.
+    handlePTO();
     handleInputs();
     handleOutputs();
     handleDrives();
     handleSerial();
 
+}
+
+// Pulse-train generation is independent of CRC success. Frequency[] retains
+// the last good command when a frame fails checksum.
+void handlePTO() {
+  for (int i = 0; i < AxisCount; i++) {
+    Drive[i].run(Frequency[i].ival);
+  }
 }
 
 void handleEtherCAT(){
@@ -329,15 +342,14 @@ void handleRx(){
         //rx_ = RxBuffer[0] & B01000000;
         //rx_ = RxBuffer[0] & B10000000;
 
-        // bytes 1 through 12 are used for frequency
+        // bytes 1 through 12 are used for frequency (int16 Hz per axis).
+        // Only update the command here; pulse generation runs in handlePTO()
+        // every loop so a bad CRC does not stall the step train.
         int k=1;
         for (int i=0;i<AxisCount;i++){
             for (int j=0;j<=1;j++){
               Frequency[i].b[j]=RxBuffer[k++];
             }
-        }
-        for (int i=0;i<AxisCount;i++){
-            Drive[i].run(Frequency[i].ival);
         }
         
         // bytes 13 through 24 are used for control from NC
