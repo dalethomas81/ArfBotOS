@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-08T07:35:54.3162999" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-08T07:30:48.8124689" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-09T09:54:27.4131776" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-09T09:46:42.4159641" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -44,7 +44,7 @@
     <configurations>
       <configuration name="Device">
         <resource name="Application">
-          <task name="MainTask" interval="PT0.001S" priority="2">
+          <task name="MainTask" interval="PT0.001S" priority="3">
             <pouInstance name="_00_Main" typeName="">
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml" />
@@ -61,10 +61,10 @@
               </data>
             </addData>
           </task>
-          <task name="SoftMotion_PlanningTask" interval="PT0.00005S" priority="3">
+          <task name="SoftMotion_PlanningTask" interval="PT0.001S" priority="5">
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
-                <TaskSettings KindOfTask="Cyclic" Interval="50" IntervalUnit="µs" WithinSPSTimeSlicing="true">
+                <TaskSettings KindOfTask="Cyclic" Interval="1" IntervalUnit="ms" WithinSPSTimeSlicing="true">
                   <Watchdog Enabled="false" Time="10" TimeUnit="ms" Sensitivity="1" />
                 </TaskSettings>
               </data>
@@ -73,7 +73,7 @@
               </data>
             </addData>
           </task>
-          <task name="VISU_TASK" interval="PT0.1S" priority="31">
+          <task name="VISU_TASK" interval="PT0.011S" priority="31">
             <pouInstance name="VisuElems.Visu_Prg" typeName="">
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml" />
@@ -91,7 +91,7 @@
             </pouInstance>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
-                <TaskSettings KindOfTask="Cyclic" Interval="100" IntervalUnit="ms" WithinSPSTimeSlicing="true">
+                <TaskSettings KindOfTask="Cyclic" Interval="11" IntervalUnit="ms" WithinSPSTimeSlicing="true">
                   <Watchdog Enabled="false" TimeUnit="ms" />
                 </TaskSettings>
               </data>
@@ -100,7 +100,7 @@
               </data>
             </addData>
           </task>
-          <task name="VisionTask" interval="PT0.02S" priority="10">
+          <task name="VisionTask" interval="PT0.02S" priority="15">
             <pouInstance name="_40_Vision" typeName="">
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml" />
@@ -117,7 +117,7 @@
               </data>
             </addData>
           </task>
-          <task name="EtherCAT_Task" interval="PT0.004S" priority="1">
+          <task name="EtherCAT_Task" interval="PT0.001S" priority="1">
             <pouInstance name="_10_Robot" typeName="">
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml" />
@@ -130,7 +130,7 @@
             </pouInstance>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
-                <TaskSettings KindOfTask="Cyclic" Interval="4" IntervalUnit="ms" WithinSPSTimeSlicing="true">
+                <TaskSettings KindOfTask="Cyclic" Interval="1" IntervalUnit="ms" WithinSPSTimeSlicing="true">
                   <Watchdog Enabled="false" TimeUnit="ms" />
                 </TaskSettings>
               </data>
@@ -146,6 +146,36 @@
               </type>
               <initialValue>
                 <simpleValue value="3.1415926535897931" />
+              </initialValue>
+            </variable>
+            <variable name="c_PosCtrl_MaxVel_TU">
+              <type>
+                <LREAL />
+              </type>
+              <initialValue>
+                <simpleValue value="100.0" />
+              </initialValue>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Application [t.u./s] maximum</xhtml>
+              </documentation>
+            </variable>
+            <variable name="c_PosCtrl_MaxVel_Int">
+              <type>
+                <LREAL />
+              </type>
+              <initialValue>
+                <simpleValue value="10000.0" />
+              </initialValue>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> Output value maximum</xhtml>
+              </documentation>
+            </variable>
+            <variable name="c_PosCtrl_VelScale">
+              <type>
+                <LREAL />
+              </type>
+              <initialValue>
+                <simpleValue value="(100.0 / 10000.0)" />
               </initialValue>
             </variable>
             <variable name="DIG_IN_ARR_BEG">
@@ -641,6 +671,36 @@ RESERVED: INT:=46;</xhtml>
                       </type>
                       <initialValue>
                         <simpleValue value="3.1415926535897931" />
+                      </initialValue>
+                    </variable>
+                    <variable name="c_PosCtrl_MaxVel_TU">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="100.0" />
+                      </initialValue>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> Application [t.u./s] maximum</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="c_PosCtrl_MaxVel_Int">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="10000.0" />
+                      </initialValue>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> Output value maximum</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="c_PosCtrl_VelScale">
+                      <type>
+                        <LREAL />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="(100.0 / 10000.0)" />
                       </initialValue>
                     </variable>
                     <variable name="DIG_IN_ARR_BEG">
@@ -4350,12 +4410,40 @@ END_IF
 
 // apply pulses per revolution and convert degrees per second to frequency (required by PTO controller)
 // pulses per revolution is how many pulses it takes for 1 revolution of the output side of the mechanical reduction.
-SetVelocity[0] := LREAL_TO_INT((IoConfig_Globals.J1.out.iSetVelocity * PersistentVars.PulsesPerRevolution[0]) / 360.0); // AR4 is 16000.0 for J1
+(*SetVelocity[0] := LREAL_TO_INT((IoConfig_Globals.J1.out.iSetVelocity * PersistentVars.PulsesPerRevolution[0]) / 360.0); // AR4 is 16000.0 for J1
 SetVelocity[1] := LREAL_TO_INT((IoConfig_Globals.J2.out.iSetVelocity * PersistentVars.PulsesPerRevolution[1]) / 360.0); // AR4 is 20000.0 for J2
 SetVelocity[2] := LREAL_TO_INT((IoConfig_Globals.J3.out.iSetVelocity * PersistentVars.PulsesPerRevolution[2]) / 360.0); // AR4 is 20000.0 for J3
 SetVelocity[3] := LREAL_TO_INT((IoConfig_Globals.J4.out.iSetVelocity * PersistentVars.PulsesPerRevolution[3]) / 360.0); // AR4 is 26880.0 for J4
 SetVelocity[4] := LREAL_TO_INT((IoConfig_Globals.J5.out.iSetVelocity * PersistentVars.PulsesPerRevolution[4]) / 360.0); // AR4 is 07850.0 for J5
-SetVelocity[5] := LREAL_TO_INT((IoConfig_Globals.J6.out.iSetVelocity * PersistentVars.PulsesPerRevolution[5]) / 360.0); // AR4 is 8081.25 for J6
+SetVelocity[5] := LREAL_TO_INT((IoConfig_Globals.J6.out.iSetVelocity * PersistentVars.PulsesPerRevolution[5]) / 360.0); // AR4 is 8081.25 for J6*)
+
+// iSetVelocity is scaled counts, NOT °/s after the SoftMotion remap.
+// deg/s = iSetVelocity * (MaxTU / MaxInt)
+// Hz    = deg/s * StepsPerRev / 360
+
+SetVelocity[0] := F_RoundToInt(
+    (INT_TO_LREAL(IoConfig_Globals.J1.out.iSetVelocity) * GVL.c_PosCtrl_VelScale)
+    * PersistentVars.PulsesPerRevolution[0] / 360.0);
+
+SetVelocity[1] := F_RoundToInt(
+    (INT_TO_LREAL(IoConfig_Globals.J2.out.iSetVelocity) * GVL.c_PosCtrl_VelScale)
+    * PersistentVars.PulsesPerRevolution[1] / 360.0);
+
+SetVelocity[2] := F_RoundToInt(
+    (INT_TO_LREAL(IoConfig_Globals.J3.out.iSetVelocity) * GVL.c_PosCtrl_VelScale)
+    * PersistentVars.PulsesPerRevolution[2] / 360.0);
+
+SetVelocity[3] := F_RoundToInt(
+    (INT_TO_LREAL(IoConfig_Globals.J4.out.iSetVelocity) * GVL.c_PosCtrl_VelScale)
+    * PersistentVars.PulsesPerRevolution[3] / 360.0);
+
+SetVelocity[4] := F_RoundToInt(
+    (INT_TO_LREAL(IoConfig_Globals.J5.out.iSetVelocity) * GVL.c_PosCtrl_VelScale)
+    * PersistentVars.PulsesPerRevolution[4] / 360.0);
+
+SetVelocity[5] := F_RoundToInt(
+    (INT_TO_LREAL(IoConfig_Globals.J6.out.iSetVelocity) * GVL.c_PosCtrl_VelScale)
+    * PersistentVars.PulsesPerRevolution[5] / 360.0);
 
 {region 'Output'}
 // check that we are talking to the right device type
@@ -13656,8 +13744,8 @@ SUPER^._UnitMode.Reset();</xhtml>
                       <addData>
                         <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                           <Attributes>
-                            <Attribute Name="noinit" />
                             <Attribute Name="instance-path" Value="" />
+                            <Attribute Name="noinit" />
                           </Attributes>
                         </data>
                       </addData>
@@ -22925,6 +23013,44 @@ PlanPath(VarList:= stVarList, DataOut=&gt; );</xhtml>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>25d35170-f0c8-4cbe-9a6a-5ff2fac6e186</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="F_RoundToInt" pouType="function">
+                <interface>
+                  <returnType>
+                    <INT />
+                  </returnType>
+                  <inputVars>
+                    <variable name="x">
+                      <type>
+                        <LREAL />
+                      </type>
+                    </variable>
+                  </inputVars>
+                  <documentation>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml"> Round LREAL to nearest INT (half away from zero via ±0.5 then truncate).
+   LREAL_TO_INT alone truncates toward zero (27.8-&gt;27, -27.8-&gt;-27), which
+   systematically under-drives |Hz| and biases crawl toward stop.
+   Positive: add 0.5 then LREAL_TO_INT. Negative: subtract 0.5 then LREAL_TO_INT
+   so both sides round to nearest (e.g. 27.8-&gt;28, -27.8-&gt;-28).
+   Used when converting LREAL step rate (Hz) to INT16 for the Teensy PTO. </xhtml>
+                  </documentation>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">IF x &gt;= 0.0 THEN
+    F_RoundToInt := LREAL_TO_INT(x + 0.5);
+ELSE
+    F_RoundToInt := LREAL_TO_INT(x - 0.5);
+END_IF</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>2f55f1a8-e8da-4116-8c0b-e7482fa81b53</ObjectId>
                   </data>
                 </addData>
               </pou>
@@ -32578,22 +32704,22 @@ PlanPath(VarList:= stVarList, DataOut=&gt; );</xhtml>
                                       <Description />
                                       <Parameter ParameterId="10100" type="std:DINT" IndexInDevDesc="27">
                                         <Attributes />
-                                        <Value name="_x0031_0100" visiblename="MaximumOutputVelocityInt">16#03E8</Value>
+                                        <Value name="_x0031_0100" visiblename="MaximumOutputVelocityInt">16#2710</Value>
                                         <Name>MaximumOutputVelocityInt</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10101" type="std:LREAL" IndexInDevDesc="28">
                                         <Attributes />
-                                        <Value name="_x0031_0101" visiblename="MaximumOutputVelocityTU">1000.0</Value>
+                                        <Value name="_x0031_0101" visiblename="MaximumOutputVelocityTU">100.0</Value>
                                         <Name>MaximumOutputVelocityTU</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10102" type="std:DINT" IndexInDevDesc="29">
                                         <Attributes />
-                                        <Value name="_x0031_0102" visiblename="MinimumOutputVelocityInt">-16#03E8</Value>
+                                        <Value name="_x0031_0102" visiblename="MinimumOutputVelocityInt">-16#2710</Value>
                                         <Name>MinimumOutputVelocityInt</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10103" type="std:LREAL" IndexInDevDesc="30">
                                         <Attributes />
-                                        <Value name="_x0031_0103" visiblename="MinimumOutputVelocityTU">-1000.0</Value>
+                                        <Value name="_x0031_0103" visiblename="MinimumOutputVelocityTU">-100.0</Value>
                                         <Name>MinimumOutputVelocityTU</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10104" type="std:DINT" IndexInDevDesc="31">
@@ -32843,22 +32969,22 @@ PlanPath(VarList:= stVarList, DataOut=&gt; );</xhtml>
                                       <Description />
                                       <Parameter ParameterId="10100" type="std:DINT" IndexInDevDesc="27">
                                         <Attributes />
-                                        <Value name="_x0031_0100" visiblename="MaximumOutputVelocityInt">16#03E8</Value>
+                                        <Value name="_x0031_0100" visiblename="MaximumOutputVelocityInt">16#2710</Value>
                                         <Name>MaximumOutputVelocityInt</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10101" type="std:LREAL" IndexInDevDesc="28">
                                         <Attributes />
-                                        <Value name="_x0031_0101" visiblename="MaximumOutputVelocityTU">1000.0</Value>
+                                        <Value name="_x0031_0101" visiblename="MaximumOutputVelocityTU">100.0</Value>
                                         <Name>MaximumOutputVelocityTU</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10102" type="std:DINT" IndexInDevDesc="29">
                                         <Attributes />
-                                        <Value name="_x0031_0102" visiblename="MinimumOutputVelocityInt">-16#03E8</Value>
+                                        <Value name="_x0031_0102" visiblename="MinimumOutputVelocityInt">-16#2710</Value>
                                         <Name>MinimumOutputVelocityInt</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10103" type="std:LREAL" IndexInDevDesc="30">
                                         <Attributes />
-                                        <Value name="_x0031_0103" visiblename="MinimumOutputVelocityTU">-1000.0</Value>
+                                        <Value name="_x0031_0103" visiblename="MinimumOutputVelocityTU">-100.0</Value>
                                         <Name>MinimumOutputVelocityTU</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10104" type="std:DINT" IndexInDevDesc="31">
@@ -33103,22 +33229,22 @@ PlanPath(VarList:= stVarList, DataOut=&gt; );</xhtml>
                                       <Description />
                                       <Parameter ParameterId="10100" type="std:DINT" IndexInDevDesc="27">
                                         <Attributes />
-                                        <Value name="_x0031_0100" visiblename="MaximumOutputVelocityInt">16#03E8</Value>
+                                        <Value name="_x0031_0100" visiblename="MaximumOutputVelocityInt">16#2710</Value>
                                         <Name>MaximumOutputVelocityInt</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10101" type="std:LREAL" IndexInDevDesc="28">
                                         <Attributes />
-                                        <Value name="_x0031_0101" visiblename="MaximumOutputVelocityTU">1000.0</Value>
+                                        <Value name="_x0031_0101" visiblename="MaximumOutputVelocityTU">100.0</Value>
                                         <Name>MaximumOutputVelocityTU</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10102" type="std:DINT" IndexInDevDesc="29">
                                         <Attributes />
-                                        <Value name="_x0031_0102" visiblename="MinimumOutputVelocityInt">-16#03E8</Value>
+                                        <Value name="_x0031_0102" visiblename="MinimumOutputVelocityInt">-16#2710</Value>
                                         <Name>MinimumOutputVelocityInt</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10103" type="std:LREAL" IndexInDevDesc="30">
                                         <Attributes />
-                                        <Value name="_x0031_0103" visiblename="MinimumOutputVelocityTU">-1000.0</Value>
+                                        <Value name="_x0031_0103" visiblename="MinimumOutputVelocityTU">-100.0</Value>
                                         <Name>MinimumOutputVelocityTU</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10104" type="std:DINT" IndexInDevDesc="31">
@@ -33363,22 +33489,22 @@ PlanPath(VarList:= stVarList, DataOut=&gt; );</xhtml>
                                       <Description />
                                       <Parameter ParameterId="10100" type="std:DINT" IndexInDevDesc="27">
                                         <Attributes />
-                                        <Value name="_x0031_0100" visiblename="MaximumOutputVelocityInt">16#03E8</Value>
+                                        <Value name="_x0031_0100" visiblename="MaximumOutputVelocityInt">16#2710</Value>
                                         <Name>MaximumOutputVelocityInt</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10101" type="std:LREAL" IndexInDevDesc="28">
                                         <Attributes />
-                                        <Value name="_x0031_0101" visiblename="MaximumOutputVelocityTU">1000.0</Value>
+                                        <Value name="_x0031_0101" visiblename="MaximumOutputVelocityTU">100.0</Value>
                                         <Name>MaximumOutputVelocityTU</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10102" type="std:DINT" IndexInDevDesc="29">
                                         <Attributes />
-                                        <Value name="_x0031_0102" visiblename="MinimumOutputVelocityInt">-16#03E8</Value>
+                                        <Value name="_x0031_0102" visiblename="MinimumOutputVelocityInt">-16#2710</Value>
                                         <Name>MinimumOutputVelocityInt</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10103" type="std:LREAL" IndexInDevDesc="30">
                                         <Attributes />
-                                        <Value name="_x0031_0103" visiblename="MinimumOutputVelocityTU">-1000.0</Value>
+                                        <Value name="_x0031_0103" visiblename="MinimumOutputVelocityTU">-100.0</Value>
                                         <Name>MinimumOutputVelocityTU</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10104" type="std:DINT" IndexInDevDesc="31">
@@ -33623,22 +33749,22 @@ PlanPath(VarList:= stVarList, DataOut=&gt; );</xhtml>
                                       <Description />
                                       <Parameter ParameterId="10100" type="std:DINT" IndexInDevDesc="27">
                                         <Attributes />
-                                        <Value name="_x0031_0100" visiblename="MaximumOutputVelocityInt">16#03E8</Value>
+                                        <Value name="_x0031_0100" visiblename="MaximumOutputVelocityInt">16#2710</Value>
                                         <Name>MaximumOutputVelocityInt</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10101" type="std:LREAL" IndexInDevDesc="28">
                                         <Attributes />
-                                        <Value name="_x0031_0101" visiblename="MaximumOutputVelocityTU">1000.0</Value>
+                                        <Value name="_x0031_0101" visiblename="MaximumOutputVelocityTU">100.0</Value>
                                         <Name>MaximumOutputVelocityTU</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10102" type="std:DINT" IndexInDevDesc="29">
                                         <Attributes />
-                                        <Value name="_x0031_0102" visiblename="MinimumOutputVelocityInt">-16#03E8</Value>
+                                        <Value name="_x0031_0102" visiblename="MinimumOutputVelocityInt">-16#2710</Value>
                                         <Name>MinimumOutputVelocityInt</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10103" type="std:LREAL" IndexInDevDesc="30">
                                         <Attributes />
-                                        <Value name="_x0031_0103" visiblename="MinimumOutputVelocityTU">-1000.0</Value>
+                                        <Value name="_x0031_0103" visiblename="MinimumOutputVelocityTU">-100.0</Value>
                                         <Name>MinimumOutputVelocityTU</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10104" type="std:DINT" IndexInDevDesc="31">
@@ -33883,22 +34009,22 @@ PlanPath(VarList:= stVarList, DataOut=&gt; );</xhtml>
                                       <Description />
                                       <Parameter ParameterId="10100" type="std:DINT" IndexInDevDesc="27">
                                         <Attributes />
-                                        <Value name="_x0031_0100" visiblename="MaximumOutputVelocityInt">16#03E8</Value>
+                                        <Value name="_x0031_0100" visiblename="MaximumOutputVelocityInt">16#2710</Value>
                                         <Name>MaximumOutputVelocityInt</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10101" type="std:LREAL" IndexInDevDesc="28">
                                         <Attributes />
-                                        <Value name="_x0031_0101" visiblename="MaximumOutputVelocityTU">1000.0</Value>
+                                        <Value name="_x0031_0101" visiblename="MaximumOutputVelocityTU">100.0</Value>
                                         <Name>MaximumOutputVelocityTU</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10102" type="std:DINT" IndexInDevDesc="29">
                                         <Attributes />
-                                        <Value name="_x0031_0102" visiblename="MinimumOutputVelocityInt">-16#03E8</Value>
+                                        <Value name="_x0031_0102" visiblename="MinimumOutputVelocityInt">-16#2710</Value>
                                         <Name>MinimumOutputVelocityInt</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10103" type="std:LREAL" IndexInDevDesc="30">
                                         <Attributes />
-                                        <Value name="_x0031_0103" visiblename="MinimumOutputVelocityTU">-1000.0</Value>
+                                        <Value name="_x0031_0103" visiblename="MinimumOutputVelocityTU">-100.0</Value>
                                         <Name>MinimumOutputVelocityTU</Name>
                                       </Parameter>
                                       <Parameter ParameterId="10104" type="std:DINT" IndexInDevDesc="31">
@@ -34552,6 +34678,7 @@ PlanPath(VarList:= stVarList, DataOut=&gt; );</xhtml>
                 </Object>
               </Folder>
               <Object Name="RAD_TO_DEG" ObjectId="5fcdbd79-7ee6-4602-a394-dd4cc360d2d1" />
+              <Object Name="F_RoundToInt" ObjectId="2f55f1a8-e8da-4116-8c0b-e7482fa81b53" />
             </Folder>
             <Folder Name="GVL">
               <Object Name="GVL" ObjectId="1430d1bd-aa92-442c-bf72-190d0e907494" />
