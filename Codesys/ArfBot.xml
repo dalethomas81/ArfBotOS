@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-09T09:54:27.4131776" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-09T09:46:42.4159641" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-09T12:46:24.4741966" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-09T12:45:20.7571584" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -8861,7 +8861,7 @@ BuildCncCmd := _Command;
                     <variable name="_VisuStruct3DPathPoint">
                       <type>
                         <array>
-                          <dimension lower="0" upper="10000" />
+                          <dimension lower="0" upper="5000" />
                           <baseType>
                             <derived name="VisuStruct3DPathPoint" />
                           </baseType>
@@ -13744,8 +13744,8 @@ SUPER^._UnitMode.Reset();</xhtml>
                       <addData>
                         <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                           <Attributes>
-                            <Attribute Name="instance-path" Value="" />
                             <Attribute Name="noinit" />
+                            <Attribute Name="instance-path" Value="" />
                           </Attributes>
                         </data>
                       </addData>
