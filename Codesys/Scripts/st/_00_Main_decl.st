@@ -24,6 +24,20 @@ VAR
 	bDeadTimeSuggested: ARRAY[0..5] OF BOOL;
 	UseSuggestedD: ARRAY[0..5] OF BOOL;
 	sDeadTimeHelp: ARRAY[0..5] OF STRING(255);
+	fKpPeakLag: ARRAY[0..5] OF LREAL;
+	fKpCruiseLag: ARRAY[0..5] OF LREAL;
+	fKpFinalLag: ARRAY[0..5] OF LREAL;
+	fKpOvershoot: ARRAY[0..5] OF LREAL;
+	fKpUndershoot: ARRAY[0..5] OF LREAL;
+	nKpReversals: ARRAY[0..5] OF INT;
+	nKpVelReversals: ARRAY[0..5] OF INT;
+	fSuggestedKp: ARRAY[0..5] OF LREAL;
+	bKpSuggested: ARRAY[0..5] OF BOOL;
+	UseSuggestedKp: ARRAY[0..5] OF BOOL;
+	RaiseKp: ARRAY[0..5] OF BOOL;
+	LowerKp: ARRAY[0..5] OF BOOL;
+	sKpVerdict: ARRAY[0..5] OF STRING(16);
+	sKpHelp: ARRAY[0..5] OF STRING(255);
 	
 	// homing
 	ProcessHome: FB_HomingProcessor;

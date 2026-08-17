@@ -20,5 +20,36 @@ VAR_STAT
 	_fDtMax: LREAL := 20.0; (* PosControl delay-buffer limit *)
 	_fCruiseRatio: LREAL := 0.9;
 	_nSampleMax: INT := 64;
+	_bKpMode: ARRAY[0..5] OF BOOL;
+	_bKpActive: ARRAY[0..5] OF BOOL;
+	_bKpFinish: ARRAY[0..5] OF BOOL;
+	_bKpApproached: ARRAY[0..5] OF BOOL;
+	_fKpDist: ARRAY[0..5] OF LREAL;
+	_fKpTarget: ARRAY[0..5] OF LREAL;
+	_fKpActStart: ARRAY[0..5] OF LREAL;
+	_fKpActMin: ARRAY[0..5] OF LREAL;
+	_fKpActMax: ARRAY[0..5] OF LREAL;
+	_fKpActLast: ARRAY[0..5] OF LREAL;
+	_fKpPrevTgtErr: ARRAY[0..5] OF LREAL;
+	_fKpPrevActDelta: ARRAY[0..5] OF LREAL;
+	_fKpCruiseSum: ARRAY[0..5] OF LREAL;
+	_nKpCruiseN: ARRAY[0..5] OF INT;
+	_nKpSettle: ARRAY[0..5] OF INT;
+	_bKpSettleInit: ARRAY[0..5] OF BOOL;
+	_fKpSettleLeg: ARRAY[0..5] OF LREAL;
+	_fSetPos: LREAL;
+	_fActPos: LREAL;
+	_fLag: LREAL;
+	_fKpNow: LREAL;
+	_fKpMin: LREAL := 0.0001;
+	_fKpMax: LREAL := 2.0;
+	_fKpRaise: LREAL := 1.5;
+	_fKpLower: LREAL := 0.9;
+	_fKpLagNoise: LREAL := 0.02;
+	_fKpDeltaMin: LREAL := 0.003;
+	_fKpBounceMin: LREAL := 0.08;
+	_fKpApproachFrac: LREAL := 0.3;
+	_fKpReachBand: LREAL := 0.15;
+	_nKpSettleCycles: INT := 200;
 	_i, _j, _k: INT;
 END_VAR
