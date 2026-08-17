@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ArfBot Night — HMI mockup</title>
+  <style>
+    :root {
+      --canvas: #0E141B;
+      --surface: #171F2A;
+      --surface-2: #1E2836;
+      --button: #243041;
+      --border: #2A3646;
+      --border-strong: #3A4A5C;
+      --text: #E8EEF5;
+      --muted: #8B9BB0;
+      --accent: #2EE6D6;
+      --accent-dim: #1A9E94;
+      --success: #3DDC84;
+      --warning: #FFB020;
+      --danger: #FF4D6A;
+      --input: #0B1118;
+      --off: #4A5563;
+      --lamp-ring: #2A3646;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      background: #070A0E;
+      color: var(--text);
+      font-family: "Segoe UI", system-ui, sans-serif;
+    }
+
+    .page {
+      min-height: 100vh;
+      padding: 24px 24px 48px;
+    }
+
+    .intro {
+      max-width: 1280px;
+      margin: 0 auto 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-end;
+    }
+    .intro h1 {
+      margin: 0 0 4px;
+      font-size: 22px;
+      font-weight: 650;
+      letter-spacing: 0.02em;
+    }
+    .intro p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+      max-width: 720px;
+      line-height: 1.45;
+    }
+    .palette {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .swatch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .swatch i {
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--border-strong);
+    }
+
+    .tabs {
+      max-width: 1280px;
+      margin: 0 auto 12px;
+      display: flex;
+      gap: 8px;
+    }
+    .tab {
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--muted);
+      padding: 8px 16px;
+      font: 600 12px/1 "Segoe UI", sans-serif;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+    }
+    .tab.active {
+      background: var(--button);
+      color: var(--text);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .stage-wrap {
+      max-width: 1280px;
+      margin: 0 auto;
+      border: 1px solid var(--border-strong);
+      background: #05080C;
+      padding: 10px;
+    }
+    .stage-label {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      padding: 0 4px;
+    }
+
+    .stage {
+      width: 1260px;
+      height: 800px;
+      background: var(--canvas);
+      color: var(--text);
+      position: relative;
+      overflow: hidden;
+      padding: 14px 16px 12px;
+    }
+    .screen { display: none; height: 100%; }
+    .screen.active { display: flex; flex-direction: column; gap: 10px; }
+
+    .panel {
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      position: relative;
+      padding: 16px 12px 10px;
+    }
+    .panel > legend {
+      position: absolute;
+      top: -8px;
+      left: 12px;
+      background: var(--surface);
+      padding: 0 6px;
+      font-size: 13px;
+      font-weight: 650;
+      color: var(--text);
+    }
+    .status-panel { min-height: 78px; }
+    .status-title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 650;
+      margin: 2px 0 8px;
+    }
+    .status-cmd {
+      color: var(--muted);
+      font-size: 13px;
+      padding-left: 4px;
+    }
+
+    .row { display: flex; gap: 10px; }
+    .grow { flex: 1; }
+    .drives { flex: 0 0 430px; }
+    .machine { flex: 1; }
+    .process { flex: 1; min-height: 286px; }
+
+    .lamp-col, .lamp-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .lamp {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+    .dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid var(--lamp-ring);
+      background: var(--off);
+      flex: 0 0 18px;
+    }
+    .dot.on { background: var(--success); border-color: #1f8a52; }
+    .dot.cyan { background: var(--accent); border-color: var(--accent-dim); }
+    .dot.warn { background: var(--warning); border-color: #b87a10; }
+    .dot.alarm { background: var(--off); border-color: var(--danger); }
+    .dot.off { background: var(--off); }
+
+    .limits {
+      display: grid;
+      grid-template-columns: 34px 34px;
+      gap: 6px;
+    }
+    .chip {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-dim);
+      background: var(--accent);
+      color: #06332f;
+      font: 700 11px/30px "Segoe UI", sans-serif;
+      text-align: center;
+    }
+    .chip.ok {
+      background: var(--success);
+      border-color: #1f8a52;
+      color: #06321a;
+    }
+    .subhead {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .drive-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px 12px;
+      align-items: start;
+    }
+    .actions {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      border: 1px solid var(--border-strong);
+      background: var(--button);
+      color: var(--text);
+      min-height: 40px;
+      padding: 0 14px;
+      font: 650 13px/1 "Segoe UI", sans-serif;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .btn:hover { border-color: var(--accent); }
+    .btn.wide { min-width: 128px; }
+    .btn.block { width: 100%; }
+    .btn.start {
+      background: var(--success);
+      color: #062314;
+      border-color: #1f8a52;
+      min-height: 64px;
+      font-size: 22px;
+      letter-spacing: 0.12em;
+    }
+    .btn.abort {
+      background: #3A1520;
+      color: var(--danger);
+      border-color: var(--danger);
+      min-height: 64px;
+      font-size: 22px;
+      letter-spacing: 0.12em;
+    }
+    .btn.ghost {
+      background: var(--surface-2);
+    }
+    .btn.active-nav {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .btn.danger-outline {
+      color: var(--danger);
+      border-color: #6a2434;
+    }
+
+    .round {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 3px solid #6b7787;
+      background: #1a222c;
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+    }
+    .round-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .field {
+      background: var(--input);
+      border: 1px solid var(--border-strong);
+      color: var(--text);
+      min-height: 34px;
+      padding: 6px 10px;
+      font: 600 14px/1.2 "Segoe UI", sans-serif;
+    }
+    .field.muted { color: var(--muted); font-weight: 500; }
+    .spin {
+      display: flex;
+      background: var(--button);
+      border: 1px solid var(--border-strong);
+      min-width: 72px;
+    }
+    .spin span {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      font-weight: 650;
+    }
+    .spin b {
+      width: 22px;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid var(--border);
+    }
+    .spin b i {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      font-style: normal;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    .sm-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px 12px;
+      align-items: start;
+    }
+    .big-stack { display: flex; flex-direction: column; gap: 10px; max-width: 240px; }
+    .side-stack { display: flex; flex-direction: column; gap: 10px; padding-top: 42px; }
+
+    .process-body {
+      display: grid;
+      grid-template-columns: 1fr 210px 250px;
+      gap: 10px;
+      height: 250px;
+    }
+    .plot {
+      background: #121924;
+      border: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .plot svg { width: 100%; height: 100%; display: block; }
+    .navpad {
+      position: absolute;
+      left: 10px;
+      bottom: 10px;
+      width: 148px;
+      height: 78px;
+      background: #0b1118;
+      border: 1px solid var(--border-strong);
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 3px;
+      padding: 6px;
+    }
+    .navpad span {
+      background: #243041;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 9px;
+      color: var(--muted);
+    }
+
+    .joints {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+    }
+    .joint {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+    .gauge {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid var(--border-strong);
+      background:
+        conic-gradient(var(--accent) var(--p), #243041 0);
+    }
+    .vision {
+      background: #10141a;
+      border: 1px solid var(--accent-dim);
+      display: flex;
+      flex-direction: column;
+    }
+    .vision-frame {
+      flex: 1;
+      position: relative;
+      background:
+        radial-gradient(circle at 50% 45%, #2a3038 0%, #15181d 70%);
+    }
+    .part {
+      position: absolute;
+      left: 28%;
+      top: 30%;
+      width: 44%;
+      height: 18%;
+      border: 2px solid var(--accent);
+      transform: rotate(-28deg);
+    }
+    .vision-caption {
+      text-align: center;
+      padding: 6px;
+      background: #12352f;
+      color: var(--accent);
+      font-weight: 650;
+      font-size: 13px;
+    }
+
+    .nav {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      padding-top: 2px;
+    }
+
+    .jog-top { display: grid; grid-template-columns: 1.15fr 1fr 0.85fr; gap: 10px; align-items: start; }
+    .kv {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .kv .field { font-size: 12px; font-weight: 500; color: var(--muted); }
+    .kv .field b { color: var(--text); font-weight: 650; float: right; }
+    .hr { height: 1px; background: var(--border-strong); margin: 6px 0; }
+
+    .poses { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+    .jog-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr) 150px;
+      gap: 8px;
+      align-items: start;
+    }
+    .axis { display: flex; flex-direction: column; gap: 6px; }
+    .axis .field { text-align: center; font-size: 12px; }
+    .warn {
+      color: var(--danger);
+      font-size: 10px;
+      line-height: 1.35;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .modal-back {
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: none;
+      place-items: center;
+      padding: 28px;
+    }
+    .modal-back.show { display: grid; }
+    .dialog {
+      width: 860px;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      padding: 16px 16px 14px;
+    }
+    .dialog h2 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      font-weight: 650;
+    }
+    .packml {
+      background: #102033;
+      border: 1px solid var(--border);
+      padding: 16px 10px 12px;
+      min-height: 280px;
+    }
+    .states {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 18px 10px;
+      font-size: 11px;
+    }
+    .st {
+      background: #17613a;
+      color: #e8eef5;
+      border: 1px solid #1f8a52;
+      text-align: center;
+      padding: 8px 4px;
+      min-height: 34px;
+    }
+    .st.wait { background: #8a5a10; border-color: #c48416; }
+    .st.exec { background: #163a8a; border-color: #3b6fe0; }
+    .st.idle { background: #4A1C28; border-color: var(--danger); }
+    .st.abort-zone { background: #1a1d22; border-color: #3a4048; }
+    .pack-btns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .pack-btns .btn { min-height: 48px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="intro">
+      <div>
+        <h1>ArfBot Night</h1>
+        <p>
+          Proposed CODESYS visualization style applied to the existing ArfBotOS screens.
+          Layout and labels stay the same. The style is Flat-derived, so it is installable
+          without redrawing the visu.
+        </p>
+      </div>
+      <div class="palette">
+        <div class="swatch"><i style="background:#0E141B"></i>Canvas</div>
+        <div class="swatch"><i style="background:#171F2A"></i>Surface</div>
+        <div class="swatch"><i style="background:#243041"></i>Button</div>
+        <div class="swatch"><i style="background:#E8EEF5"></i>Text</div>
+        <div class="swatch"><i style="background:#2EE6D6"></i>Accent</div>
+        <div class="swatch"><i style="background:#3DDC84"></i>Success</div>
+        <div class="swatch"><i style="background:#FFB020"></i>Warning</div>
+        <div class="swatch"><i style="background:#FF4D6A"></i>Danger</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-screen="main">Main</button>
+      <button class="tab" data-screen="jog">Jogging</button>
+      <button class="tab" data-screen="packml">PackML dialog</button>
+    </div>
+
+    <div class="stage-wrap">
+      <div class="stage-label">
+        <span>CODESYS WebVisu mockup · 1260 × 800</span>
+        <span>ArfBot Night 1.0.0.0</span>
+      </div>
+      <div class="stage">
+
+        <section id="main" class="screen active">
+          <div class="panel status-panel">
+            <legend>Status</legend>
+            <div class="status-title">Idle</div>
+            <div class="status-cmd">PGM: 0 &nbsp; CMD: 0 &nbsp; OutputCommand: DIG 0 1.0 &nbsp; Comment: Open the Gripper</div>
+          </div>
+
+          <div class="row">
+            <div class="panel drives">
+              <legend>Drives Controller</legend>
+              <div class="drive-body">
+                <div class="lamp-col">
+                  <div class="lamp"><i class="dot on"></i>Enabled</div>
+                  <div class="lamp"><i class="dot on"></i>Heartbeat</div>
+                  <div class="lamp"><i class="dot on"></i>EtherCAT</div>
+                  <div class="lamp"><i class="dot on"></i>Homed</div>
+                </div>
+                <div>
+                  <div class="subhead">Status</div>
+                  <div class="limits">
+                    <div class="chip ok">J1</div><div class="chip ok">J4</div>
+                    <div class="chip ok">J2</div><div class="chip ok">J5</div>
+                    <div class="chip ok">J3</div><div class="chip ok">J6</div>
+                  </div>
+                </div>
+                <div>
+                  <div class="subhead">Limits</div>
+                  <div class="limits">
+                    <div class="chip">J1</div><div class="chip">J4</div>
+                    <div class="chip">J2</div><div class="chip">J5</div>
+                    <div class="chip">J3</div><div class="chip">J6</div>
+                  </div>
+                </div>
+                <div class="actions">
+                  <div class="round-wrap">
+                    <div class="round">⏻</div>
+                    ENABLE
+                  </div>
+                  <button class="btn wide">Home robot</button>
+                  <button class="btn wide">Global reset</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel machine">
+              <legend>State Machine</legend>
+              <div class="sm-grid">
+                <div class="field">Program: Vision Pick and Place</div>
+                <div class="spin"><span>1</span><b><i>▲</i><i>▼</i></b></div>
+                <div class="big-stack">
+                  <button class="btn start">Start</button>
+                  <button class="btn abort">Abort</button>
+                </div>
+                <div class="side-stack">
+                  <button class="btn wide" data-goto="packml">Orchestrator</button>
+                  <button class="btn wide" data-goto="packml">Active processor</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel process">
+            <legend>Process View</legend>
+            <div class="process-body">
+              <div class="plot">
+                <svg viewBox="0 0 520 250" preserveAspectRatio="none">
+                  <defs>
+                    <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#243041" stroke-width="1"/>
+                    </pattern>
+                  </defs>
+                  <rect x="70" y="40" width="280" height="180" fill="url(#grid)"/>
+                  <line x1="70" y1="220" x2="420" y2="220" stroke="#FF4D6A" stroke-width="1.5"/>
+                  <line x1="70" y1="220" x2="70" y2="20" stroke="#3DDC84" stroke-width="1.5"/>
+                  <polyline points="70,80 180,80 250,150 180,210 110,150 180,80" fill="none" stroke="#5B8CFF" stroke-width="2"/>
+                  <circle cx="70" cy="80" r="3" fill="#2EE6D6"/>
+                </svg>
+                <div class="navpad">
+                  <span>＋</span><span>↻</span><span>－</span><span></span><span>↑</span><span></span>
+                  <span>↺</span><span>⟳</span><span>↕</span><span>←</span><span>↓</span><span>→</span>
+                </div>
+              </div>
+              <div class="joints">
+                <div class="joint"><div class="gauge" style="--p:2%"></div>J1: 0.0 &nbsp; X: 74.3</div>
+                <div class="joint"><div class="gauge" style="--p:28%"></div>J2: 45.3 &nbsp; Y: -0.0</div>
+                <div class="joint"><div class="gauge" style="--p:62%"></div>J3: -68.3 &nbsp; Z: -2.8</div>
+                <div class="joint"><div class="gauge" style="--p:2%"></div>J4: 0.0 &nbsp; r: 0.0</div>
+                <div class="joint"><div class="gauge" style="--p:22%"></div>J5: 30.0 &nbsp; p: 37.0</div>
+                <div class="joint"><div class="gauge" style="--p:2%"></div>J6: 0.0 &nbsp; y: 0.0</div>
+              </div>
+              <div class="vision">
+                <div class="vision-frame"><div class="part"></div></div>
+                <div class="vision-caption">DONE. Found 1 parts.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="nav">
+            <button class="btn wide">Programs</button>
+            <button class="btn wide" data-goto="jog">Jogging</button>
+            <button class="btn wide">Tuning</button>
+            <button class="btn wide">Vision</button>
+          </div>
+        </section>
+
+        <section id="jog" class="screen">
+          <div class="jog-top">
+            <div class="panel">
+              <legend>Drives Controller</legend>
+              <div class="drive-body">
+                <div class="lamp-col">
+                  <div class="lamp"><i class="dot on"></i>Enabled</div>
+                  <div class="lamp"><i class="dot on"></i>Heartbeat</div>
+                  <div class="lamp"><i class="dot off"></i>Watchdog</div>
+                  <div class="lamp"><i class="dot alarm"></i>Alarm</div>
+                  <div class="lamp"><i class="dot off"></i>Homed</div>
+                </div>
+                <div>
+                  <div class="subhead">Limits</div>
+                  <div class="limits">
+                    <div class="chip">J1</div><div class="chip">J4</div>
+                    <div class="chip">J2</div><div class="chip">J5</div>
+                    <div class="chip">J3</div><div class="chip">J6</div>
+                  </div>
+                </div>
+                <div></div>
+                <div class="actions">
+                  <div class="round-wrap"><div class="round">⏻</div>ENABLE</div>
+                  <button class="btn">Home robot</button>
+                  <button class="btn">Global reset</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <legend>Jog Status</legend>
+              <div class="row" style="gap:28px">
+                <div class="lamp-col">
+                  <div class="lamp"><i class="dot cyan"></i>Controller</div>
+                  <div class="lamp"><i class="dot off"></i>Jog Active</div>
+                  <div class="lamp"><i class="dot off"></i>Jog Busy</div>
+                  <div class="lamp"><i class="dot alarm"></i>Jog Error</div>
+                </div>
+                <div class="lamp-col">
+                  <div class="lamp"><i class="dot off"></i>TCP Offset</div>
+                  <div class="lamp"><i class="dot off"></i>PC2 Offset</div>
+                  <div class="lamp"><i class="dot off"></i>PC1 Offset</div>
+                  <div class="lamp"><i class="dot off"></i>MCS Offset</div>
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn grow">Enable</button>
+                <button class="btn grow">Clear offsets</button>
+              </div>
+            </div>
+
+            <div class="panel">
+              <legend>Settings</legend>
+              <div class="kv">
+                <div class="field">Max Linear Distance: <b>200.00</b></div>
+                <div class="field">Max Angular Distance: <b>90.00</b></div>
+                <div class="hr"></div>
+                <div class="field">Velocity: <b>50.00</b></div>
+                <div class="field">Acceleration: <b>300.00</b></div>
+                <div class="field">Deceleration: <b>300.00</b></div>
+                <div class="field">Jerk: <b>1000.00</b></div>
+                <div class="hr"></div>
+                <div class="field">Velocity Factor: <b>0.10</b></div>
+                <div class="field">Acceleration Factor: <b>1.00</b></div>
+                <div class="field">Jerk Factor: <b>1.00</b></div>
+                <div class="field">Torque Factor: <b>1.00</b></div>
+                <div class="lamp" style="margin-top:4px"><i class="dot off"></i>ABC as ACS</div>
+                <button class="btn block">TCS ▾</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <legend>Poses</legend>
+            <div class="poses">
+              <button class="btn">One</button>
+              <button class="btn">Two</button>
+              <button class="btn">Three</button>
+              <button class="btn">Four</button>
+              <button class="btn">Five</button>
+            </div>
+          </div>
+
+          <div class="panel grow">
+            <legend>Jog Buttons</legend>
+            <div class="jog-grid">
+              <div class="axis"><div class="field">X: 0.00</div><button class="btn">X+</button><button class="btn">X-</button></div>
+              <div class="axis"><div class="field">Y: 0.00</div><button class="btn">Y+</button><button class="btn">Y-</button></div>
+              <div class="axis"><div class="field">Z: 0.00</div><button class="btn">Z+</button><button class="btn">Z-</button></div>
+              <div class="axis"><div class="field">A: 0.00</div><button class="btn">Pitch+</button><button class="btn">Pitch-</button></div>
+              <div class="axis"><div class="field">B: 0.00</div><button class="btn">Yaw+</button><button class="btn">Yaw-</button></div>
+              <div class="axis"><div class="field">C: 0.00</div><button class="btn">Roll+</button><button class="btn">Roll-</button></div>
+              <div>
+                <button class="btn block danger-outline" style="min-height:56px;margin-top:28px">Set home</button>
+                <div class="warn">WARNING: PRESSING THIS BUTTON WILL SET THE CURRENT POSITION AS HOME POSITION FOR ALL THE AXES.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="packml" class="screen">
+          <div class="panel status-panel">
+            <legend>Status</legend>
+            <div class="status-cmd" style="margin-top:18px">CMD: DIR ABS 050 ACS LIT +00 +30 -30 +00 +30 +00</div>
+          </div>
+          <div class="panel grow" style="display:flex;flex-direction:column">
+            <legend>State Machine</legend>
+            <div class="packml">
+              <div class="states">
+                <div></div>
+                <div class="st">Un-Holding</div>
+                <div class="st wait">Held</div>
+                <div class="st">Holding</div>
+                <div></div>
+                <div></div>
+                <div class="st idle">Idle</div>
+                <div class="st">Starting</div>
+                <div class="st exec">Execute</div>
+                <div class="st">Completing</div>
+                <div class="st wait">Complete</div>
+                <div></div>
+                <div class="st">Resetting</div>
+                <div class="st">Un-Suspending</div>
+                <div class="st wait">Suspended</div>
+                <div class="st">Suspending</div>
+                <div></div>
+                <div></div>
+                <div class="st wait">Stopped</div>
+                <div class="st">Stopping</div>
+                <div class="st">Clearing</div>
+                <div class="st wait">Aborted</div>
+                <div class="st">Aborting</div>
+                <div></div>
+              </div>
+            </div>
+            <div class="pack-btns">
+              <button class="btn">Start</button>
+              <button class="btn">Stop</button>
+              <button class="btn">Hold</button>
+              <button class="btn abort" style="min-height:48px;font-size:14px">Abort</button>
+              <button class="btn">Reset</button>
+              <button class="btn">Clear</button>
+              <div></div>
+              <div></div>
+              <button class="btn" data-goto="main">Close</button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll(".tab");
+    const screens = document.querySelectorAll(".screen");
+    function show(id) {
+      screens.forEach((s) => s.classList.toggle("active", s.id === id));
+      tabs.forEach((t) => t.classList.toggle("active", t.dataset.screen === id));
+    }
+    tabs.forEach((t) => t.addEventListener("click", () => show(t.dataset.screen)));
+    document.querySelectorAll("[data-goto]").forEach((b) => {
+      b.addEventListener("click", () => show(b.dataset.goto));
+    });
+    const initial = new URLSearchParams(location.search).get("screen");
+    if (initial) show(initial);
+  </script>
+</body>
+</html>
