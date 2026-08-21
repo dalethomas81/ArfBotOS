@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<VisualizationStyle>
+  <General baseStyle="Flat style, 4.9.0.0 (CODESYS)">
+    <Strings>
+      <Language lang="en">
+        <String identifier="ArfBot Night">ArfBot Night</String>
+        <String identifier="Canvas">Canvas</String>
+        <String identifier="Surface">Surface</String>
+        <String identifier="Accent">Accent</String>
+        <String identifier="Success">Success</String>
+        <String identifier="Warning">Warning</String>
+        <String identifier="Danger">Danger</String>
+        <String identifier="Muted">Muted</String>
+      </Language>
+    </Strings>
+    <StyleInfo>
+      <Name>ArfBot Night</Name>
+      <Company>ArfBotOS</Company>
+      <Version>1.0.0.0</Version>
+    </StyleInfo>
+  </General>
+  <StyleDefinition>
+    <Fonts>
+      <Font name="Font-Standard">
+        <FontName>Segoe UI</FontName>
+        <FontSize>12</FontSize>
+      </Font>
+      <Font name="Font-HeadingSmall">
+        <FontName>Segoe UI</FontName>
+        <FontSize>14</FontSize>
+      </Font>
+      <Font name="Font-Heading">
+        <FontName>Segoe UI</FontName>
+        <FontSize>18</FontSize>
+      </Font>
+      <Font name="Font-HeadingLarge">
+        <FontName>Segoe UI</FontName>
+        <FontSize>24</FontSize>
+        <FontStyle>Bold</FontStyle>
+      </Font>
+      <Font name="Font-Title">
+        <FontName>Segoe UI</FontName>
+        <FontSize>32</FontSize>
+        <FontStyle>Bold</FontStyle>
+      </Font>
+      <Font name="Font-Annotation">
+        <FontName>Segoe UI</FontName>
+        <FontSize>10</FontSize>
+      </Font>
+    </Fonts>
+    <Colors>
+      <!-- Palette chips that also appear in element color dropdowns -->
+      <Color name="Canvas">0xFF0E141B</Color>
+      <Color name="Surface">0xFF171F2A</Color>
+      <Color name="Accent">0xFF2EE6D6</Color>
+      <Color name="Success">0xFF3DDC84</Color>
+      <Color name="Warning">0xFFFFB020</Color>
+      <Color name="Danger">0xFFFF4D6A</Color>
+      <Color name="Muted">0xFF8B9BB0</Color>
+      <Color name="Visualization-Background-Color">0xFF0E141B</Color>
+      <Color name="BasicElement-Fill-Color">0xFF171F2A</Color>
+      <Color name="BasicElement-Frame-Color">0xFF3A4A5C</Color>
+      <Color name="BasicElement-Alarm-Fill-Color">0xFF3A1520</Color>
+      <Color name="BasicElement-Alarm-Frame-Color">0xFFFF4D6A</Color>
+      <Color name="Element-Frame-Color">0xFF2A3646</Color>
+      <Color name="Element-Fill-Color">0xFF171F2A</Color>
+      <Color name="Element-Background-Color">0xFF171F2A</Color>
+      <Color name="Element-Alarm-Frame-Color">0xFFFF4D6A</Color>
+      <Color name="Element-Alarm-Fill-Color">0xFF4A1C28</Color>
+      <Color name="Element-Alarm-Color">0xFF4A1C28</Color>
+      <Color name="Element-Control-Color">0xFF243041</Color>
+      <Color name="Element-Control-BrightColor" attributes="hide">0xFF3A4A5C</Color>
+      <Color name="Element-Control-DarkColor" attributes="hide">0xFF1E2836</Color>
+      <Color name="Element-Control-HighlightColor" attributes="hide">0xFF2EE6D6</Color>
+      <Color name="Element-Control-ArrowColor">0xFFE8EEF5</Color>
+      <Color name="Element-Control-Color_Yellow">0xFFFFB020</Color>
+      <Color name="Element-Control-Color_Red">0xFFFF4D6A</Color>
+      <Color name="Element-Control-Color_Green">0xFF3DDC84</Color>
+      <Color name="Element-Control-Color_Gray">0xFF1E2836</Color>
+      <Color name="Element-Control-Color_Blue">0xFF2EE6D6</Color>
+      <Color name="Font-Default-Color">0xFFE8EEF5</Color>
+      <Color name="Font-Default-DarkColor" attributes="hide">0xFF0E141B</Color>
+      <Color name="Font-Default-BrightColor">0xFFE8EEF5</Color>
+      <Color name="Element-Button-FontColor">0xFFE8EEF5</Color>
+      <Color name="Element-Table-Grid-Color" attributes="hide">0xFF2A3646</Color>
+      <Color name="Element-Table-Rows-FirstColor" attributes="hide">0xFF171F2A</Color>
+      <Color name="Element-Table-Rows-SecondColor" attributes="hide">0xFF1E2836</Color>
+      <Color name="Element-Table-ColumnHeader-Color" attributes="hide">0xFF243041</Color>
+      <Color name="Element-Potentiometer-LabelFontColor">0xFF8B9BB0</Color>
+      <Color name="Element-Potentiometer-ScaleColor">0xFF8B9BB0</Color>
+      <Color name="Element-Meter-ScaleColor">0xFF8B9BB0</Color>
+      <Color name="Element-Meter-LabelFontColor">0xFF8B9BB0</Color>
+      <Color name="Element-Meter-ArrowColor">0xFF2EE6D6</Color>
+      <Color name="Element-Bar-ScaleColor">0xFF8B9BB0</Color>
+      <Color name="Element-Bar-GraphColor">0xFF2EE6D6</Color>
+      <Color name="Element-Table-SelectionColor">0xFF2EE6D6</Color>
+      <Color name="Element-Table-SelectionFontColor">0xFF0E141B</Color>
+      <Color name="Element-Alarmtable-SelectionColor">0xFF2EE6D6</Color>
+      <Color name="Element-Alarmtable-SelectionFontColor">0xFF0E141B</Color>
+      <Color name="Element-Slider-ScaleColor" attributes="hide">0xFF8B9BB0</Color>
+      <Color name="Element-Button-PressedColor" attributes="hide">0xFF1A9E94</Color>
+      <Color name="Element-Button-PressedFontColor" attributes="hide">0xFF0E141B</Color>
+      <Color name="Element-GroupBox-FrameColor" attributes="hide">0xFF3A4A5C</Color>
+      <Color name="Element-Selection-Background-Color" attributes="hide">0xFF2EE6D6</Color>
+      <Color name="Element-Selection-Font-Color" attributes="hide">0xFF0E141B</Color>
+      <Color name="Progressbar-Color" attributes="hide">0xFF2EE6D6</Color>
+      <Color name="Progressbar-Frame-Color" attributes="hide">0xFF2A3646</Color>
+      <Color name="Element-ComboArray-Selection-Color" attributes="hide">0xFF2EE6D6</Color>
+      <Color name="Element-ComboArray-Grid-Color" attributes="hide">0xFF2A3646</Color>
+      <Color name="Element-Scrollbar-ScrollAreaColor" attributes="hide">0xFF1E2836</Color>
+      <Color name="Element-Scrollbar-KnobColor" attributes="hide">0xFF3A4A5C</Color>
+      <Color name="Element-Scrollbar-ButtonColor" attributes="hide">0xFF243041</Color>
+      <Color name="Element-Scrollbar-BackgroundClickColor" attributes="hide">0xFF2A3646</Color>
+      <Color name="Element-ComboBoxInteger-Selection-Color" attributes="hide">0xFF2EE6D6</Color>
+      <Color name="Element-ComboBoxInteger-List-SecondColor" attributes="hide">0xFF1E2836</Color>
+      <Color name="Element-ComboBoxInteger-List-FirstColor" attributes="hide">0xFF171F2A</Color>
+      <Color name="Element-ComboBoxInteger-Box-Color" attributes="hide">0xFF243041</Color>
+      <Color name="Element-ComboArray-List-SecondColor" attributes="hide">0xFF1E2836</Color>
+      <Color name="Element-ComboArray-List-FirstColor" attributes="hide">0xFF171F2A</Color>
+      <Color name="Element-ComboArray-Box-Color" attributes="hide">0xFF243041</Color>
+      <Color name="Dialog-HeaderColor">0xFF1E2836</Color>
+      <Color name="Dialog-ScrollbarColor">0xFF3A4A5C</Color>
+      <Color name="Dialog-ModalBackgroundColor">0x99000000</Color>
+      <Color name="Dialog-ButtonColor">0xFF243041</Color>
+      <Color name="Dialog-ButtonFontColor" attributes="displayAfter=Dialog-ButtonColor">0xFFE8EEF5</Color>
+      <Color name="Dialog-FunctionButtonColor" attributes="displayAfter=Dialog-ButtonFontColor">0xFF2EE6D6</Color>
+      <Color name="Dialog-BackgroundColor">0xFF171F2A</Color>
+      <Color name="Element-Histogram-Background-FirstColor" attributes="hide">0xFF171F2A</Color>
+      <Color name="Element-Histogram-Background-SecondColor" attributes="hide">0xFF1E2836</Color>
+      <Color name="Element-Trace-Background-FirstColor" attributes="hide">0xFF0E141B</Color>
+      <Color name="Element-Trace-Background-SecondColor" attributes="hide">0xFF171F2A</Color>
+      <Color name="Element-Trend-Background-FirstColor" attributes="hide">0xFF0E141B</Color>
+      <Color name="Element-Trend-Background-SecondColor" attributes="hide">0xFF171F2A</Color>
+      <Color name="Element-Clock-Hands-HourHandColor">0xFF2EE6D6</Color>
+      <Color name="Element-Clock-Hands-MinuteHandColor">0xFF2EE6D6</Color>
+      <Color name="Element-Clock-Hands-SecondsHandColor">0xFFFF4D6A</Color>
+      <Color name="Element-Clock-CenterPoint-Color">0xFF2EE6D6</Color>
+      <Color name="Element-Clock-Numerics-FontColor">0xFF8B9BB0</Color>
+      <Color name="Element-Clock-Lines-Color">0xFF3A4A5C</Color>
+      <Color name="Element-DatePicker-MainArea-SelectedDay-FrameColor">0xFF2EE6D6</Color>
+      <Color name="Element-DatePicker-MainArea-SelectedDay-FontColor">0xFF0E141B</Color>
+      <Color name="Element-DatePicker-MainArea-SelectedDay-BackColor">0xFF2EE6D6</Color>
+      <Color name="Element-DatePicker-MainArea-OtherMonth-FrameColor">0xFF2A3646</Color>
+      <Color name="Element-DatePicker-MainArea-OtherMonth-FontColor">0xFF8B9BB0</Color>
+      <Color name="Element-DatePicker-MainArea-OtherMonth-BackColor">0xFF171F2A</Color>
+      <Color name="Element-DatePicker-MainArea-HeaderDay-LineColor">0xFF2A3646</Color>
+      <Color name="Element-DatePicker-MainArea-HeaderDay-FrameColor">0xFF2A3646</Color>
+      <Color name="Element-DatePicker-MainArea-HeaderDay-FontColor">0xFF8B9BB0</Color>
+      <Color name="Element-DatePicker-MainArea-HeaderDay-BackColor">0xFF1E2836</Color>
+      <Color name="Element-DatePicker-MainArea-CurrMonth-FrameColor">0xFF2A3646</Color>
+      <Color name="Element-DatePicker-MainArea-CurrMonth-FontColor">0xFFE8EEF5</Color>
+      <Color name="Element-DatePicker-MainArea-CurrMonth-BackColor">0xFF171F2A</Color>
+      <Color name="Element-DatePicker-MainArea-CurrentDay-FrameColor">0xFF2EE6D6</Color>
+      <Color name="Element-DatePicker-MainArea-CurrentDay-FontColor">0xFFE8EEF5</Color>
+      <Color name="Element-DatePicker-MainArea-CurrentDay-BackColor">0xFF1E2836</Color>
+      <Color name="Element-DatePicker-MainArea-Background-FrameColor">0xFF2A3646</Color>
+      <Color name="Element-DatePicker-MainArea-Background-BackColor">0xFF171F2A</Color>
+      <Color name="Element-DatePicker-Header-FontColor">0xFFE8EEF5</Color>
+      <Color name="Element-DatePicker-Header-BackgroundColor">0xFF1E2836</Color>
+      <Color name="Element-DatePicker-Header-ArrowPressedColor">0xFF2EE6D6</Color>
+      <Color name="Element-DatePicker-Header-ArrowColor">0xFFE8EEF5</Color>
+      <Color name="Element-DateTimePicker-SelectedCell-FrameColor">0xFF2EE6D6</Color>
+      <Color name="Element-DateTimePicker-SelectedCell-FontColor">0xFF0E141B</Color>
+      <Color name="Element-DateTimePicker-SelectedCell-BackColor">0xFF2EE6D6</Color>
+      <Color name="Element-DateTimePicker-ElemRect-BackColor">0xFF1E2836</Color>
+      <Color name="Element-DateTimePicker-Cell-FrameColor">0xFF2A3646</Color>
+      <Color name="Element-DateTimePicker-Cell-FontColor">0xFFE8EEF5</Color>
+      <Color name="Element-DateTimePicker-Cell-BackColor">0xFF171F2A</Color>
+      <Color name="Element-DateTimePicker-Arrow-ArrowPressedColor">0xFF2EE6D6</Color>
+      <Color name="Element-DateTimePicker-Arrow-ArrowColor">0xFFE8EEF5</Color>
+      <Color name="Element-XYChart-Background-FirstColor" attributes="hide">0xFF0E141B</Color>
+      <Color name="Element-XYChart-Background-SecondColor" attributes="hide">0xFF171F2A</Color>
+      <Color name="Element-XYChart-Axis-Background-Color">0xFF1E2836</Color>
+      <Color name="Element-XYChart-Axis-Label-Color">0xFFE8EEF5</Color>
+      <Color name="Element-XYChart-Main-CursorColor">0xFF2EE6D6</Color>
+      <Color name="Element-XYChart-Secondary-CursorColor">0xFF5B8CFF</Color>
+      <Color name="Tooltip-Font-Color">0xFFE8EEF5</Color>
+      <Color name="Tooltip-Border-Color">0xFF3A4A5C</Color>
+      <Color name="Tooltip-Fill-Color">0xFF1E2836</Color>
+      <Color name="Element-TabControl-SecondFrameColor">0xFF2A3646</Color>
+      <Color name="Element-TabControl-BrightColor">0xFF1E2836</Color>
+    </Colors>
+    <Images />
+    <AdditionalStyles>
+      <Value name="Style" type="string">STYLE9_FLAT</Value>
+      <Value name="Textfield-Shadow" type="string">NONE</Value>
+      <Value name="Element-RoundRect-Radius" type="dint">6</Value>
+      <Value name="GroupBox-Text-Frame-Border" type="dint">8</Value>
+      <Value name="TabControl-Frame-Border" type="dint">1</Value>
+      <Value name="TabControl-Text-Frame-Border" type="dint">8</Value>
+      <Value name="TabControl-TabHeight" type="dint">32</Value>
+    </AdditionalStyles>
+  </StyleDefinition>
+</VisualizationStyle>
