@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-19T23:59:56.7440519" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-19T23:53:59.4394605" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-20T21:20:49.3334458" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-20T21:11:47.0429189" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -3952,53 +3952,123 @@ END_IF</xhtml>
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">//
-PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.X := 283.23;
-PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.Y := -66.77;
-PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.Z := 195.00;
-PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.A := -127.52;
-PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.B := 179.00;
-PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.C := 102.00;
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">// taught positions referenced by factory programs
+PersistentVars.StoredPositions[40].Position.X := -76.81;
+PersistentVars.StoredPositions[40].Position.Y := 1.2;
+PersistentVars.StoredPositions[40].Position.Z := -24.93;
+PersistentVars.StoredPositions[40].Position.A := -4.74;
+PersistentVars.StoredPositions[40].Position.B := 62.93;
+PersistentVars.StoredPositions[40].Position.C := 24.21;
+PersistentVars.StoredPositions[41].Comment := 'Euler Angle Tool Place Position MCS';
+PersistentVars.StoredPositions[41].Position.X := 44.39;
+PersistentVars.StoredPositions[41].Position.Y := -285.95;
+PersistentVars.StoredPositions[41].Position.Z := 310.15;
+PersistentVars.StoredPositions[41].Position.A := 96.6;
+PersistentVars.StoredPositions[41].Position.B := 177.75;
+PersistentVars.StoredPositions[41].Position.C := -174.21;
+PersistentVars.StoredPositions[42].Comment := 'Euler Angle Tool Pick Position MCS';
+PersistentVars.StoredPositions[42].Position.X := 43.97;
+PersistentVars.StoredPositions[42].Position.Y := -280.38;
+PersistentVars.StoredPositions[42].Position.Z := 215.24;
+PersistentVars.StoredPositions[42].Position.A := 96.61;
+PersistentVars.StoredPositions[42].Position.B := 177.75;
+PersistentVars.StoredPositions[42].Position.C := -174.22;
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[0].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[0].Commands[_i].CommandString := '';
+	PersistentVars.Programs[0].Commands[_i].CommandComment := '';
+END_FOR
+PersistentVars.Programs[0].ProgramName := 'Pick and Place Euler Angle Tool';
+PersistentVars.Programs[0].Commands[0].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[0].Commands[0].CommandString := 'DIR ABS 50.0 ACS VAR STO 35 ';
+PersistentVars.Programs[0].Commands[0].CommandComment := 'take on a pose';
+PersistentVars.Programs[0].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[0].Commands[1].CommandString := 'STO 46 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 ';
+PersistentVars.Programs[0].Commands[1].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[0].Commands[3].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[0].Commands[3].CommandString := 'IF REGISTER 40 EQU 0 THEN JUMP 5 ELSE JUMP 12 ';
+PersistentVars.Programs[0].Commands[3].CommandComment := 'determine if pick or place';
+PersistentVars.Programs[0].Commands[5].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[0].Commands[5].CommandString := 'DIR ABS 50.0 MCS VAR STO 42 ';
+PersistentVars.Programs[0].Commands[5].CommandComment := 'go to euler angle tool down position';
+PersistentVars.Programs[0].Commands[6].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[0].Commands[6].CommandString := 'DIG 0 1.0 ';
+PersistentVars.Programs[0].Commands[6].CommandComment := 'open gripper';
+PersistentVars.Programs[0].Commands[7].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[0].Commands[7].CommandString := 'LIN REL 20.0 TCS LIT 0.0 0.0 25.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[0].Commands[7].CommandComment := 'move onto euler angle tool';
+PersistentVars.Programs[0].Commands[8].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[0].Commands[8].CommandString := 'DIG 0 0.0 ';
+PersistentVars.Programs[0].Commands[8].CommandComment := 'close gripper';
+PersistentVars.Programs[0].Commands[9].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[0].Commands[9].CommandString := 'LIN REL 20.0 TCS LIT 0.0 0.0 -120.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[0].Commands[9].CommandComment := 'pull out tool';
+PersistentVars.Programs[0].Commands[10].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[0].Commands[10].CommandString := 'IF PASS THEN JUMP 16 ';
+PersistentVars.Programs[0].Commands[12].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[0].Commands[12].CommandString := 'DIR ABS 50.0 MCS VAR STO 41 ';
+PersistentVars.Programs[0].Commands[12].CommandComment := 'go to euler angle tool up position';
+PersistentVars.Programs[0].Commands[13].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[0].Commands[13].CommandString := 'LIN REL 20.0 TCS LIT 0.0 0.0 120.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[0].Commands[13].CommandComment := 'push tool in';
+PersistentVars.Programs[0].Commands[14].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[0].Commands[14].CommandString := 'DIG 0 1.0 ';
+PersistentVars.Programs[0].Commands[14].CommandComment := 'open gripper';
+PersistentVars.Programs[0].Commands[15].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[0].Commands[15].CommandString := 'LIN REL 20.0 TCS LIT 0.0 0.0 -25.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[0].Commands[15].CommandComment := 'move away from euler angle tool';
 
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[1].Commands[_i].CommandType := DUT_CommandType.Disabled;
 	PersistentVars.Programs[1].Commands[_i].CommandString := '';
+	PersistentVars.Programs[1].Commands[_i].CommandComment := '';
 END_FOR
 PersistentVars.Programs[1].ProgramName := 'Vision Pick and Place';
 PersistentVars.Programs[1].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
-PersistentVars.Programs[1].Commands[0].CommandString := 'STO 0046 +0000.00 +0000.00 +0000.00 +0090.00 +0000.00 +0000.00';
+PersistentVars.Programs[1].Commands[0].CommandString := 'STO 46 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 E 90.0 ';
+PersistentVars.Programs[1].Commands[0].CommandComment := 'Set the TCP offset';
 PersistentVars.Programs[1].Commands[1].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[1].CommandString := 'DIR ABS 020 ACS LIT 00000.00 00030.00 -0030.00 00000.00 00030.00 00000.00';
-PersistentVars.Programs[1].Commands[2].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[2].CommandString := 'DIG 1 1';
-PersistentVars.Programs[1].Commands[3].CommandType := DUT_CommandType.VisionCommand;
-PersistentVars.Programs[1].Commands[3].CommandString := 'LOC 640 400 0060 001 000.0 0.8 030.0 000 Template.jpg FastTemplateMatching.py';
-PersistentVars.Programs[1].Commands[4].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[4].CommandString := 'DIG 1 0';
-PersistentVars.Programs[1].Commands[5].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[5].CommandString := 'DIR ABS 050 PC1 LIT 00000.00 00000.00 -0010.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[1].Commands[1].CommandString := 'DIR ABS 60.0 ACS VAR STO 40 ';
+PersistentVars.Programs[1].Commands[1].CommandComment := 'Take a pose';
+PersistentVars.Programs[1].Commands[2].CommandType := DUT_CommandType.VisionCommand;
+PersistentVars.Programs[1].Commands[2].CommandString := 'LOC 640 400 15 1 0.0 0.6 180.0 0 Pen.jpg FastTemplateMatching.py ';
+PersistentVars.Programs[1].Commands[2].CommandComment := 'Find the object and store the result';
+PersistentVars.Programs[1].Commands[3].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[1].Commands[3].CommandString := 'VIS 0 M -1.0 M -1.0 E -20.0 M -1.0 N 0.0 N 0.0 ';
+PersistentVars.Programs[1].Commands[3].CommandComment := 'Rotate x and y to line up with TCP';
+PersistentVars.Programs[1].Commands[4].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[4].CommandString := 'DIR ABS 50.0 PC1 VAR VIS 0 ';
+PersistentVars.Programs[1].Commands[4].CommandComment := 'Move over the object';
+PersistentVars.Programs[1].Commands[5].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[5].CommandString := 'DIG 0 1.0 ';
+PersistentVars.Programs[1].Commands[5].CommandComment := 'Open the Gripper';
 PersistentVars.Programs[1].Commands[6].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[6].CommandString := 'DIR ABS 050 PC1 VAR VIS 000';
+PersistentVars.Programs[1].Commands[6].CommandString := 'LIN REL 50.0 TCS LIT 0.0 0.0 20.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[1].Commands[6].CommandComment := 'Move down to the object';
 PersistentVars.Programs[1].Commands[7].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[7].CommandString := 'SRV 1 30.0 360.0';
-PersistentVars.Programs[1].Commands[8].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[8].CommandString := 'LIN REL 050 TCS LIT 00000.00 00000.00 00010.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[1].Commands[9].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[9].CommandString := 'SRV 1 0.0 360.0';
-PersistentVars.Programs[1].Commands[10].CommandType := DUT_CommandType.PauseCommand;
-PersistentVars.Programs[1].Commands[10].CommandString := 'T#1s';
-PersistentVars.Programs[1].Commands[11].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[11].CommandString := 'LIN REL 050 TCS LIT 00000.00 00000.00 -0010.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[1].Commands[12].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[12].CommandString := 'DIR ABS 050 PC1 LIT 00000.00 00000.00 -0050.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[1].Commands[13].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[13].CommandString := 'SRV 1 30.0 360.0';
+PersistentVars.Programs[1].Commands[7].CommandString := 'DIG 0 0.0 ';
+PersistentVars.Programs[1].Commands[7].CommandComment := 'Close the Gripper';
+PersistentVars.Programs[1].Commands[8].CommandType := DUT_CommandType.PauseCommand;
+PersistentVars.Programs[1].Commands[8].CommandString := 'T#1s';
+PersistentVars.Programs[1].Commands[8].CommandComment := 'Pause while the gripper closes';
+PersistentVars.Programs[1].Commands[9].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[9].CommandString := 'LIN REL 50.0 TCS LIT 0.0 0.0 -20.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[1].Commands[9].CommandComment := 'Pick up the object';
+PersistentVars.Programs[1].Commands[10].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[10].CommandString := 'DIR ABS 50.0 PC1 LIT 0.0 0.0 -50.0 0.0 0.0 90.0 ';
+PersistentVars.Programs[1].Commands[10].CommandComment := 'Move to drop position';
+PersistentVars.Programs[1].Commands[11].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[11].CommandString := 'DIG 0 1.0 ';
+PersistentVars.Programs[1].Commands[11].CommandComment := 'Open the Gripper';
 
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[2].Commands[_i].CommandType := DUT_CommandType.Disabled;
 	PersistentVars.Programs[2].Commands[_i].CommandString := '';
+	PersistentVars.Programs[2].Commands[_i].CommandComment := '';
 END_FOR
 PersistentVars.Programs[2].ProgramName := 'PCS1 Corners';
 PersistentVars.Programs[2].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
@@ -4022,17 +4092,19 @@ PersistentVars.Programs[2].Commands[7].CommandString := 'DIR ABS 050 ACS LIT +00
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[3].Commands[_i].CommandType := DUT_CommandType.Disabled;
 	PersistentVars.Programs[3].Commands[_i].CommandString := '';
+	PersistentVars.Programs[3].Commands[_i].CommandComment := '';
 END_FOR
 PersistentVars.Programs[3].ProgramName := 'Cnc Validation';
-PersistentVars.Programs[3].Commands[0].CommandType := DUT_CommandType.CncCommand;
-PersistentVars.Programs[3].Commands[0].CommandString := 'CNC_FromFile.cnc XYZ VAR STO 45';
+PersistentVars.Programs[3].Commands[0].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[3].Commands[0].CommandString := 'DIR ABS 30.0 ACS VAR STO 34 ';
 PersistentVars.Programs[3].Commands[1].CommandType := DUT_CommandType.CncCommand;
-PersistentVars.Programs[3].Commands[1].CommandString := 'CNC_FromFile.cnc XYZ LIT +0300.00 +0000.00 -0300.00 +0000.00 +0000.00 +0000.00';
+PersistentVars.Programs[3].Commands[1].CommandString := 'ArfBotOS-HelloWorld.cnc ';
 
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[4].Commands[_i].CommandType := DUT_CommandType.Disabled;
 	PersistentVars.Programs[4].Commands[_i].CommandString := '';
+	PersistentVars.Programs[4].Commands[_i].CommandComment := '';
 END_FOR
 PersistentVars.Programs[4].ProgramName := 'Vision Validation';
 PersistentVars.Programs[4].Commands[0].CommandType := DUT_CommandType.VisionCommand;
@@ -4044,6 +4116,7 @@ PersistentVars.Programs[4].Commands[1].CommandString := 'LOC 640 400 60 1 0.0 0.
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[5].Commands[_i].CommandType := DUT_CommandType.Disabled;
 	PersistentVars.Programs[5].Commands[_i].CommandString := '';
+	PersistentVars.Programs[5].Commands[_i].CommandComment := '';
 END_FOR
 PersistentVars.Programs[5].ProgramName := 'VarSet Validation';
 PersistentVars.Programs[5].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
@@ -4053,11 +4126,11 @@ PersistentVars.Programs[5].Commands[1].CommandString := 'VIS 2 1 2 3 4 5 6';
 PersistentVars.Programs[5].Commands[2].CommandType := DUT_CommandType.VarSetCommand;
 PersistentVars.Programs[5].Commands[2].CommandString := 'FLG 3 1';
 
-
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[6].Commands[_i].CommandType := DUT_CommandType.Disabled;
 	PersistentVars.Programs[6].Commands[_i].CommandString := '';
+	PersistentVars.Programs[6].Commands[_i].CommandComment := '';
 END_FOR
 PersistentVars.Programs[6].ProgramName := 'Logic Validation';
 PersistentVars.Programs[6].Commands[0].CommandType := DUT_CommandType.LogicCommand;
@@ -4067,52 +4140,194 @@ PersistentVars.Programs[6].Commands[1].CommandString := 'IF INPUT 1 EQU 1 THEN C
 PersistentVars.Programs[6].Commands[2].CommandType := DUT_CommandType.LogicCommand;
 PersistentVars.Programs[6].Commands[2].CommandString := 'IF COUNTER 2 GRE 10 THEN NOP ELSE JUMP 0';
 
-(*
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[11].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[11].Commands[_i].CommandString := '';
+	PersistentVars.Programs[7].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[7].Commands[_i].CommandString := '';
+	PersistentVars.Programs[7].Commands[_i].CommandComment := '';
 END_FOR
-PersistentVars.Programs[11].ProgramName := 'Make Me an Egg, Please';
-PersistentVars.Programs[11].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[11].Commands[0].CommandString := '';
+PersistentVars.Programs[7].ProgramName := 'Euler Angles Demo';
+PersistentVars.Programs[7].Commands[0].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[0].CommandString := 'IF PASS THEN REGISTER 40 0 ';
+PersistentVars.Programs[7].Commands[0].CommandComment := 'Set pick/place register to pick tool';
+PersistentVars.Programs[7].Commands[1].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[1].CommandString := 'IF PASS THEN CALL 0 ';
+PersistentVars.Programs[7].Commands[1].CommandComment := 'Call pick and place program';
+PersistentVars.Programs[7].Commands[3].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[3].CommandString := 'IF COUNTER 7 EQU 0 THEN NOP ELSE JUMP 7 ';
+PersistentVars.Programs[7].Commands[3].CommandComment := 'apply or jump over';
+PersistentVars.Programs[7].Commands[4].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[7].Commands[4].CommandString := 'STO 46 E 0.0 E 0.0 E 70.0 E 0.0 E 0.0 E 0.0 ';
+PersistentVars.Programs[7].Commands[4].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[7].Commands[5].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[5].CommandString := 'IF PASS THEN JUMP 19 ';
+PersistentVars.Programs[7].Commands[5].CommandComment := 'go to move commands';
+PersistentVars.Programs[7].Commands[7].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[7].CommandString := 'IF COUNTER 7 EQU 1 THEN NOP ELSE JUMP 11 ';
+PersistentVars.Programs[7].Commands[7].CommandComment := 'apply or jump over';
+PersistentVars.Programs[7].Commands[8].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[7].Commands[8].CommandString := 'STO 46 E 0.0 E 0.0 E 170.0 E 0.0 E 0.0 E 0.0 ';
+PersistentVars.Programs[7].Commands[8].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[7].Commands[9].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[9].CommandString := 'IF PASS THEN JUMP 19 ';
+PersistentVars.Programs[7].Commands[9].CommandComment := 'go to move commands';
+PersistentVars.Programs[7].Commands[11].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[11].CommandString := 'IF COUNTER 7 EQU 2 THEN NOP ELSE JUMP 15 ';
+PersistentVars.Programs[7].Commands[11].CommandComment := 'apply or jump over';
+PersistentVars.Programs[7].Commands[12].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[7].Commands[12].CommandString := 'STO 46 E 0.0 E -100.0 E 70.0 E 0.0 E 0.0 E 0.0 ';
+PersistentVars.Programs[7].Commands[12].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[7].Commands[13].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[13].CommandString := 'IF PASS THEN JUMP 19 ';
+PersistentVars.Programs[7].Commands[13].CommandComment := 'go to move commands';
+PersistentVars.Programs[7].Commands[15].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[15].CommandString := 'IF COUNTER 7 EQU 3 THEN NOP ELSE JUMP 29 ';
+PersistentVars.Programs[7].Commands[15].CommandComment := 'apply or jump over';
+PersistentVars.Programs[7].Commands[16].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[7].Commands[16].CommandString := 'STO 46 E 100.0 E 0.0 E 70.0 E 0.0 E 0.0 E 0.0 ';
+PersistentVars.Programs[7].Commands[16].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[7].Commands[17].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[17].CommandString := 'IF PASS THEN JUMP 19 ';
+PersistentVars.Programs[7].Commands[17].CommandComment := 'go to move commands';
+PersistentVars.Programs[7].Commands[19].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[7].Commands[19].CommandString := 'DIR ABS 50.0 ACS VAR STO 35 ';
+PersistentVars.Programs[7].Commands[19].CommandComment := 'take on a pose';
+PersistentVars.Programs[7].Commands[20].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[7].Commands[20].CommandString := 'LIN ABS 70.0 TCS LIT 0.0 0.0 0.0 0.0 0.0 -45.0 ';
+PersistentVars.Programs[7].Commands[20].CommandComment := 'rotate around TCP Z';
+PersistentVars.Programs[7].Commands[21].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[7].Commands[21].CommandString := 'LIN ABS 70.0 TCS LIT 0.0 0.0 0.0 0.0 -30.0 0.0 ';
+PersistentVars.Programs[7].Commands[21].CommandComment := 'rotate around TCP Y';
+PersistentVars.Programs[7].Commands[22].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[7].Commands[22].CommandString := 'LIN ABS 70.0 TCS LIT 0.0 0.0 0.0 90.0 30.0 -90.0 ';
+PersistentVars.Programs[7].Commands[22].CommandComment := 'rotate around TCP X with z$' y z$'$'';
+PersistentVars.Programs[7].Commands[23].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[7].Commands[23].CommandString := 'LIN ABS 70.0 TCS LIT 0.0 0.0 0.0 90.0 -30.0 -90.0 ';
+PersistentVars.Programs[7].Commands[23].CommandComment := 'rotate around TCP X with z$' y z$'$'';
+PersistentVars.Programs[7].Commands[24].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[7].Commands[24].CommandString := 'LIN ABS 70.0 TCS LIT 0.0 0.0 0.0 0.0 30.0 0.0 ';
+PersistentVars.Programs[7].Commands[24].CommandComment := 'rotate around TCP Y';
+PersistentVars.Programs[7].Commands[25].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[7].Commands[25].CommandString := 'DIR ABS 70.0 ACS VAR STO 35 ';
+PersistentVars.Programs[7].Commands[25].CommandComment := 'take on a pose';
+PersistentVars.Programs[7].Commands[27].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[27].CommandString := 'IF PASS THEN CNTUP 7 ';
+PersistentVars.Programs[7].Commands[27].CommandComment := 'count up counter';
+PersistentVars.Programs[7].Commands[28].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[28].CommandString := 'IF PASS THEN JUMP 3 ';
+PersistentVars.Programs[7].Commands[28].CommandComment := 'go back to start';
+PersistentVars.Programs[7].Commands[29].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[29].CommandString := 'IF PASS THEN CNTRST 7 ';
+PersistentVars.Programs[7].Commands[29].CommandComment := 'reset counter back to 0';
+PersistentVars.Programs[7].Commands[31].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[31].CommandString := 'IF PASS THEN REGISTER 40 1 ';
+PersistentVars.Programs[7].Commands[31].CommandComment := 'Set pick/place register to place tool';
+PersistentVars.Programs[7].Commands[32].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[32].CommandString := 'IF PASS THEN CALL 0 ';
+PersistentVars.Programs[7].Commands[32].CommandComment := 'Call pick and place program';
 
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[12].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[12].Commands[_i].CommandString := '';
+	PersistentVars.Programs[10].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[10].Commands[_i].CommandString := '';
+	PersistentVars.Programs[10].Commands[_i].CommandComment := '';
 END_FOR
-PersistentVars.Programs[12].ProgramName := 'Egg Pick Routine';
-PersistentVars.Programs[12].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[12].Commands[0].CommandString := '';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[13].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[13].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[13].ProgramName := 'Egg Crack Routine';
-PersistentVars.Programs[13].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[13].Commands[0].CommandString := '';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[14].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[14].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[14].ProgramName := 'Egg Flip Routine';
-PersistentVars.Programs[14].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[14].Commands[0].CommandString := '';
+PersistentVars.Programs[10].ProgramName := 'Pick Glow Stick';
+PersistentVars.Programs[10].Commands[0].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[0].CommandString := 'IF REGISTER 2 EQU 0 THEN NOP ELSE JUMP 5 ';
+PersistentVars.Programs[10].Commands[0].CommandComment := 'check if initialized';
+PersistentVars.Programs[10].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[10].Commands[1].CommandString := 'STO 0 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 ';
+PersistentVars.Programs[10].Commands[1].CommandComment := 'clear out the tcp position';
+PersistentVars.Programs[10].Commands[2].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[2].CommandString := 'IF PASS THEN CNTRST 0 ';
+PersistentVars.Programs[10].Commands[2].CommandComment := 'clear column counter';
+PersistentVars.Programs[10].Commands[3].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[3].CommandString := 'IF PASS THEN CNTRST 1 ';
+PersistentVars.Programs[10].Commands[3].CommandComment := 'clear row counter';
+PersistentVars.Programs[10].Commands[4].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[4].CommandString := 'IF PASS THEN REGISTER 2 1 ';
+PersistentVars.Programs[10].Commands[4].CommandComment := 'mark data initialized';
+PersistentVars.Programs[10].Commands[6].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[10].Commands[6].CommandString := 'DIR ABS 50.0 ACS VAR STO 34 ';
+PersistentVars.Programs[10].Commands[6].CommandComment := 'take on a pose';
+PersistentVars.Programs[10].Commands[7].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[10].Commands[7].CommandString := 'DIG 0 1.0 ';
+PersistentVars.Programs[10].Commands[7].CommandComment := 'open gripper';
+PersistentVars.Programs[10].Commands[8].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[10].Commands[8].CommandString := 'LIN ABS 50.0 PC1 VAR STO 0 ';
+PersistentVars.Programs[10].Commands[8].CommandComment := 'go to the pick position in PCS1';
+PersistentVars.Programs[10].Commands[9].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[10].Commands[9].CommandString := 'LIN REL 50.0 TCS LIT 0.0 0.0 10.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[10].Commands[9].CommandComment := 'move into glow stick';
+PersistentVars.Programs[10].Commands[10].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[10].Commands[10].CommandString := 'DIG 0 0.0 ';
+PersistentVars.Programs[10].Commands[10].CommandComment := 'close gripper';
+PersistentVars.Programs[10].Commands[11].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[10].Commands[11].CommandString := 'LIN REL 50.0 TCS LIT 160.0 0.0 0.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[10].Commands[11].CommandComment := 'pick glow stick out of nest';
+PersistentVars.Programs[10].Commands[12].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[10].Commands[12].CommandString := 'LIN ABS 50.0 PC2 LIT 0.0 0.0 0.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[10].Commands[12].CommandComment := 'go to the home position of PCS2';
+PersistentVars.Programs[10].Commands[13].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[10].Commands[13].CommandString := 'LIN REL 50.0 TCS LIT 0.0 0.0 50.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[10].Commands[13].CommandComment := 'move into drop position';
+PersistentVars.Programs[10].Commands[14].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[10].Commands[14].CommandString := 'DIG 0 1.0 ';
+PersistentVars.Programs[10].Commands[14].CommandComment := 'open gripper';
+PersistentVars.Programs[10].Commands[15].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[10].Commands[15].CommandString := 'LIN ABS 50.0 PC2 LIT 0.0 0.0 0.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[10].Commands[15].CommandComment := 'go to the home position of PCS2';
+PersistentVars.Programs[10].Commands[17].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[17].CommandString := 'IF COUNTER 0 LES 3 THEN CNTUP 0 ELSE JUMP 21 ';
+PersistentVars.Programs[10].Commands[17].CommandComment := 'increment the column counter';
+PersistentVars.Programs[10].Commands[18].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[10].Commands[18].CommandString := 'STO 0 N 0.0 A 20.0 N 0.0 N 0.0 N 0.0 N 0.0 ';
+PersistentVars.Programs[10].Commands[18].CommandComment := 'add the column width';
+PersistentVars.Programs[10].Commands[20].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[20].CommandString := 'IF PASS THEN JUMP 24 ';
+PersistentVars.Programs[10].Commands[20].CommandComment := 'jump over the counter operations';
+PersistentVars.Programs[10].Commands[21].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[21].CommandString := 'IF PASS THEN CNTRST 0 ';
+PersistentVars.Programs[10].Commands[21].CommandComment := 'reset the column counter';
+PersistentVars.Programs[10].Commands[22].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[22].CommandString := 'IF PASS THEN CNTUP 1 ';
+PersistentVars.Programs[10].Commands[22].CommandComment := 'increment the row counter';
+PersistentVars.Programs[10].Commands[23].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[10].Commands[23].CommandString := 'STO 0 N 0.0 E 0.0 A 15.0 N 0.0 N 0.0 N 0.0 ';
+PersistentVars.Programs[10].Commands[23].CommandComment := 'add the row width. clear column.';
 
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[15].Commands[_i].CommandType := DUT_CommandType.Disabled;
 	PersistentVars.Programs[15].Commands[_i].CommandString := '';
+	PersistentVars.Programs[15].Commands[_i].CommandComment := '';
 END_FOR
-PersistentVars.Programs[15].ProgramName := 'Egg Place Routine';
-PersistentVars.Programs[15].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[15].Commands[0].CommandString := '';
-*)</xhtml>
+PersistentVars.Programs[15].ProgramName := 'Gimbal 1';
+PersistentVars.Programs[15].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[15].Commands[0].CommandString := 'STO 43 N 0.0 E 250.0 E 250.0 N 0.0 E 1.0e-2 E 1.0e-1 ';
+PersistentVars.Programs[15].Commands[0].CommandComment := 'set velocity, acceleration, and jerk';
+PersistentVars.Programs[15].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[15].Commands[1].CommandString := 'STO 43 E 100.0 E 1000.0 E 1000.0 E 1.0 E 1.0 E 1.0 ';
+PersistentVars.Programs[15].Commands[1].CommandComment := 'set velocity, acceleration, and jerk';
+PersistentVars.Programs[15].Commands[3].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[15].Commands[3].CommandString := 'DIR ABS 30.0 ACS LIT -19.65 30.42 -55.18 0.0 4.04 0.0 ';
+PersistentVars.Programs[15].Commands[3].CommandComment := 'Taught position';
+PersistentVars.Programs[15].Commands[6].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[15].Commands[6].CommandString := 'STO 46 E 0.0 E 0.0 E 300.0 E 0.0 E 0.0 E 0.0 ';
+PersistentVars.Programs[15].Commands[6].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[15].Commands[7].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[15].Commands[7].CommandString := 'LIN ABS 20.0 TCS LIT 0.0 0.0 0.0 0.0 -30.0 0.0 ';
+PersistentVars.Programs[15].Commands[7].CommandComment := 'rotate around TCP Y';
+PersistentVars.Programs[15].Commands[8].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[15].Commands[8].CommandString := 'LIN ABS 20.0 TCS LIT 0.0 0.0 0.0 90.0 60.0 -90.0 ';
+PersistentVars.Programs[15].Commands[8].CommandComment := 'rotate around TCP X with z$' y z$'$'';
+PersistentVars.Programs[15].Commands[10].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[15].Commands[10].CommandString := 'DIR ABS 30.0 ACS LIT -19.65 30.42 -55.18 0.0 4.04 0.0 ';
+PersistentVars.Programs[15].Commands[10].CommandComment := 'Taught position';
+PersistentVars.Programs[15].Commands[12].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[15].Commands[12].CommandString := 'STO 43 E 100.0 E 1000.0 E 1000.0 E 1.0 E 1.0 E 1.0 ';
+PersistentVars.Programs[15].Commands[12].CommandComment := 'set velocity, acceleration, and jerk';</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -16480,6 +16695,113 @@ END_IF</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="F_SplitCmd" pouType="function">
+                <interface>
+                  <returnType>
+                    <array>
+                      <dimension lower="0" upper="GVL.COMMAND_LEN" />
+                      <baseType>
+                        <string />
+                      </baseType>
+                    </array>
+                  </returnType>
+                  <inputVars>
+                    <variable name="Command">
+                      <type>
+                        <string length="GVL.COMMAND_LEN" />
+                      </type>
+                    </variable>
+                    <variable name="Delimiter">
+                      <type>
+                        <string length="1" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="' '" />
+                      </initialValue>
+                    </variable>
+                  </inputVars>
+                  <localVars>
+                    <variable name="_Command">
+                      <type>
+                        <string length="GVL.COMMAND_LEN" />
+                      </type>
+                    </variable>
+                    <variable name="_DelimPos">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_i">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_j">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_k">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                  </localVars>
+                  <localVars constant="true">
+                    <variable name="_SpaceChar">
+                      <type>
+                        <string length="1" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="' '" />
+                      </initialValue>
+                    </variable>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// grab a copy
+// TODO do we need to do this? cant we just operate on the input?
+_Command := Command;
+
+// ex. 123 456 789 0 123 456 879 0
+WHILE LEN(_Command) &gt; 0  AND _i &lt; GVL.COMMAND_LEN DO
+	// find the delimiter
+	_DelimPos := FIND(_Command, Delimiter);
+	// don't copy empty commands
+	IF _DelimPos &gt; 1 THEN
+		// copy the command into the array position
+		F_SplitCmd[_i] := MID(STR:=_Command, LEN:=_DelimPos - 1, POS:=1);
+		// trim the command off the front of the string
+		_Command := DELETE(STR:=_Command, LEN:=_DelimPos, POS:=1);
+		// increment the index and get ready for the next
+		_i := _i + 1;
+	ELSIF _DelimPos = 1 OR FIND(_Command, _SpaceChar) = 1 THEN
+		// don't do anything with a stray delimiter or a space at the  start of the next command
+		// trim the command off the space at the front of the string
+		_Command := DELETE(STR:=_Command, LEN:=LEN(_SpaceChar), POS:=1);
+	ELSIF _DelimPos = 0 AND LEN(_Command) &gt; 0 THEN
+		// copy the last command into the array position and return
+		F_SplitCmd[_i] := MID(STR:=_Command, LEN:=LEN(_Command), POS:=1);
+		// trim the command off the front of the string
+		_Command := DELETE(STR:=_Command, LEN:=_DelimPos, POS:=1);
+		// increment the index and get ready for the next
+		_i := _i + 1;
+		RETURN;
+	ELSE
+		RETURN;
+	END_IF
+END_WHILE</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>4ffeb092-e2fe-4508-9822-2d3197400b13</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
               <pou name="F_BuildVarSetCmd" pouType="function">
                 <interface>
                   <returnType>
@@ -23906,113 +24228,6 @@ END_IF</xhtml>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                     <ObjectId>2f55f1a8-e8da-4116-8c0b-e7482fa81b53</ObjectId>
-                  </data>
-                </addData>
-              </pou>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="F_SplitCmd" pouType="function">
-                <interface>
-                  <returnType>
-                    <array>
-                      <dimension lower="0" upper="GVL.COMMAND_LEN" />
-                      <baseType>
-                        <string />
-                      </baseType>
-                    </array>
-                  </returnType>
-                  <inputVars>
-                    <variable name="Command">
-                      <type>
-                        <string length="GVL.COMMAND_LEN" />
-                      </type>
-                    </variable>
-                    <variable name="Delimiter">
-                      <type>
-                        <string length="1" />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="' '" />
-                      </initialValue>
-                    </variable>
-                  </inputVars>
-                  <localVars>
-                    <variable name="_Command">
-                      <type>
-                        <string length="GVL.COMMAND_LEN" />
-                      </type>
-                    </variable>
-                    <variable name="_DelimPos">
-                      <type>
-                        <INT />
-                      </type>
-                    </variable>
-                    <variable name="_i">
-                      <type>
-                        <INT />
-                      </type>
-                    </variable>
-                    <variable name="_j">
-                      <type>
-                        <INT />
-                      </type>
-                    </variable>
-                    <variable name="_k">
-                      <type>
-                        <INT />
-                      </type>
-                    </variable>
-                  </localVars>
-                  <localVars constant="true">
-                    <variable name="_SpaceChar">
-                      <type>
-                        <string length="1" />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="' '" />
-                      </initialValue>
-                    </variable>
-                  </localVars>
-                </interface>
-                <body>
-                  <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// grab a copy
-// TODO do we need to do this? cant we just operate on the input?
-_Command := Command;
-
-// ex. 123 456 789 0 123 456 879 0
-WHILE LEN(_Command) &gt; 0  AND _i &lt; GVL.COMMAND_LEN DO
-	// find the delimiter
-	_DelimPos := FIND(_Command, Delimiter);
-	// don't copy empty commands
-	IF _DelimPos &gt; 1 THEN
-		// copy the command into the array position
-		F_SplitCmd[_i] := MID(STR:=_Command, LEN:=_DelimPos - 1, POS:=1);
-		// trim the command off the front of the string
-		_Command := DELETE(STR:=_Command, LEN:=_DelimPos, POS:=1);
-		// increment the index and get ready for the next
-		_i := _i + 1;
-	ELSIF _DelimPos = 1 OR FIND(_Command, _SpaceChar) = 1 THEN
-		// don't do anything with a stray delimiter or a space at the  start of the next command
-		// trim the command off the space at the front of the string
-		_Command := DELETE(STR:=_Command, LEN:=LEN(_SpaceChar), POS:=1);
-	ELSIF _DelimPos = 0 AND LEN(_Command) &gt; 0 THEN
-		// copy the last command into the array position and return
-		F_SplitCmd[_i] := MID(STR:=_Command, LEN:=LEN(_Command), POS:=1);
-		// trim the command off the front of the string
-		_Command := DELETE(STR:=_Command, LEN:=_DelimPos, POS:=1);
-		// increment the index and get ready for the next
-		_i := _i + 1;
-		RETURN;
-	ELSE
-		RETURN;
-	END_IF
-END_WHILE</xhtml>
-                  </ST>
-                </body>
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>4ffeb092-e2fe-4508-9822-2d3197400b13</ObjectId>
                   </data>
                 </addData>
               </pou>
@@ -35566,6 +35781,7 @@ END_WHILE</xhtml>
                 <Object Name="F_VarSetCmdOperate" ObjectId="4a4ec279-6d88-4f3c-a9ff-f801c2546a48" />
               </Folder>
               <Folder Name="logic">
+                <Object Name="F_SplitCmd" ObjectId="4ffeb092-e2fe-4508-9822-2d3197400b13" />
                 <Object Name="FB_LogicCmdProcessor" ObjectId="ef05d0a0-faef-4d26-ad80-b37bf095bfda">
                   <Folder Name="protected">
                     <Object Name="M_SetPackML" ObjectId="8ca4de4a-aa41-4055-81ee-9c69366d3914" />
@@ -35579,7 +35795,6 @@ END_WHILE</xhtml>
                 <Object Name="F_BuildLogicCmd" ObjectId="c913c794-b56e-4d94-b465-42dec1dfd0be" />
                 <Object Name="ST_LogicCmd" ObjectId="c4e12c65-0b92-43d3-a6f5-ab4569642ec6" />
                 <Object Name="F_ChangeJumpRow" ObjectId="38b68f93-b03b-4e6d-b291-89cec4400a06" />
-                <Object Name="F_SplitCmd" ObjectId="4ffeb092-e2fe-4508-9822-2d3197400b13" />
               </Folder>
               <Object Name="F_AddElement" ObjectId="40f6ab40-9306-42a3-9cf6-d7249218b202" />
               <Object Name="FB_ProgramProcessor" ObjectId="efd5aca7-63df-4cd7-9f44-51095df5f331">

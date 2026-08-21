@@ -29,6 +29,8 @@ python Codesys\Scripts\RunCodesysScript.py --script Codesys\Scripts\ListDeviceTr
 - `RunCodesysScript.py`: Python wrapper that detects the local CODESYS install and launches a script through the CODESYS command line.
 - `ListDeviceTree.py`: Opens the target project if needed and writes the CODESYS device tree to `Codesys/Scripts/ListDeviceTree.out.txt`.
 - `PatchTuningDeadTime.py`: Writes the deadtime-suggestion logic into `_00_Main` / `_M_Tuning` and relabels the Tuning DeadTime field. ST sources live in `Codesys/Scripts/st/`.
+- `parse_retain.py`: Decodes `BackupRetain.ret` / `Application.ret` program data and regenerates `st/M_BuildTests_impl.st`.
+- `PatchBuildTests.py`: Writes `st/M_BuildTests_impl.st` into `_00_Main.M_BuildTests` and saves `ArfBot.project`. Does not re-export PLCopen XML (that export changes format).
 
 ## Notes
 - CODESYS startup can be slow because each run launches the engineering environment, loads the profile, opens the project, and then runs the script.
