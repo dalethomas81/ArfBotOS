@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-20T21:20:49.3334458" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-20T21:11:47.0429189" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-21T20:13:36.7453429" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-21T20:02:51.3645723" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -22418,7 +22418,7 @@ END_CASE</xhtml>
                         <LREAL />
                       </type>
                       <initialValue>
-                        <simpleValue value="50.0" />
+                        <simpleValue value="1000.0" />
                       </initialValue>
                     </variable>
                     <variable name="_HomingJerk">
@@ -22426,7 +22426,7 @@ END_CASE</xhtml>
                         <LREAL />
                       </type>
                       <initialValue>
-                        <simpleValue value="100.0" />
+                        <simpleValue value="10000.0" />
                       </initialValue>
                     </variable>
                     <variable name="_MoveToPose">
@@ -27855,7 +27855,7 @@ END_IF</xhtml>
                         <addData>
                           <data name="Device" handleUnknown="discard">
                             <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
-                              <DeviceType Disable="true">
+                              <DeviceType>
                                 <DeviceIdentification>
                                   <Type>65</Type>
                                   <Id>2_044C2C5200120000</Id>
