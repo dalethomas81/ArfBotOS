@@ -35,6 +35,11 @@ When starting a new session in this repo, read these files first:
 - Vision-related Python utilities, calibration helpers, template matching experiments, socket tools, and the `VisionWebServer`.
 - Expect many prototype/test scripts here in addition to project-critical utilities.
 
+### `scripts/`
+- Raspberry Pi Linux installer: `scripts/install-pi.sh`.
+- Intended to be run from SSH as `curl .../scripts/install-pi.sh | bash` (clones this repo if needed). Flags: `--plc-only` (no vision), `--vision-only` (no DualSense/CODESYS).
+- Covers camera overlay, OpenCV, vision/controller systemd services, and CODESYS `SysProcess=AllowAll` when the runtime is already present. It does not install the CODESYS Windows IDE, runtime, licenses, or Arduino/Teensy firmware.
+
 ### `Controller/`
 - Python scripts related to PlayStation DualSense controller integration.
 
