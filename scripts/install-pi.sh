@@ -8,9 +8,11 @@
 # Does NOT install: Raspberry Pi OS, the CODESYS Windows IDE/runtime,
 # CODESYS licenses, or Arduino/Teensy firmware.
 #
-# From SSH on the Pi (OpenKiln2-style, no prior clone required):
+# PLC Pi (recommended): SSH in, Windows Tools > Update Raspberry Pi, then:
 #   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/feature/pi-installer/scripts/install-pi.sh | bash
 #   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/feature/pi-installer/scripts/install-pi.sh | bash -s -- --plc-only
+#
+# Dedicated vision Pi (no CODESYS):
 #   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/feature/pi-installer/scripts/install-pi.sh | bash -s -- --vision-only
 #
 # From an existing checkout:
@@ -18,7 +20,9 @@
 #   sudo ./scripts/install-pi.sh --plc-only
 #   sudo ./scripts/install-pi.sh --vision-only
 #
-# Safe to re-run. Existing cal.yaml / roi.yaml are left alone.
+# Does not block if the CODESYS runtime is missing; SysProcess is patched
+# when the cfg files exist. Safe to re-run. Existing cal.yaml / roi.yaml
+# are left alone.
 
 set -euo pipefail
 
@@ -90,16 +94,20 @@ Environment:
   ARFBOT_REPO         Same as --repo
   ARFBOT_REF          Same as --ref
 
-Typical PLC Pi with vision (32-bit Raspberry Pi OS, after SSH):
-  curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${DEFAULT_REPO_REF}/scripts/install-pi.sh | bash
+Typical PLC Pi (32-bit Raspberry Pi OS):
+  1. SSH in
+  2. From Windows CODESYS: Tools > Update Raspberry Pi (32-bit multicore)
+  3. curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${DEFAULT_REPO_REF}/scripts/install-pi.sh | bash
 
-PLC Pi without vision:
+PLC Pi without vision (same order, then):
   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${DEFAULT_REPO_REF}/scripts/install-pi.sh | bash -s -- --plc-only
 
-Dedicated vision Pi (64-bit Lite recommended):
+Dedicated vision Pi (64-bit Lite recommended, no CODESYS):
   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${DEFAULT_REPO_REF}/scripts/install-pi.sh | bash -s -- --vision-only
 
-Re-run after CODESYS "Update Raspberry Pi" to apply SysProcess AllowAll.
+The installer does not wait for the CODESYS runtime. If you already ran it
+before Update Raspberry Pi, run it again afterward so it can set
+SysProcess Command=AllowAll — it will not redo the rest from scratch.
 EOF
 }
 
@@ -234,10 +242,19 @@ require_repo_files() {
     fi
 }
 
-user_home() {
+invoking_user() {
     local user="${SUDO_USER:-${USER:-}}"
+    if [[ -z "${user}" || "${user}" == "root" ]]; then
+        return 1
+    fi
+    printf '%s\n' "${user}"
+}
+
+user_home() {
+    local user=""
     local home=""
-    if [[ -n "${user}" && "${user}" != "root" ]] && command -v getent >/dev/null 2>&1; then
+    user="$(invoking_user 2>/dev/null || true)"
+    if [[ -n "${user}" ]] && command -v getent >/dev/null 2>&1; then
         home="$(getent passwd "${user}" | awk -F: '{print $6}')"
     fi
     if [[ -n "${home}" ]]; then
@@ -245,6 +262,30 @@ user_home() {
         return 0
     fi
     printf '%s\n' "${HOME}"
+}
+
+run_as_invoking_user() {
+    local user=""
+    user="$(invoking_user 2>/dev/null || true)"
+    if [[ "${EUID}" -eq 0 && -n "${user}" ]]; then
+        sudo -u "${user}" -H -- "$@"
+    else
+        "$@"
+    fi
+}
+
+chown_to_invoking_user() {
+    local path="$1"
+    local user=""
+    user="$(invoking_user 2>/dev/null || true)"
+    if [[ -z "${user}" || ! -e "${path}" ]]; then
+        return 0
+    fi
+    if is_true "${DRY_RUN}"; then
+        printf 'DRY-RUN: chown -R %s:%s %s\n' "${user}" "${user}" "${path}"
+        return 0
+    fi
+    chown -R "${user}:${user}" "${path}" || warn "could not chown ${path} to ${user}"
 }
 
 ensure_git() {
@@ -275,13 +316,15 @@ bootstrap_from_git() {
     fi
     if [[ -d "${dest}/.git" ]]; then
         log "updating existing clone ${dest}"
-        git -C "${dest}" fetch --depth 1 origin "${REPO_REF}"
-        git -C "${dest}" checkout -B "${REPO_REF}" FETCH_HEAD
+        chown_to_invoking_user "${dest}"
+        run_as_invoking_user git -C "${dest}" fetch --depth 1 origin "${REPO_REF}"
+        run_as_invoking_user git -C "${dest}" checkout -B "${REPO_REF}" FETCH_HEAD
     elif [[ -e "${dest}" ]]; then
         die "${dest} exists and is not an ArfBotOS git clone"
     else
-        git clone --depth 1 --branch "${REPO_REF}" "${REPO_URL}" "${dest}"
+        run_as_invoking_user git clone --depth 1 --branch "${REPO_REF}" "${REPO_URL}" "${dest}"
     fi
+    chown_to_invoking_user "${dest}"
     local next="${dest}/scripts/install-pi.sh"
     if [[ ! -f "${next}" ]]; then
         die "clone is missing ${next} (check --ref ${REPO_REF})"
@@ -787,21 +830,21 @@ configure_codesys() {
         fi
     done
     if [[ "${found}" -eq 0 ]]; then
-        warn "CODESYS runtime config not found. Install the runtime from Windows (Tools > Update Raspberry Pi), then re-run this script to allow PLC process execution."
+        warn "CODESYS runtime config not found. Recommended: Tools > Update Raspberry Pi first, then this installer, so SysProcess is set in one pass. If you already ran this script, run it again after the runtime is present — it will only add that setting."
     fi
 }
 
 chown_deploy_tree() {
-    local user="${SUDO_USER:-}"
-    if [[ -z "${user}" || "${user}" == "root" ]]; then
-        return 0
+    local home=""
+    if ! is_true "${SKIP_VISION}"; then
+        chown_to_invoking_user "${VISION_DST}"
     fi
-    if ! is_true "${DRY_RUN}"; then
-        if [[ -d /var/opt/codesys ]]; then
-            chown -R "${user}:${user}" /var/opt/codesys || warn "could not chown /var/opt/codesys to ${user}"
-        fi
-    else
-        printf 'DRY-RUN: chown -R %s:%s /var/opt/codesys\n' "${user}" "${user}"
+    if ! is_true "${SKIP_CONTROLLER}"; then
+        chown_to_invoking_user "${CONTROLLER_DST}"
+    fi
+    home="$(user_home)"
+    if [[ -n "${REPO_ROOT}" && -n "${home}" && "${REPO_ROOT}" == "${home}"* ]]; then
+        chown_to_invoking_user "${REPO_ROOT}"
     fi
 }
 
@@ -922,10 +965,11 @@ EOF
     fi
     if ! is_true "${SKIP_CODESYS}" && [[ ! -f /etc/CODESYSControl.cfg && ! -f /etc/codesyscontrol/CODESYSControl.cfg ]]; then
         cat <<EOF
-  CODESYS runtime: not detected. From Windows CODESYS:
-                     Tools > Update Raspberry Pi  (32-bit multicore)
-                     then re-run this installer (same curl command, or sudo ${SCRIPT_FILE:-./scripts/install-pi.sh})
-                     then Multiple Download of ArfBot.project
+  CODESYS runtime: not detected.
+                     Recommended: Tools > Update Raspberry Pi first, then this
+                     installer once. If you already ran this script, run it
+                     again after the runtime so it can set SysProcess
+                     Command=AllowAll. Then Multiple Download of ArfBot.project.
 EOF
     fi
     if ! is_true "${SKIP_CONTROLLER}"; then
@@ -962,9 +1006,11 @@ Would deploy to:   ${VISION_DST}
 Controller dest:   ${CONTROLLER_DST}
 Venv:              ${VENV_DIR}
 
-From SSH (no prior clone):
+PLC Pi (runtime first, then):
   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${REPO_REF}/scripts/install-pi.sh | bash
   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${REPO_REF}/scripts/install-pi.sh | bash -s -- --plc-only
+
+Dedicated vision Pi:
   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${REPO_REF}/scripts/install-pi.sh | bash -s -- --vision-only
 EOF
 }

@@ -38,6 +38,7 @@ When starting a new session in this repo, read these files first:
 ### `scripts/`
 - Raspberry Pi Linux installer: `scripts/install-pi.sh`.
 - Intended to be run from SSH as `curl .../scripts/install-pi.sh | bash` (clones this repo if needed). Flags: `--plc-only` (no vision), `--vision-only` (no DualSense/CODESYS).
+- On a PLC Pi, install the CODESYS runtime first (Tools → Update Raspberry Pi), then run this script once. It does not block if the runtime is missing; re-run afterward only to set `SysProcess=AllowAll`.
 - Covers camera overlay, OpenCV, vision/controller systemd services, and CODESYS `SysProcess=AllowAll` when the runtime is already present. It does not install the CODESYS Windows IDE, runtime, licenses, or Arduino/Teensy firmware.
 
 ### `Controller/`
