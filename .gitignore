@@ -410,4 +410,7 @@ Codesys/ArfBot.~u
 Codesys/ArfBot.export
 Codesys/*.ret
 Codesys/scriptengine/
+Codesys/Scripts/*.out.txt
+Codesys/Scripts/temp/
 .DS_Store
+/Codesys/Scripts/st

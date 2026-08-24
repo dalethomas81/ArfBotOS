@@ -32,6 +32,8 @@ Codesys/*.xml   diff=codesys-xml
 *.xml      text eol=lf
 *.export   text eol=lf
 *.expx     text eol=lf
+*.sh                 text eol=lf
+scripts/pi/*.rules   text eol=lf
 
 
 # Auto detect text files and perform LF normalization

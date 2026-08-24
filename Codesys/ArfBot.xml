@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-16T22:52:52.5971513" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-16T22:51:33.7533304" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-20T21:20:49.3334458" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-20T21:11:47.0429189" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -1175,6 +1175,11 @@ RESERVED: INT:=46;</xhtml>
                         <simpleValue value="0" />
                       </initialValue>
                     </variable>
+                    <variable name="LicenseStatus">
+                      <type>
+                        <derived name="FB_LicenseStatus" />
+                      </type>
+                    </variable>
                     <variable name="Servo0Position">
                       <type>
                         <BYTE />
@@ -1304,6 +1309,49 @@ RESERVED: INT:=46;</xhtml>
                 </data>
               </addData>
             </variable>
+            <variable name="PulsesPerRevolution">
+              <type>
+                <array>
+                  <dimension lower="0" upper="5" />
+                  <baseType>
+                    <LREAL />
+                  </baseType>
+                </array>
+              </type>
+              <initialValue>
+                <arrayValue>
+                  <value>
+                    <simpleValue value="16000.0" />
+                  </value>
+                  <value>
+                    <simpleValue value="20000.0" />
+                  </value>
+                  <value>
+                    <simpleValue value="20000.0" />
+                  </value>
+                  <value>
+                    <simpleValue value="26880.0" />
+                  </value>
+                  <value>
+                    <simpleValue value="7850.0" />
+                  </value>
+                  <value>
+                    <simpleValue value="8081.25" />
+                  </value>
+                </arrayValue>
+              </initialValue>
+              <addData>
+                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                  <Attributes>
+                    <Attribute Name="order_in_persistent_editor" Value="7" />
+                  </Attributes>
+                </data>
+              </addData>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> dh parameters
+ axis params</xhtml>
+              </documentation>
+            </variable>
             <variable name="HomingGroupOne">
               <type>
                 <derived name="DUT_AxisEnabled" />
@@ -1408,49 +1456,6 @@ RESERVED: INT:=46;</xhtml>
                   </Attributes>
                 </data>
               </addData>
-            </variable>
-            <variable name="PulsesPerRevolution">
-              <type>
-                <array>
-                  <dimension lower="0" upper="5" />
-                  <baseType>
-                    <LREAL />
-                  </baseType>
-                </array>
-              </type>
-              <initialValue>
-                <arrayValue>
-                  <value>
-                    <simpleValue value="16000.0" />
-                  </value>
-                  <value>
-                    <simpleValue value="20000.0" />
-                  </value>
-                  <value>
-                    <simpleValue value="20000.0" />
-                  </value>
-                  <value>
-                    <simpleValue value="26880.0" />
-                  </value>
-                  <value>
-                    <simpleValue value="7850.0" />
-                  </value>
-                  <value>
-                    <simpleValue value="8081.25" />
-                  </value>
-                </arrayValue>
-              </initialValue>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="7" />
-                  </Attributes>
-                </data>
-              </addData>
-              <documentation>
-                <xhtml xmlns="http://www.w3.org/1999/xhtml"> dh parameters
- axis params</xhtml>
-              </documentation>
             </variable>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
@@ -3484,7 +3489,7 @@ RESERVED: INT:=46;</xhtml>
                     </variable>
                     <variable name="TrackPosition">
                       <type>
-                        <derived name="PositionTracker" />
+                        <derived name="FB_PositionTracker" />
                       </type>
                     </variable>
                     <variable name="ProcessPrograms">
@@ -3579,6 +3584,8 @@ RESERVED: INT:=46;</xhtml>
 		GVL.Reset := FALSE;
 	END_IF
 	
+	GVL.LicenseStatus();
+
 	IF FirstScan THEN
 		M_Init();	
 	END_IF
@@ -3952,53 +3959,123 @@ END_IF</xhtml>
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">//
-PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.X := 283.23;
-PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.Y := -66.77;
-PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.Z := 195.00;
-PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.A := -127.52;
-PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.B := 179.00;
-PersistentVars.StoredPositions[GVL.PC1_POS_IDX].Position.C := 102.00;
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">// taught positions referenced by factory programs
+PersistentVars.StoredPositions[40].Position.X := -76.81;
+PersistentVars.StoredPositions[40].Position.Y := 1.2;
+PersistentVars.StoredPositions[40].Position.Z := -24.93;
+PersistentVars.StoredPositions[40].Position.A := -4.74;
+PersistentVars.StoredPositions[40].Position.B := 62.93;
+PersistentVars.StoredPositions[40].Position.C := 24.21;
+PersistentVars.StoredPositions[41].Comment := 'Euler Angle Tool Place Position MCS';
+PersistentVars.StoredPositions[41].Position.X := 44.39;
+PersistentVars.StoredPositions[41].Position.Y := -285.95;
+PersistentVars.StoredPositions[41].Position.Z := 310.15;
+PersistentVars.StoredPositions[41].Position.A := 96.6;
+PersistentVars.StoredPositions[41].Position.B := 177.75;
+PersistentVars.StoredPositions[41].Position.C := -174.21;
+PersistentVars.StoredPositions[42].Comment := 'Euler Angle Tool Pick Position MCS';
+PersistentVars.StoredPositions[42].Position.X := 43.97;
+PersistentVars.StoredPositions[42].Position.Y := -280.38;
+PersistentVars.StoredPositions[42].Position.Z := 215.24;
+PersistentVars.StoredPositions[42].Position.A := 96.61;
+PersistentVars.StoredPositions[42].Position.B := 177.75;
+PersistentVars.StoredPositions[42].Position.C := -174.22;
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[0].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[0].Commands[_i].CommandString := '';
+	PersistentVars.Programs[0].Commands[_i].CommandComment := '';
+END_FOR
+PersistentVars.Programs[0].ProgramName := 'Pick and Place Euler Angle Tool';
+PersistentVars.Programs[0].Commands[0].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[0].Commands[0].CommandString := 'DIR ABS 50.0 ACS VAR STO 35 ';
+PersistentVars.Programs[0].Commands[0].CommandComment := 'take on a pose';
+PersistentVars.Programs[0].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[0].Commands[1].CommandString := 'STO 46 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 ';
+PersistentVars.Programs[0].Commands[1].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[0].Commands[3].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[0].Commands[3].CommandString := 'IF REGISTER 40 EQU 0 THEN JUMP 5 ELSE JUMP 12 ';
+PersistentVars.Programs[0].Commands[3].CommandComment := 'determine if pick or place';
+PersistentVars.Programs[0].Commands[5].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[0].Commands[5].CommandString := 'DIR ABS 50.0 MCS VAR STO 42 ';
+PersistentVars.Programs[0].Commands[5].CommandComment := 'go to euler angle tool down position';
+PersistentVars.Programs[0].Commands[6].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[0].Commands[6].CommandString := 'DIG 0 1.0 ';
+PersistentVars.Programs[0].Commands[6].CommandComment := 'open gripper';
+PersistentVars.Programs[0].Commands[7].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[0].Commands[7].CommandString := 'LIN REL 20.0 TCS LIT 0.0 0.0 25.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[0].Commands[7].CommandComment := 'move onto euler angle tool';
+PersistentVars.Programs[0].Commands[8].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[0].Commands[8].CommandString := 'DIG 0 0.0 ';
+PersistentVars.Programs[0].Commands[8].CommandComment := 'close gripper';
+PersistentVars.Programs[0].Commands[9].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[0].Commands[9].CommandString := 'LIN REL 20.0 TCS LIT 0.0 0.0 -120.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[0].Commands[9].CommandComment := 'pull out tool';
+PersistentVars.Programs[0].Commands[10].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[0].Commands[10].CommandString := 'IF PASS THEN JUMP 16 ';
+PersistentVars.Programs[0].Commands[12].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[0].Commands[12].CommandString := 'DIR ABS 50.0 MCS VAR STO 41 ';
+PersistentVars.Programs[0].Commands[12].CommandComment := 'go to euler angle tool up position';
+PersistentVars.Programs[0].Commands[13].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[0].Commands[13].CommandString := 'LIN REL 20.0 TCS LIT 0.0 0.0 120.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[0].Commands[13].CommandComment := 'push tool in';
+PersistentVars.Programs[0].Commands[14].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[0].Commands[14].CommandString := 'DIG 0 1.0 ';
+PersistentVars.Programs[0].Commands[14].CommandComment := 'open gripper';
+PersistentVars.Programs[0].Commands[15].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[0].Commands[15].CommandString := 'LIN REL 20.0 TCS LIT 0.0 0.0 -25.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[0].Commands[15].CommandComment := 'move away from euler angle tool';
 
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[1].Commands[_i].CommandType := DUT_CommandType.Disabled;
 	PersistentVars.Programs[1].Commands[_i].CommandString := '';
+	PersistentVars.Programs[1].Commands[_i].CommandComment := '';
 END_FOR
 PersistentVars.Programs[1].ProgramName := 'Vision Pick and Place';
 PersistentVars.Programs[1].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
-PersistentVars.Programs[1].Commands[0].CommandString := 'STO 0046 +0000.00 +0000.00 +0000.00 +0090.00 +0000.00 +0000.00';
+PersistentVars.Programs[1].Commands[0].CommandString := 'STO 46 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 E 90.0 ';
+PersistentVars.Programs[1].Commands[0].CommandComment := 'Set the TCP offset';
 PersistentVars.Programs[1].Commands[1].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[1].CommandString := 'DIR ABS 020 ACS LIT 00000.00 00030.00 -0030.00 00000.00 00030.00 00000.00';
-PersistentVars.Programs[1].Commands[2].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[2].CommandString := 'DIG 1 1';
-PersistentVars.Programs[1].Commands[3].CommandType := DUT_CommandType.VisionCommand;
-PersistentVars.Programs[1].Commands[3].CommandString := 'LOC 640 400 0060 001 000.0 0.8 030.0 000 Template.jpg FastTemplateMatching.py';
-PersistentVars.Programs[1].Commands[4].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[4].CommandString := 'DIG 1 0';
-PersistentVars.Programs[1].Commands[5].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[5].CommandString := 'DIR ABS 050 PC1 LIT 00000.00 00000.00 -0010.00 00000.00 00000.00 00000.00';
+PersistentVars.Programs[1].Commands[1].CommandString := 'DIR ABS 60.0 ACS VAR STO 40 ';
+PersistentVars.Programs[1].Commands[1].CommandComment := 'Take a pose';
+PersistentVars.Programs[1].Commands[2].CommandType := DUT_CommandType.VisionCommand;
+PersistentVars.Programs[1].Commands[2].CommandString := 'LOC 640 400 15 1 0.0 0.6 180.0 0 Pen.jpg FastTemplateMatching.py ';
+PersistentVars.Programs[1].Commands[2].CommandComment := 'Find the object and store the result';
+PersistentVars.Programs[1].Commands[3].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[1].Commands[3].CommandString := 'VIS 0 M -1.0 M -1.0 E -20.0 M -1.0 N 0.0 N 0.0 ';
+PersistentVars.Programs[1].Commands[3].CommandComment := 'Rotate x and y to line up with TCP';
+PersistentVars.Programs[1].Commands[4].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[4].CommandString := 'DIR ABS 50.0 PC1 VAR VIS 0 ';
+PersistentVars.Programs[1].Commands[4].CommandComment := 'Move over the object';
+PersistentVars.Programs[1].Commands[5].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[5].CommandString := 'DIG 0 1.0 ';
+PersistentVars.Programs[1].Commands[5].CommandComment := 'Open the Gripper';
 PersistentVars.Programs[1].Commands[6].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[6].CommandString := 'DIR ABS 050 PC1 VAR VIS 000';
+PersistentVars.Programs[1].Commands[6].CommandString := 'LIN REL 50.0 TCS LIT 0.0 0.0 20.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[1].Commands[6].CommandComment := 'Move down to the object';
 PersistentVars.Programs[1].Commands[7].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[7].CommandString := 'SRV 1 30.0 360.0';
-PersistentVars.Programs[1].Commands[8].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[8].CommandString := 'LIN REL 050 TCS LIT 00000.00 00000.00 00010.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[1].Commands[9].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[9].CommandString := 'SRV 1 0.0 360.0';
-PersistentVars.Programs[1].Commands[10].CommandType := DUT_CommandType.PauseCommand;
-PersistentVars.Programs[1].Commands[10].CommandString := 'T#1s';
-PersistentVars.Programs[1].Commands[11].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[11].CommandString := 'LIN REL 050 TCS LIT 00000.00 00000.00 -0010.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[1].Commands[12].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[1].Commands[12].CommandString := 'DIR ABS 050 PC1 LIT 00000.00 00000.00 -0050.00 00000.00 00000.00 00000.00';
-PersistentVars.Programs[1].Commands[13].CommandType := DUT_CommandType.OutputCommand;
-PersistentVars.Programs[1].Commands[13].CommandString := 'SRV 1 30.0 360.0';
+PersistentVars.Programs[1].Commands[7].CommandString := 'DIG 0 0.0 ';
+PersistentVars.Programs[1].Commands[7].CommandComment := 'Close the Gripper';
+PersistentVars.Programs[1].Commands[8].CommandType := DUT_CommandType.PauseCommand;
+PersistentVars.Programs[1].Commands[8].CommandString := 'T#1s';
+PersistentVars.Programs[1].Commands[8].CommandComment := 'Pause while the gripper closes';
+PersistentVars.Programs[1].Commands[9].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[9].CommandString := 'LIN REL 50.0 TCS LIT 0.0 0.0 -20.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[1].Commands[9].CommandComment := 'Pick up the object';
+PersistentVars.Programs[1].Commands[10].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[1].Commands[10].CommandString := 'DIR ABS 50.0 PC1 LIT 0.0 0.0 -50.0 0.0 0.0 90.0 ';
+PersistentVars.Programs[1].Commands[10].CommandComment := 'Move to drop position';
+PersistentVars.Programs[1].Commands[11].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[1].Commands[11].CommandString := 'DIG 0 1.0 ';
+PersistentVars.Programs[1].Commands[11].CommandComment := 'Open the Gripper';
 
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[2].Commands[_i].CommandType := DUT_CommandType.Disabled;
 	PersistentVars.Programs[2].Commands[_i].CommandString := '';
+	PersistentVars.Programs[2].Commands[_i].CommandComment := '';
 END_FOR
 PersistentVars.Programs[2].ProgramName := 'PCS1 Corners';
 PersistentVars.Programs[2].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
@@ -4022,17 +4099,19 @@ PersistentVars.Programs[2].Commands[7].CommandString := 'DIR ABS 050 ACS LIT +00
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[3].Commands[_i].CommandType := DUT_CommandType.Disabled;
 	PersistentVars.Programs[3].Commands[_i].CommandString := '';
+	PersistentVars.Programs[3].Commands[_i].CommandComment := '';
 END_FOR
 PersistentVars.Programs[3].ProgramName := 'Cnc Validation';
-PersistentVars.Programs[3].Commands[0].CommandType := DUT_CommandType.CncCommand;
-PersistentVars.Programs[3].Commands[0].CommandString := 'CNC_FromFile.cnc XYZ VAR STO 45';
+PersistentVars.Programs[3].Commands[0].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[3].Commands[0].CommandString := 'DIR ABS 30.0 ACS VAR STO 34 ';
 PersistentVars.Programs[3].Commands[1].CommandType := DUT_CommandType.CncCommand;
-PersistentVars.Programs[3].Commands[1].CommandString := 'CNC_FromFile.cnc XYZ LIT +0300.00 +0000.00 -0300.00 +0000.00 +0000.00 +0000.00';
+PersistentVars.Programs[3].Commands[1].CommandString := 'ArfBotOS-HelloWorld.cnc ';
 
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[4].Commands[_i].CommandType := DUT_CommandType.Disabled;
 	PersistentVars.Programs[4].Commands[_i].CommandString := '';
+	PersistentVars.Programs[4].Commands[_i].CommandComment := '';
 END_FOR
 PersistentVars.Programs[4].ProgramName := 'Vision Validation';
 PersistentVars.Programs[4].Commands[0].CommandType := DUT_CommandType.VisionCommand;
@@ -4044,6 +4123,7 @@ PersistentVars.Programs[4].Commands[1].CommandString := 'LOC 640 400 60 1 0.0 0.
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[5].Commands[_i].CommandType := DUT_CommandType.Disabled;
 	PersistentVars.Programs[5].Commands[_i].CommandString := '';
+	PersistentVars.Programs[5].Commands[_i].CommandComment := '';
 END_FOR
 PersistentVars.Programs[5].ProgramName := 'VarSet Validation';
 PersistentVars.Programs[5].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
@@ -4053,11 +4133,11 @@ PersistentVars.Programs[5].Commands[1].CommandString := 'VIS 2 1 2 3 4 5 6';
 PersistentVars.Programs[5].Commands[2].CommandType := DUT_CommandType.VarSetCommand;
 PersistentVars.Programs[5].Commands[2].CommandString := 'FLG 3 1';
 
-
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[6].Commands[_i].CommandType := DUT_CommandType.Disabled;
 	PersistentVars.Programs[6].Commands[_i].CommandString := '';
+	PersistentVars.Programs[6].Commands[_i].CommandComment := '';
 END_FOR
 PersistentVars.Programs[6].ProgramName := 'Logic Validation';
 PersistentVars.Programs[6].Commands[0].CommandType := DUT_CommandType.LogicCommand;
@@ -4067,52 +4147,194 @@ PersistentVars.Programs[6].Commands[1].CommandString := 'IF INPUT 1 EQU 1 THEN C
 PersistentVars.Programs[6].Commands[2].CommandType := DUT_CommandType.LogicCommand;
 PersistentVars.Programs[6].Commands[2].CommandString := 'IF COUNTER 2 GRE 10 THEN NOP ELSE JUMP 0';
 
-(*
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[11].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[11].Commands[_i].CommandString := '';
+	PersistentVars.Programs[7].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[7].Commands[_i].CommandString := '';
+	PersistentVars.Programs[7].Commands[_i].CommandComment := '';
 END_FOR
-PersistentVars.Programs[11].ProgramName := 'Make Me an Egg, Please';
-PersistentVars.Programs[11].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[11].Commands[0].CommandString := '';
+PersistentVars.Programs[7].ProgramName := 'Euler Angles Demo';
+PersistentVars.Programs[7].Commands[0].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[0].CommandString := 'IF PASS THEN REGISTER 40 0 ';
+PersistentVars.Programs[7].Commands[0].CommandComment := 'Set pick/place register to pick tool';
+PersistentVars.Programs[7].Commands[1].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[1].CommandString := 'IF PASS THEN CALL 0 ';
+PersistentVars.Programs[7].Commands[1].CommandComment := 'Call pick and place program';
+PersistentVars.Programs[7].Commands[3].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[3].CommandString := 'IF COUNTER 7 EQU 0 THEN NOP ELSE JUMP 7 ';
+PersistentVars.Programs[7].Commands[3].CommandComment := 'apply or jump over';
+PersistentVars.Programs[7].Commands[4].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[7].Commands[4].CommandString := 'STO 46 E 0.0 E 0.0 E 70.0 E 0.0 E 0.0 E 0.0 ';
+PersistentVars.Programs[7].Commands[4].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[7].Commands[5].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[5].CommandString := 'IF PASS THEN JUMP 19 ';
+PersistentVars.Programs[7].Commands[5].CommandComment := 'go to move commands';
+PersistentVars.Programs[7].Commands[7].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[7].CommandString := 'IF COUNTER 7 EQU 1 THEN NOP ELSE JUMP 11 ';
+PersistentVars.Programs[7].Commands[7].CommandComment := 'apply or jump over';
+PersistentVars.Programs[7].Commands[8].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[7].Commands[8].CommandString := 'STO 46 E 0.0 E 0.0 E 170.0 E 0.0 E 0.0 E 0.0 ';
+PersistentVars.Programs[7].Commands[8].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[7].Commands[9].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[9].CommandString := 'IF PASS THEN JUMP 19 ';
+PersistentVars.Programs[7].Commands[9].CommandComment := 'go to move commands';
+PersistentVars.Programs[7].Commands[11].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[11].CommandString := 'IF COUNTER 7 EQU 2 THEN NOP ELSE JUMP 15 ';
+PersistentVars.Programs[7].Commands[11].CommandComment := 'apply or jump over';
+PersistentVars.Programs[7].Commands[12].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[7].Commands[12].CommandString := 'STO 46 E 0.0 E -100.0 E 70.0 E 0.0 E 0.0 E 0.0 ';
+PersistentVars.Programs[7].Commands[12].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[7].Commands[13].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[13].CommandString := 'IF PASS THEN JUMP 19 ';
+PersistentVars.Programs[7].Commands[13].CommandComment := 'go to move commands';
+PersistentVars.Programs[7].Commands[15].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[15].CommandString := 'IF COUNTER 7 EQU 3 THEN NOP ELSE JUMP 29 ';
+PersistentVars.Programs[7].Commands[15].CommandComment := 'apply or jump over';
+PersistentVars.Programs[7].Commands[16].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[7].Commands[16].CommandString := 'STO 46 E 100.0 E 0.0 E 70.0 E 0.0 E 0.0 E 0.0 ';
+PersistentVars.Programs[7].Commands[16].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[7].Commands[17].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[17].CommandString := 'IF PASS THEN JUMP 19 ';
+PersistentVars.Programs[7].Commands[17].CommandComment := 'go to move commands';
+PersistentVars.Programs[7].Commands[19].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[7].Commands[19].CommandString := 'DIR ABS 50.0 ACS VAR STO 35 ';
+PersistentVars.Programs[7].Commands[19].CommandComment := 'take on a pose';
+PersistentVars.Programs[7].Commands[20].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[7].Commands[20].CommandString := 'LIN ABS 70.0 TCS LIT 0.0 0.0 0.0 0.0 0.0 -45.0 ';
+PersistentVars.Programs[7].Commands[20].CommandComment := 'rotate around TCP Z';
+PersistentVars.Programs[7].Commands[21].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[7].Commands[21].CommandString := 'LIN ABS 70.0 TCS LIT 0.0 0.0 0.0 0.0 -30.0 0.0 ';
+PersistentVars.Programs[7].Commands[21].CommandComment := 'rotate around TCP Y';
+PersistentVars.Programs[7].Commands[22].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[7].Commands[22].CommandString := 'LIN ABS 70.0 TCS LIT 0.0 0.0 0.0 90.0 30.0 -90.0 ';
+PersistentVars.Programs[7].Commands[22].CommandComment := 'rotate around TCP X with z$' y z$'$'';
+PersistentVars.Programs[7].Commands[23].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[7].Commands[23].CommandString := 'LIN ABS 70.0 TCS LIT 0.0 0.0 0.0 90.0 -30.0 -90.0 ';
+PersistentVars.Programs[7].Commands[23].CommandComment := 'rotate around TCP X with z$' y z$'$'';
+PersistentVars.Programs[7].Commands[24].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[7].Commands[24].CommandString := 'LIN ABS 70.0 TCS LIT 0.0 0.0 0.0 0.0 30.0 0.0 ';
+PersistentVars.Programs[7].Commands[24].CommandComment := 'rotate around TCP Y';
+PersistentVars.Programs[7].Commands[25].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[7].Commands[25].CommandString := 'DIR ABS 70.0 ACS VAR STO 35 ';
+PersistentVars.Programs[7].Commands[25].CommandComment := 'take on a pose';
+PersistentVars.Programs[7].Commands[27].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[27].CommandString := 'IF PASS THEN CNTUP 7 ';
+PersistentVars.Programs[7].Commands[27].CommandComment := 'count up counter';
+PersistentVars.Programs[7].Commands[28].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[28].CommandString := 'IF PASS THEN JUMP 3 ';
+PersistentVars.Programs[7].Commands[28].CommandComment := 'go back to start';
+PersistentVars.Programs[7].Commands[29].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[29].CommandString := 'IF PASS THEN CNTRST 7 ';
+PersistentVars.Programs[7].Commands[29].CommandComment := 'reset counter back to 0';
+PersistentVars.Programs[7].Commands[31].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[31].CommandString := 'IF PASS THEN REGISTER 40 1 ';
+PersistentVars.Programs[7].Commands[31].CommandComment := 'Set pick/place register to place tool';
+PersistentVars.Programs[7].Commands[32].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[7].Commands[32].CommandString := 'IF PASS THEN CALL 0 ';
+PersistentVars.Programs[7].Commands[32].CommandComment := 'Call pick and place program';
 
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[12].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[12].Commands[_i].CommandString := '';
+	PersistentVars.Programs[10].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[10].Commands[_i].CommandString := '';
+	PersistentVars.Programs[10].Commands[_i].CommandComment := '';
 END_FOR
-PersistentVars.Programs[12].ProgramName := 'Egg Pick Routine';
-PersistentVars.Programs[12].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[12].Commands[0].CommandString := '';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[13].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[13].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[13].ProgramName := 'Egg Crack Routine';
-PersistentVars.Programs[13].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[13].Commands[0].CommandString := '';
-
-//
-FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
-	PersistentVars.Programs[14].Commands[_i].CommandType := DUT_CommandType.Disabled;
-	PersistentVars.Programs[14].Commands[_i].CommandString := '';
-END_FOR
-PersistentVars.Programs[14].ProgramName := 'Egg Flip Routine';
-PersistentVars.Programs[14].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[14].Commands[0].CommandString := '';
+PersistentVars.Programs[10].ProgramName := 'Pick Glow Stick';
+PersistentVars.Programs[10].Commands[0].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[0].CommandString := 'IF REGISTER 2 EQU 0 THEN NOP ELSE JUMP 5 ';
+PersistentVars.Programs[10].Commands[0].CommandComment := 'check if initialized';
+PersistentVars.Programs[10].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[10].Commands[1].CommandString := 'STO 0 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 ';
+PersistentVars.Programs[10].Commands[1].CommandComment := 'clear out the tcp position';
+PersistentVars.Programs[10].Commands[2].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[2].CommandString := 'IF PASS THEN CNTRST 0 ';
+PersistentVars.Programs[10].Commands[2].CommandComment := 'clear column counter';
+PersistentVars.Programs[10].Commands[3].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[3].CommandString := 'IF PASS THEN CNTRST 1 ';
+PersistentVars.Programs[10].Commands[3].CommandComment := 'clear row counter';
+PersistentVars.Programs[10].Commands[4].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[4].CommandString := 'IF PASS THEN REGISTER 2 1 ';
+PersistentVars.Programs[10].Commands[4].CommandComment := 'mark data initialized';
+PersistentVars.Programs[10].Commands[6].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[10].Commands[6].CommandString := 'DIR ABS 50.0 ACS VAR STO 34 ';
+PersistentVars.Programs[10].Commands[6].CommandComment := 'take on a pose';
+PersistentVars.Programs[10].Commands[7].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[10].Commands[7].CommandString := 'DIG 0 1.0 ';
+PersistentVars.Programs[10].Commands[7].CommandComment := 'open gripper';
+PersistentVars.Programs[10].Commands[8].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[10].Commands[8].CommandString := 'LIN ABS 50.0 PC1 VAR STO 0 ';
+PersistentVars.Programs[10].Commands[8].CommandComment := 'go to the pick position in PCS1';
+PersistentVars.Programs[10].Commands[9].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[10].Commands[9].CommandString := 'LIN REL 50.0 TCS LIT 0.0 0.0 10.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[10].Commands[9].CommandComment := 'move into glow stick';
+PersistentVars.Programs[10].Commands[10].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[10].Commands[10].CommandString := 'DIG 0 0.0 ';
+PersistentVars.Programs[10].Commands[10].CommandComment := 'close gripper';
+PersistentVars.Programs[10].Commands[11].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[10].Commands[11].CommandString := 'LIN REL 50.0 TCS LIT 160.0 0.0 0.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[10].Commands[11].CommandComment := 'pick glow stick out of nest';
+PersistentVars.Programs[10].Commands[12].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[10].Commands[12].CommandString := 'LIN ABS 50.0 PC2 LIT 0.0 0.0 0.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[10].Commands[12].CommandComment := 'go to the home position of PCS2';
+PersistentVars.Programs[10].Commands[13].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[10].Commands[13].CommandString := 'LIN REL 50.0 TCS LIT 0.0 0.0 50.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[10].Commands[13].CommandComment := 'move into drop position';
+PersistentVars.Programs[10].Commands[14].CommandType := DUT_CommandType.OutputCommand;
+PersistentVars.Programs[10].Commands[14].CommandString := 'DIG 0 1.0 ';
+PersistentVars.Programs[10].Commands[14].CommandComment := 'open gripper';
+PersistentVars.Programs[10].Commands[15].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[10].Commands[15].CommandString := 'LIN ABS 50.0 PC2 LIT 0.0 0.0 0.0 0.0 0.0 0.0 ';
+PersistentVars.Programs[10].Commands[15].CommandComment := 'go to the home position of PCS2';
+PersistentVars.Programs[10].Commands[17].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[17].CommandString := 'IF COUNTER 0 LES 3 THEN CNTUP 0 ELSE JUMP 21 ';
+PersistentVars.Programs[10].Commands[17].CommandComment := 'increment the column counter';
+PersistentVars.Programs[10].Commands[18].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[10].Commands[18].CommandString := 'STO 0 N 0.0 A 20.0 N 0.0 N 0.0 N 0.0 N 0.0 ';
+PersistentVars.Programs[10].Commands[18].CommandComment := 'add the column width';
+PersistentVars.Programs[10].Commands[20].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[20].CommandString := 'IF PASS THEN JUMP 24 ';
+PersistentVars.Programs[10].Commands[20].CommandComment := 'jump over the counter operations';
+PersistentVars.Programs[10].Commands[21].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[21].CommandString := 'IF PASS THEN CNTRST 0 ';
+PersistentVars.Programs[10].Commands[21].CommandComment := 'reset the column counter';
+PersistentVars.Programs[10].Commands[22].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[10].Commands[22].CommandString := 'IF PASS THEN CNTUP 1 ';
+PersistentVars.Programs[10].Commands[22].CommandComment := 'increment the row counter';
+PersistentVars.Programs[10].Commands[23].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[10].Commands[23].CommandString := 'STO 0 N 0.0 E 0.0 A 15.0 N 0.0 N 0.0 N 0.0 ';
+PersistentVars.Programs[10].Commands[23].CommandComment := 'add the row width. clear column.';
 
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[15].Commands[_i].CommandType := DUT_CommandType.Disabled;
 	PersistentVars.Programs[15].Commands[_i].CommandString := '';
+	PersistentVars.Programs[15].Commands[_i].CommandComment := '';
 END_FOR
-PersistentVars.Programs[15].ProgramName := 'Egg Place Routine';
-PersistentVars.Programs[15].Commands[0].CommandType := DUT_CommandType.Disabled;
-PersistentVars.Programs[15].Commands[0].CommandString := '';
-*)</xhtml>
+PersistentVars.Programs[15].ProgramName := 'Gimbal 1';
+PersistentVars.Programs[15].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[15].Commands[0].CommandString := 'STO 43 N 0.0 E 250.0 E 250.0 N 0.0 E 1.0e-2 E 1.0e-1 ';
+PersistentVars.Programs[15].Commands[0].CommandComment := 'set velocity, acceleration, and jerk';
+PersistentVars.Programs[15].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[15].Commands[1].CommandString := 'STO 43 E 100.0 E 1000.0 E 1000.0 E 1.0 E 1.0 E 1.0 ';
+PersistentVars.Programs[15].Commands[1].CommandComment := 'set velocity, acceleration, and jerk';
+PersistentVars.Programs[15].Commands[3].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[15].Commands[3].CommandString := 'DIR ABS 30.0 ACS LIT -19.65 30.42 -55.18 0.0 4.04 0.0 ';
+PersistentVars.Programs[15].Commands[3].CommandComment := 'Taught position';
+PersistentVars.Programs[15].Commands[6].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[15].Commands[6].CommandString := 'STO 46 E 0.0 E 0.0 E 300.0 E 0.0 E 0.0 E 0.0 ';
+PersistentVars.Programs[15].Commands[6].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[15].Commands[7].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[15].Commands[7].CommandString := 'LIN ABS 20.0 TCS LIT 0.0 0.0 0.0 0.0 -30.0 0.0 ';
+PersistentVars.Programs[15].Commands[7].CommandComment := 'rotate around TCP Y';
+PersistentVars.Programs[15].Commands[8].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[15].Commands[8].CommandString := 'LIN ABS 20.0 TCS LIT 0.0 0.0 0.0 90.0 60.0 -90.0 ';
+PersistentVars.Programs[15].Commands[8].CommandComment := 'rotate around TCP X with z$' y z$'$'';
+PersistentVars.Programs[15].Commands[10].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[15].Commands[10].CommandString := 'DIR ABS 30.0 ACS LIT -19.65 30.42 -55.18 0.0 4.04 0.0 ';
+PersistentVars.Programs[15].Commands[10].CommandComment := 'Taught position';
+PersistentVars.Programs[15].Commands[12].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[15].Commands[12].CommandString := 'STO 43 E 100.0 E 1000.0 E 1000.0 E 1.0 E 1.0 E 1.0 ';
+PersistentVars.Programs[15].Commands[12].CommandComment := 'set velocity, acceleration, and jerk';</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -6057,7 +6279,7 @@ END_IF</xhtml>
                     </variable>
                     <variable name="_MoveCommandProcessor">
                       <type>
-                        <derived name="MoveCmdProcessor" />
+                        <derived name="FB_MoveCmdProcessor" />
                       </type>
                     </variable>
                     <variable name="_i">
@@ -6765,7 +6987,7 @@ END_FOR</xhtml>
 				_MoveCommand.CoordSystem 		:= SMC_COORD_SYSTEM.ACS;
 				_MoveCommand.CoordRef 			:= PersistentVars.StoredPositions[GVL.POSE_1_IDX + _i].Position;
 				//
-				_MoveCommandProcessor.Command := BuildMoveCmd(_MoveCommand);
+				_MoveCommandProcessor.Command := F_BuildMoveCmd(_MoveCommand);
 				_MoveCommandProcessor.M_Start();
 				//
 				EXIT;
@@ -6940,17 +7162,17 @@ END_IF</xhtml>
                     </variable>
                     <variable name="_ProcessMoveCommand">
                       <type>
-                        <derived name="MoveCmdProcessor" />
+                        <derived name="FB_MoveCmdProcessor" />
                       </type>
                     </variable>
                     <variable name="_ProcessPauseCommand">
                       <type>
-                        <derived name="PauseCmdProcessor" />
+                        <derived name="FB_PauseCmdProcessor" />
                       </type>
                     </variable>
                     <variable name="_ProcessOutputCommand">
                       <type>
-                        <derived name="OutputCmdProcessor" />
+                        <derived name="FB_OutputCmdProcessor" />
                       </type>
                       <documentation>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml">_ProcessInputCommand: InputCommandProcessor;</xhtml>
@@ -6963,7 +7185,7 @@ END_IF</xhtml>
                     </variable>
                     <variable name="_ProcessVisionCommand">
                       <type>
-                        <derived name="REFERENCE TO VisionCmdProcessor" />
+                        <derived name="REFERENCE TO FB_VisionCmdProcessor" />
                       </type>
                       <documentation>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> keep vision in separate task</xhtml>
@@ -6971,17 +7193,17 @@ END_IF</xhtml>
                     </variable>
                     <variable name="_ProcessVarSetCommand">
                       <type>
-                        <derived name="VarSetCmdProcessor" />
+                        <derived name="FB_VarSetCmdProcessor" />
                       </type>
                     </variable>
                     <variable name="_ProcessCncCommand">
                       <type>
-                        <derived name="CncCmdProcessor" />
+                        <derived name="FB_CncCmdProcessor" />
                       </type>
                     </variable>
                     <variable name="_ProcessLogicCommand">
                       <type>
-                        <derived name="LogicCmdProcessor" />
+                        <derived name="FB_LogicCmdProcessor" />
                       </type>
                     </variable>
                     <variable name="_FirstScan">
@@ -7038,7 +7260,7 @@ END_IF</xhtml>
                   <addData>
                     <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
                       <Inheritance>
-                        <Extends>Module</Extends>
+                        <Extends>FB_Module</Extends>
                       </Inheritance>
                     </data>
                   </addData>
@@ -7937,7 +8159,7 @@ END_IF</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="ParseMoveCmd" pouType="functionBlock">
+              <pou name="FB_ParseMoveCmd" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="Command">
@@ -8535,7 +8757,7 @@ END_CASE</xhtml>
                     </variable>
                     <variable name="MoveCmdParser">
                       <type>
-                        <derived name="ParseMoveCmd" />
+                        <derived name="FB_ParseMoveCmd" />
                       </type>
                     </variable>
                     <variable name="stMoveCmd">
@@ -8550,7 +8772,7 @@ END_CASE</xhtml>
                     </variable>
                     <variable name="OutputCmdParser">
                       <type>
-                        <derived name="ParseOutputCmd" />
+                        <derived name="FB_ParseOutputCmd" />
                       </type>
                     </variable>
                     <variable name="stOutputCmd">
@@ -8565,7 +8787,7 @@ END_CASE</xhtml>
                     </variable>
                     <variable name="PauseCmdParser">
                       <type>
-                        <derived name="ParsePauseCmd" />
+                        <derived name="FB_ParsePauseCmd" />
                       </type>
                     </variable>
                     <variable name="stPauseCmd">
@@ -8580,7 +8802,7 @@ END_CASE</xhtml>
                     </variable>
                     <variable name="VisionCmdParser">
                       <type>
-                        <derived name="ParseVisionCmd" />
+                        <derived name="FB_ParseVisionCmd" />
                       </type>
                     </variable>
                     <variable name="stVisionCmd">
@@ -8595,7 +8817,7 @@ END_CASE</xhtml>
                     </variable>
                     <variable name="VarSetCmdParser">
                       <type>
-                        <derived name="ParseVarSetCmd" />
+                        <derived name="FB_ParseVarSetCmd" />
                       </type>
                     </variable>
                     <variable name="stVarSetCmd">
@@ -8610,7 +8832,7 @@ END_CASE</xhtml>
                     </variable>
                     <variable name="CncCmdParser">
                       <type>
-                        <derived name="ParseCncCmd" />
+                        <derived name="FB_ParseCncCmd" />
                       </type>
                     </variable>
                     <variable name="stCncCmd">
@@ -8625,7 +8847,7 @@ END_CASE</xhtml>
                     </variable>
                     <variable name="LogicCmdParser">
                       <type>
-                        <derived name="ParseLogicCmd" />
+                        <derived name="FB_ParseLogicCmd" />
                       </type>
                     </variable>
                     <variable name="stLogicCmd">
@@ -8729,7 +8951,7 @@ IF TeachPosition THEN
 	stTeachPosition.CoordRef.B := F_RoundLreal(_00_Main.ProcessJog.Position.v[4],2);
 	stTeachPosition.CoordRef.C := F_RoundLreal(_00_Main.ProcessJog.Position.v[5],2);
 	PersistentVars.Programs[SelectedProgramNumber].Commands[SelectedRecipeRowIndex].CommandType := DUT_CommandType.MoveCommand;
-	PersistentVars.Programs[SelectedProgramNumber].Commands[SelectedRecipeRowIndex].CommandString := BuildMoveCmd(stTeachPosition);
+	PersistentVars.Programs[SelectedProgramNumber].Commands[SelectedRecipeRowIndex].CommandString := F_BuildMoveCmd(stTeachPosition);
 	PersistentVars.Programs[SelectedProgramNumber].Commands[SelectedRecipeRowIndex].CommandComment := 'Taught position';
 END_IF
 
@@ -8822,7 +9044,7 @@ END_IF</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="BuildOutputCmd" pouType="function">
+              <pou name="F_BuildOutputCmd" pouType="function">
                 <interface>
                   <returnType>
                     <string length="GVL.COMMAND_LEN" />
@@ -8892,7 +9114,7 @@ F_AddElement(_Command, _Delimiter, INT_TO_STRING(stCommand.OutputTarget));
 F_AddElement(_Command, _Delimiter, LREAL_TO_STRING(stCommand.OutputValue1));
 
 // set function equal to command
-BuildOutputCmd := _Command;</xhtml>
+F_BuildOutputCmd := _Command;</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -8903,7 +9125,7 @@ BuildOutputCmd := _Command;</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="ParseOutputCmd" pouType="functionBlock">
+              <pou name="FB_ParseOutputCmd" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="Command">
@@ -8977,7 +9199,7 @@ stCommand.OutputValue1 := STRING_TO_LREAL(_CmdParams[2]);</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="BuildPauseCmd" pouType="function">
+              <pou name="F_BuildPauseCmd" pouType="function">
                 <interface>
                   <returnType>
                     <string length="GVL.COMMAND_LEN" />
@@ -9016,7 +9238,7 @@ _Command:='';
 F_AddElement(_Command, _Delimiter, TIME_TO_STRING(stCommand.PauseTime));
 
 // set function equal to command
-BuildPauseCmd := _Command;</xhtml>
+F_BuildPauseCmd := _Command;</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -9027,7 +9249,7 @@ BuildPauseCmd := _Command;</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="ParsePauseCmd" pouType="functionBlock">
+              <pou name="FB_ParsePauseCmd" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="Command">
@@ -9092,7 +9314,7 @@ stCommand.PauseTime := STRING_TO_TIME(_CmdParams[0]);</xhtml>
                   <localVars>
                     <variable name="ProcessVisionCommand">
                       <type>
-                        <derived name="VisionCmdProcessor" />
+                        <derived name="FB_VisionCmdProcessor" />
                       </type>
                     </variable>
                     <variable name="HostName">
@@ -9200,7 +9422,7 @@ ProcessVisionCommand(
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="CncPathPlanner" pouType="functionBlock">
+              <pou name="FB_CncPathPlanner" pouType="functionBlock">
                 <interface>
                   <inOutVars>
                     <variable name="VarList">
@@ -9562,7 +9784,7 @@ ErrorDescription := '';</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="BuildCncCmd" pouType="function">
+              <pou name="F_BuildCncCmd" pouType="function">
                 <interface>
                   <returnType>
                     <string length="GVL.COMMAND_LEN" />
@@ -9716,7 +9938,7 @@ CASE stCommand.CoordinateType OF
 		
 END_CASE*)
 
-BuildCncCmd := _Command;
+F_BuildCncCmd := _Command;
 </xhtml>
                   </ST>
                 </body>
@@ -9728,7 +9950,7 @@ BuildCncCmd := _Command;
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="PositionTracker" pouType="functionBlock">
+              <pou name="FB_PositionTracker" pouType="functionBlock">
                 <interface>
                   <inOutVars>
                     <variable name="AxisGroup">
@@ -9916,9 +10138,9 @@ CASE OriConvention OF
         // yaw(Z), pitch(Y) and roll(X)
         SMC_Matrix3_ToYawPitchRoll( mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
                                     dRoll_rad=&gt; Position.dA, dPitch_rad=&gt; Position.dB, dYaw_rad=&gt; Position.dC);
-                                    Position.dA := RAD_TO_DEG(Position.dA);
-                                    Position.dB := RAD_TO_DEG(Position.dB);
-                                    Position.dC := RAD_TO_DEG(Position.dC);
+                                    Position.dA := F_RadToDeg(Position.dA);
+                                    Position.dB := F_RadToDeg(Position.dB);
+                                    Position.dC := F_RadToDeg(Position.dC);
     SMC_ORI_CONVENTION.ZYZ:
         SMC_Matrix3_ToZYZ_deg(  mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
                                 dA_deg=&gt; Position.dA, dB_deg=&gt; Position.dB, dC_deg=&gt; Position.dC);
@@ -9956,12 +10178,12 @@ _Clear := FALSE;</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="OpenCV" pouType="functionBlock">
+              <pou name="FB_OpenCV" pouType="functionBlock">
                 <interface>
                   <addData>
                     <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
                       <Inheritance>
-                        <Extends>PythonServerHandler</Extends>
+                        <Extends>FB_PythonServerHandler</Extends>
                       </Inheritance>
                     </data>
                   </addData>
@@ -10368,7 +10590,7 @@ END_IF</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="TcpClient" pouType="functionBlock">
+              <pou name="FB_TcpClient" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="bEnable">
@@ -10835,7 +11057,7 @@ END_IF</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="ParseVisionCmd" pouType="functionBlock">
+              <pou name="FB_ParseVisionCmd" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="Command">
@@ -11014,7 +11236,7 @@ END_IF</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="BuildVisionCmd" pouType="function">
+              <pou name="F_BuildVisionCmd" pouType="function">
                 <interface>
                   <returnType>
                     <string length="GVL.COMMAND_LEN" />
@@ -11142,7 +11364,7 @@ CASE stCommand.CommandType OF
 END_CASE
 
 // set function equal to command
-BuildVisionCmd := _Command;</xhtml>
+F_BuildVisionCmd := _Command;</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -11153,7 +11375,7 @@ BuildVisionCmd := _Command;</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="Module" pouType="functionBlock">
+              <pou name="FB_Module" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="StoredPositions">
@@ -11279,7 +11501,7 @@ BuildVisionCmd := _Command;</xhtml>
                   <addData>
                     <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
                       <Inheritance>
-                        <Extends>PackML</Extends>
+                        <Extends>FB_PackML</Extends>
                         <Implements>ItfModule</Implements>
                       </Inheritance>
                     </data>
@@ -11692,7 +11914,7 @@ END_CASE</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="VisionCmdProcessor" pouType="functionBlock">
+              <pou name="FB_VisionCmdProcessor" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="Command">
@@ -11768,12 +11990,12 @@ END_CASE</xhtml>
                     </variable>
                     <variable name="_Vision">
                       <type>
-                        <derived name="OpenCV" />
+                        <derived name="FB_OpenCV" />
                       </type>
                     </variable>
                     <variable name="_VisionCommandParser">
                       <type>
-                        <derived name="ParseVisionCmd" />
+                        <derived name="FB_ParseVisionCmd" />
                       </type>
                     </variable>
                     <variable name="_VisionDoneRtrig">
@@ -11924,7 +12146,7 @@ END_CASE</xhtml>
                   <addData>
                     <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
                       <Inheritance>
-                        <Extends>Module</Extends>
+                        <Extends>FB_Module</Extends>
                       </Inheritance>
                     </data>
                   </addData>
@@ -12369,7 +12591,7 @@ _Vision.M_Reconnect();</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="ParseVarSetCmd" pouType="functionBlock">
+              <pou name="FB_ParseVarSetCmd" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="Command">
@@ -12643,7 +12865,7 @@ stCommand.Coordinates.C := STRING_TO_LREAL(_CmdParams[_i]);</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="MoveCmdProcessor" pouType="functionBlock">
+              <pou name="FB_MoveCmdProcessor" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="Velocity">
@@ -12800,7 +13022,7 @@ stCommand.Coordinates.C := STRING_TO_LREAL(_CmdParams[_i]);</xhtml>
                     </variable>
                     <variable name="_MoveCommandParser">
                       <type>
-                        <derived name="ParseMoveCmd" />
+                        <derived name="FB_ParseMoveCmd" />
                       </type>
                     </variable>
                     <variable name="_PosRef">
@@ -12971,7 +13193,7 @@ stCommand.Coordinates.C := STRING_TO_LREAL(_CmdParams[_i]);</xhtml>
                   <addData>
                     <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
                       <Inheritance>
-                        <Extends>Module</Extends>
+                        <Extends>FB_Module</Extends>
                       </Inheritance>
                     </data>
                   </addData>
@@ -13703,7 +13925,7 @@ SUPER^.M_StateComplete();</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="VarSetCmdProcessor" pouType="functionBlock">
+              <pou name="FB_VarSetCmdProcessor" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="Command">
@@ -13757,14 +13979,14 @@ SUPER^.M_StateComplete();</xhtml>
                     </variable>
                     <variable name="_VarSetCmdParser">
                       <type>
-                        <derived name="ParseVarSetCmd" />
+                        <derived name="FB_ParseVarSetCmd" />
                       </type>
                     </variable>
                   </localVars>
                   <addData>
                     <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
                       <Inheritance>
-                        <Extends>Module</Extends>
+                        <Extends>FB_Module</Extends>
                       </Inheritance>
                     </data>
                   </addData>
@@ -13967,7 +14189,7 @@ END_IF</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="PauseCmdProcessor" pouType="functionBlock">
+              <pou name="FB_PauseCmdProcessor" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="Command">
@@ -14024,7 +14246,7 @@ END_IF</xhtml>
                     </variable>
                     <variable name="_ParsePauseCmd">
                       <type>
-                        <derived name="ParsePauseCmd" />
+                        <derived name="FB_ParsePauseCmd" />
                       </type>
                     </variable>
                   </localVars>
@@ -14073,7 +14295,7 @@ END_IF</xhtml>
                   <addData>
                     <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
                       <Inheritance>
-                        <Extends>Module</Extends>
+                        <Extends>FB_Module</Extends>
                       </Inheritance>
                     </data>
                   </addData>
@@ -14246,7 +14468,7 @@ SUPER^.M_StateComplete();</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="OutputCmdProcessor" pouType="functionBlock">
+              <pou name="FB_OutputCmdProcessor" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="Enable">
@@ -14308,7 +14530,7 @@ SUPER^.M_StateComplete();</xhtml>
                     </variable>
                     <variable name="_OutputCommandParser">
                       <type>
-                        <derived name="ParseOutputCmd" />
+                        <derived name="FB_ParseOutputCmd" />
                       </type>
                     </variable>
                     <variable name="_OutputType">
@@ -14372,7 +14594,7 @@ SUPER^.M_StateComplete();</xhtml>
                   <addData>
                     <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
                       <Inheritance>
-                        <Extends>Module</Extends>
+                        <Extends>FB_Module</Extends>
                       </Inheritance>
                     </data>
                   </addData>
@@ -14689,7 +14911,7 @@ SUPER^._UnitMode.Reset();</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="PackML" pouType="functionBlock">
+              <pou name="FB_PackML" pouType="functionBlock">
                 <interface>
                   <outputVars>
                     <variable name="IUnitMode">
@@ -14706,8 +14928,8 @@ SUPER^._UnitMode.Reset();</xhtml>
                       <addData>
                         <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                           <Attributes>
-                            <Attribute Name="noinit" />
                             <Attribute Name="instance-path" Value="" />
+                            <Attribute Name="noinit" />
                           </Attributes>
                         </data>
                       </addData>
@@ -15337,7 +15559,7 @@ END_IF</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="CncCmdProcessor" pouType="functionBlock">
+              <pou name="FB_CncCmdProcessor" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="GapVelocity">
@@ -15479,12 +15701,12 @@ END_IF</xhtml>
                     </variable>
                     <variable name="_TrackPosition">
                       <type>
-                        <derived name="PositionTracker" />
+                        <derived name="FB_PositionTracker" />
                       </type>
                     </variable>
                     <variable name="_PlanPath">
                       <type>
-                        <derived name="CncPathPlanner" />
+                        <derived name="FB_CncPathPlanner" />
                       </type>
                     </variable>
                     <variable name="_SysLTime">
@@ -15659,7 +15881,7 @@ END_IF</xhtml>
                     </variable>
                     <variable name="_CncCmdParser">
                       <type>
-                        <derived name="ParseCncCmd" />
+                        <derived name="FB_ParseCncCmd" />
                       </type>
                     </variable>
                     <variable name="lrR1">
@@ -15716,7 +15938,7 @@ END_IF</xhtml>
                   <addData>
                     <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
                       <Inheritance>
-                        <Extends>Module</Extends>
+                        <Extends>FB_Module</Extends>
                       </Inheritance>
                     </data>
                   </addData>
@@ -16276,7 +16498,7 @@ _SMC_Interpolator.bExecute := FALSE;</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="ParseCncCmd" pouType="functionBlock">
+              <pou name="FB_ParseCncCmd" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="Command">
@@ -16587,7 +16809,7 @@ END_WHILE</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="BuildVarSetCmd" pouType="function">
+              <pou name="F_BuildVarSetCmd" pouType="function">
                 <interface>
                   <returnType>
                     <string length="GVL.COMMAND_LEN" />
@@ -16819,7 +17041,7 @@ ELSIF stCommand.ArrayType = DUT_Command_ArrayType.Flag THEN
 END_IF
 
 // set function equal to command
-BuildVarSetCmd := _Command;</xhtml>
+F_BuildVarSetCmd := _Command;</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -16830,7 +17052,7 @@ BuildVarSetCmd := _Command;</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="LogicCmdProcessor" pouType="functionBlock">
+              <pou name="FB_LogicCmdProcessor" pouType="functionBlock">
                 <interface>
                   <inOutVars>
                     <variable name="PrgProcessor">
@@ -16867,7 +17089,7 @@ BuildVarSetCmd := _Command;</xhtml>
                     </variable>
                     <variable name="_ParseLogicCmd">
                       <type>
-                        <derived name="ParseLogicCmd" />
+                        <derived name="FB_ParseLogicCmd" />
                       </type>
                     </variable>
                     <variable name="_ThenFunctionProcessed">
@@ -17017,7 +17239,7 @@ BuildVarSetCmd := _Command;</xhtml>
                   <addData>
                     <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
                       <Inheritance>
-                        <Extends>Module</Extends>
+                        <Extends>FB_Module</Extends>
                       </Inheritance>
                     </data>
                   </addData>
@@ -17509,7 +17731,7 @@ Command:=CONCAT(Command, Delimiter);</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="BuildMoveCmd" pouType="function">
+              <pou name="F_BuildMoveCmd" pouType="function">
                 <interface>
                   <returnType>
                     <string length="GVL.COMMAND_LEN" />
@@ -17844,7 +18066,7 @@ IF stCommand.MoveType = DUT_Command_MoveType.CircularMove THEN
 END_IF
 
 // set function equal to command
-BuildMoveCmd := _Command;</xhtml>
+F_BuildMoveCmd := _Command;</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -17919,7 +18141,7 @@ F_RoundLreal := r2 / r0;</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="ParseLogicCmd" pouType="functionBlock">
+              <pou name="FB_ParseLogicCmd" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="Command">
@@ -18126,7 +18348,7 @@ END_IF</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="BuildLogicCmd" pouType="function">
+              <pou name="F_BuildLogicCmd" pouType="function">
                 <interface>
                   <returnType>
                     <string length="GVL.COMMAND_LEN" />
@@ -18208,7 +18430,7 @@ IF stCommand.IF_Condition &lt;&gt; E_LogicIfCondition.PASS THEN
 END_IF
 
 // set function equal to command
-BuildLogicCmd := _Command;</xhtml>
+F_BuildLogicCmd := _Command;</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -18488,7 +18710,7 @@ END_IF</xhtml>
                   <addData>
                     <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
                       <Inheritance>
-                        <Extends>Module</Extends>
+                        <Extends>FB_Module</Extends>
                       </Inheritance>
                     </data>
                   </addData>
@@ -19512,7 +19734,7 @@ END_IF</xhtml>
                   <addData>
                     <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
                       <Inheritance>
-                        <Extends>PythonServerHandler</Extends>
+                        <Extends>FB_PythonServerHandler</Extends>
                       </Inheritance>
                     </data>
                   </addData>
@@ -20284,7 +20506,7 @@ END_IF</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="PythonServerHandler" pouType="functionBlock">
+              <pou name="FB_PythonServerHandler" pouType="functionBlock">
                 <interface>
                   <inputVars>
                     <variable name="sIpAddress">
@@ -20370,7 +20592,7 @@ END_IF</xhtml>
                     </variable>
                     <variable name="_TcpClient">
                       <type>
-                        <derived name="TcpClient" />
+                        <derived name="FB_TcpClient" />
                       </type>
                     </variable>
                     <variable name="_TimeoutTimer">
@@ -22226,7 +22448,7 @@ END_CASE</xhtml>
                     </variable>
                     <variable name="_MoveCommandProcessor">
                       <type>
-                        <derived name="MoveCmdProcessor" />
+                        <derived name="FB_MoveCmdProcessor" />
                       </type>
                     </variable>
                     <variable name="_i">
@@ -23112,7 +23334,7 @@ END_IF</xhtml>
 			_MoveCommand.CoordSystem 		:= SMC_COORD_SYSTEM.ACS;
 			_MoveCommand.CoordRef 			:= StoredPositions[GVL.POSE_2_IDX].Position;
 			//
-			_MoveCommandProcessor.Command := BuildMoveCmd(_MoveCommand);
+			_MoveCommandProcessor.Command := F_BuildMoveCmd(_MoveCommand);
 			_MoveCommandProcessor.M_Start();
 	END_IF;
 END_IF
@@ -23524,6 +23746,437 @@ _FirstScan := FALSE;</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="FB_LicenseStatus" pouType="functionBlock">
+                <interface>
+                  <outputVars>
+                    <variable name="eState">
+                      <type>
+                        <derived name="CmpMgr.RUNTIME_LICENSE_STATE" />
+                      </type>
+                    </variable>
+                    <variable name="udiSecondsLeft">
+                      <type>
+                        <UDINT />
+                      </type>
+                    </variable>
+                    <variable name="udiMinutesLeft">
+                      <type>
+                        <UDINT />
+                      </type>
+                    </variable>
+                    <variable name="tRemaining">
+                      <type>
+                        <TIME />
+                      </type>
+                    </variable>
+                    <variable name="sState">
+                      <type>
+                        <string length="32" />
+                      </type>
+                    </variable>
+                    <variable name="sBanner">
+                      <type>
+                        <string length="80" />
+                      </type>
+                    </variable>
+                    <variable name="xDemo">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="xLicensed">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="xShowBanner">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </outputVars>
+                  <localVars>
+                    <variable name="_hEvent">
+                      <type>
+                        <derived name="SysTypes.RTS_IEC_HANDLE" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="SysTypes.RTS_INVALID_HANDLE" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_hCallback">
+                      <type>
+                        <derived name="SysTypes.RTS_IEC_HANDLE" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="SysTypes.RTS_INVALID_HANDLE" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_result">
+                      <type>
+                        <derived name="SysTypes.RTS_IEC_RESULT" />
+                      </type>
+                    </variable>
+                    <variable name="_xRegistered">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_xTried">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_xGotEvent">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_udiSecondsAtEvent">
+                      <type>
+                        <UDINT />
+                      </type>
+                    </variable>
+                    <variable name="_tEvent">
+                      <type>
+                        <TIME />
+                      </type>
+                    </variable>
+                    <variable name="_tRetry">
+                      <type>
+                        <TIME />
+                      </type>
+                    </variable>
+                    <variable name="_udiElapsed">
+                      <type>
+                        <UDINT />
+                      </type>
+                    </variable>
+                    <variable name="_sMin">
+                      <type>
+                        <string length="11" />
+                      </type>
+                    </variable>
+                    <variable name="_sSec">
+                      <type>
+                        <string length="11" />
+                      </type>
+                    </variable>
+                    <variable name="_udiSec">
+                      <type>
+                        <UDINT />
+                      </type>
+                    </variable>
+                  </localVars>
+                  <addData>
+                    <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
+                      <Inheritance>
+                        <Implements>CmpEventMgr.ICmpEventCallback</Implements>
+                      </Inheritance>
+                    </data>
+                  </addData>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">M_EnsureRegistered();
+M_UpdateRemaining();
+M_BuildBanner();</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="EventCallback" ObjectId="bbb97f39-05c3-55ba-af1d-5eb73fef989d">
+                      <interface>
+                        <returnType>
+                          <derived name="SysTypes.RTS_IEC_RESULT" />
+                        </returnType>
+                        <inputVars>
+                          <variable name="pEventParam">
+                            <type>
+                              <pointer>
+                                <baseType>
+                                  <derived name="CmpEventMgr.EventParam" />
+                                </baseType>
+                              </pointer>
+                            </type>
+                          </variable>
+                        </inputVars>
+                        <localVars>
+                          <variable name="pLic">
+                            <type>
+                              <pointer>
+                                <baseType>
+                                  <derived name="CmpMgr.EVTPARAM_CmpMgr_LicenseState" />
+                                </baseType>
+                              </pointer>
+                            </type>
+                          </variable>
+                        </localVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">EventCallback := 0;
+IF pEventParam = 0 THEN
+	RETURN;
+END_IF
+IF pEventParam^.EventId &lt;&gt; CmpMgr.EventIDs.EVT_CmpMgr_LicenseState THEN
+	RETURN;
+END_IF
+IF pEventParam^.pParameter = 0 THEN
+	RETURN;
+END_IF
+
+pLic := pEventParam^.pParameter;
+eState := pLic^.state;
+_xGotEvent := TRUE;
+_tEvent := TIME();
+IF pLic^.secondsToExpiration &gt; 0 THEN
+	_udiSecondsAtEvent := pLic^.secondsToExpiration;
+ELSIF eState = CmpMgr.RUNTIME_LICENSE_STATE.DEMOMODE THEN
+	_udiSecondsAtEvent := 7200;
+ELSE
+	_udiSecondsAtEvent := 0;
+END_IF
+udiSecondsLeft := _udiSecondsAtEvent;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="FB_Init" ObjectId="12e6ebed-9971-5cf8-bb39-daf10e63314c">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="bInitRetains">
+                            <type>
+                              <BOOL />
+                            </type>
+                          </variable>
+                          <variable name="bInCopyCode">
+                            <type>
+                              <BOOL />
+                            </type>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT bInCopyCode THEN
+	M_EnsureRegistered();
+END_IF
+FB_Init := TRUE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="FB_Exit" ObjectId="90a05c4e-17c5-548e-a4cf-78708a6f267a">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="bInCopyCode">
+                            <type>
+                              <BOOL />
+                            </type>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT bInCopyCode THEN
+	M_Unregister();
+END_IF
+FB_Exit := TRUE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_EnsureRegistered" ObjectId="db22b6a1-174c-5732-be62-1bf4d260a642">
+                      <interface>
+                        <localVars>
+                          <variable name="tNow">
+                            <type>
+                              <TIME />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF _xRegistered THEN
+	RETURN;
+END_IF
+
+tNow := TIME();
+IF _xTried AND ((tNow - _tRetry) &lt; T#2S) THEN
+	RETURN;
+END_IF
+_xTried := TRUE;
+_tRetry := tNow;
+
+IF _hEvent = SysTypes.RTS_INVALID_HANDLE THEN
+	_hEvent := CmpEventMgr.EventOpen(
+		EventId := CmpMgr.EventIDs.EVT_CmpMgr_LicenseState,
+		CmpIdProvider := CmpMgr.ComponentID.CMPID_CmpMgr,
+		Result := _result);
+END_IF
+
+IF _hEvent = SysTypes.RTS_INVALID_HANDLE THEN
+	RETURN;
+END_IF
+
+_hCallback := CmpEventMgr.EventRegisterCallback2(
+	hEvent := _hEvent,
+	pICallback := THIS^,
+	pUserParameter := 0,
+	Result := _result);
+
+IF _hCallback &lt;&gt; SysTypes.RTS_INVALID_HANDLE THEN
+	_xRegistered := TRUE;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_Unregister" ObjectId="320d2bd0-e838-519e-b405-e7b3962bed8d">
+                      <interface>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF _hCallback &lt;&gt; SysTypes.RTS_INVALID_HANDLE THEN
+	_result := CmpEventMgr.EventUnregisterCallback(
+		hEvent := _hEvent,
+		hInterface := _hCallback);
+END_IF
+IF _hEvent &lt;&gt; SysTypes.RTS_INVALID_HANDLE THEN
+	_result := CmpEventMgr.EventClose2(hEvent := _hEvent);
+END_IF
+_hEvent := SysTypes.RTS_INVALID_HANDLE;
+_hCallback := SysTypes.RTS_INVALID_HANDLE;
+_xRegistered := FALSE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_UpdateRemaining" ObjectId="1fb30b69-ae39-5d07-904f-7126811b2a79">
+                      <interface>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">xDemo := (eState = CmpMgr.RUNTIME_LICENSE_STATE.DEMOMODE);
+xLicensed := (eState = CmpMgr.RUNTIME_LICENSE_STATE.LICENSED);
+xShowBanner := xDemo
+	OR (eState = CmpMgr.RUNTIME_LICENSE_STATE.LICENSE_LOST)
+	OR (eState = CmpMgr.RUNTIME_LICENSE_STATE.TRIGGER_SHUTDOWN)
+	OR (eState = CmpMgr.RUNTIME_LICENSE_STATE.SAFEMODE);
+
+IF xLicensed THEN
+	udiSecondsLeft := 0;
+	udiMinutesLeft := 0;
+	tRemaining := T#0S;
+	RETURN;
+END_IF
+
+IF _xGotEvent AND (xDemo OR (eState = CmpMgr.RUNTIME_LICENSE_STATE.TRIGGER_SHUTDOWN)) THEN
+	_udiElapsed := TIME_TO_UDINT(TIME() - _tEvent) / 1000;
+	IF _udiElapsed &lt; _udiSecondsAtEvent THEN
+		udiSecondsLeft := _udiSecondsAtEvent - _udiElapsed;
+	ELSE
+		udiSecondsLeft := 0;
+	END_IF
+END_IF
+
+udiMinutesLeft := udiSecondsLeft / 60;
+tRemaining := UDINT_TO_TIME(udiSecondsLeft * 1000);</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_BuildBanner" ObjectId="a13f3131-62e0-5919-b27c-f71321edf346">
+                      <interface>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">CASE eState OF
+	CmpMgr.RUNTIME_LICENSE_STATE.DEMOMODE:
+		sState := 'DEMO';
+	CmpMgr.RUNTIME_LICENSE_STATE.LICENSED:
+		sState := 'LICENSED';
+	CmpMgr.RUNTIME_LICENSE_STATE.LICENSE_LOST:
+		sState := 'LICENSE LOST';
+	CmpMgr.RUNTIME_LICENSE_STATE.TRIGGER_SHUTDOWN:
+		sState := 'SHUTTING DOWN';
+	CmpMgr.RUNTIME_LICENSE_STATE.SAFEMODE:
+		sState := 'SAFE MODE';
+ELSE
+	sState := '';
+END_CASE
+
+IF NOT xShowBanner THEN
+	sBanner := '';
+	RETURN;
+END_IF
+
+IF eState = CmpMgr.RUNTIME_LICENSE_STATE.DEMOMODE THEN
+	_udiSec := udiSecondsLeft MOD 60;
+	_sMin := UDINT_TO_STRING(udiMinutesLeft);
+	_sSec := UDINT_TO_STRING(_udiSec);
+	sBanner := CONCAT('DEMO LICENSE  ', _sMin);
+	sBanner := CONCAT(sBanner, 'm ');
+	sBanner := CONCAT(sBanner, _sSec);
+	sBanner := CONCAT(sBanner, 's remaining');
+ELSIF eState = CmpMgr.RUNTIME_LICENSE_STATE.TRIGGER_SHUTDOWN THEN
+	sBanner := CONCAT('LICENSE SHUTDOWN  ', UDINT_TO_STRING(udiSecondsLeft));
+	sBanner := CONCAT(sBanner, 's');
+ELSE
+	sBanner := sState;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>6a8beb29-2fee-57c9-97cf-0b6c4cb5aa49</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
               <pou name="F_ChangeJumpRow" pouType="function">
                 <interface>
                   <returnType>
@@ -23551,7 +24204,7 @@ _FirstScan := FALSE;</xhtml>
                   <localVars>
                     <variable name="_LogicCmdParser">
                       <type>
-                        <derived name="ParseLogicCmd" />
+                        <derived name="FB_ParseLogicCmd" />
                       </type>
                     </variable>
                     <variable name="_stLogicCmd">
@@ -23583,7 +24236,7 @@ IF Command.CommandType = DUT_CommandType.LogicCommand THEN
 	
 	// set the command
 	IF F_ChangeJumpRow THEN
-		Command.CommandString := BuildLogicCmd(stCommand:=_stLogicCmd);
+		Command.CommandString := F_BuildLogicCmd(stCommand:=_stLogicCmd);
 	END_IF
 	
 ELSE
@@ -23867,7 +24520,7 @@ END_IF
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="RAD_TO_DEG" pouType="function">
+              <pou name="F_RadToDeg" pouType="function">
                 <interface>
                   <returnType>
                     <LREAL />
@@ -23882,7 +24535,7 @@ END_IF
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">RAD_TO_DEG := Radians * (180 / GVL.pi);</xhtml>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">F_RadToDeg := Radians * (180 / GVL.pi);</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -23898,7 +24551,7 @@ END_IF
                   <localVars>
                     <variable name="PlanPath">
                       <type>
-                        <derived name="CncPathPlanner" />
+                        <derived name="FB_CncPathPlanner" />
                       </type>
                     </variable>
                   </localVars>
@@ -35141,6 +35794,8 @@ END_IF</xhtml>
         <Library Name="#System_VisuElemsDateTime" Namespace="VisuElemsDateTime" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsDateTime, 4.9.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
         <Library Name="#System_VisuElemXYChart" Namespace="VisuElemXYChart" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemXYChart, 4.8.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
         <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.7.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+        <Library Name="Component Manager, * (System)" Namespace="CmpMgr" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Component Manager, 3.5.21.0 (System)" />
+        <Library Name="CmpEventMgr, * (System)" Namespace="CmpEventMgr" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CmpEventMgr, 3.5.17.0 (System)" />
         <PlaceholderRedirections>
           <PlaceholderRedirection Placeholder="CmpBinTagUtilIec" Redirection="CmpBinTagUtilIec, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="CAA ResMan" Redirection="CAA Ressource Manager Extern, 3.5.17.0 (CAA Technical Workgroup)" />
@@ -35256,6 +35911,17 @@ END_IF</xhtml>
                 </Folder>
               </Object>
               <Object Name="_60_PathPlanner" ObjectId="25d35170-f0c8-4cbe-9a6a-5ff2fac6e186" />
+              <Object Name="FB_LicenseStatus" ObjectId="6a8beb29-2fee-57c9-97cf-0b6c4cb5aa49">
+                <Object Name="EventCallback" ObjectId="bbb97f39-05c3-55ba-af1d-5eb73fef989d" />
+                <Object Name="FB_Init" ObjectId="12e6ebed-9971-5cf8-bb39-daf10e63314c" />
+                <Object Name="FB_Exit" ObjectId="90a05c4e-17c5-548e-a4cf-78708a6f267a" />
+                <Folder Name="private">
+                  <Object Name="M_EnsureRegistered" ObjectId="db22b6a1-174c-5732-be62-1bf4d260a642" />
+                  <Object Name="M_Unregister" ObjectId="320d2bd0-e838-519e-b405-e7b3962bed8d" />
+                  <Object Name="M_UpdateRemaining" ObjectId="1fb30b69-ae39-5d07-904f-7126811b2a79" />
+                  <Object Name="M_BuildBanner" ObjectId="a13f3131-62e0-5919-b27c-f71321edf346" />
+                </Folder>
+              </Object>
             </Folder>
             <Object Name="MainTask" ObjectId="eafe4677-fa00-4970-b015-251c89fffd79" />
             <Object Name="SoftMotion_PlanningTask" ObjectId="5a42e1b4-5f13-4f3e-9a38-abed03da7807" />
@@ -35264,8 +35930,8 @@ END_IF</xhtml>
             <Object Name="EtherCAT_Task" ObjectId="ea09100e-839b-4071-804c-d88dc427910c" />
             <Folder Name="FUN">
               <Folder Name="move">
-                <Object Name="ParseMoveCmd" ObjectId="35e49e9e-292d-48d5-910d-e69db317cc55" />
-                <Object Name="MoveCmdProcessor" ObjectId="8f4275d6-46b8-4b53-89d9-00cb2bff4683">
+                <Object Name="FB_ParseMoveCmd" ObjectId="35e49e9e-292d-48d5-910d-e69db317cc55" />
+                <Object Name="FB_MoveCmdProcessor" ObjectId="8f4275d6-46b8-4b53-89d9-00cb2bff4683">
                   <Folder Name="protected">
                     <Object Name="M_Starting" ObjectId="ce3be291-42fd-4d66-9e0a-0e5bf023807b" />
                     <Object Name="M_Resetting" ObjectId="95f46e6e-26ec-450c-948d-d902314a1d4d" />
@@ -35280,7 +35946,7 @@ END_IF</xhtml>
                   </Folder>
                 </Object>
                 <Object Name="ST_MoveCmd" ObjectId="f71cc9b7-cb4b-485a-9aed-2944bbd084ca" />
-                <Object Name="BuildMoveCmd" ObjectId="19554b2f-3ca2-4f8d-a4a2-2e3ac3119ec0" />
+                <Object Name="F_BuildMoveCmd" ObjectId="19554b2f-3ca2-4f8d-a4a2-2e3ac3119ec0" />
               </Folder>
               <Folder Name="home">
                 <Object Name="FB_HomingProcessor" ObjectId="6c30ff35-bc31-4ed8-ab4a-320ad080dc49">
@@ -35304,8 +35970,8 @@ END_IF</xhtml>
                   </Folder>
                   <Folder Name="public">
                     <Object Name="M_ClearOffsets" ObjectId="5b18153f-c32f-4189-9485-f501f275c7f5" />
+                    <Object Name="M_MoveToPose" ObjectId="5971868c-619e-47a6-ac41-0e2ed68a066a" />
                   </Folder>
-                  <Object Name="M_MoveToPose" ObjectId="5971868c-619e-47a6-ac41-0e2ed68a066a" />
                 </Object>
                 <Object Name="F_SetJogButtons" ObjectId="640ac73b-ff1c-4df1-a978-e5b05f9ea455" />
                 <Object Name="E_Pose" ObjectId="b79aef52-6212-478e-b00a-eac3efda95a0" />
@@ -35335,17 +36001,17 @@ END_IF</xhtml>
               </Object>
               <Folder Name="cnc">
                 <Object Name="ST_CncCmd" ObjectId="bfbed99a-036f-4373-a7be-6feb43a2d296" />
-                <Object Name="CncPathPlanner" ObjectId="845c01d1-16bd-4c5b-8921-4865a7e07fd2">
+                <Object Name="FB_CncPathPlanner" ObjectId="845c01d1-16bd-4c5b-8921-4865a7e07fd2">
                   <Object Name="M_Execute" ObjectId="92875761-2fd7-4bb6-bbf7-a117fd98b83f" />
                   <Object Name="M_Reset" ObjectId="bcea459e-fa66-4937-b73d-59fec7864ad5" />
                   <Object Name="M_SetStartPosition" ObjectId="deae1c1c-a35f-4dab-a882-870c0dd1bbee" />
                   <Object Name="M_SetOriConvention" ObjectId="bc2fe0c5-bb28-4086-a8ef-9e95685b910f" />
                 </Object>
-                <Object Name="PositionTracker" ObjectId="7701f0fc-a0ed-4db5-acf4-25ec5ce43abb">
+                <Object Name="FB_PositionTracker" ObjectId="7701f0fc-a0ed-4db5-acf4-25ec5ce43abb">
                   <Object Name="M_Clear" ObjectId="dfb86b0d-b5f1-49bd-9916-9936d6497f13" />
                 </Object>
-                <Object Name="BuildCncCmd" ObjectId="e33aafb8-c7d1-4dab-86cc-41df906bbf07" />
-                <Object Name="CncCmdProcessor" ObjectId="09e229dd-dea4-4418-8521-de497c93f5dc">
+                <Object Name="F_BuildCncCmd" ObjectId="e33aafb8-c7d1-4dab-86cc-41df906bbf07" />
+                <Object Name="FB_CncCmdProcessor" ObjectId="09e229dd-dea4-4418-8521-de497c93f5dc">
                   <Folder Name="protected">
                     <Object Name="M_SetPackML" ObjectId="7c793665-23c8-4063-a654-5011975c105b" />
                     <Object Name="M_Complete" ObjectId="0b336f4b-391c-459f-a28e-2f4ba2e8bba2" />
@@ -35357,12 +36023,12 @@ END_IF</xhtml>
                     <Object Name="M_Idle" ObjectId="c93ab278-2b3f-4bc7-a2ff-fccaf401c8a8" />
                   </Folder>
                 </Object>
-                <Object Name="ParseCncCmd" ObjectId="4ea6ce2c-d973-415a-9620-8fd34fa576a4" />
+                <Object Name="FB_ParseCncCmd" ObjectId="4ea6ce2c-d973-415a-9620-8fd34fa576a4" />
               </Folder>
               <Folder Name="output">
-                <Object Name="BuildOutputCmd" ObjectId="e29ffd53-c60c-4780-9cae-795a42c1806f" />
-                <Object Name="ParseOutputCmd" ObjectId="b67ef6d4-a509-4504-af22-150225e40cd0" />
-                <Object Name="OutputCmdProcessor" ObjectId="6372490f-9396-4f98-b458-51631931ad07">
+                <Object Name="F_BuildOutputCmd" ObjectId="e29ffd53-c60c-4780-9cae-795a42c1806f" />
+                <Object Name="FB_ParseOutputCmd" ObjectId="b67ef6d4-a509-4504-af22-150225e40cd0" />
+                <Object Name="FB_OutputCmdProcessor" ObjectId="6372490f-9396-4f98-b458-51631931ad07">
                   <Folder Name="protected">
                     <Object Name="M_SetPackML" ObjectId="fed562a2-eddf-4e93-afb0-ae3624ddf3de" />
                     <Object Name="M_Resetting" ObjectId="83e31000-e404-406b-a9f0-af2b8e43e2b9" />
@@ -35379,9 +36045,9 @@ END_IF</xhtml>
                 <Object Name="ST_OutputCmd" ObjectId="8d0742ed-4361-441a-8bce-40feb4d004c2" />
               </Folder>
               <Folder Name="pause">
-                <Object Name="BuildPauseCmd" ObjectId="b7a08d1d-f5e6-4f3c-9f3f-733c40c45429" />
-                <Object Name="ParsePauseCmd" ObjectId="155e4e57-98df-4f34-8414-c9af1793585b" />
-                <Object Name="PauseCmdProcessor" ObjectId="761241d9-a41a-4641-86b9-9b083b6be68b">
+                <Object Name="F_BuildPauseCmd" ObjectId="b7a08d1d-f5e6-4f3c-9f3f-733c40c45429" />
+                <Object Name="FB_ParsePauseCmd" ObjectId="155e4e57-98df-4f34-8414-c9af1793585b" />
+                <Object Name="FB_PauseCmdProcessor" ObjectId="761241d9-a41a-4641-86b9-9b083b6be68b">
                   <Folder Name="protected">
                     <Object Name="M_SetPackML" ObjectId="6e516751-a0ab-433e-9a68-8b911bf9a0fe" />
                     <Object Name="M_Complete" ObjectId="2e5db4a5-a489-4506-8ef9-c0b206420609" />
@@ -35393,7 +36059,7 @@ END_IF</xhtml>
                 <Object Name="ST_PauseCmd" ObjectId="be976acf-5a13-4a9d-8d9f-61e2df7de507" />
               </Folder>
               <Folder Name="tcp">
-                <Object Name="PythonServerHandler" ObjectId="804277ad-245a-4a3c-a537-920a77a195da">
+                <Object Name="FB_PythonServerHandler" ObjectId="804277ad-245a-4a3c-a537-920a77a195da">
                   <Object Name="P_Error" ObjectId="7b9a3d13-95e9-4410-9f3b-3b6399fa6fb2" />
                   <Folder Name="protected">
                     <Object Name="_M_Execute" ObjectId="1d54f7e6-4fa6-4e0f-8c65-6228efc66fc8" />
@@ -35412,7 +36078,7 @@ END_IF</xhtml>
                   <Object Name="P_RecordNumber" ObjectId="c9f5a0ac-c563-44aa-8bfd-7e4ab4c918a0" />
                   <Object Name="P_Connected" ObjectId="b5d488ec-005f-42a5-ae5d-b73e6b84cd93" />
                 </Object>
-                <Object Name="TcpClient" ObjectId="0c178c71-0d25-4361-b16e-e3833e33b5d0">
+                <Object Name="FB_TcpClient" ObjectId="0c178c71-0d25-4361-b16e-e3833e33b5d0">
                   <Folder Name="internal">
                     <Object Name="_M_Write" ObjectId="5821b17b-b657-4412-802a-8f52a5970847" />
                     <Object Name="_M_Reconnect" ObjectId="97676848-0c7a-4e94-a0de-70ae837304a7" />
@@ -35420,20 +36086,20 @@ END_IF</xhtml>
                 </Object>
               </Folder>
               <Folder Name="vision">
-                <Object Name="OpenCV" ObjectId="6d87a4c9-9357-4e03-b1a0-c731940d5946">
+                <Object Name="FB_OpenCV" ObjectId="6d87a4c9-9357-4e03-b1a0-c731940d5946">
                   <Folder Name="Public">
                     <Object Name="M_CalibrateCamera" ObjectId="f8181cbb-d977-4dc5-9d9a-f6beb94ec24e" />
                     <Object Name="M_CaptureImage" ObjectId="d38f4a97-5265-4a49-a236-4f8dbe120152" />
                     <Object Name="M_LocatePart" ObjectId="6c14d589-4ff1-4332-97a1-15bfa9d317ed" />
                   </Folder>
                 </Object>
-                <Object Name="ParseVisionCmd" ObjectId="c1f3fe10-7066-4e4d-ae1a-05a0a2c8898a" />
-                <Object Name="BuildVisionCmd" ObjectId="580bcf70-fae5-407f-8446-aaa0a1365ba4" />
+                <Object Name="FB_ParseVisionCmd" ObjectId="c1f3fe10-7066-4e4d-ae1a-05a0a2c8898a" />
+                <Object Name="F_BuildVisionCmd" ObjectId="580bcf70-fae5-407f-8446-aaa0a1365ba4" />
                 <Object Name="StringByteArray" ObjectId="74ac9c91-8dd0-4804-83eb-55aba09ae987" />
                 <Object Name="ST_VisionLocate" ObjectId="979edabc-249c-4294-9a6b-583c609d1013" />
                 <Object Name="ST_VisionCalibrate" ObjectId="182d3d19-8ffc-4b3a-943b-f60486efdc5a" />
                 <Object Name="ST_VisionCmd" ObjectId="bbefe0b0-9a20-4826-9638-01ab457504e9" />
-                <Object Name="VisionCmdProcessor" ObjectId="fe68b725-9761-4240-89f1-03981366ea66">
+                <Object Name="FB_VisionCmdProcessor" ObjectId="fe68b725-9761-4240-89f1-03981366ea66">
                   <Folder Name="protected">
                     <Object Name="M_SetPackML" ObjectId="93afa927-2608-4b3d-9460-07c2fd48c33a" />
                     <Object Name="M_Complete" ObjectId="fcfc6b30-29f1-4c96-9dec-23fe83a707f7" />
@@ -35493,7 +36159,7 @@ END_IF</xhtml>
                 <Object Name="E_ControllerTriggerForceParameter" ObjectId="54b4a266-7c75-4f63-967a-c2dc24d3f5bb" />
               </Folder>
               <Folder Name="template">
-                <Object Name="Module" ObjectId="06152fa3-0ee8-42bb-9309-1b5f17657eed">
+                <Object Name="FB_Module" ObjectId="06152fa3-0ee8-42bb-9309-1b5f17657eed">
                   <Folder Name="public">
                     <Object Name="M_Start" ObjectId="4fffeb3f-a502-448a-801f-62a2012af7b1" />
                     <Object Name="M_Home" ObjectId="80e95931-65c8-4c90-ad00-612ca250483e" />
@@ -35514,7 +36180,7 @@ END_IF</xhtml>
                   <Object Name="PropError" ObjectId="3b5ad92c-8b5a-464b-aed7-6f6699ae2429" />
                   <Object Name="PropErrDescription" ObjectId="e9dc189d-3561-4f34-8238-07f940859ee8" />
                 </Object>
-                <Object Name="PackML" ObjectId="6c88eb42-407a-40dd-8e49-bce1d691f0b2">
+                <Object Name="FB_PackML" ObjectId="6c88eb42-407a-40dd-8e49-bce1d691f0b2">
                   <Folder Name="transition">
                     <Object Name="M_Aborting" ObjectId="4ccdaadd-4d64-4496-9a92-f9d54027b3e6" />
                     <Object Name="M_Unholding" ObjectId="dd9db8d0-121c-491d-90d0-c48a6d1a9c8c" />
@@ -35552,8 +36218,8 @@ END_IF</xhtml>
                 </Object>
               </Folder>
               <Folder Name="varset">
-                <Object Name="ParseVarSetCmd" ObjectId="21a45979-23a6-4d05-8c5e-026456e22047" />
-                <Object Name="VarSetCmdProcessor" ObjectId="4e6d31f4-1f5e-495c-b2c6-1fabb531ce1d">
+                <Object Name="FB_ParseVarSetCmd" ObjectId="21a45979-23a6-4d05-8c5e-026456e22047" />
+                <Object Name="FB_VarSetCmdProcessor" ObjectId="4e6d31f4-1f5e-495c-b2c6-1fabb531ce1d">
                   <Folder Name="protected">
                     <Object Name="M_SetPackML" ObjectId="68d991e6-dbe4-463a-80e0-5f3da08333d1" />
                     <Object Name="M_Complete" ObjectId="130f8bcb-8a65-424f-bc15-3fc7e753edde" />
@@ -35561,13 +36227,13 @@ END_IF</xhtml>
                     <Object Name="M_Execute" ObjectId="f570903b-8d82-43ce-845d-3b6445cd6365" />
                   </Folder>
                 </Object>
-                <Object Name="BuildVarSetCmd" ObjectId="464f3abe-fbad-44ed-ab93-0358a4edadad" />
+                <Object Name="F_BuildVarSetCmd" ObjectId="464f3abe-fbad-44ed-ab93-0358a4edadad" />
                 <Object Name="ST_VarSetCmd" ObjectId="0b1a37a4-4123-4a33-84fb-db1ab5afd1a7" />
                 <Object Name="F_VarSetCmdOperate" ObjectId="4a4ec279-6d88-4f3c-a9ff-f801c2546a48" />
               </Folder>
-              <Object Name="F_SplitCmd" ObjectId="4ffeb092-e2fe-4508-9822-2d3197400b13" />
               <Folder Name="logic">
-                <Object Name="LogicCmdProcessor" ObjectId="ef05d0a0-faef-4d26-ad80-b37bf095bfda">
+                <Object Name="F_SplitCmd" ObjectId="4ffeb092-e2fe-4508-9822-2d3197400b13" />
+                <Object Name="FB_LogicCmdProcessor" ObjectId="ef05d0a0-faef-4d26-ad80-b37bf095bfda">
                   <Folder Name="protected">
                     <Object Name="M_SetPackML" ObjectId="8ca4de4a-aa41-4055-81ee-9c69366d3914" />
                     <Object Name="M_Complete" ObjectId="b9caab7f-1bc9-4e01-ad9e-5992be1f9d70" />
@@ -35576,8 +36242,8 @@ END_IF</xhtml>
                   </Folder>
                 </Object>
                 <Object Name="ST_LogicCmdIO" ObjectId="d9e4da03-9627-4669-97eb-9d4d80e11f49" />
-                <Object Name="ParseLogicCmd" ObjectId="94719e33-3b96-48b6-b30b-137cf4b2830f" />
-                <Object Name="BuildLogicCmd" ObjectId="c913c794-b56e-4d94-b465-42dec1dfd0be" />
+                <Object Name="FB_ParseLogicCmd" ObjectId="94719e33-3b96-48b6-b30b-137cf4b2830f" />
+                <Object Name="F_BuildLogicCmd" ObjectId="c913c794-b56e-4d94-b465-42dec1dfd0be" />
                 <Object Name="ST_LogicCmd" ObjectId="c4e12c65-0b92-43d3-a6f5-ab4569642ec6" />
                 <Object Name="F_ChangeJumpRow" ObjectId="38b68f93-b03b-4e6d-b291-89cec4400a06" />
               </Folder>
@@ -35639,7 +36305,7 @@ END_IF</xhtml>
                   <Object Name="P_StateOn" ObjectId="15ab277e-c978-4e7b-9e52-7a854e0469dd" />
                 </Object>
               </Folder>
-              <Object Name="RAD_TO_DEG" ObjectId="5fcdbd79-7ee6-4602-a394-dd4cc360d2d1" />
+              <Object Name="F_RadToDeg" ObjectId="5fcdbd79-7ee6-4602-a394-dd4cc360d2d1" />
               <Object Name="F_RoundToInt" ObjectId="2f55f1a8-e8da-4116-8c0b-e7482fa81b53" />
             </Folder>
             <Folder Name="GVL">
