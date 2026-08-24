@@ -31,7 +31,17 @@ python Codesys\Scripts\RunCodesysScript.py --script Codesys\Scripts\ListDeviceTr
 - `PatchTuningDeadTime.py`: Writes the deadtime-suggestion logic into `_00_Main` / `_M_Tuning` and relabels the Tuning DeadTime field. ST sources live in `Codesys/Scripts/st/`.
 - `parse_retain.py`: Decodes `BackupRetain.ret` / `Application.ret` program data and regenerates `st/M_BuildTests_impl.st`.
 - `PatchBuildTests.py`: Writes `st/M_BuildTests_impl.st` into `_00_Main.M_BuildTests` and saves `ArfBot.project`. Does not re-export PLCopen XML (that export changes format).
+- `PatchLicenseStatus.py`: Creates/updates `FB_LicenseStatus`, wires `GVL.LicenseStatus` and `_00_Main`, adds Component Manager + CmpEventMgr, then builds.
+
+## Temp scripts
+One-shot probes, dumps, and experiments go in `Codesys/Scripts/temp/` (gitignored). Do not commit them.
+
+Reusable visualization helpers live in the CODESYS skill (`dotfiles/.claude/skills/codesys/scripts/`). Copy into `temp/`, edit, run:
+
+```powershell
+python Codesys\Scripts\RunCodesysScript.py --script Codesys\Scripts\temp\patch_visu_rectangle.py --project Codesys\ArfBot.project --no-ui --text-prompts
+```
 
 ## Notes
 - CODESYS startup can be slow because each run launches the engineering environment, loads the profile, opens the project, and then runs the script.
-- Prefer keeping generated outputs such as `ListDeviceTree.out.txt` out of commits unless they are intentionally needed.
+- Prefer keeping generated outputs such as `ListDeviceTree.out.txt` out of commits unless they are intentionally needed. Logs from temp scripts should stay under `temp/`.
