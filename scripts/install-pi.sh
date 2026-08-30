@@ -978,16 +978,19 @@ EOF
     fi
     if ! is_true "${SKIP_CONTROLLER}"; then
         cat <<'EOF'
-  DualSense:       USB works without pairing. For Bluetooth:
+  DualSense:       USB works without pairing. For Bluetooth on Lite,
+                     unblock then power on before scan:
+                     sudo rfkill unblock bluetooth
                      bluetoothctl
-                     pairable on
-                     agent on
-                     default-agent
-                     scan on
-                     (hold PS + Share until the trackpad flashes)
-                     pair <MAC>
-                     trust <MAC>
-                     exit
+                       power on
+                       pairable on
+                       agent on
+                       default-agent
+                       scan on
+                       (hold PS + Share until the trackpad flashes)
+                       pair <MAC>
+                       trust <MAC>
+                       exit
 EOF
     fi
     if is_true "${VISION_ONLY}"; then
