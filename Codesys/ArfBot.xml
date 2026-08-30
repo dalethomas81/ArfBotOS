@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-30T11:10:42.4670926" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-30T11:07:30.8907079" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-30T16:34:50.106859" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-30T16:34:17.664287" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -9385,8 +9385,8 @@ stCommand.PauseTime := STRING_TO_TIME(_CmdParams[0]);</xhtml>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">
 // used to show the output image on the HMI
-// local vision:  http://&lt;plc-hostname&gt;.local:5000/vision/output_sized?width=365&amp;height=255
-// remote vision: http://&lt;vision-ip&gt;:5000/vision/output_sized?width=365&amp;height=255
+// local vision:  http://&lt;plc-hostname&gt;.local:5000/output_sized?width=365&amp;height=255
+// remote vision: http://&lt;vision-ip&gt;:5000/output_sized?width=365&amp;height=255
 IF PersistentVars.VisionSystemIpAddress &lt;&gt; VisionSystemIpAddress_Last THEN
     VisionSystemIpAddress_Last := PersistentVars.VisionSystemIpAddress;
     //
@@ -9402,8 +9402,8 @@ IF PersistentVars.VisionSystemIpAddress &lt;&gt; VisionSystemIpAddress_Last THEN
         VisionSystemUrl := CONCAT('http://', PersistentVars.VisionSystemIpAddress);
     END_IF
     //
-    VisionSystemUrl := CONCAT(VisionSystemUrl, ':5000');
-    VisionOutputImageUrl := CONCAT(VisionSystemUrl,'/vision/output_sized?width=');
+    VisionSystemUrl := CONCAT(VisionSystemUrl, ':5000/vision');
+    VisionOutputImageUrl := CONCAT(VisionSystemUrl,'/output_sized?width=');
     VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,INT_TO_STRING(VisionImageWidth));
     VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,'&amp;height=');
     VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,INT_TO_STRING(VisionImageHeight));
@@ -14937,8 +14937,8 @@ SUPER^._UnitMode.Reset();</xhtml>
                       <addData>
                         <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                           <Attributes>
-                            <Attribute Name="noinit" />
                             <Attribute Name="instance-path" Value="" />
+                            <Attribute Name="noinit" />
                           </Attributes>
                         </data>
                       </addData>
