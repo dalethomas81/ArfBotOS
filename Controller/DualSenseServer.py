@@ -424,9 +424,9 @@ def handle_connection(connection):
                 dualsense.close()
                 
             except Exception as e:
-                #if e == 'No device detected':
-                #print(e)
-                pass
+                # No pad yet (or hid/BlueZ is busy). Back off so bluetoothctl
+                # scan/pair can run while CODESYS is already connected.
+                time.sleep(1)
                 
     except Exception as e:
         print(e)
