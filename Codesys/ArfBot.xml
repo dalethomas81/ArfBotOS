@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-30T10:18:47.7595393" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-30T10:05:22.7124343" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-30T11:10:42.4670926" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-30T11:07:30.8907079" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -9385,38 +9385,42 @@ stCommand.PauseTime := STRING_TO_TIME(_CmdParams[0]);</xhtml>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">
 // used to show the output image on the HMI
-// 'http://ArfBot:5000/output'
-// http://ArfBot:5000/output_sized?width=320&amp;height=200
-IF  PersistentVars.VisionSystemIpAddress &lt;&gt; VisionSystemIpAddress_Last THEN
-	 VisionSystemIpAddress_Last :=  PersistentVars.VisionSystemIpAddress;
-	//
-	IF PersistentVars.VisionSystemIpAddress = LocalIpAddress THEN
-		// https://forge.codesys.com/forge/talk/Runtime/thread/61d60a9fb7/
-		SysSockGetHostName(szHostName:=HostName, diNameLen:=SIZEOF(HostName));
-		VisionSystemUrl := CONCAT('http://', HostName);
-	ELSE
-		VisionSystemUrl := CONCAT('http://', PersistentVars.VisionSystemIpAddress);
-	END_IF
-	//
-	VisionSystemUrl := CONCAT(VisionSystemUrl, ':5000');
-	VisionOutputImageUrl := CONCAT(VisionSystemUrl,'/output_sized?width=');
-	VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,INT_TO_STRING(VisionImageWidth));
-	VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,'&amp;height=');
-	VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,INT_TO_STRING(VisionImageHeight));
+// local vision:  http://&lt;plc-hostname&gt;.local:5000/output_sized?width=365&amp;height=255
+// remote vision: http://&lt;vision-ip&gt;:5000/output_sized?width=365&amp;height=255
+IF PersistentVars.VisionSystemIpAddress &lt;&gt; VisionSystemIpAddress_Last THEN
+    VisionSystemIpAddress_Last := PersistentVars.VisionSystemIpAddress;
+    //
+    IF PersistentVars.VisionSystemIpAddress = LocalIpAddress THEN
+        // WebVisu runs in the PC browser, so 127.0.0.1 would hit the PC.
+        // Use this PLC's mDNS name instead.
+        // https://forge.codesys.com/forge/talk/Runtime/thread/61d60a9fb7/
+        SysSockGetHostName(szHostName:=HostName, diNameLen:=SIZEOF(HostName));
+        VisionSystemUrl := CONCAT('http://', HostName);
+        VisionSystemUrl := CONCAT(VisionSystemUrl, '.local');
+    ELSE
+        // Dedicated vision Pi: the Programming HMI IP is already that box.
+        VisionSystemUrl := CONCAT('http://', PersistentVars.VisionSystemIpAddress);
+    END_IF
+    //
+    VisionSystemUrl := CONCAT(VisionSystemUrl, ':5000');
+    VisionOutputImageUrl := CONCAT(VisionSystemUrl,'/output_sized?width=');
+    VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,INT_TO_STRING(VisionImageWidth));
+    VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,'&amp;height=');
+    VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,INT_TO_STRING(VisionImageHeight));
 END_IF
 
 //
 ProcessVisionCommand(
-	VisionSystemIpAddress:= PersistentVars.VisionSystemIpAddress,
-	VisionSystemPort:= PersistentVars.VisionSystemPort,
-	StoredPositions:= PersistentVars.StoredPositions,
-	VisionRegisters:= PersistentVars.VisionRegisters,
-	Flags:= PersistentVars.Flags,
-	LogicCmdIO:= GVL.CmdIO,
-	ItfUnitMode=&gt; ,
-	Error=&gt; , 
-	ErrorDescription=&gt; , 
-	VisionStateText=&gt; );</xhtml>
+    VisionSystemIpAddress:= PersistentVars.VisionSystemIpAddress,
+    VisionSystemPort:= PersistentVars.VisionSystemPort,
+    StoredPositions:= PersistentVars.StoredPositions,
+    VisionRegisters:= PersistentVars.VisionRegisters,
+    Flags:= PersistentVars.Flags,
+    LogicCmdIO:= GVL.CmdIO,
+    ItfUnitMode=&gt; ,
+    Error=&gt; ,
+    ErrorDescription=&gt; ,
+    VisionStateText=&gt; );</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -14933,8 +14937,8 @@ SUPER^._UnitMode.Reset();</xhtml>
                       <addData>
                         <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                           <Attributes>
-                            <Attribute Name="instance-path" Value="" />
                             <Attribute Name="noinit" />
+                            <Attribute Name="instance-path" Value="" />
                           </Attributes>
                         </data>
                       </addData>
@@ -24758,12 +24762,12 @@ END_IF</xhtml>
                   <PlaceholderRedirection Placeholder="NetBaseSrv" Redirection="Net Base Services, 4.0.0.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="Standard" Redirection="Standard, 3.5.18.0 (System)" />
                   <PlaceholderRedirection Placeholder="Standard64" Redirection="Standard64, 3.5.20.0 (System)" />
-                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.9.1.0 (System)" />
                   <PlaceholderRedirection Placeholder="UTF8" Redirection="UTF-8 Encoding Support, 4.1.0.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElem3DPath" Redirection="VisuElem3DPath, 4.7.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemTextEditor" Redirection="VisuElemTextEditor, 4.8.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemCamDisplayer" Redirection="VisuElemCamDisplayer, 4.7.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemBase" Redirection="VisuElemBase, 4.9.1.0 (System)" />
+                  <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="MemoryBlockManager" Redirection="Memory Block Manager, 3.5.21.30 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemMeter" Redirection="VisuElemMeter, 4.9.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemsSpecialControls" Redirection="VisuElemsSpecialControls, 4.7.0.0 (System)" />
@@ -24779,7 +24783,7 @@ END_IF</xhtml>
                   <PlaceholderRedirection Placeholder="System_VisuElemXYChart" Redirection="VisuElemXYChart, 4.8.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="OMAC_PackML_State_Machine" Redirection="OMAC PackML State Machine, 1.0.0.4 (3S - Smart Software Solutions GmbH)" />
                   <PlaceholderRedirection Placeholder="FloatingPointUtils" Redirection="FloatingPointUtils, 4.0.0.0 (System)" />
-                  <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.9.1.0 (System)" />
                   <PlaceholderRedirection Placeholder="Collections" Redirection="Collections, 3.5.17.0 (System)" />
                   <PlaceholderRedirection Placeholder="StringSegs" Redirection="Immutable String Segments, 3.5.18.0 (3S - Smart Software Solutions GmbH)" />
                   <PlaceholderRedirection Placeholder="CBML" Redirection="Common Behaviour Model, 4.0.0.0 (CODESYS)" />
