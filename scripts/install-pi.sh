@@ -562,7 +562,7 @@ install_packages() {
         fi
     fi
     if ! is_true "${SKIP_CONTROLLER}"; then
-        apt_install_available libhidapi-dev libhidapi-hidraw0 libhidapi-libusb0
+        apt_install_available libhidapi-dev libhidapi-hidraw0 libhidapi-libusb0 rfkill
     fi
 }
 
@@ -655,6 +655,10 @@ deploy_controller_files() {
     if command -v udevadm >/dev/null 2>&1; then
         run udevadm control --reload-rules || warn "udevadm reload failed"
         run udevadm trigger || warn "udevadm trigger failed"
+    fi
+    if command -v rfkill >/dev/null 2>&1; then
+        log "unblocking Bluetooth (Lite images often rfkill-block hci0)"
+        run rfkill unblock bluetooth || warn "rfkill unblock bluetooth failed"
     fi
 }
 
