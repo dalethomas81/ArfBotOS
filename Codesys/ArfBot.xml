@@ -9385,8 +9385,8 @@ stCommand.PauseTime := STRING_TO_TIME(_CmdParams[0]);</xhtml>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">
 // used to show the output image on the HMI
-// local vision:  http://&lt;plc-hostname&gt;.local:5000/output_sized?width=365&amp;height=255
-// remote vision: http://&lt;vision-ip&gt;:5000/output_sized?width=365&amp;height=255
+// local vision:  http://&lt;plc-hostname&gt;.local:5000/vision/output_sized?width=365&amp;height=255
+// remote vision: http://&lt;vision-ip&gt;:5000/vision/output_sized?width=365&amp;height=255
 IF PersistentVars.VisionSystemIpAddress &lt;&gt; VisionSystemIpAddress_Last THEN
     VisionSystemIpAddress_Last := PersistentVars.VisionSystemIpAddress;
     //
@@ -9403,7 +9403,7 @@ IF PersistentVars.VisionSystemIpAddress &lt;&gt; VisionSystemIpAddress_Last THEN
     END_IF
     //
     VisionSystemUrl := CONCAT(VisionSystemUrl, ':5000');
-    VisionOutputImageUrl := CONCAT(VisionSystemUrl,'/output_sized?width=');
+    VisionOutputImageUrl := CONCAT(VisionSystemUrl,'/vision/output_sized?width=');
     VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,INT_TO_STRING(VisionImageWidth));
     VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,'&amp;height=');
     VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,INT_TO_STRING(VisionImageHeight));
