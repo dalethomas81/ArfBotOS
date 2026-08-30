@@ -8,12 +8,13 @@
 # Does NOT install: Raspberry Pi OS, the CODESYS Windows IDE/runtime,
 # CODESYS licenses, or Arduino/Teensy firmware.
 #
-# PLC Pi (recommended): SSH in, Windows Tools > Update Raspberry Pi, then:
-#   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/feature/pi-installer/scripts/install-pi.sh | bash
-#   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/feature/pi-installer/scripts/install-pi.sh | bash -s -- --plc-only
+# PLC Pi (recommended): image 64-bit Lite, Tools > Update Raspberry Pi (64 SL),
+# download ArfBot.project, then:
+#   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/main/scripts/install-pi.sh | bash
+#   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/main/scripts/install-pi.sh | bash -s -- --plc-only
 #
 # Dedicated vision Pi (no CODESYS):
-#   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/feature/pi-installer/scripts/install-pi.sh | bash -s -- --vision-only
+#   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/main/scripts/install-pi.sh | bash -s -- --vision-only
 #
 # From an existing checkout:
 #   sudo ./scripts/install-pi.sh
@@ -29,7 +30,7 @@ set -euo pipefail
 DEFAULT_REPO_URL="https://github.com/dalethomas81/ArfBotOS.git"
 # Keep this matching the branch this file is published from so
 # `curl | bash` clones the same tree it just downloaded.
-DEFAULT_REPO_REF="feature/pi-installer"
+DEFAULT_REPO_REF="main"
 
 REPO_URL="${ARFBOT_REPO:-${DEFAULT_REPO_URL}}"
 REPO_REF="${ARFBOT_REF:-${DEFAULT_REPO_REF}}"
@@ -96,20 +97,21 @@ Environment:
   ARFBOT_REPO         Same as --repo
   ARFBOT_REF          Same as --ref
 
-Typical PLC Pi (32-bit Raspberry Pi OS):
-  1. SSH in
-  2. From Windows CODESYS: Tools > Update Raspberry Pi (32-bit multicore)
-  3. curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${DEFAULT_REPO_REF}/scripts/install-pi.sh | bash
+Typical PLC Pi (Raspberry Pi OS 64-bit Lite):
+  1. Image the Pi and SSH in
+  2. From Windows CODESYS: Tools > Update Raspberry Pi (Raspberry Pi 64 SL)
+  3. Multiple Download of ArfBot.project
+  4. curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${DEFAULT_REPO_REF}/scripts/install-pi.sh | bash
 
 PLC Pi without vision (same order, then):
   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${DEFAULT_REPO_REF}/scripts/install-pi.sh | bash -s -- --plc-only
 
-Dedicated vision Pi (64-bit Lite recommended, no CODESYS):
+Dedicated vision Pi (64-bit Lite, no CODESYS):
   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${DEFAULT_REPO_REF}/scripts/install-pi.sh | bash -s -- --vision-only
 
-The installer does not wait for the CODESYS runtime. If you already ran it
-before Update Raspberry Pi, run it again afterward so it can set
-SysProcess Command=AllowAll — it will not redo the rest from scratch.
+If you ran this installer before the CODESYS runtime was present, run it
+again afterward so it can set SysProcess Command=AllowAll. It will not redo
+the rest from scratch.
 EOF
 }
 
@@ -1042,29 +1044,9 @@ EOF
     fi
     if ! is_true "${SKIP_CODESYS}" && [[ ! -f /etc/CODESYSControl.cfg && ! -f /etc/codesyscontrol/CODESYSControl.cfg ]]; then
         cat <<EOF
-  CODESYS runtime: not detected.
-                     Recommended: Tools > Update Raspberry Pi first, then this
-                     installer once. If you already ran this script, run it
-                     again after the runtime so it can set SysProcess
-                     Command=AllowAll. Then Multiple Download of ArfBot.project.
-EOF
-    fi
-    if ! is_true "${SKIP_CONTROLLER}"; then
-        cat <<EOF
-  DualSense:       USB works without pairing. Bluetooth pairing UI:
-                     http://${ip:-<pi-ip>}:5000/bluetooth
-                   CLI fallback on Lite (rfkill then power on):
-                     sudo rfkill unblock bluetooth
-                     bluetoothctl
-                       power on
-                       pairable on
-                       agent on
-                       default-agent
-                       scan on
-                       (hold PS + Share until the trackpad flashes)
-                       pair <MAC>
-                       trust <MAC>
-                       exit
+  CODESYS runtime: not detected. Run this script again after
+                     Tools > Update Raspberry Pi so it can set
+                     SysProcess Command=AllowAll.
 EOF
     fi
     if is_true "${VISION_ONLY}"; then
@@ -1088,7 +1070,7 @@ Web dest:          ${WEB_DST}
 Controller dest:   ${CONTROLLER_DST}
 Venv:              ${VENV_DIR}
 
-PLC Pi (runtime first, then):
+PLC Pi:
   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${REPO_REF}/scripts/install-pi.sh | bash
   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${REPO_REF}/scripts/install-pi.sh | bash -s -- --plc-only
 

@@ -58,7 +58,7 @@ The older `OpenCV/VisionWebServer` tree is no longer deployed. Keep it only as h
 
 ## Bluetooth pairing
 
-`Power On` and `Scan` call `rfkill unblock bluetooth` then `bluetoothctl power on` so Lite images that ship `off-blocked` work from the browser. DualSense CLI pairing in the wiki remains a fallback.
+`Power On` and `Scan` call `rfkill unblock bluetooth` then `bluetoothctl power on` so Lite images that ship `off-blocked` work from the browser.
 
 API (all under `/bluetooth`):
 

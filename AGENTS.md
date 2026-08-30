@@ -41,8 +41,9 @@ When starting a new session in this repo, read these files first:
 
 ### `scripts/`
 - Raspberry Pi Linux installer: `scripts/install-pi.sh`.
-- Intended to be run from SSH as `curl .../scripts/install-pi.sh | bash` (clones this repo if needed). Flags: `--plc-only` (no camera/OpenCV; still DualSense + Bluetooth web), `--vision-only` (no DualSense/CODESYS).
-- On a PLC Pi, install the CODESYS runtime first (Tools → Update Raspberry Pi), then run this script once. It does not block if the runtime is missing; re-run afterward only to set `SysProcess=AllowAll`.
+- Default target is Raspberry Pi OS **64-bit Lite** with CODESYS Control **Raspberry Pi 64 SL**. 32-bit is no longer the documented path.
+- `curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/main/scripts/install-pi.sh | bash` (clones this repo if needed). Flags: `--plc-only` (no camera/OpenCV; still DualSense + Bluetooth web), `--vision-only` (no DualSense/CODESYS).
+- Recommended PLC Pi order: image the Pi, Tools → Update Raspberry Pi, Multiple Download of `ArfBot.project`, then the installer. If the runtime was missing, re-run afterward only to set `SysProcess=AllowAll`.
 - Covers camera overlay, OpenCV, the combined web UI (`Web/` → `Application/Web` on :5000), vision/controller systemd services, and CODESYS `SysProcess=AllowAll` when the runtime is already present. It does not install the CODESYS Windows IDE, runtime, licenses, or Arduino/Teensy firmware.
 
 ### `Controller/`
