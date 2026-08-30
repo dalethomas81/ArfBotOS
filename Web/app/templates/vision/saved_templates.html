@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block page_class %}centered{% endblock %}
+
+{% block content %}
+    <h1>Saved Templates</h1>
+    <p>Templates live in /var/opt/codesys/PlcLogic/Application/Vision/Templates</p>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(document).on('click', 'button[data-id]', function (e) {
+            var filename = $(this).attr('data-id');
+            deleteTemplate(filename.split('\\').pop().split('/').pop())
+        });
+
+        function deleteTemplate(filename) {
+            $.get("{{ url_for('vision.delete_template') }}"+"/"+filename,function(data,status) {
+            },'html')
+            .done(function() {
+                location.reload();
+            });
+        }
+    </script>
+
+    {% if files %}
+    <ul class="file-grid">
+    {% for file in files %}
+        <li class="file-card">
+            <img src="{{ url_for('vision.file', filename=file) }}" alt="{{ file }}" />
+            <a href="{{ url_for('vision.file', filename=file) }}">{{ file }}</a>
+            <button class="danger small" data-id="{{ url_for('vision.file', filename=file) }}">Delete</button>
+        </li>
+    {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty">No templates saved yet.</div>
+    {% endif %}
+{% endblock %}

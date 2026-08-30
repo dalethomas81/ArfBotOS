@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-20T21:20:49.3334458" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-20T21:11:47.0429189" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP21 Patch 5" creationDateTime="2026-08-30T16:34:50.106859" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-08-30T16:34:17.664287" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -117,7 +117,7 @@
               </data>
             </addData>
           </task>
-          <task name="EtherCAT_Task" interval="PT0.001S" priority="1">
+          <task name="EtherCAT_Task" interval="PT0.004S" priority="1">
             <pouInstance name="_10_Robot" typeName="">
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml" />
@@ -130,7 +130,7 @@
             </pouInstance>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
-                <TaskSettings KindOfTask="Cyclic" Interval="1" IntervalUnit="ms" WithinSPSTimeSlicing="true">
+                <TaskSettings KindOfTask="Cyclic" Interval="4000" IntervalUnit="µs" WithinSPSTimeSlicing="true">
                   <Watchdog Enabled="false" TimeUnit="ms" />
                 </TaskSettings>
               </data>
@@ -651,6 +651,11 @@ RESERVED: INT:=46;</xhtml>
             <variable name="Servo0Position">
               <type>
                 <BYTE />
+              </type>
+            </variable>
+            <variable name="LicenseStatus">
+              <type>
+                <derived name="FB_LicenseStatus" />
               </type>
             </variable>
             <addData>
@@ -1175,14 +1180,14 @@ RESERVED: INT:=46;</xhtml>
                         <simpleValue value="0" />
                       </initialValue>
                     </variable>
-                    <variable name="LicenseStatus">
-                      <type>
-                        <derived name="FB_LicenseStatus" />
-                      </type>
-                    </variable>
                     <variable name="Servo0Position">
                       <type>
                         <BYTE />
+                      </type>
+                    </variable>
+                    <variable name="LicenseStatus">
+                      <type>
+                        <derived name="FB_LicenseStatus" />
                       </type>
                     </variable>
                   </globalVars>
@@ -3574,8 +3579,8 @@ RESERVED: INT:=46;</xhtml>
     {IF defined (IsSimulationMode)}
         GVL.dwMainInterval := 1000;
     {ELSE}
-        TaskHandle := CmpIecTask.IecTaskGetCurrent(Result);
-        TaskInfo := CmpIecTask.IecTaskGetInfo3(TaskHandle, Result);
+        TaskHandle := CmpIecTask.IecTaskGetCurrent(ADR(Result));
+        TaskInfo := CmpIecTask.IecTaskGetInfo3(TaskHandle, ADR(Result));
         GVL.dwMainInterval := TaskInfo^.dwInterval;
     {END_IF}
     
@@ -9380,38 +9385,42 @@ stCommand.PauseTime := STRING_TO_TIME(_CmdParams[0]);</xhtml>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">
 // used to show the output image on the HMI
-// 'http://ArfBot:5000/output'
-// http://ArfBot:5000/output_sized?width=320&amp;height=200
-IF  PersistentVars.VisionSystemIpAddress &lt;&gt; VisionSystemIpAddress_Last THEN
-	 VisionSystemIpAddress_Last :=  PersistentVars.VisionSystemIpAddress;
-	//
-	IF PersistentVars.VisionSystemIpAddress = LocalIpAddress THEN
-		// https://forge.codesys.com/forge/talk/Runtime/thread/61d60a9fb7/
-		SysSockGetHostName(szHostName:=HostName, diNameLen:=SIZEOF(HostName));
-		VisionSystemUrl := CONCAT('http://', HostName);
-	ELSE
-		VisionSystemUrl := CONCAT('http://', PersistentVars.VisionSystemIpAddress);
-	END_IF
-	//
-	VisionSystemUrl := CONCAT(VisionSystemUrl, ':5000');
-	VisionOutputImageUrl := CONCAT(VisionSystemUrl,'/output_sized?width=');
-	VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,INT_TO_STRING(VisionImageWidth));
-	VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,'&amp;height=');
-	VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,INT_TO_STRING(VisionImageHeight));
+// local vision:  http://&lt;plc-hostname&gt;.local:5000/output_sized?width=365&amp;height=255
+// remote vision: http://&lt;vision-ip&gt;:5000/output_sized?width=365&amp;height=255
+IF PersistentVars.VisionSystemIpAddress &lt;&gt; VisionSystemIpAddress_Last THEN
+    VisionSystemIpAddress_Last := PersistentVars.VisionSystemIpAddress;
+    //
+    IF PersistentVars.VisionSystemIpAddress = LocalIpAddress THEN
+        // WebVisu runs in the PC browser, so 127.0.0.1 would hit the PC.
+        // Use this PLC's mDNS name instead.
+        // https://forge.codesys.com/forge/talk/Runtime/thread/61d60a9fb7/
+        SysSockGetHostName(szHostName:=HostName, diNameLen:=SIZEOF(HostName));
+        VisionSystemUrl := CONCAT('http://', HostName);
+        VisionSystemUrl := CONCAT(VisionSystemUrl, '.local');
+    ELSE
+        // Dedicated vision Pi: the Programming HMI IP is already that box.
+        VisionSystemUrl := CONCAT('http://', PersistentVars.VisionSystemIpAddress);
+    END_IF
+    //
+    VisionSystemUrl := CONCAT(VisionSystemUrl, ':5000/vision');
+    VisionOutputImageUrl := CONCAT(VisionSystemUrl,'/output_sized?width=');
+    VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,INT_TO_STRING(VisionImageWidth));
+    VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,'&amp;height=');
+    VisionOutputImageUrl := CONCAT(VisionOutputImageUrl,INT_TO_STRING(VisionImageHeight));
 END_IF
 
 //
 ProcessVisionCommand(
-	VisionSystemIpAddress:= PersistentVars.VisionSystemIpAddress,
-	VisionSystemPort:= PersistentVars.VisionSystemPort,
-	StoredPositions:= PersistentVars.StoredPositions,
-	VisionRegisters:= PersistentVars.VisionRegisters,
-	Flags:= PersistentVars.Flags,
-	LogicCmdIO:= GVL.CmdIO,
-	ItfUnitMode=&gt; ,
-	Error=&gt; , 
-	ErrorDescription=&gt; , 
-	VisionStateText=&gt; );</xhtml>
+    VisionSystemIpAddress:= PersistentVars.VisionSystemIpAddress,
+    VisionSystemPort:= PersistentVars.VisionSystemPort,
+    StoredPositions:= PersistentVars.StoredPositions,
+    VisionRegisters:= PersistentVars.VisionRegisters,
+    Flags:= PersistentVars.Flags,
+    LogicCmdIO:= GVL.CmdIO,
+    ItfUnitMode=&gt; ,
+    Error=&gt; ,
+    ErrorDescription=&gt; ,
+    VisionStateText=&gt; );</xhtml>
                   </ST>
                 </body>
                 <addData>
@@ -23746,437 +23755,6 @@ _FirstScan := FALSE;</xhtml>
               </pou>
             </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
-              <pou name="FB_LicenseStatus" pouType="functionBlock">
-                <interface>
-                  <outputVars>
-                    <variable name="eState">
-                      <type>
-                        <derived name="CmpMgr.RUNTIME_LICENSE_STATE" />
-                      </type>
-                    </variable>
-                    <variable name="udiSecondsLeft">
-                      <type>
-                        <UDINT />
-                      </type>
-                    </variable>
-                    <variable name="udiMinutesLeft">
-                      <type>
-                        <UDINT />
-                      </type>
-                    </variable>
-                    <variable name="tRemaining">
-                      <type>
-                        <TIME />
-                      </type>
-                    </variable>
-                    <variable name="sState">
-                      <type>
-                        <string length="32" />
-                      </type>
-                    </variable>
-                    <variable name="sBanner">
-                      <type>
-                        <string length="80" />
-                      </type>
-                    </variable>
-                    <variable name="xDemo">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="xLicensed">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="xShowBanner">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                  </outputVars>
-                  <localVars>
-                    <variable name="_hEvent">
-                      <type>
-                        <derived name="SysTypes.RTS_IEC_HANDLE" />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="SysTypes.RTS_INVALID_HANDLE" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_hCallback">
-                      <type>
-                        <derived name="SysTypes.RTS_IEC_HANDLE" />
-                      </type>
-                      <initialValue>
-                        <simpleValue value="SysTypes.RTS_INVALID_HANDLE" />
-                      </initialValue>
-                    </variable>
-                    <variable name="_result">
-                      <type>
-                        <derived name="SysTypes.RTS_IEC_RESULT" />
-                      </type>
-                    </variable>
-                    <variable name="_xRegistered">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="_xTried">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="_xGotEvent">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="_udiSecondsAtEvent">
-                      <type>
-                        <UDINT />
-                      </type>
-                    </variable>
-                    <variable name="_tEvent">
-                      <type>
-                        <TIME />
-                      </type>
-                    </variable>
-                    <variable name="_tRetry">
-                      <type>
-                        <TIME />
-                      </type>
-                    </variable>
-                    <variable name="_udiElapsed">
-                      <type>
-                        <UDINT />
-                      </type>
-                    </variable>
-                    <variable name="_sMin">
-                      <type>
-                        <string length="11" />
-                      </type>
-                    </variable>
-                    <variable name="_sSec">
-                      <type>
-                        <string length="11" />
-                      </type>
-                    </variable>
-                    <variable name="_udiSec">
-                      <type>
-                        <UDINT />
-                      </type>
-                    </variable>
-                  </localVars>
-                  <addData>
-                    <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
-                      <Inheritance>
-                        <Implements>CmpEventMgr.ICmpEventCallback</Implements>
-                      </Inheritance>
-                    </data>
-                  </addData>
-                </interface>
-                <body>
-                  <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">M_EnsureRegistered();
-M_UpdateRemaining();
-M_BuildBanner();</xhtml>
-                  </ST>
-                </body>
-                <addData>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="EventCallback" ObjectId="bbb97f39-05c3-55ba-af1d-5eb73fef989d">
-                      <interface>
-                        <returnType>
-                          <derived name="SysTypes.RTS_IEC_RESULT" />
-                        </returnType>
-                        <inputVars>
-                          <variable name="pEventParam">
-                            <type>
-                              <pointer>
-                                <baseType>
-                                  <derived name="CmpEventMgr.EventParam" />
-                                </baseType>
-                              </pointer>
-                            </type>
-                          </variable>
-                        </inputVars>
-                        <localVars>
-                          <variable name="pLic">
-                            <type>
-                              <pointer>
-                                <baseType>
-                                  <derived name="CmpMgr.EVTPARAM_CmpMgr_LicenseState" />
-                                </baseType>
-                              </pointer>
-                            </type>
-                          </variable>
-                        </localVars>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">EventCallback := 0;
-IF pEventParam = 0 THEN
-	RETURN;
-END_IF
-IF pEventParam^.EventId &lt;&gt; CmpMgr.EventIDs.EVT_CmpMgr_LicenseState THEN
-	RETURN;
-END_IF
-IF pEventParam^.pParameter = 0 THEN
-	RETURN;
-END_IF
-
-pLic := pEventParam^.pParameter;
-eState := pLic^.state;
-_xGotEvent := TRUE;
-_tEvent := TIME();
-IF pLic^.secondsToExpiration &gt; 0 THEN
-	_udiSecondsAtEvent := pLic^.secondsToExpiration;
-ELSIF eState = CmpMgr.RUNTIME_LICENSE_STATE.DEMOMODE THEN
-	_udiSecondsAtEvent := 7200;
-ELSE
-	_udiSecondsAtEvent := 0;
-END_IF
-udiSecondsLeft := _udiSecondsAtEvent;</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="FB_Init" ObjectId="12e6ebed-9971-5cf8-bb39-daf10e63314c">
-                      <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
-                        <inputVars>
-                          <variable name="bInitRetains">
-                            <type>
-                              <BOOL />
-                            </type>
-                          </variable>
-                          <variable name="bInCopyCode">
-                            <type>
-                              <BOOL />
-                            </type>
-                          </variable>
-                        </inputVars>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT bInCopyCode THEN
-	M_EnsureRegistered();
-END_IF
-FB_Init := TRUE;</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="FB_Exit" ObjectId="90a05c4e-17c5-548e-a4cf-78708a6f267a">
-                      <interface>
-                        <returnType>
-                          <BOOL />
-                        </returnType>
-                        <inputVars>
-                          <variable name="bInCopyCode">
-                            <type>
-                              <BOOL />
-                            </type>
-                          </variable>
-                        </inputVars>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT bInCopyCode THEN
-	M_Unregister();
-END_IF
-FB_Exit := TRUE;</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_EnsureRegistered" ObjectId="db22b6a1-174c-5732-be62-1bf4d260a642">
-                      <interface>
-                        <localVars>
-                          <variable name="tNow">
-                            <type>
-                              <TIME />
-                            </type>
-                          </variable>
-                        </localVars>
-                        <addData>
-                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
-                            <AccessModifiers Private="true" />
-                          </data>
-                        </addData>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF _xRegistered THEN
-	RETURN;
-END_IF
-
-tNow := TIME();
-IF _xTried AND ((tNow - _tRetry) &lt; T#2S) THEN
-	RETURN;
-END_IF
-_xTried := TRUE;
-_tRetry := tNow;
-
-IF _hEvent = SysTypes.RTS_INVALID_HANDLE THEN
-	_hEvent := CmpEventMgr.EventOpen(
-		EventId := CmpMgr.EventIDs.EVT_CmpMgr_LicenseState,
-		CmpIdProvider := CmpMgr.ComponentID.CMPID_CmpMgr,
-		Result := _result);
-END_IF
-
-IF _hEvent = SysTypes.RTS_INVALID_HANDLE THEN
-	RETURN;
-END_IF
-
-_hCallback := CmpEventMgr.EventRegisterCallback2(
-	hEvent := _hEvent,
-	pICallback := THIS^,
-	pUserParameter := 0,
-	Result := _result);
-
-IF _hCallback &lt;&gt; SysTypes.RTS_INVALID_HANDLE THEN
-	_xRegistered := TRUE;
-END_IF</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_Unregister" ObjectId="320d2bd0-e838-519e-b405-e7b3962bed8d">
-                      <interface>
-                        <addData>
-                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
-                            <AccessModifiers Private="true" />
-                          </data>
-                        </addData>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF _hCallback &lt;&gt; SysTypes.RTS_INVALID_HANDLE THEN
-	_result := CmpEventMgr.EventUnregisterCallback(
-		hEvent := _hEvent,
-		hInterface := _hCallback);
-END_IF
-IF _hEvent &lt;&gt; SysTypes.RTS_INVALID_HANDLE THEN
-	_result := CmpEventMgr.EventClose2(hEvent := _hEvent);
-END_IF
-_hEvent := SysTypes.RTS_INVALID_HANDLE;
-_hCallback := SysTypes.RTS_INVALID_HANDLE;
-_xRegistered := FALSE;</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_UpdateRemaining" ObjectId="1fb30b69-ae39-5d07-904f-7126811b2a79">
-                      <interface>
-                        <addData>
-                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
-                            <AccessModifiers Private="true" />
-                          </data>
-                        </addData>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">xDemo := (eState = CmpMgr.RUNTIME_LICENSE_STATE.DEMOMODE);
-xLicensed := (eState = CmpMgr.RUNTIME_LICENSE_STATE.LICENSED);
-xShowBanner := xDemo
-	OR (eState = CmpMgr.RUNTIME_LICENSE_STATE.LICENSE_LOST)
-	OR (eState = CmpMgr.RUNTIME_LICENSE_STATE.TRIGGER_SHUTDOWN)
-	OR (eState = CmpMgr.RUNTIME_LICENSE_STATE.SAFEMODE);
-
-IF xLicensed THEN
-	udiSecondsLeft := 0;
-	udiMinutesLeft := 0;
-	tRemaining := T#0S;
-	RETURN;
-END_IF
-
-IF _xGotEvent AND (xDemo OR (eState = CmpMgr.RUNTIME_LICENSE_STATE.TRIGGER_SHUTDOWN)) THEN
-	_udiElapsed := TIME_TO_UDINT(TIME() - _tEvent) / 1000;
-	IF _udiElapsed &lt; _udiSecondsAtEvent THEN
-		udiSecondsLeft := _udiSecondsAtEvent - _udiElapsed;
-	ELSE
-		udiSecondsLeft := 0;
-	END_IF
-END_IF
-
-udiMinutesLeft := udiSecondsLeft / 60;
-tRemaining := UDINT_TO_TIME(udiSecondsLeft * 1000);</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
-                    <Method name="M_BuildBanner" ObjectId="a13f3131-62e0-5919-b27c-f71321edf346">
-                      <interface>
-                        <addData>
-                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
-                            <AccessModifiers Private="true" />
-                          </data>
-                        </addData>
-                      </interface>
-                      <body>
-                        <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">CASE eState OF
-	CmpMgr.RUNTIME_LICENSE_STATE.DEMOMODE:
-		sState := 'DEMO';
-	CmpMgr.RUNTIME_LICENSE_STATE.LICENSED:
-		sState := 'LICENSED';
-	CmpMgr.RUNTIME_LICENSE_STATE.LICENSE_LOST:
-		sState := 'LICENSE LOST';
-	CmpMgr.RUNTIME_LICENSE_STATE.TRIGGER_SHUTDOWN:
-		sState := 'SHUTTING DOWN';
-	CmpMgr.RUNTIME_LICENSE_STATE.SAFEMODE:
-		sState := 'SAFE MODE';
-ELSE
-	sState := '';
-END_CASE
-
-IF NOT xShowBanner THEN
-	sBanner := '';
-	RETURN;
-END_IF
-
-IF eState = CmpMgr.RUNTIME_LICENSE_STATE.DEMOMODE THEN
-	_udiSec := udiSecondsLeft MOD 60;
-	_sMin := UDINT_TO_STRING(udiMinutesLeft);
-	_sSec := UDINT_TO_STRING(_udiSec);
-	sBanner := CONCAT('DEMO LICENSE  ', _sMin);
-	sBanner := CONCAT(sBanner, 'm ');
-	sBanner := CONCAT(sBanner, _sSec);
-	sBanner := CONCAT(sBanner, 's remaining');
-ELSIF eState = CmpMgr.RUNTIME_LICENSE_STATE.TRIGGER_SHUTDOWN THEN
-	sBanner := CONCAT('LICENSE SHUTDOWN  ', UDINT_TO_STRING(udiSecondsLeft));
-	sBanner := CONCAT(sBanner, 's');
-ELSE
-	sBanner := sState;
-END_IF</xhtml>
-                        </ST>
-                      </body>
-                      <addData />
-                    </Method>
-                  </data>
-                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
-                    <ObjectId>6a8beb29-2fee-57c9-97cf-0b6c4cb5aa49</ObjectId>
-                  </data>
-                </addData>
-              </pou>
-            </data>
-            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
               <pou name="F_ChangeJumpRow" pouType="function">
                 <interface>
                   <returnType>
@@ -24670,6 +24248,437 @@ END_IF</xhtml>
                 </addData>
               </pou>
             </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="FB_LicenseStatus" pouType="functionBlock">
+                <interface>
+                  <outputVars>
+                    <variable name="eState">
+                      <type>
+                        <derived name="CmpMgr.RUNTIME_LICENSE_STATE" />
+                      </type>
+                    </variable>
+                    <variable name="udiSecondsLeft">
+                      <type>
+                        <UDINT />
+                      </type>
+                    </variable>
+                    <variable name="udiMinutesLeft">
+                      <type>
+                        <UDINT />
+                      </type>
+                    </variable>
+                    <variable name="tRemaining">
+                      <type>
+                        <TIME />
+                      </type>
+                    </variable>
+                    <variable name="sState">
+                      <type>
+                        <string length="32" />
+                      </type>
+                    </variable>
+                    <variable name="sBanner">
+                      <type>
+                        <string length="80" />
+                      </type>
+                    </variable>
+                    <variable name="xDemo">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="xLicensed">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="xShowBanner">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                  </outputVars>
+                  <localVars>
+                    <variable name="_hEvent">
+                      <type>
+                        <derived name="SysTypes.RTS_IEC_HANDLE" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="SysTypes.RTS_INVALID_HANDLE" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_hCallback">
+                      <type>
+                        <derived name="SysTypes.RTS_IEC_HANDLE" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="SysTypes.RTS_INVALID_HANDLE" />
+                      </initialValue>
+                    </variable>
+                    <variable name="_result">
+                      <type>
+                        <derived name="SysTypes.RTS_IEC_RESULT" />
+                      </type>
+                    </variable>
+                    <variable name="_xRegistered">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_xTried">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_xGotEvent">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="_udiSecondsAtEvent">
+                      <type>
+                        <UDINT />
+                      </type>
+                    </variable>
+                    <variable name="_tEvent">
+                      <type>
+                        <TIME />
+                      </type>
+                    </variable>
+                    <variable name="_tRetry">
+                      <type>
+                        <TIME />
+                      </type>
+                    </variable>
+                    <variable name="_udiElapsed">
+                      <type>
+                        <UDINT />
+                      </type>
+                    </variable>
+                    <variable name="_sMin">
+                      <type>
+                        <string length="11" />
+                      </type>
+                    </variable>
+                    <variable name="_sSec">
+                      <type>
+                        <string length="11" />
+                      </type>
+                    </variable>
+                    <variable name="_udiSec">
+                      <type>
+                        <UDINT />
+                      </type>
+                    </variable>
+                  </localVars>
+                  <addData>
+                    <data name="http://www.3s-software.com/plcopenxml/pouinheritance" handleUnknown="implementation">
+                      <Inheritance>
+                        <Implements>CmpEventMgr.ICmpEventCallback</Implements>
+                      </Inheritance>
+                    </data>
+                  </addData>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">M_EnsureRegistered();
+M_UpdateRemaining();
+M_BuildBanner();</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="EventCallback" ObjectId="9d5160ce-9334-4ebe-abf6-9c769afb3a4a">
+                      <interface>
+                        <returnType>
+                          <derived name="SysTypes.RTS_IEC_RESULT" />
+                        </returnType>
+                        <inputVars>
+                          <variable name="pEventParam">
+                            <type>
+                              <pointer>
+                                <baseType>
+                                  <derived name="CmpEventMgr.EventParam" />
+                                </baseType>
+                              </pointer>
+                            </type>
+                          </variable>
+                        </inputVars>
+                        <localVars>
+                          <variable name="pLic">
+                            <type>
+                              <pointer>
+                                <baseType>
+                                  <derived name="CmpMgr.EVTPARAM_CmpMgr_LicenseState" />
+                                </baseType>
+                              </pointer>
+                            </type>
+                          </variable>
+                        </localVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">EventCallback := 0;
+IF pEventParam = 0 THEN
+	RETURN;
+END_IF
+IF pEventParam^.EventId &lt;&gt; CmpMgr.EventIDs.EVT_CmpMgr_LicenseState THEN
+	RETURN;
+END_IF
+IF pEventParam^.pParameter = 0 THEN
+	RETURN;
+END_IF
+
+pLic := pEventParam^.pParameter;
+eState := pLic^.state;
+_xGotEvent := TRUE;
+_tEvent := TIME();
+IF pLic^.secondsToExpiration &gt; 0 THEN
+	_udiSecondsAtEvent := pLic^.secondsToExpiration;
+ELSIF eState = CmpMgr.RUNTIME_LICENSE_STATE.DEMOMODE THEN
+	_udiSecondsAtEvent := 7200;
+ELSE
+	_udiSecondsAtEvent := 0;
+END_IF
+udiSecondsLeft := _udiSecondsAtEvent;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="FB_Init" ObjectId="4c0cf37d-0331-47a8-9534-2e4cc18e6954">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="bInitRetains">
+                            <type>
+                              <BOOL />
+                            </type>
+                          </variable>
+                          <variable name="bInCopyCode">
+                            <type>
+                              <BOOL />
+                            </type>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT bInCopyCode THEN
+	M_EnsureRegistered();
+END_IF
+FB_Init := TRUE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="FB_Exit" ObjectId="3477a245-8469-4baa-b808-450f744c70fd">
+                      <interface>
+                        <returnType>
+                          <BOOL />
+                        </returnType>
+                        <inputVars>
+                          <variable name="bInCopyCode">
+                            <type>
+                              <BOOL />
+                            </type>
+                          </variable>
+                        </inputVars>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF NOT bInCopyCode THEN
+	M_Unregister();
+END_IF
+FB_Exit := TRUE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_EnsureRegistered" ObjectId="881016bd-ad84-4770-b44a-1c2586f5ce70">
+                      <interface>
+                        <localVars>
+                          <variable name="tNow">
+                            <type>
+                              <TIME />
+                            </type>
+                          </variable>
+                        </localVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF _xRegistered THEN
+	RETURN;
+END_IF
+
+tNow := TIME();
+IF _xTried AND ((tNow - _tRetry) &lt; T#2S) THEN
+	RETURN;
+END_IF
+_xTried := TRUE;
+_tRetry := tNow;
+
+IF _hEvent = SysTypes.RTS_INVALID_HANDLE THEN
+	_hEvent := CmpEventMgr.EventOpen(
+		EventId := CmpMgr.EventIDs.EVT_CmpMgr_LicenseState,
+		CmpIdProvider := CmpMgr.ComponentID.CMPID_CmpMgr,
+		Result := _result);
+END_IF
+
+IF _hEvent = SysTypes.RTS_INVALID_HANDLE THEN
+	RETURN;
+END_IF
+
+_hCallback := CmpEventMgr.EventRegisterCallback2(
+	hEvent := _hEvent,
+	pICallback := THIS^,
+	pUserParameter := 0,
+	Result := _result);
+
+IF _hCallback &lt;&gt; SysTypes.RTS_INVALID_HANDLE THEN
+	_xRegistered := TRUE;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_Unregister" ObjectId="008283b4-cfec-4010-bde6-cd473d39e0fc">
+                      <interface>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">IF _hCallback &lt;&gt; SysTypes.RTS_INVALID_HANDLE THEN
+	_result := CmpEventMgr.EventUnregisterCallback(
+		hEvent := _hEvent,
+		hInterface := _hCallback);
+END_IF
+IF _hEvent &lt;&gt; SysTypes.RTS_INVALID_HANDLE THEN
+	_result := CmpEventMgr.EventClose2(hEvent := _hEvent);
+END_IF
+_hEvent := SysTypes.RTS_INVALID_HANDLE;
+_hCallback := SysTypes.RTS_INVALID_HANDLE;
+_xRegistered := FALSE;</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_UpdateRemaining" ObjectId="22c45294-0830-4008-b1be-3c6d5bea1b80">
+                      <interface>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">xDemo := (eState = CmpMgr.RUNTIME_LICENSE_STATE.DEMOMODE);
+xLicensed := (eState = CmpMgr.RUNTIME_LICENSE_STATE.LICENSED);
+xShowBanner := xDemo
+	OR (eState = CmpMgr.RUNTIME_LICENSE_STATE.LICENSE_LOST)
+	OR (eState = CmpMgr.RUNTIME_LICENSE_STATE.TRIGGER_SHUTDOWN)
+	OR (eState = CmpMgr.RUNTIME_LICENSE_STATE.SAFEMODE);
+
+IF xLicensed THEN
+	udiSecondsLeft := 0;
+	udiMinutesLeft := 0;
+	tRemaining := T#0S;
+	RETURN;
+END_IF
+
+IF _xGotEvent AND (xDemo OR (eState = CmpMgr.RUNTIME_LICENSE_STATE.TRIGGER_SHUTDOWN)) THEN
+	_udiElapsed := TIME_TO_UDINT(TIME() - _tEvent) / 1000;
+	IF _udiElapsed &lt; _udiSecondsAtEvent THEN
+		udiSecondsLeft := _udiSecondsAtEvent - _udiElapsed;
+	ELSE
+		udiSecondsLeft := 0;
+	END_IF
+END_IF
+
+udiMinutesLeft := udiSecondsLeft / 60;
+tRemaining := UDINT_TO_TIME(udiSecondsLeft * 1000);</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="M_BuildBanner" ObjectId="d037a93c-8df8-4d4d-8ae8-9085dfb4e73a">
+                      <interface>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">CASE eState OF
+	CmpMgr.RUNTIME_LICENSE_STATE.DEMOMODE:
+		sState := 'DEMO';
+	CmpMgr.RUNTIME_LICENSE_STATE.LICENSED:
+		sState := 'LICENSED';
+	CmpMgr.RUNTIME_LICENSE_STATE.LICENSE_LOST:
+		sState := 'LICENSE LOST';
+	CmpMgr.RUNTIME_LICENSE_STATE.TRIGGER_SHUTDOWN:
+		sState := 'SHUTTING DOWN';
+	CmpMgr.RUNTIME_LICENSE_STATE.SAFEMODE:
+		sState := 'SAFE MODE';
+ELSE
+	sState := '';
+END_CASE
+
+IF NOT xShowBanner THEN
+	sBanner := '';
+	RETURN;
+END_IF
+
+IF eState = CmpMgr.RUNTIME_LICENSE_STATE.DEMOMODE THEN
+	_udiSec := udiSecondsLeft MOD 60;
+	_sMin := UDINT_TO_STRING(udiMinutesLeft);
+	_sSec := UDINT_TO_STRING(_udiSec);
+	sBanner := CONCAT('CODESYS RUNTIME DEMO LICENSE  ', _sMin);
+	sBanner := CONCAT(sBanner, 'm ');
+	sBanner := CONCAT(sBanner, _sSec);
+	sBanner := CONCAT(sBanner, 's remaining');
+ELSIF eState = CmpMgr.RUNTIME_LICENSE_STATE.TRIGGER_SHUTDOWN THEN
+	sBanner := CONCAT('LICENSE SHUTDOWN  ', UDINT_TO_STRING(udiSecondsLeft));
+	sBanner := CONCAT(sBanner, 's');
+ELSE
+	sBanner := sState;
+END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>69b35fe4-a73f-4a9b-a365-a8c97a3b2665</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/union" handleUnknown="implementation">
               <union name="StringByteArray">
                 <variable name="bArray">
@@ -24721,14 +24730,10 @@ END_IF</xhtml>
                 <Library Name="#OMAC_PackML_State_Machine" Namespace="PACK_ML" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="OMAC PackML State Machine, * (3S - Smart Software Solutions GmbH)" />
                 <Library Name="IoDrvGPIO, 4.11.0.0 (CODESYS)" Namespace="IoDrvGPIO" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" />
                 <Library Name="#SysCom" Namespace="SysCom" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="SysCom, * (System)" />
-                <Library Name="#IoStandard" Namespace="IoStandard" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="true" DefaultResolution="IoStandard, 3.5.17.0 (System)" />
-                <Library Name="#SM3_Basic" Namespace="SM3_Basic" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Basic, 4.16.0.0 (CODESYS)" />
-                <Library Name="#SM3_CNC" Namespace="SM3_CNC" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_CNC, 4.16.0.0 (CODESYS)" />
                 <Library Name="#CmpDynamicText" Namespace="CmpDynamicText" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CmpDynamicText" />
                 <Library Name="#IODrvEtherCAT" Namespace="IoDrvEthercatLib" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="IoDrvEtherCAT, 4.1.0.0 (3S - Smart Software Solutions GmbH)" />
                 <Library Name="#CmpApp" Namespace="CmpApp" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="CmpApp, * (System)" />
                 <Library Name="#CmpIecTask" Namespace="CmpIecTask" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" DefaultResolution="CmpIecTask, * (System)" />
-                <Library Name="#SM3_Drive_PosControl" Namespace="SM3_Drive_PosControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Drive_PosControl, * (CODESYS)" />
                 <Library Name="#System_VisuElems" Namespace="VisuElems" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElems, 4.9.1.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
                 <Library Name="#System_VisuElemMeter" Namespace="VisuElemMeter" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemMeter, 4.9.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
                 <Library Name="#System_VisuElemsSpecialControls" Namespace="VisuElemsSpecialControls" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsSpecialControls, 4.7.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
@@ -24743,9 +24748,15 @@ END_IF</xhtml>
                 <Library Name="#System_VisuElemXYChart" Namespace="VisuElemXYChart" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemXYChart, 4.8.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
                 <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.7.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
                 <Library Name="#SM3_Basic_Visu" Namespace="SM3_Basic_Visu" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Basic_Visu, 4.19.0.0 (CODESYS)" />
-                <Library Name="#3SLicense" Namespace="_3S_LICENSE" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="3SLicense, 0.0.0.0 (3S - Smart Software Solutions GmbH)" ResolverGuid="97c3b452-d9fa-4ac2-9d0c-3d420aa6d95b" />
-                <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.0.0 (CAA Technical Workgroup)" />
                 <Library Name="#BreakpointLogging" Namespace="BPLog" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Breakpoint Logging Functions, * (3S - Smart Software Solutions GmbH)" />
+                <Library Name="Component Manager, * (System)" Namespace="CmpMgr" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+                <Library Name="CmpEventMgr, * (System)" Namespace="CmpEventMgr" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="false" LinkAllContent="false" />
+                <Library Name="#IoStandard" Namespace="IoStandard" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="true" DefaultResolution="IoStandard, 3.5.17.0 (System)" />
+                <Library Name="#SM3_Basic" Namespace="SM3_Basic" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Basic, 4.20.0.0 (CODESYS)" />
+                <Library Name="#SM3_CNC" Namespace="SM3_CNC" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_CNC, 4.20.0.0 (CODESYS)" />
+                <Library Name="#3SLicense" Namespace="_3S_LICENSE" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="3SLicense, 0.0.0.0 (3S - Smart Software Solutions GmbH)" ResolverGuid="97c3b452-d9fa-4ac2-9d0c-3d420aa6d95b" />
+                <Library Name="#SM3_Drive_PosControl" Namespace="SM3_Drive_PosControl" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="SM3_Drive_PosControl, 4.19.0.0 (CODESYS)" />
+                <Library Name="#CAA Device Diagnosis" Namespace="DED" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CAA Device Diagnosis, 3.5.0.0 (CAA Technical Workgroup)" />
                 <PlaceholderRedirections>
                   <PlaceholderRedirection Placeholder="System_VisuElemsAlarm" Redirection="VisuElemsAlarm, 4.9.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="NetBaseSrv" Redirection="Net Base Services, 4.0.0.0 (CODESYS)" />
@@ -24800,8 +24811,8 @@ END_IF</xhtml>
               <DeviceType>
                 <DeviceIdentification>
                   <Type>4102</Type>
-                  <Id>0000 0011</Id>
-                  <Version>4.11.0.0</Version>
+                  <Id>0000 0012</Id>
+                  <Version>4.13.0.0</Version>
                 </DeviceIdentification>
                 <Connector moduleType="256" interface="Common.PCI" connectorId="0">
                   <HostParameterSet />
@@ -25003,7 +25014,7 @@ END_IF</xhtml>
                             </Parameter>
                             <Parameter ParameterId="805458176" type="std:BOOL" IndexInDevDesc="18">
                               <Attributes />
-                              <Value name="_x0038_05458176" visiblename="SelectNetworkByName" desc="Select network by name">FALSE</Value>
+                              <Value name="_x0038_05458176" visiblename="SelectNetworkByName" desc="Select network by name">True</Value>
                               <Name>SelectNetworkByName</Name>
                               <Description>Select network by name</Description>
                             </Parameter>
@@ -25116,13 +25127,13 @@ END_IF</xhtml>
                             </Parameter>
                             <Parameter ParameterId="1073741829" type="std:DWORD" IndexInDevDesc="2">
                               <Attributes />
-                              <Value name="_x0031_073741829" visiblename="SrcAddress1" desc="Two zero Bytes and the First Two Bytes of the Source Address">58463</Value>
+                              <Value name="_x0031_073741829" visiblename="SrcAddress1" desc="Two zero Bytes and the First Two Bytes of the Source Address">55354</Value>
                               <Name>SrcAddress1</Name>
                               <Description>Two zero Bytes and the First Two Bytes of the Source Address</Description>
                             </Parameter>
                             <Parameter ParameterId="1073741830" type="std:DWORD" IndexInDevDesc="3">
                               <Attributes />
-                              <Value name="_x0031_073741830" visiblename="SrcAddress2" desc="Lower 4 Bytes of the Source Address">20925217</Value>
+                              <Value name="_x0031_073741830" visiblename="SrcAddress2" desc="Lower 4 Bytes of the Source Address">3722077523</Value>
                               <Name>SrcAddress2</Name>
                               <Description>Lower 4 Bytes of the Source Address</Description>
                             </Parameter>
@@ -35794,8 +35805,6 @@ END_IF</xhtml>
         <Library Name="#System_VisuElemsDateTime" Namespace="VisuElemsDateTime" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsDateTime, 4.9.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
         <Library Name="#System_VisuElemXYChart" Namespace="VisuElemXYChart" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemXYChart, 4.8.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
         <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.7.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
-        <Library Name="Component Manager, * (System)" Namespace="CmpMgr" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="Component Manager, 3.5.21.0 (System)" />
-        <Library Name="CmpEventMgr, * (System)" Namespace="CmpEventMgr" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="CmpEventMgr, 3.5.17.0 (System)" />
         <PlaceholderRedirections>
           <PlaceholderRedirection Placeholder="CmpBinTagUtilIec" Redirection="CmpBinTagUtilIec, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="CAA ResMan" Redirection="CAA Ressource Manager Extern, 3.5.17.0 (CAA Technical Workgroup)" />
@@ -35911,17 +35920,6 @@ END_IF</xhtml>
                 </Folder>
               </Object>
               <Object Name="_60_PathPlanner" ObjectId="25d35170-f0c8-4cbe-9a6a-5ff2fac6e186" />
-              <Object Name="FB_LicenseStatus" ObjectId="6a8beb29-2fee-57c9-97cf-0b6c4cb5aa49">
-                <Object Name="EventCallback" ObjectId="bbb97f39-05c3-55ba-af1d-5eb73fef989d" />
-                <Object Name="FB_Init" ObjectId="12e6ebed-9971-5cf8-bb39-daf10e63314c" />
-                <Object Name="FB_Exit" ObjectId="90a05c4e-17c5-548e-a4cf-78708a6f267a" />
-                <Folder Name="private">
-                  <Object Name="M_EnsureRegistered" ObjectId="db22b6a1-174c-5732-be62-1bf4d260a642" />
-                  <Object Name="M_Unregister" ObjectId="320d2bd0-e838-519e-b405-e7b3962bed8d" />
-                  <Object Name="M_UpdateRemaining" ObjectId="1fb30b69-ae39-5d07-904f-7126811b2a79" />
-                  <Object Name="M_BuildBanner" ObjectId="a13f3131-62e0-5919-b27c-f71321edf346" />
-                </Folder>
-              </Object>
             </Folder>
             <Object Name="MainTask" ObjectId="eafe4677-fa00-4970-b015-251c89fffd79" />
             <Object Name="SoftMotion_PlanningTask" ObjectId="5a42e1b4-5f13-4f3e-9a38-abed03da7807" />
@@ -36307,6 +36305,15 @@ END_IF</xhtml>
               </Folder>
               <Object Name="F_RadToDeg" ObjectId="5fcdbd79-7ee6-4602-a394-dd4cc360d2d1" />
               <Object Name="F_RoundToInt" ObjectId="2f55f1a8-e8da-4116-8c0b-e7482fa81b53" />
+              <Object Name="FB_LicenseStatus" ObjectId="69b35fe4-a73f-4a9b-a365-a8c97a3b2665">
+                <Object Name="EventCallback" ObjectId="9d5160ce-9334-4ebe-abf6-9c769afb3a4a" />
+                <Object Name="FB_Init" ObjectId="4c0cf37d-0331-47a8-9534-2e4cc18e6954" />
+                <Object Name="FB_Exit" ObjectId="3477a245-8469-4baa-b808-450f744c70fd" />
+                <Object Name="M_EnsureRegistered" ObjectId="881016bd-ad84-4770-b44a-1c2586f5ce70" />
+                <Object Name="M_Unregister" ObjectId="008283b4-cfec-4010-bde6-cd473d39e0fc" />
+                <Object Name="M_UpdateRemaining" ObjectId="22c45294-0830-4008-b1be-3c6d5bea1b80" />
+                <Object Name="M_BuildBanner" ObjectId="d037a93c-8df8-4d4d-8ae8-9085dfb4e73a" />
+              </Object>
             </Folder>
             <Folder Name="GVL">
               <Object Name="GVL" ObjectId="1430d1bd-aa92-442c-bf72-190d0e907494" />

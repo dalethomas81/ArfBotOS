@@ -2,7 +2,7 @@
 # ArfBotOS Raspberry Pi installer.
 #
 # Automates the Linux-side Software Installation steps from the wiki:
-# camera overlay, OpenCV, vision services, DualSense service, and
+# camera overlay, OpenCV, vision/bluetooth web UI, DualSense service, and
 # CODESYS SysProcess AllowAll when the runtime is already present.
 #
 # Does NOT install: Raspberry Pi OS, the CODESYS Windows IDE/runtime,
@@ -35,6 +35,7 @@ REPO_URL="${ARFBOT_REPO:-${DEFAULT_REPO_URL}}"
 REPO_REF="${ARFBOT_REF:-${DEFAULT_REPO_REF}}"
 
 VISION_DST="/var/opt/codesys/PlcLogic/Application/Vision"
+WEB_DST="/var/opt/codesys/PlcLogic/Application/Web"
 CONTROLLER_DST="/var/opt/codesys/PlcLogic/Application/Controller"
 VENV_DIR="/opt/arfbot/venv"
 UDEV_RULES_DST="/etc/udev/rules.d/70-ps5-controller.rules"
@@ -71,11 +72,12 @@ Usage:
   sudo ./scripts/install-pi.sh [options]
 
 Options:
-  --plc-only          PLC Pi without vision. Installs DualSense and CODESYS
-                      SysProcess config. Skips camera, OpenCV, and vision
-                      services.
+  --plc-only          PLC Pi without vision. Installs DualSense, the Bluetooth
+                      pairing web UI, and CODESYS SysProcess config. Skips
+                      camera, OpenCV, and vision scripts.
   --vision-only       Dedicated vision Pi. Installs camera, OpenCV, PyServer,
-                      and VisionWeb. Skips DualSense and CODESYS config.
+                      and the vision web UI. Skips DualSense, Bluetooth pairing,
+                      and CODESYS config.
   --skip-camera       Do not patch config.txt or install picamera2.
   --skip-controller   Do not install the DualSense controller service.
   --skip-codesys      Do not patch CODESYSControl.cfg.
@@ -213,11 +215,20 @@ require_repo_files() {
             "${REPO_ROOT}/OpenCV/FastTemplateMatching/roi.yaml"
             "${REPO_ROOT}/OpenCV/CameraCalibration/CalibrateCamera.py"
             "${REPO_ROOT}/OpenCV/CameraCalibration/cal.yaml"
-            "${REPO_ROOT}/OpenCV/VisionWebServer/vision.py"
-            "${REPO_ROOT}/OpenCV/VisionWebServer/config.py"
-            "${REPO_ROOT}/OpenCV/VisionWebServer/app/__init__.py"
-            "${REPO_ROOT}/OpenCV/VisionWebServer/app/routes.py"
-            "${REPO_ROOT}/OpenCV/VisionWebServer/app/forms.py"
+        )
+    fi
+    if needs_web; then
+        required+=(
+            "${REPO_ROOT}/Web/wsgi.py"
+            "${REPO_ROOT}/Web/config.py"
+            "${REPO_ROOT}/Web/app/__init__.py"
+            "${REPO_ROOT}/Web/app/vision.py"
+            "${REPO_ROOT}/Web/app/bluetooth.py"
+            "${REPO_ROOT}/Web/app/bluetoothctl_wrapper.py"
+            "${REPO_ROOT}/Web/app/static/css/arfbot-night.css"
+            "${REPO_ROOT}/Web/app/templates/base.html"
+            "${REPO_ROOT}/Web/app/templates/bluetooth/index.html"
+            "${REPO_ROOT}/Web/app/templates/vision/template.html"
         )
     fi
     if ! is_true "${SKIP_CONTROLLER}"; then
@@ -402,7 +413,7 @@ copy_dir_contents() {
         [[ -e "${item}" ]] || continue
         name="$(basename "${item}")"
         case "${name}" in
-            __pycache__|*.pyc|app.db|README.md) continue ;;
+            __pycache__|*.pyc|app.db|README.md|tests) continue ;;
         esac
         if [[ -d "${item}" ]]; then
             rm -rf "${dst}/${name}"
@@ -562,12 +573,16 @@ install_packages() {
         fi
     fi
     if ! is_true "${SKIP_CONTROLLER}"; then
-        apt_install_available libhidapi-dev libhidapi-hidraw0 libhidapi-libusb0
+        apt_install_available libhidapi-dev libhidapi-hidraw0 libhidapi-libusb0 rfkill bluez bluetooth
     fi
 }
 
-needs_venv() {
+needs_web() {
     ! is_true "${SKIP_VISION}" || ! is_true "${SKIP_CONTROLLER}"
+}
+
+needs_venv() {
+    needs_web
 }
 
 ensure_venv() {
@@ -592,16 +607,16 @@ ensure_venv() {
 
     local pip="${VENV_DIR}/bin/pip"
     if is_true "${DRY_RUN}"; then
-        if ! is_true "${SKIP_VISION}"; then
-            printf 'DRY-RUN: %s install flask flask-wtf\n' "${pip}"
+        if needs_web; then
+            printf 'DRY-RUN: %s install flask\n' "${pip}"
         fi
         if ! is_true "${SKIP_CONTROLLER}"; then
             printf 'DRY-RUN: %s install git+https://github.com/flok/pydualsense.git\n' "${pip}"
         fi
         return 0
     fi
-    if ! is_true "${SKIP_VISION}"; then
-        "${pip}" install flask flask-wtf
+    if needs_web; then
+        "${pip}" install flask
     fi
     if ! is_true "${SKIP_CONTROLLER}"; then
         if ! "${pip}" install "git+https://github.com/flok/pydualsense.git"; then
@@ -618,9 +633,9 @@ deploy_vision_files() {
     fi
     log "deploying vision files to ${VISION_DST}"
     if ! is_true "${DRY_RUN}"; then
-        mkdir -p "${VISION_DST}/Templates" "${VISION_DST}/VisionWebServer"
+        mkdir -p "${VISION_DST}/Templates"
     else
-        printf 'DRY-RUN: mkdir -p %s/Templates %s/VisionWebServer\n' "${VISION_DST}" "${VISION_DST}"
+        printf 'DRY-RUN: mkdir -p %s/Templates\n' "${VISION_DST}"
     fi
 
     copy_file "${REPO_ROOT}/OpenCV/SocketServer/PyServer.py" "${VISION_DST}/PyServer.py"
@@ -629,13 +644,26 @@ deploy_vision_files() {
     copy_file "${REPO_ROOT}/OpenCV/CameraCalibration/CalibrateCamera.py" "${VISION_DST}/CalibrateCamera.py"
     copy_unless_exists "${REPO_ROOT}/OpenCV/CameraCalibration/cal.yaml" "${VISION_DST}/cal.yaml"
     copy_unless_exists "${REPO_ROOT}/OpenCV/FastTemplateMatching/roi.yaml" "${VISION_DST}/roi.yaml"
-    copy_dir_contents "${REPO_ROOT}/OpenCV/VisionWebServer" "${VISION_DST}/VisionWebServer"
 
     if ! is_true "${DRY_RUN}"; then
         : > "${VISION_DST}/VisionLog.txt"
         : > "${VISION_DST}/VisionErrorLog.txt"
         chmod 644 "${VISION_DST}/"*".py" "${VISION_DST}/cal.yaml" "${VISION_DST}/roi.yaml" 2>/dev/null || true
     fi
+}
+
+deploy_web_files() {
+    if ! needs_web; then
+        log "skipping web files (no vision or bluetooth components requested)"
+        return 0
+    fi
+    log "deploying web files to ${WEB_DST}"
+    if ! is_true "${DRY_RUN}"; then
+        mkdir -p "${WEB_DST}"
+    else
+        printf 'DRY-RUN: mkdir -p %s\n' "${WEB_DST}"
+    fi
+    copy_dir_contents "${REPO_ROOT}/Web" "${WEB_DST}"
 }
 
 deploy_controller_files() {
@@ -652,9 +680,23 @@ deploy_controller_files() {
     copy_file "${REPO_ROOT}/Controller/DualSenseServer.py" "${CONTROLLER_DST}/DualSenseServer.py"
     copy_file "${REPO_ROOT}/Controller/DualSenseClient.py" "${CONTROLLER_DST}/DualSenseClient.py"
     copy_file "${UDEV_RULES_SRC}" "${UDEV_RULES_DST}"
+    if ! is_true "${DRY_RUN}"; then
+        mkdir -p /etc/modprobe.d
+        cat > /etc/modprobe.d/bluetooth-arfbot.conf <<'EOF'
+# DualSense/DualShock HID connections fail with ERTM on many BlueZ/Linux stacks.
+options bluetooth disable_ertm=Y
+EOF
+        if [[ -w /sys/module/bluetooth/parameters/disable_ertm ]]; then
+            echo Y > /sys/module/bluetooth/parameters/disable_ertm || warn "could not set disable_ertm at runtime"
+        fi
+    fi
     if command -v udevadm >/dev/null 2>&1; then
         run udevadm control --reload-rules || warn "udevadm reload failed"
         run udevadm trigger || warn "udevadm trigger failed"
+    fi
+    if command -v rfkill >/dev/null 2>&1; then
+        log "unblocking Bluetooth (Lite images often rfkill-block hci0)"
+        run rfkill unblock bluetooth || warn "rfkill unblock bluetooth failed"
     fi
 }
 
@@ -692,24 +734,38 @@ ExecStart=${python_bin} ${VISION_DST}/PyServer.py
 [Install]
 WantedBy=multi-user.target
 EOF
+        units+=(PyServer.service)
+    fi
+
+    if needs_web; then
+        local enable_vision=1
+        local enable_bluetooth=1
+        if is_true "${SKIP_VISION}"; then
+            enable_vision=0
+        fi
+        if is_true "${SKIP_CONTROLLER}"; then
+            enable_bluetooth=0
+        fi
         write_unit /etc/systemd/system/VisionWeb.service <<EOF
 [Unit]
-Description=ArfBotOS vision web server
-After=network-online.target multi-user.target
+Description=ArfBotOS web server (vision + bluetooth)
+After=network-online.target bluetooth.service multi-user.target
 Wants=network-online.target
 
 [Service]
 Type=simple
 Restart=always
 RestartSec=3
-Environment=FLASK_APP=vision.py
-WorkingDirectory=${VISION_DST}/VisionWebServer
-ExecStart=${flask_bin} run -h 0.0.0.0 -p 5000
+Environment=FLASK_APP=wsgi.py
+Environment=ARFBOT_ENABLE_VISION=${enable_vision}
+Environment=ARFBOT_ENABLE_BLUETOOTH=${enable_bluetooth}
+WorkingDirectory=${WEB_DST}
+ExecStart=${flask_bin} run -h 0.0.0.0 -p 5000 --with-threads
 
 [Install]
 WantedBy=multi-user.target
 EOF
-        units+=(PyServer.service VisionWeb.service)
+        units+=(VisionWeb.service)
     fi
 
     if ! is_true "${SKIP_CONTROLLER}"; then
@@ -839,6 +895,9 @@ chown_deploy_tree() {
     if ! is_true "${SKIP_VISION}"; then
         chown_to_invoking_user "${VISION_DST}"
     fi
+    if needs_web; then
+        chown_to_invoking_user "${WEB_DST}"
+    fi
     if ! is_true "${SKIP_CONTROLLER}"; then
         chown_to_invoking_user "${CONTROLLER_DST}"
     fi
@@ -894,7 +953,10 @@ verify_install() {
         if ! is_true "${SKIP_CAMERA}"; then
             verify_import "${py}" "from picamera2 import Picamera2; print('picamera2 ok')" "picamera2" || failed=1
         fi
-        verify_import "${py}" "import flask, flask_wtf; print('flask ok')" "Flask" || failed=1
+        verify_import "${py}" "import flask; print('flask ok')" "Flask" || failed=1
+    fi
+    if is_true "${SKIP_VISION}" && ! is_true "${SKIP_CONTROLLER}"; then
+        verify_import "${py}" "import flask; print('flask ok')" "Flask" || failed=1
     fi
     if ! is_true "${SKIP_CONTROLLER}"; then
         verify_import "${py}" "from pydualsense import pydualsense; print('pydualsense ok')" "pydualsense" || failed=1
@@ -910,7 +972,6 @@ verify_install() {
             "${VISION_DST}/CalibrateCamera.py"
             "${VISION_DST}/cal.yaml"
             "${VISION_DST}/roi.yaml"
-            "${VISION_DST}/VisionWebServer/vision.py"
         )
         local f
         for f in "${required_files[@]}"; do
@@ -922,10 +983,20 @@ verify_install() {
             fi
         done
     fi
+    if needs_web && ! is_true "${DRY_RUN}"; then
+        if [[ -f "${WEB_DST}/wsgi.py" ]]; then
+            log "ok: ${WEB_DST}/wsgi.py"
+        else
+            warn "missing ${WEB_DST}/wsgi.py"
+            failed=1
+        fi
+    fi
 
     if command -v systemctl >/dev/null 2>&1 && ! is_true "${DRY_RUN}"; then
         if ! is_true "${SKIP_VISION}"; then
             print_service_status PyServer.service
+        fi
+        if needs_web; then
             print_service_status VisionWeb.service
         fi
         if ! is_true "${SKIP_CONTROLLER}"; then
@@ -949,12 +1020,18 @@ EOF
     if ! is_true "${SKIP_VISION}"; then
         cat <<EOF
   vision files:    ${VISION_DST}
-  vision web:      http://${ip:-<pi-ip>}:5000
+  vision web:      http://${ip:-<pi-ip>}:5000/vision
+EOF
+    fi
+    if needs_web; then
+        cat <<EOF
+  web files:       ${WEB_DST}
 EOF
     fi
     if ! is_true "${SKIP_CONTROLLER}"; then
         cat <<EOF
   controller:      ${CONTROLLER_DST}
+  bluetooth web:   http://${ip:-<pi-ip>}:5000/bluetooth
 EOF
     fi
     if is_true "${NEED_REBOOT}"; then
@@ -973,17 +1050,21 @@ EOF
 EOF
     fi
     if ! is_true "${SKIP_CONTROLLER}"; then
-        cat <<'EOF'
-  DualSense:       USB works without pairing. For Bluetooth:
+        cat <<EOF
+  DualSense:       USB works without pairing. Bluetooth pairing UI:
+                     http://${ip:-<pi-ip>}:5000/bluetooth
+                   CLI fallback on Lite (rfkill then power on):
+                     sudo rfkill unblock bluetooth
                      bluetoothctl
-                     pairable on
-                     agent on
-                     default-agent
-                     scan on
-                     (hold PS + Share until the trackpad flashes)
-                     pair <MAC>
-                     trust <MAC>
-                     exit
+                       power on
+                       pairable on
+                       agent on
+                       default-agent
+                       scan on
+                       (hold PS + Share until the trackpad flashes)
+                       pair <MAC>
+                       trust <MAC>
+                       exit
 EOF
     fi
     if is_true "${VISION_ONLY}"; then
@@ -1003,6 +1084,7 @@ ArfBotOS installer checkout looks complete.
 Repo:              ${REPO_ROOT}
 Mode:              $(install_mode)
 Would deploy to:   ${VISION_DST}
+Web dest:          ${WEB_DST}
 Controller dest:   ${CONTROLLER_DST}
 Venv:              ${VENV_DIR}
 
@@ -1033,6 +1115,7 @@ main() {
     enable_i2c
     ensure_venv
     deploy_vision_files
+    deploy_web_files
     deploy_controller_files
     install_systemd_units
     configure_codesys

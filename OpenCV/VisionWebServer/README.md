@@ -1,4 +1,8 @@
-# VisionWebServer
+# VisionWebServer (not deployed)
+
+The live Flask app is now [`Web/`](../../Web/README.md). The Pi installer copies that tree to `/var/opt/codesys/PlcLogic/Application/Web` and serves vision + Bluetooth pairing from port 5000. This folder is leftover source and is not installed.
+
+---
 
 `OpenCV/VisionWebServer` is a small Flask application that provides a browser-based interface for vision template management and for viewing the latest vision result image. It lets an operator capture a camera image, drag out a crop to create a template, save that crop into the deployed templates directory, browse or delete saved templates, and serve the latest processed output image back to the HMI.
 

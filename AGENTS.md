@@ -32,14 +32,18 @@ When starting a new session in this repo, read these files first:
 - `Electrical/` for schematics and wiring references
 
 ### `OpenCV/`
-- Vision-related Python utilities, calibration helpers, template matching experiments, socket tools, and the `VisionWebServer`.
-- Expect many prototype/test scripts here in addition to project-critical utilities.
+- Vision-related Python utilities, calibration helpers, template matching experiments, and socket tools.
+- The live Flask UI moved to `Web/`. `OpenCV/VisionWebServer` is leftover source and is not deployed.
+
+### `Web/`
+- Combined Flask app on port 5000: vision templates at `/vision`, saved templates at `/vision/files`, Bluetooth pairing at `/bluetooth`, HMI image at `/vision/output_sized`.
+- Deployed by the Pi installer to `/var/opt/codesys/PlcLogic/Application/Web`. Theme is ArfBot Night.
 
 ### `scripts/`
 - Raspberry Pi Linux installer: `scripts/install-pi.sh`.
-- Intended to be run from SSH as `curl .../scripts/install-pi.sh | bash` (clones this repo if needed). Flags: `--plc-only` (no vision), `--vision-only` (no DualSense/CODESYS).
+- Intended to be run from SSH as `curl .../scripts/install-pi.sh | bash` (clones this repo if needed). Flags: `--plc-only` (no camera/OpenCV; still DualSense + Bluetooth web), `--vision-only` (no DualSense/CODESYS).
 - On a PLC Pi, install the CODESYS runtime first (Tools → Update Raspberry Pi), then run this script once. It does not block if the runtime is missing; re-run afterward only to set `SysProcess=AllowAll`.
-- Covers camera overlay, OpenCV, vision/controller systemd services, and CODESYS `SysProcess=AllowAll` when the runtime is already present. It does not install the CODESYS Windows IDE, runtime, licenses, or Arduino/Teensy firmware.
+- Covers camera overlay, OpenCV, the combined web UI (`Web/` → `Application/Web` on :5000), vision/controller systemd services, and CODESYS `SysProcess=AllowAll` when the runtime is already present. It does not install the CODESYS Windows IDE, runtime, licenses, or Arduino/Teensy firmware.
 
 ### `Controller/`
 - Python scripts related to PlayStation DualSense controller integration.
@@ -62,7 +66,7 @@ When starting a new session in this repo, read these files first:
 ## Project-Specific Guidance
 - For PLC/runtime work, inspect `Codesys/` first and use the top-level `README.md` as the architectural overview.
 - For robot bring-up, use the AR4 docs before modifying firmware or setup instructions.
-- For vision work, determine whether the target lives in `VisionWebServer`, a reusable utility, or a one-off test script before editing.
+- For vision work, determine whether the target lives in `Web/` (operator UI), a reusable OpenCV utility, or a one-off test script before editing.
 - For user-facing tutorials or onboarding, keep the "new automation/control engineer" audience in mind.
 
 ## Known Context
