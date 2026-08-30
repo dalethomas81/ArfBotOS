@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import atexit
 import os
 
 from flask import Flask, jsonify, render_template, request
@@ -14,6 +15,7 @@ app = Flask(__name__, template_folder=TEMPLATES_DIR)
 app.config["JSON_SORT_KEYS"] = False
 
 bt = BluetoothctlWrapper()
+atexit.register(bt.stop_scan)
 
 
 def json_error(message: str, status_code: int = 400):
@@ -30,9 +32,15 @@ def get_mac_from_request():
     return mac, None
 
 
+def truthy(value, default: bool = False) -> bool:
+    if value is None:
+        return default
+    return str(value).lower() in {"1", "true", "yes", "on"}
+
+
 @app.route("/")
 def index():
-    return render_template("index.html", title="Bluetooth")
+    return render_template("index.html", title="Connect Controller")
 
 
 @app.route("/api/status")
@@ -42,12 +50,14 @@ def api_status():
 
 @app.route("/api/devices")
 def api_devices():
-    return jsonify(bt.get_discovered_devices())
+    enrich = truthy(request.args.get("enrich"), default=False)
+    return jsonify(bt.get_discovered_devices(enrich=enrich))
 
 
 @app.route("/api/paired")
 def api_paired():
-    return jsonify(bt.get_paired_devices())
+    enrich = truthy(request.args.get("enrich"), default=True)
+    return jsonify(bt.get_paired_devices(enrich=enrich))
 
 
 @app.route("/api/scan/start", methods=["POST"])
@@ -58,6 +68,16 @@ def api_scan_start():
 @app.route("/api/scan/stop", methods=["POST"])
 def api_scan_stop():
     return jsonify(bt.stop_scan())
+
+
+@app.route("/api/power/on", methods=["POST"])
+def api_power_on():
+    return jsonify(bt.power_on())
+
+
+@app.route("/api/power/off", methods=["POST"])
+def api_power_off():
+    return jsonify(bt.power_off())
 
 
 @app.route("/api/pair", methods=["POST"])
@@ -98,6 +118,15 @@ def api_remove():
     if error:
         return error
     return jsonify(bt.remove(mac))
+
+
+@app.route("/api/setup", methods=["POST"])
+def api_setup():
+    """One-click pair + trust + connect for a DualSense / gamepad."""
+    mac, error = get_mac_from_request()
+    if error:
+        return error
+    return jsonify(bt.setup_device(mac))
 
 
 if __name__ == "__main__":

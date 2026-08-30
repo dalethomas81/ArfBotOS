@@ -38,6 +38,11 @@ When starting a new session in this repo, read these files first:
 ### `Controller/`
 - Python scripts related to PlayStation DualSense controller integration.
 
+### `Bluetooth/`
+- Standalone Flask service + web UI for pairing Bluetooth controllers on the Raspberry Pi.
+- Uses `bluetoothctl` (persistent scan session) and exposes HTTP APIs intended for both the browser UI and a future CODESYS HMI.
+- Start with `Bluetooth/README.md` and `python3 BluetoothServer.py` (port `50014`).
+
 ### `Projects/`
 - Example or application-specific content such as `HelloWorld`, `HelloWorld-CNC`, and `EggMaker`.
 

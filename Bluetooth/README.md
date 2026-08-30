@@ -1,27 +1,24 @@
 # Bluetooth
 
-The `Bluetooth/` folder contains a standalone MVP service for pairing Bluetooth devices on a Raspberry Pi without coupling that work to the vision stack. The service is intended to become the shared backend that both a browser UI and the ArfBotOS HMI can call.
+The `Bluetooth/` folder contains a standalone service for pairing Bluetooth controllers on a Raspberry Pi without coupling that work to the vision stack. The service is intended to become the shared backend that both a browser UI and the ArfBotOS HMI can call.
+
+Primary goal: make it easy to connect a PlayStation DualSense (or similar gamepad) to the Pi so `Controller/DualSenseServer.py` can use it.
 
 ## Files
 
-- [`BluetoothServer.py`](c:/Users/dalet/Github/ArfBotOS/Bluetooth/BluetoothServer.py): Flask server and HTTP API
-- [`bluetoothctl_wrapper.py`](c:/Users/dalet/Github/ArfBotOS/Bluetooth/bluetoothctl_wrapper.py): wrapper around `bluetoothctl`
-- [`templates/index.html`](c:/Users/dalet/Github/ArfBotOS/Bluetooth/templates/index.html): simple browser UI
+- [`BluetoothServer.py`](BluetoothServer.py): Flask server and HTTP API
+- [`bluetoothctl_wrapper.py`](bluetoothctl_wrapper.py): wrapper around `bluetoothctl`, including a persistent scan session
+- [`templates/index.html`](templates/index.html): guided browser UI for connecting a controller
+- [`test_bluetoothctl_wrapper.py`](test_bluetoothctl_wrapper.py): unit tests with mocked `bluetoothctl`
 
-## Current MVP
+## What It Does
 
-The MVP provides:
-
-- adapter status
-- start scan
-- stop scan
-- discovered device list
+- adapter status + power on/off
+- start / stop scan (persistent scan process)
+- discovered device list (controllers sorted first)
 - paired device list
-- pair device
-- trust device
-- connect device
-- disconnect device
-- remove device
+- one-click setup: pair + trust + connect
+- individual pair / trust / connect / disconnect / remove actions
 
 ## Fresh Raspberry Pi Setup
 
@@ -46,7 +43,7 @@ Notes:
 - `bluez` provides `bluetoothctl`
 - many Raspberry Pi OS images already include the Bluetooth stack, so the first command only installs it if `bluetoothctl` is missing
 - `pi-bluetooth` is commonly present on Raspberry Pi OS but it is included here to make the setup explicit when Bluetooth packages are missing
-- newer Raspberry Pi OS images may block `pip install` into the system Python environment, so `python3-flask` from `apt` is the simplest path for this MVP
+- newer Raspberry Pi OS images may block `pip install` into the system Python environment, so `python3-flask` from `apt` is the simplest path
 - if we later need Python packages that are not available through `apt`, we can switch this service to a virtual environment
 
 ### 3. Make sure Bluetooth is enabled
@@ -126,12 +123,20 @@ In a second SSH terminal:
 
 ```bash
 curl http://localhost:50014/api/status
+curl -X POST http://localhost:50014/api/power/on
+curl -X POST http://localhost:50014/api/scan/start
+sleep 8
 curl http://localhost:50014/api/devices
 curl http://localhost:50014/api/paired
-curl -X POST http://localhost:50014/api/scan/start
-sleep 5
-curl http://localhost:50014/api/devices
 curl -X POST http://localhost:50014/api/scan/stop
+```
+
+One-click controller setup (replace the MAC):
+
+```bash
+curl -X POST http://localhost:50014/api/setup \
+  -H 'Content-Type: application/json' \
+  -d '{"mac":"AA:BB:CC:DD:EE:FF"}'
 ```
 
 ### 9. Open the browser UI from another machine
@@ -142,32 +147,25 @@ From a PC on the same network:
 http://<raspberry-pi-ip>:50014/
 ```
 
-## First Test Workflow
+## Recommended DualSense Workflow
 
-Once the service is up, the recommended first test is:
-
-1. Confirm `/api/status` shows a controller and `powered: true`.
-2. Start a scan.
-3. Refresh the discovered devices list after a few seconds.
-4. Pick a device MAC address.
-5. Try `pair`.
-6. Try `trust`.
-7. Try `connect`.
-
-If anything fails, the first things to capture are:
-
-- `bluetoothctl show`
-- `curl http://localhost:50014/api/status`
-- `curl -X POST http://localhost:50014/api/scan/start`
-- `curl http://localhost:50014/api/devices`
+1. Open the web UI.
+2. Confirm the adapter badge says powered on (use **Power On Bluetooth** if needed).
+3. On the DualSense, hold **Create + PS** until the light bar blinks.
+4. Click **Scan for Controllers**.
+5. When `DualSense Wireless Controller` appears, click **Connect Controller**.
+6. Confirm the top badge shows the controller as connected.
+7. Start `Controller/DualSenseServer.py` as usual so the PLC/HMI can read the pad.
 
 ## How It Works
 
 `BluetoothServer.py` starts a Flask app and creates one `BluetoothctlWrapper` instance.
 
-The wrapper opens `bluetoothctl` in a subprocess session, sends one or more commands followed by `quit`, captures stdout and stderr, and returns parsed results to the API layer.
+Most commands still open a short `bluetoothctl` session, send commands, then `quit`.
 
-The browser page in `templates/index.html` calls the API endpoints, shows adapter status, renders discovered and paired device tables, and provides action buttons for each device.
+Scanning is different: **Start Scan** launches a long-lived `bluetoothctl` process and keeps `scan on` active until **Stop Scan** (or process exit). The old MVP sent `scan on` and immediately quit, which stopped discovery before devices could appear.
+
+The browser page is guided around controller setup. Advanced adapter details and the raw JSON response stay collapsed for debugging.
 
 ## Default Network Settings
 
@@ -186,17 +184,20 @@ These can be overridden with environment variables:
 
 - `GET /`
 - `GET /api/status`
-- `GET /api/devices`
-- `GET /api/paired`
+- `GET /api/devices?enrich=false`
+- `GET /api/paired?enrich=true`
 - `POST /api/scan/start`
 - `POST /api/scan/stop`
+- `POST /api/power/on`
+- `POST /api/power/off`
+- `POST /api/setup` (pair + trust + connect)
 - `POST /api/pair`
 - `POST /api/trust`
 - `POST /api/connect`
 - `POST /api/disconnect`
 - `POST /api/remove`
 
-The device action endpoints expect a JSON body like:
+Device action endpoints expect a JSON body like:
 
 ```json
 {
@@ -206,10 +207,8 @@ The device action endpoints expect a JSON body like:
 
 ## Running It
 
-Example:
-
 ```bash
-python BluetoothServer.py
+python3 BluetoothServer.py
 ```
 
 Then open:
@@ -220,8 +219,6 @@ http://<raspberry-pi-hostname-or-ip>:50014/
 
 ## Optional Environment Variables
 
-You can override the default bind settings with:
-
 ```bash
 export ARFBOTOS_BT_HOST=0.0.0.0
 export ARFBOTOS_BT_PORT=50014
@@ -229,9 +226,19 @@ export ARFBOTOS_BT_DEBUG=false
 python3 BluetoothServer.py
 ```
 
+## Local Unit Tests
+
+From this folder, on a machine with Python 3 (no Bluetooth hardware required):
+
+```bash
+python3 -m unittest test_bluetoothctl_wrapper.py -v
+```
+
 ## Notes
 
-- This version uses `bluetoothctl` rather than the BlueZ DBus API to keep the first implementation simple.
-- The wrapper validates MAC address format before pair, trust, connect, disconnect, and remove actions.
-- The service is designed to be a standalone backend so a future CODESYS HMI page can call the same endpoints.
-- This is an MVP scaffold. The current parsing is intentionally conservative and will likely need refinement after testing on the Pi with real devices.
+- This version uses `bluetoothctl` rather than the BlueZ DBus API to keep the implementation simple and inspectable.
+- The wrapper validates MAC address format before pair/trust/connect/disconnect/remove/setup.
+- Discovered-device refresh skips per-device `info` calls by default so scanning stays responsive. Paired-device refresh still enriches by default.
+- Controllers are detected heuristically from names/icons (`DualSense`, `Wireless Controller`, `Xbox`, etc.) and sorted to the top of the list.
+- The service is designed as a standalone backend so a future CODESYS HMI page can call the same endpoints.
+- Pairing can still fail if the DualSense is not in pairing mode, already bonded to another host, or if the Pi adapter is soft-blocked.

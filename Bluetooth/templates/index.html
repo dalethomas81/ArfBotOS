@@ -6,14 +6,18 @@
     <title>{{ title }}</title>
     <style>
         :root {
-            --bg: #f3f0e8;
-            --panel: #fffdf8;
-            --ink: #1d2a2f;
-            --muted: #687176;
-            --line: #d9d0c0;
-            --accent: #17624f;
-            --accent-2: #b56a2b;
+            --bg: #eef3f1;
+            --panel: #ffffff;
+            --ink: #15252b;
+            --muted: #5f7178;
+            --line: #d5e0dc;
+            --accent: #0f6b57;
+            --accent-soft: #d7f0e8;
+            --accent-2: #c26b20;
             --danger: #a53838;
+            --ok: #1f7a45;
+            --warn: #9a6b10;
+            --controller: #2146a6;
         }
 
         * { box-sizing: border-box; }
@@ -21,51 +25,116 @@
             margin: 0;
             font-family: "Segoe UI", Tahoma, sans-serif;
             background:
-                radial-gradient(circle at top left, #ffffff 0, rgba(255,255,255,0.4) 18%, transparent 45%),
-                linear-gradient(180deg, #efe8da 0%, var(--bg) 100%);
+                radial-gradient(circle at top right, #dceee8 0, transparent 36%),
+                linear-gradient(180deg, #f7faf8 0%, var(--bg) 100%);
             color: var(--ink);
         }
         main {
-            max-width: 1180px;
+            max-width: 980px;
             margin: 0 auto;
-            padding: 28px 18px 40px;
+            padding: 28px 18px 48px;
         }
-        h1, h2 {
-            margin: 0 0 10px;
-            font-weight: 700;
-            letter-spacing: 0.02em;
+        h1, h2, h3 {
+            margin: 0 0 8px;
+            letter-spacing: 0.01em;
         }
-        p {
-            color: var(--muted);
-            margin: 0;
-        }
-        .hero {
-            display: grid;
-            gap: 18px;
-            grid-template-columns: 1.2fr 0.8fr;
-            margin-bottom: 20px;
-        }
+        p { margin: 0; color: var(--muted); line-height: 1.5; }
         .panel {
             background: var(--panel);
             border: 1px solid var(--line);
-            border-radius: 16px;
-            padding: 18px;
-            box-shadow: 0 14px 36px rgba(57, 48, 31, 0.08);
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 12px 30px rgba(27, 48, 44, 0.06);
+        }
+        .hero {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .badge-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 999px;
+            padding: 7px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            background: #f3f7f5;
+            border: 1px solid var(--line);
+        }
+        .badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--muted);
+        }
+        .badge.ok { background: #e8f7ee; border-color: #b9e2c8; color: var(--ok); }
+        .badge.ok .dot { background: var(--ok); }
+        .badge.warn { background: #fff6df; border-color: #f0d48a; color: var(--warn); }
+        .badge.warn .dot { background: var(--warn); }
+        .badge.busy { background: var(--accent-soft); border-color: #a7d8c8; color: var(--accent); }
+        .badge.busy .dot {
+            background: var(--accent);
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.35; }
+        }
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .step {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 14px;
+            background: #fbfdfc;
+        }
+        .step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--accent);
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        .step strong {
+            display: block;
+            margin-bottom: 6px;
         }
         .controls {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
-            margin-top: 14px;
+            margin-top: 16px;
         }
         button {
             border: 0;
             border-radius: 999px;
-            padding: 10px 16px;
+            padding: 11px 16px;
             cursor: pointer;
             color: white;
             background: var(--accent);
-            font-weight: 600;
+            font-weight: 650;
+            font-size: 14px;
+        }
+        button:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
         }
         button.secondary { background: var(--accent-2); }
         button.ghost {
@@ -74,11 +143,116 @@
             border: 1px solid var(--line);
         }
         button.danger { background: var(--danger); }
+        button.small {
+            padding: 7px 11px;
+            font-size: 12px;
+        }
+        .toast {
+            margin-top: 14px;
+            border-radius: 12px;
+            padding: 12px 14px;
+            background: #f3f7f5;
+            border: 1px solid var(--line);
+            color: var(--ink);
+            font-weight: 600;
+            min-height: 46px;
+        }
+        .toast.error {
+            background: #fdeeee;
+            border-color: #efc0c0;
+            color: var(--danger);
+        }
+        .toast.success {
+            background: #e8f7ee;
+            border-color: #b9e2c8;
+            color: var(--ok);
+        }
+        .section {
+            margin-top: 16px;
+        }
+        .section-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .device-list {
+            display: grid;
+            gap: 10px;
+        }
+        .device-card {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 14px;
+            background: #fff;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            align-items: center;
+        }
+        .device-card.controller {
+            border-color: #b9c8ef;
+            background: linear-gradient(180deg, #f7f9ff 0%, #ffffff 70%);
+        }
+        .device-card.connected {
+            border-color: #b9e2c8;
+            box-shadow: inset 0 0 0 1px rgba(31, 122, 69, 0.08);
+        }
+        .device-name {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .device-mac {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 12px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+        .meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .pill {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            border-radius: 999px;
+            padding: 4px 8px;
+            background: #eef3f1;
+            color: var(--muted);
+        }
+        .pill.controller { background: #e7ecfb; color: var(--controller); }
+        .pill.ok { background: #e8f7ee; color: var(--ok); }
+        .row-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        .empty {
+            color: var(--muted);
+            padding: 18px 8px;
+            border: 1px dashed var(--line);
+            border-radius: 12px;
+            text-align: center;
+        }
+        details.advanced {
+            margin-top: 16px;
+        }
+        details.advanced summary {
+            cursor: pointer;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
         .status-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 10px;
-            margin-top: 10px;
         }
         .status-card {
             border: 1px solid var(--line);
@@ -87,62 +261,16 @@
             background: #fff;
         }
         .label {
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.08em;
             color: var(--muted);
             margin-bottom: 6px;
         }
         .value {
-            font-size: 16px;
-            font-weight: 600;
-        }
-        .tables {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-            margin-top: 18px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 12px;
-        }
-        th, td {
-            text-align: left;
-            padding: 10px 8px;
-            border-bottom: 1px solid var(--line);
-            vertical-align: top;
-            font-size: 14px;
-        }
-        th {
-            color: var(--muted);
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-        }
-        .row-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .device-name {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-        .device-mac {
-            font-size: 14px;
-            margin-bottom: 6px;
-        }
-        .device-meta {
-            font-size: 12px;
-            color: var(--muted);
-            line-height: 1.5;
-        }
-        .row-actions button {
-            padding: 6px 10px;
-            font-size: 12px;
+            font-size: 15px;
+            font-weight: 650;
+            word-break: break-all;
         }
         pre {
             margin: 12px 0 0;
@@ -151,80 +279,136 @@
             background: #182125;
             color: #e9f3f6;
             overflow: auto;
-            min-height: 140px;
+            min-height: 120px;
+            font-size: 12px;
         }
-        .empty {
-            color: var(--muted);
-            padding: 18px 4px 8px;
-        }
-        @media (max-width: 900px) {
-            .hero, .tables {
+        @media (max-width: 800px) {
+            .steps, .status-grid, .device-card {
                 grid-template-columns: 1fr;
+            }
+            .row-actions {
+                justify-content: flex-start;
             }
         }
     </style>
 </head>
 <body>
 <main>
-    <section class="hero">
-        <div class="panel">
-            <h1>Bluetooth Pairing</h1>
-            <p>Standalone ArfBotOS Bluetooth service MVP for scanning, pairing, trusting, connecting, and removing devices on the Raspberry Pi.</p>
+    <section class="hero panel">
+        <div>
+            <h1>Connect a Bluetooth Controller</h1>
+            <p>
+                Pair a PlayStation DualSense (or other Bluetooth gamepad) to this Raspberry Pi
+                so ArfBotOS can use it for jogging.
+            </p>
+            <div class="badge-row">
+                <div class="badge" id="badge-power"><span class="dot"></span><span>Adapter: checking…</span></div>
+                <div class="badge" id="badge-scan"><span class="dot"></span><span>Scan: idle</span></div>
+                <div class="badge" id="badge-controller"><span class="dot"></span><span>Controller: none</span></div>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <strong>Put controller in pairing mode</strong>
+                    <p>On DualSense: hold Create + PS until the light bar starts blinking.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <strong>Scan nearby devices</strong>
+                    <p>Start a scan, wait a few seconds, then look for DualSense in the list.</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <strong>Connect</strong>
+                    <p>Tap <em>Connect Controller</em>. This pairs, trusts, and connects in one step.</p>
+                </div>
+            </div>
             <div class="controls">
-                <button id="scan-start">Start Scan</button>
+                <button id="scan-start">Scan for Controllers</button>
                 <button id="scan-stop" class="secondary">Stop Scan</button>
+                <button id="power-on" class="ghost">Power On Bluetooth</button>
                 <button id="refresh" class="ghost">Refresh</button>
             </div>
-            <div class="status-grid">
-                <div class="status-card">
-                    <div class="label">Controller</div>
-                    <div class="value" id="adapter-controller">Unknown</div>
-                </div>
-                <div class="status-card">
-                    <div class="label">Alias</div>
-                    <div class="value" id="adapter-alias">Unknown</div>
-                </div>
-                <div class="status-card">
-                    <div class="label">Powered</div>
-                    <div class="value" id="adapter-powered">Unknown</div>
-                </div>
-                <div class="status-card">
-                    <div class="label">Pairable / Discoverable</div>
-                    <div class="value" id="adapter-flags">Unknown</div>
-                </div>
-            </div>
-        </div>
-        <div class="panel">
-            <h2>Activity</h2>
-            <p>Most recent service response:</p>
-            <pre id="log">Waiting for first refresh...</pre>
+            <div class="toast" id="toast">Ready when you are.</div>
         </div>
     </section>
 
-    <section class="tables">
-        <div class="panel">
-            <h2>Discovered Devices</h2>
-            <div id="devices-wrap"></div>
+    <section class="section panel">
+        <div class="section-head">
+            <div>
+                <h2>Nearby Controllers</h2>
+                <p>Controllers are listed first. Other Bluetooth devices stay available underneath.</p>
+            </div>
         </div>
-        <div class="panel">
-            <h2>Paired Devices</h2>
-            <div id="paired-wrap"></div>
-        </div>
+        <div id="devices-wrap" class="device-list"></div>
     </section>
+
+    <section class="section panel">
+        <div class="section-head">
+            <div>
+                <h2>Saved Controllers</h2>
+                <p>Already paired on this Pi. Reconnect after a reboot from here.</p>
+            </div>
+        </div>
+        <div id="paired-wrap" class="device-list"></div>
+    </section>
+
+    <details class="advanced panel">
+        <summary>Advanced adapter details</summary>
+        <div class="status-grid">
+            <div class="status-card">
+                <div class="label">Controller address</div>
+                <div class="value" id="adapter-controller">Unknown</div>
+            </div>
+            <div class="status-card">
+                <div class="label">Alias</div>
+                <div class="value" id="adapter-alias">Unknown</div>
+            </div>
+            <div class="status-card">
+                <div class="label">Powered</div>
+                <div class="value" id="adapter-powered">Unknown</div>
+            </div>
+            <div class="status-card">
+                <div class="label">Pairable / Discoverable</div>
+                <div class="value" id="adapter-flags">Unknown</div>
+            </div>
+        </div>
+        <div class="controls">
+            <button id="power-off" class="danger small">Power Off Bluetooth</button>
+        </div>
+        <p style="margin-top:14px;">Raw response (for debugging):</p>
+        <pre id="log">Waiting for first refresh...</pre>
+    </details>
 </main>
 
 <script>
     const logEl = document.getElementById("log");
+    const toastEl = document.getElementById("toast");
+    let busy = false;
+    let lastStatus = {};
+
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#39;");
+    }
+
+    function setToast(message, kind = "") {
+        toastEl.textContent = message;
+        toastEl.className = "toast" + (kind ? ` ${kind}` : "");
+    }
 
     function setLog(payload) {
         logEl.textContent = JSON.stringify(payload, null, 2);
     }
 
-    async function fetchJson(url, options) {
-        const response = await fetch(url, options);
-        const payload = await response.json();
-        setLog(payload);
-        return payload;
+    function setBadge(id, text, kind = "") {
+        const el = document.getElementById(id);
+        el.className = "badge" + (kind ? ` ${kind}` : "");
+        el.innerHTML = `<span class="dot"></span><span>${escapeHtml(text)}</span>`;
     }
 
     function yesNoMaybe(value) {
@@ -233,82 +417,123 @@
         return "Unknown";
     }
 
-    function renderTable(targetId, devices, pairedView) {
+    async function fetchJson(url, options) {
+        const response = await fetch(url, options);
+        let payload;
+        try {
+            payload = await response.json();
+        } catch (err) {
+            payload = { ok: false, message: `Bad response from ${url}` };
+        }
+        setLog(payload);
+        if (!response.ok && payload && payload.message) {
+            throw new Error(payload.message);
+        }
+        return payload;
+    }
+
+    function renderDevices(targetId, devices, pairedView) {
         const target = document.getElementById(targetId);
         if (!devices || devices.length === 0) {
-            target.innerHTML = '<div class="empty">No devices to show yet.</div>';
+            target.innerHTML = pairedView
+                ? '<div class="empty">No saved controllers yet.</div>'
+                : '<div class="empty">No devices found yet. Start a scan and put the controller in pairing mode.</div>';
             return;
         }
 
-        const rows = devices.map(device => {
-            const preferredName = device.alias || device.name;
-            const displayName = preferredName || "Unknown device";
-            const meta = [];
-            if (device.alias && device.name && device.alias !== device.name) {
-                meta.push(`Name: ${device.name}`);
-            }
-            if (device.icon) {
-                meta.push(`Icon: ${device.icon}`);
-            }
-            if (device.rssi) {
-                meta.push(`RSSI: ${device.rssi}`);
-            }
+        target.innerHTML = devices.map(device => {
+            const displayName = device.display_name || device.alias || device.name || "Unknown device";
+            const isController = !!device.is_controller;
+            const connected = device.connected === true;
+            const classes = [
+                "device-card",
+                isController ? "controller" : "",
+                connected ? "connected" : "",
+            ].filter(Boolean).join(" ");
+
+            const pills = [];
+            if (isController) pills.push('<span class="pill controller">Controller</span>');
+            if (device.paired) pills.push('<span class="pill ok">Paired</span>');
+            if (device.trusted) pills.push('<span class="pill ok">Trusted</span>');
+            if (connected) pills.push('<span class="pill ok">Connected</span>');
+            if (device.rssi) pills.push(`<span class="pill">RSSI ${escapeHtml(device.rssi)}</span>`);
+
+            const mac = escapeHtml(device.mac);
             const actions = pairedView
                 ? `
-                    <button onclick="deviceAction('/api/connect', '${device.mac}')">Connect</button>
-                    <button onclick="deviceAction('/api/disconnect', '${device.mac}')" class="secondary">Disconnect</button>
-                    <button onclick="deviceAction('/api/remove', '${device.mac}')" class="danger">Remove</button>
+                    <button class="small" onclick="deviceAction('/api/connect', '${mac}')">Connect</button>
+                    <button class="small secondary" onclick="deviceAction('/api/disconnect', '${mac}')">Disconnect</button>
+                    <button class="small danger" onclick="deviceAction('/api/remove', '${mac}')">Forget</button>
                   `
                 : `
-                    <button onclick="deviceAction('/api/pair', '${device.mac}')">Pair</button>
-                    <button onclick="deviceAction('/api/trust', '${device.mac}')" class="secondary">Trust</button>
-                    <button onclick="deviceAction('/api/connect', '${device.mac}')" class="ghost">Connect</button>
+                    <button class="small" onclick="deviceAction('/api/setup', '${mac}')">Connect Controller</button>
+                    <button class="small ghost" onclick="deviceAction('/api/pair', '${mac}')">Pair only</button>
                   `;
 
             return `
-                <tr>
-                    <td>
-                        <div class="device-name">${displayName}</div>
-                        <div class="device-mac">${device.mac}</div>
-                        <div class="device-meta">${meta.length ? meta.join("<br>") : "No device name advertised yet."}</div>
-                    </td>
-                    <td>${yesNoMaybe(device.paired)} / ${yesNoMaybe(device.trusted)}</td>
-                    <td>${yesNoMaybe(device.connected)}</td>
-                    <td><div class="row-actions">${actions}</div></td>
-                </tr>
+                <div class="${classes}">
+                    <div>
+                        <div class="device-name">${escapeHtml(displayName)}</div>
+                        <div class="device-mac">${mac}</div>
+                        <div class="meta-row">${pills.join("") || '<span class="pill">Bluetooth device</span>'}</div>
+                    </div>
+                    <div class="row-actions">${actions}</div>
+                </div>
             `;
         }).join("");
+    }
 
-        target.innerHTML = `
-            <table>
-                <thead>
-                    <tr>
-                        <th>Device</th>
-                        <th>Paired / Trusted</th>
-                        <th>Connected</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>${rows}</tbody>
-            </table>
-        `;
+    function updateBadges(status, pairedDevices) {
+        const adapter = status.adapter || {};
+        if (adapter.powered) {
+            setBadge("badge-power", "Adapter: powered on", "ok");
+        } else if (adapter.powered === false) {
+            setBadge("badge-power", "Adapter: powered off", "warn");
+        } else {
+            setBadge("badge-power", "Adapter: unknown");
+        }
+
+        if (status.scanning || adapter.scanning) {
+            setBadge("badge-scan", "Scan: searching…", "busy");
+        } else {
+            setBadge("badge-scan", "Scan: idle");
+        }
+
+        const connected = (pairedDevices || []).find(d => d.connected);
+        if (connected) {
+            const name = connected.display_name || connected.name || connected.mac;
+            setBadge("badge-controller", `Controller: ${name}`, "ok");
+        } else {
+            const savedController = (pairedDevices || []).find(d => d.is_controller);
+            if (savedController) {
+                setBadge("badge-controller", "Controller: paired, not connected", "warn");
+            } else {
+                setBadge("badge-controller", "Controller: none");
+            }
+        }
     }
 
     async function refreshStatus() {
         const status = await fetchJson("/api/status");
+        lastStatus = status;
         const adapter = status.adapter || {};
         document.getElementById("adapter-controller").textContent = adapter.controller || "Unknown";
         document.getElementById("adapter-alias").textContent = adapter.alias || adapter.name || "Unknown";
         document.getElementById("adapter-powered").textContent = yesNoMaybe(adapter.powered);
-        document.getElementById("adapter-flags").textContent = `${yesNoMaybe(adapter.pairable)} / ${yesNoMaybe(adapter.discoverable)}`;
+        document.getElementById("adapter-flags").textContent =
+            `${yesNoMaybe(adapter.pairable)} / ${yesNoMaybe(adapter.discoverable)}`;
+        return status;
     }
 
     async function refreshLists() {
-        const devices = await fetchJson("/api/devices");
-        renderTable("devices-wrap", devices.devices || [], false);
-
-        const paired = await fetchJson("/api/paired");
-        renderTable("paired-wrap", paired.devices || [], true);
+        const [devices, paired] = await Promise.all([
+            fetchJson("/api/devices"),
+            fetchJson("/api/paired"),
+        ]);
+        renderDevices("devices-wrap", devices.devices || [], false);
+        renderDevices("paired-wrap", paired.devices || [], true);
+        updateBadges(lastStatus, paired.devices || []);
+        return { devices, paired };
     }
 
     async function refreshAll() {
@@ -316,14 +541,26 @@
         await refreshLists();
     }
 
-    async function postAction(url, body = {}) {
-        const payload = await fetchJson(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body)
-        });
-        await refreshAll();
-        return payload;
+    async function postAction(url, body = {}, successMessage) {
+        if (busy) return;
+        busy = true;
+        setToast("Working…");
+        try {
+            const payload = await fetchJson(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body),
+            });
+            const message = payload.message || successMessage || "Done";
+            setToast(message, payload.ok === false ? "error" : "success");
+            await refreshAll();
+            return payload;
+        } catch (err) {
+            setToast(err.message || "Request failed", "error");
+            throw err;
+        } finally {
+            busy = false;
+        }
     }
 
     async function deviceAction(url, mac) {
@@ -331,17 +568,30 @@
     }
 
     document.getElementById("scan-start").addEventListener("click", async () => {
-        await postAction("/api/scan/start");
+        await postAction("/api/scan/start", {}, "Scanning for nearby devices");
     });
-
     document.getElementById("scan-stop").addEventListener("click", async () => {
-        await postAction("/api/scan/stop");
+        await postAction("/api/scan/stop", {}, "Scan stopped");
+    });
+    document.getElementById("power-on").addEventListener("click", async () => {
+        await postAction("/api/power/on", {}, "Bluetooth powered on");
+    });
+    document.getElementById("power-off").addEventListener("click", async () => {
+        await postAction("/api/power/off", {}, "Bluetooth powered off");
+    });
+    document.getElementById("refresh").addEventListener("click", async () => {
+        setToast("Refreshing…");
+        await refreshAll();
+        setToast("Refreshed.");
     });
 
-    document.getElementById("refresh").addEventListener("click", refreshAll);
-
-    refreshAll();
-    setInterval(refreshLists, 5000);
+    refreshAll().catch(err => setToast(err.message || "Failed to load", "error"));
+    setInterval(() => {
+        if (!busy) {
+            refreshLists().catch(() => {});
+            refreshStatus().catch(() => {});
+        }
+    }, 4000);
 </script>
 </body>
 </html>
