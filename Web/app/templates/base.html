@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% if title %}
+        <title>{{ title }} — ArfBot</title>
+        {% else %}
+        <title>ArfBot</title>
+        {% endif %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/arfbot-night.css') }}">
+        {% block head %}{% endblock %}
+    </head>
+    <body>
+        <header class="topbar">
+            {% if enable_vision %}
+            <a class="brand" href="{{ url_for('vision.template') }}">
+                <span class="brand-mark"></span>
+                ARFBOT
+                <span class="brand-sub">Night</span>
+            </a>
+            {% elif enable_bluetooth %}
+            <a class="brand" href="{{ url_for('bluetooth.index') }}">
+                <span class="brand-mark"></span>
+                ARFBOT
+                <span class="brand-sub">Night</span>
+            </a>
+            {% else %}
+            <span class="brand"><span class="brand-mark"></span>ARFBOT<span class="brand-sub">Night</span></span>
+            {% endif %}
+            <nav class="nav">
+                {% if enable_vision %}
+                <a href="{{ url_for('vision.template') }}" {% if request.endpoint in ['vision.template'] %}class="active"{% endif %}>Vision</a>
+                <a href="{{ url_for('vision.files') }}" {% if request.endpoint in ['vision.files'] %}class="active"{% endif %}>Files</a>
+                {% endif %}
+                {% if enable_bluetooth %}
+                <a href="{{ url_for('bluetooth.index') }}" {% if request.endpoint and request.endpoint.startswith('bluetooth.') %}class="active"{% endif %}>Bluetooth</a>
+                {% endif %}
+            </nav>
+        </header>
+        <main class="page {% block page_class %}{% endblock %}">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul class="flash-list">
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </main>
+    </body>
+</html>

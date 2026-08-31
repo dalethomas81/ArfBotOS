@@ -336,6 +336,7 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+.venv/
 
 # Cake - Uncomment if you are using it
 # tools/**
@@ -410,4 +411,7 @@ Codesys/ArfBot.~u
 Codesys/ArfBot.export
 Codesys/*.ret
 Codesys/scriptengine/
+Codesys/Scripts/*.out.txt
+Codesys/Scripts/temp/
 .DS_Store
+/Codesys/Scripts/st
