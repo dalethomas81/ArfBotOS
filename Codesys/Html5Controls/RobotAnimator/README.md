@@ -12,7 +12,7 @@ From this folder:
 python -m http.server 8765
 ```
 
-Open http://localhost:8765/TestControl.html — drag to orbit, wheel to zoom, sliders are joint degrees.
+Open http://localhost:8765/TestControl.html — drag to orbit, wheel to zoom, sliders are joint degrees. MCS / PC1 / PC2 are X Y Z mm and A B C deg (Rx Ry Rz), all relative to **WCS** (SoftMotion). TCP is relative to the flange. **Demo offsets** places sample frames.
 
 ## Install into CODESYS
 
@@ -52,4 +52,4 @@ If Process View is a blank dark rectangle: the overlay slot is there but the can
 
 ## Kinematics
 
-Default DH is AR4 millimetres in the SoftMotion 6-DOF convention (`d1` negative). `AXIS_SIGN` / `AXIS_OFFSET` map `fActPosition` onto that DH (J4 reversed, J6 +90° flange). Bind raw `Jx.fActPosition`, do not bake signs into the visu properties.
+Default DH is AR4 millimetres in the SoftMotion 6-DOF convention (`d1` negative). J2 has a built-in +90° DH offset. J1–J6 inputs are kinematic joint angles — if this robot’s `fActPosition` differs (J4 reversed, J6 flange +90°), map that on the visu bindings or in the axis group, not inside the control.

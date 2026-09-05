@@ -31,10 +31,11 @@ var RobotAnimatorElementWrapper;
         d6: 36.25
     };
 
-    // Map SoftMotion fActPosition (deg) to DH theta. J2 +90 is the 6-DOF convention.
-    // J4 sign matches the physical wrist; J6 +90 aligns the gripper fingers with the flange.
-    var AXIS_SIGN = [1, 1, 1, -1, 1, 1];
-    var AXIS_OFFSET = [0, 90, 0, 0, 0, 90];
+    // SoftMotion 6-DOF DH: J2 zero is 90° from the DH theta-2 home. Other axes are
+    // passed through as kinematic joint angles — robot sign/offset belongs in the
+    // visu bindings (or axis config), not in this control.
+    var AXIS_SIGN = [1, 1, 1, 1, 1, 1];
+    var AXIS_OFFSET = [0, 90, 0, 0, 0, 0];
 
     var LIGHT = { x: 0.35, y: 0.55, z: 0.75 };
 
@@ -104,6 +105,71 @@ var RobotAnimatorElementWrapper;
     }
     function lerp(a, b, t) { return add(a, scale(sub(b, a), t)); }
 
+    function ident() {
+        return [
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+        ];
+    }
+
+    function trans(x, y, z) {
+        return [
+            1, 0, 0, x,
+            0, 1, 0, y,
+            0, 0, 1, z,
+            0, 0, 0, 1
+        ];
+    }
+
+    function rotX(deg) {
+        var a = deg * DEG;
+        var c = Math.cos(a);
+        var s = Math.sin(a);
+        return [
+            1, 0, 0, 0,
+            0, c, -s, 0,
+            0, s, c, 0,
+            0, 0, 0, 1
+        ];
+    }
+
+    function rotY(deg) {
+        var a = deg * DEG;
+        var c = Math.cos(a);
+        var s = Math.sin(a);
+        return [
+            c, 0, s, 0,
+            0, 1, 0, 0,
+            -s, 0, c, 0,
+            0, 0, 0, 1
+        ];
+    }
+
+    function rotZ(deg) {
+        var a = deg * DEG;
+        var c = Math.cos(a);
+        var s = Math.sin(a);
+        return [
+            c, -s, 0, 0,
+            s, c, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
+        ];
+    }
+
+    function emptyPose() {
+        return { x: 0, y: 0, z: 0, a: 0, b: 0, c: 0 };
+    }
+
+    function poseT(p) {
+        if (!p) {
+            return ident();
+        }
+        return mul4(trans(p.x || 0, p.y || 0, p.z || 0), mul4(rotZ(p.c || 0), mul4(rotY(p.b || 0), rotX(p.a || 0))));
+    }
+
     function worldUp() {
         return [
             1, 0, 0, 0,
@@ -113,8 +179,8 @@ var RobotAnimatorElementWrapper;
         ];
     }
 
-    function frames(q) {
-        var T = worldUp();
+    function frames(q, mcs) {
+        var T = mul4(poseT(mcs), worldUp());
         var list = [T];
         var th0 = AXIS_SIGN[0] * q[0] + AXIS_OFFSET[0];
         var th1 = AXIS_SIGN[1] * q[1] + AXIS_OFFSET[1];
@@ -151,6 +217,18 @@ var RobotAnimatorElementWrapper;
         return "rgb(" + r + "," + g + "," + b + ")";
     }
 
+    function parseHex(hex) {
+        var h = hex || "E8EEF5";
+        if (h.charAt(0) === "#") {
+            h = h.slice(1);
+        }
+        return {
+            r: parseInt(h.slice(0, 2), 16),
+            g: parseInt(h.slice(2, 4), 16),
+            b: parseInt(h.slice(4, 6), 16)
+        };
+    }
+
     function shadeAlong(dir) {
         var n = norm(dir);
         return 0.45 + 0.55 * Math.max(0, dot(n, LIGHT));
@@ -160,6 +238,14 @@ var RobotAnimatorElementWrapper;
         var self = this;
         this.joints = [0, 0, 0, 0, 0, 0];
         this.gripper = 1;
+        this.showHud = { joints: true, gripper: true, coordinates: true };
+        this.offsets = {
+            mcs: emptyPose(),
+            pc1: emptyPose(),
+            pc2: emptyPose(),
+            tcp: emptyPose()
+        };
+        this._frames = { mcs: ident(), pc1: ident(), pc2: ident(), tcp: ident() };
         this.yaw = 0.95 + Math.PI;
         this.pitch = 0.55;
         this.distance = 1400;
@@ -172,7 +258,7 @@ var RobotAnimatorElementWrapper;
         this._raf = 0;
         this._cssW = 1;
         this._cssH = 1;
-        this._hudHtml = "";
+        this._hudKey = "";
         this._initW = 0;
         this._initH = 0;
         if (typeof idGenerator === "number") {
@@ -196,9 +282,36 @@ var RobotAnimatorElementWrapper;
         this.domNode.appendChild(this.canvas);
         this.ctx = this.canvas.getContext("2d");
 
-        this.hud = document.createElement("div");
-        this.hud.style.cssText = "position:absolute;left:8px;top:8px;z-index:2;color:" + TEXT + ";font-size:11px;line-height:1.45;pointer-events:none;text-shadow:0 1px 2px #000;";
-        this.domNode.appendChild(this.hud);
+        var hudBoxCss = "z-index:2;color:" + TEXT + ";font-size:10px;line-height:1.28;pointer-events:none;" +
+            "text-shadow:0 1px 2px #000;background:rgba(14,20,27,0.78);padding:5px 7px;" +
+            "border-radius:4px;border:1px solid " + GRID + ";white-space:nowrap;";
+
+        this.hudStack = document.createElement("div");
+        this.hudStack.style.cssText = "position:absolute;left:6px;top:6px;z-index:2;display:flex;" +
+            "flex-direction:column;align-items:flex-start;gap:4px;pointer-events:none;";
+        this.domNode.appendChild(this.hudStack);
+
+        this.jointsHud = document.createElement("div");
+        this.jointsHud.style.cssText = hudBoxCss;
+        this.hudStack.appendChild(this.jointsHud);
+
+        this.gripHud = document.createElement("div");
+        this.gripHud.style.cssText = hudBoxCss;
+        this.hudStack.appendChild(this.gripHud);
+
+        this.coordHud = document.createElement("div");
+        this.coordHud.style.cssText = "position:absolute;right:6px;top:6px;" + hudBoxCss;
+        this.domNode.appendChild(this.coordHud);
+
+        this.axisHud = document.createElement("div");
+        this.axisHud.style.cssText = "position:absolute;left:0;right:0;bottom:5px;z-index:2;text-align:center;" +
+            "font-size:9px;letter-spacing:0.08em;pointer-events:none;text-shadow:0 1px 2px #000;color:" + MUTED + ";";
+        this.axisHud.innerHTML =
+            "<span style='color:#FF4D6A;'>X</span> red &nbsp;·&nbsp; " +
+            "<span style='color:" + SUCCESS + ";'>Y</span> green &nbsp;·&nbsp; " +
+            "<span style='color:" + ACCENT + ";'>Z</span> teal";
+        this.domNode.appendChild(this.axisHud);
+        this._applyHudVisibility();
 
         document.body.appendChild(this.domNode);
 
@@ -216,7 +329,7 @@ var RobotAnimatorElementWrapper;
             var dy = e.clientY - self.lastY;
             self.lastX = e.clientX;
             self.lastY = e.clientY;
-            self.yaw -= dx * 0.008;
+            self.yaw += dx * 0.008;
             self.pitch += dy * 0.008;
             if (self.pitch > 1.45) { self.pitch = 1.45; }
             if (self.pitch < 0.08) { self.pitch = 0.08; }
@@ -279,6 +392,12 @@ var RobotAnimatorElementWrapper;
                 acc(parts[i].b);
             }
         }
+        if (this._frames) {
+            acc(origin(this._frames.mcs));
+            acc(origin(this._frames.pc1));
+            acc(origin(this._frames.pc2));
+            acc(origin(this._frames.tcp));
+        }
         this._lookAt = look;
         shortSide = Math.min(this._cssW, this._cssH);
         if (shortSide < 80) { shortSide = 80; }
@@ -301,6 +420,77 @@ var RobotAnimatorElementWrapper;
     RobotAnimatorElementWrapper.prototype.setJ4 = function (value) { this._setJoint(3, value); };
     RobotAnimatorElementWrapper.prototype.setJ5 = function (value) { this._setJoint(4, value); };
     RobotAnimatorElementWrapper.prototype.setJ6 = function (value) { this._setJoint(5, value); };
+
+    RobotAnimatorElementWrapper.prototype._setComp = function (name, key, value) {
+        var n = Number(value);
+        if (!isFinite(n)) {
+            return;
+        }
+        this.offsets[name][key] = n;
+    };
+
+    (function bindOffsetSetters() {
+        var names = ["mcs", "pc1", "pc2", "tcp"];
+        var prefixes = ["Mcs", "Pc1", "Pc2", "Tcp"];
+        var keys = ["x", "y", "z", "a", "b", "c"];
+        var i, j, n, k, method;
+        for (i = 0; i < names.length; i++) {
+            for (j = 0; j < keys.length; j++) {
+                n = names[i];
+                k = keys[j];
+                method = "set" + prefixes[i] + k.toUpperCase();
+                RobotAnimatorElementWrapper.prototype[method] = (function (poseName, poseKey) {
+                    return function (value) {
+                        this._setComp(poseName, poseKey, value);
+                    };
+                }(n, k));
+            }
+        }
+    }());
+
+    RobotAnimatorElementWrapper.prototype._asBool = function (value) {
+        if (value === true || value === 1 || value === "1") {
+            return true;
+        }
+        if (value === false || value === 0 || value === "0" || value === "" || value == null) {
+            return false;
+        }
+        var s = String(value).toLowerCase();
+        if (s === "true" || s === "yes" || s === "on") {
+            return true;
+        }
+        if (s === "false" || s === "no" || s === "off") {
+            return false;
+        }
+        return Boolean(value);
+    };
+
+    RobotAnimatorElementWrapper.prototype._applyHudVisibility = function () {
+        if (this.jointsHud) {
+            this.jointsHud.style.display = this.showHud.joints ? "" : "none";
+        }
+        if (this.gripHud) {
+            this.gripHud.style.display = this.showHud.gripper ? "" : "none";
+        }
+        if (this.coordHud) {
+            this.coordHud.style.display = this.showHud.coordinates ? "" : "none";
+        }
+    };
+
+    RobotAnimatorElementWrapper.prototype.setShowJoints = function (value) {
+        this.showHud.joints = this._asBool(value);
+        this._applyHudVisibility();
+    };
+
+    RobotAnimatorElementWrapper.prototype.setShowGripper = function (value) {
+        this.showHud.gripper = this._asBool(value);
+        this._applyHudVisibility();
+    };
+
+    RobotAnimatorElementWrapper.prototype.setShowCoordinates = function (value) {
+        this.showHud.coordinates = this._asBool(value);
+        this._applyHudVisibility();
+    };
 
     RobotAnimatorElementWrapper.prototype.setGripper = function (value) {
         var n = Number(value);
@@ -472,6 +662,39 @@ var RobotAnimatorElementWrapper;
         ctx.fill();
     };
 
+    RobotAnimatorElementWrapper.prototype._drawCone = function (base, tip, radius, colorHex) {
+        var ctx = this.ctx;
+        var n = 16;
+        var axis = sub(tip, base);
+        var color = parseHex(colorHex);
+        var ring = this._ring(base, axis, radius, n);
+        var pTip = this._project(tip);
+        var i, pa, pb, mid, lit;
+        if (!isFinite(pTip.x) || !isFinite(pTip.y)) {
+            return;
+        }
+        for (i = 0; i < n; i++) {
+            pa = this._project(ring[i]);
+            pb = this._project(ring[(i + 1) % n]);
+            if (!isFinite(pa.x) || !isFinite(pb.x)) {
+                continue;
+            }
+            if ((pb.x - pa.x) * (pTip.y - pa.y) - (pb.y - pa.y) * (pTip.x - pa.x) <= 0) {
+                continue;
+            }
+            mid = lerp(ring[i], ring[(i + 1) % n], 0.5);
+            lit = shadeAlong(sub(mid, base));
+            ctx.beginPath();
+            ctx.moveTo(pa.x, pa.y);
+            ctx.lineTo(pb.x, pb.y);
+            ctx.lineTo(pTip.x, pTip.y);
+            ctx.closePath();
+            ctx.fillStyle = rgb(color, lit);
+            ctx.fill();
+        }
+        this._drawCap(base, norm(axis), radius, color, -1);
+    };
+
     RobotAnimatorElementWrapper.prototype._drawBall = function (part) {
         var pr = this._project(part.p);
         var ctx = this.ctx;
@@ -490,7 +713,7 @@ var RobotAnimatorElementWrapper;
 
     RobotAnimatorElementWrapper.prototype._grid = function () {
         var ctx = this.ctx;
-        var i, a, b, pa, pb;
+        var i, a, b;
         var step = 50;
         var n = 8;
         ctx.lineWidth = 1;
@@ -509,19 +732,60 @@ var RobotAnimatorElementWrapper;
             ctx.lineTo(b.x, b.y);
             ctx.stroke();
         }
-        function axisLine(from, to, color) {
-            pa = this._project(from);
-            pb = this._project(to);
+    };
+
+    RobotAnimatorElementWrapper.prototype._drawPoseFrame = function (T, length, ballColor, lineWidth) {
+        var ctx = this.ctx;
+        var o = origin(T);
+        var po = this._project(o);
+        var pr;
+        var lw = lineWidth || 2.5;
+        var coneLen = Math.max(12, length * 0.28);
+        var coneR = Math.max(4.5, length * 0.1);
+        var axes;
+        var i, dir, color, shaftEnd, tip, a, b;
+        if (coneLen > length * 0.45) {
+            coneLen = length * 0.45;
+        }
+        axes = [
+            [axisX(T), "#FF4D6A"],
+            [axisY(T), SUCCESS],
+            [axisZ(T), ACCENT]
+        ];
+        for (i = 0; i < axes.length; i++) {
+            dir = axes[i][0];
+            color = axes[i][1];
+            shaftEnd = add(o, scale(dir, length - coneLen));
+            a = this._project(o);
+            b = this._project(shaftEnd);
             ctx.beginPath();
-            ctx.moveTo(pa.x, pa.y);
-            ctx.lineTo(pb.x, pb.y);
+            ctx.moveTo(a.x, a.y);
+            ctx.lineTo(b.x, b.y);
             ctx.strokeStyle = color;
-            ctx.lineWidth = 2;
+            ctx.lineWidth = lw;
+            ctx.lineCap = "butt";
             ctx.stroke();
         }
-        axisLine.call(this, { x: 0, y: 0, z: 0 }, { x: 90, y: 0, z: 0 }, "#FF4D6A");
-        axisLine.call(this, { x: 0, y: 0, z: 0 }, { x: 0, y: 90, z: 0 }, SUCCESS);
-        axisLine.call(this, { x: 0, y: 0, z: 0 }, { x: 0, y: 0, z: 90 }, ACCENT);
+        for (i = 0; i < axes.length; i++) {
+            dir = axes[i][0];
+            color = axes[i][1];
+            shaftEnd = add(o, scale(dir, length - coneLen));
+            tip = add(o, scale(dir, length));
+            this._drawCone(shaftEnd, tip, coneR, color);
+        }
+        if (!ballColor) {
+            return;
+        }
+        pr = Math.max(3.5, 6 * po.s);
+        if (isFinite(po.x) && isFinite(po.y) && isFinite(pr)) {
+            ctx.beginPath();
+            ctx.arc(po.x, po.y, pr, 0, Math.PI * 2);
+            ctx.fillStyle = ballColor;
+            ctx.fill();
+            ctx.strokeStyle = "rgba(232,238,245,0.85)";
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
     };
 
     RobotAnimatorElementWrapper.prototype._housing = function (parts, frame, along, halfH, radius, color) {
@@ -618,7 +882,11 @@ var RobotAnimatorElementWrapper;
 
         var fs, parts, i, lines, html;
         try {
-            fs = frames(this.joints);
+            this._frames.mcs = poseT(this.offsets.mcs);
+            this._frames.pc1 = poseT(this.offsets.pc1);
+            this._frames.pc2 = poseT(this.offsets.pc2);
+            fs = frames(this.joints, this.offsets.mcs);
+            this._frames.tcp = mul4(fs[6], poseT(this.offsets.tcp));
             parts = this._bodyParts(fs);
             this._fitCamera(parts);
             this._grid();
@@ -642,23 +910,44 @@ var RobotAnimatorElementWrapper;
                     this._drawBall(parts[i]);
                 }
             }
+            this._drawPoseFrame(ident(), 90, TEXT);
+            this._drawPoseFrame(this._frames.mcs, 70, WARNING);
+            this._drawPoseFrame(this._frames.pc1, 58, SUCCESS);
+            this._drawPoseFrame(this._frames.pc2, 48, ACCENT);
+            this._drawPoseFrame(this._frames.tcp, 42, "#FF6B9D");
             this._error = "";
         } catch (err) {
             this._error = String(err && err.message ? err.message : err);
         }
 
-        lines = ["Generic 6-axis"];
+        function poseLine(name, p, color) {
+            return "<span style='color:" + color + ";font-weight:600;'>" + name + "</span>  " +
+                p.x.toFixed(0) + " " + p.y.toFixed(0) + " " + p.z.toFixed(0) +
+                "  " + p.a.toFixed(0) + "\u00B0 " + p.b.toFixed(0) + "\u00B0 " + p.c.toFixed(0) + "\u00B0";
+        }
+        function hudHeading(label) {
+            return "<div style='color:" + MUTED + ";font-size:8px;letter-spacing:0.08em;margin-bottom:2px;'>" + label + "</div>";
+        }
+        lines = [];
         for (i = 0; i < 6; i++) {
             lines.push("J" + (i + 1) + "  " + this.joints[i].toFixed(1) + "\u00B0");
         }
-        lines.push("Grip  " + Math.round(this.gripper * 100) + "% open");
         if (this._error) {
             lines.push(this._error);
         }
-        html = lines.join("<br>");
-        if (html !== this._hudHtml) {
-            this._hudHtml = html;
-            this.hud.innerHTML = html;
+        html = hudHeading("JOINTS") + lines.join("<br>");
+        var gripHtml = hudHeading("GRIPPER") + Math.round(this.gripper * 100) + "% open";
+        var coordHtml = hudHeading("COORDINATES") +
+            poseLine("MCS", this.offsets.mcs, WARNING) + "<br>" +
+            poseLine("PC1", this.offsets.pc1, SUCCESS) + "<br>" +
+            poseLine("PC2", this.offsets.pc2, ACCENT) + "<br>" +
+            poseLine("TCP", this.offsets.tcp, "#FF6B9D");
+        var key = html + "\n" + gripHtml + "\n" + coordHtml;
+        if (key !== this._hudKey) {
+            this._hudKey = key;
+            this.jointsHud.innerHTML = html;
+            this.gripHud.innerHTML = gripHtml;
+            this.coordHud.innerHTML = coordHtml;
         }
     };
 })();

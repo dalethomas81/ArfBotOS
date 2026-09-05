@@ -8,18 +8,21 @@
         <meta name="theme-color" content="#0E141B" />
         <style>
             html, body { margin: 0; height: 100%; background: #0E141B; color: #E8EEF5; font-family: "Segoe UI", sans-serif; }
-            #stage { position: absolute; inset: 0 240px 0 0; }
+            #stage { position: absolute; inset: 0 280px 0 0; }
             #panel {
-                position: absolute; top: 0; right: 0; bottom: 0; width: 240px;
+                position: absolute; top: 0; right: 0; bottom: 0; width: 280px;
                 background: #171F2A; border-left: 1px solid #2A3646;
                 box-sizing: border-box; padding: 16px 14px; overflow: auto;
             }
             h1 { font-size: 16px; margin: 0 0 4px; color: #2EE6D6; }
+            h2 { font-size: 12px; margin: 16px 0 6px; color: #FFB020; letter-spacing: 0.04em; }
             p.hint { font-size: 11px; color: #8B9BB0; margin: 0 0 16px; }
-            label { display: block; font-size: 11px; color: #8B9BB0; margin: 10px 0 4px; }
+            label { display: block; font-size: 11px; color: #8B9BB0; margin: 8px 0 2px; }
+            label.check { display: flex; align-items: center; gap: 8px; margin: 4px 0; color: #E8EEF5; }
             input[type=range] { width: 100%; }
+            input[type=checkbox] { margin: 0; }
             button {
-                width: 100%; margin-top: 14px; padding: 8px;
+                width: 100%; margin-top: 10px; padding: 8px;
                 background: #243041; color: #E8EEF5; border: 1px solid #3A4A5C;
                 border-radius: 4px; cursor: pointer;
             }
@@ -31,9 +34,10 @@
         <div id="stage"></div>
         <aside id="panel">
             <h1>Robot Animator</h1>
-            <p class="hint">Generic industrial body with a two-finger gripper. Drag to orbit, wheel to zoom. Joints in degrees; gripper 0% closed / 100% open.</p>
+            <p class="hint">Drag to orbit, wheel to zoom, double-click to reset zoom. Joints in degrees. Offsets are SoftMotion poses: X Y Z mm, A B C deg (Rx Ry Rz). MCS, PC1, and PC2 are all relative to world (WCS). TCP is from the flange.</p>
             <div id="sliders"></div>
             <button id="wave" type="button">Demo wave</button>
+            <button id="offsets" type="button">Demo offsets</button>
             <button id="home" type="button">Home (zeros)</button>
         </aside>
         <script>
@@ -47,55 +51,125 @@
             var wrapper = new RobotAnimatorElementWrapper();
             document.body.appendChild = origAppend;
 
-            var names = ["J1", "J2", "J3", "J4", "J5", "J6"];
             var box = document.getElementById("sliders");
             var inputs = [];
-            names.forEach(function (name, i) {
+
+            function heading(text) {
+                var h = document.createElement("h2");
+                h.textContent = text;
+                box.appendChild(h);
+            }
+
+            function addRange(labelText, min, max, step, value, onInput) {
                 var lab = document.createElement("label");
-                lab.textContent = name;
+                lab.textContent = labelText;
                 var inp = document.createElement("input");
                 inp.type = "range";
-                inp.min = -180;
-                inp.max = 180;
-                inp.step = 0.1;
-                inp.value = [0, -35, 55, 0, 40, 0][i];
-                inp.addEventListener("input", function () {
-                    wrapper["_setJoint"](i, inp.value);
-                    lab.textContent = name + "  " + Number(inp.value).toFixed(1) + "°";
-                });
-                inp.dispatchEvent(new Event("input"));
+                inp.min = min;
+                inp.max = max;
+                inp.step = step;
+                inp.value = value;
+                inp.addEventListener("input", function () { onInput(inp, lab); });
                 box.appendChild(lab);
                 box.appendChild(inp);
-                inputs.push(inp);
+                inp.dispatchEvent(new Event("input"));
+                return inp;
+            }
+
+            heading("HUD boxes");
+            [
+                ["Show joints", "setShowJoints"],
+                ["Show gripper", "setShowGripper"],
+                ["Show coordinates", "setShowCoordinates"]
+            ].forEach(function (item) {
+                var lab = document.createElement("label");
+                lab.className = "check";
+                var inp = document.createElement("input");
+                inp.type = "checkbox";
+                inp.checked = true;
+                inp.addEventListener("change", function () {
+                    wrapper[item[1]](inp.checked);
+                });
+                lab.appendChild(inp);
+                lab.appendChild(document.createTextNode(item[0]));
+                box.appendChild(lab);
             });
 
-            var gripLab = document.createElement("label");
-            gripLab.textContent = "Gripper";
-            var grip = document.createElement("input");
-            grip.type = "range";
-            grip.min = 0;
-            grip.max = 100;
-            grip.step = 1;
-            grip.value = 100;
-            grip.addEventListener("input", function () {
-                wrapper.setGripper(grip.value);
-                gripLab.textContent = "Gripper  " + grip.value + "% open";
+            heading("Joints");
+            var names = ["J1", "J2", "J3", "J4", "J5", "J6"];
+            var homeJoints = [0, -35, 55, 0, 40, 0];
+            names.forEach(function (name, i) {
+                inputs.push(addRange(name, -180, 180, 0.1, homeJoints[i], function (inp, lab) {
+                    wrapper["_setJoint"](i, inp.value);
+                    lab.textContent = name + "  " + Number(inp.value).toFixed(1) + "\u00B0";
+                }));
             });
-            grip.dispatchEvent(new Event("input"));
-            box.appendChild(gripLab);
-            box.appendChild(grip);
 
-            function setAll(vals) {
+            var grip = addRange("Gripper", 0, 100, 1, 100, function (inp, lab) {
+                wrapper.setGripper(inp.value);
+                lab.textContent = "Gripper  " + inp.value + "% open";
+            });
+
+            var poseInputs = {};
+            var poseDefs = [
+                { key: "mcs", title: "MCS (robot base in WCS)", prefix: "Mcs" },
+                { key: "pc1", title: "PC1 (in WCS)", prefix: "Pc1" },
+                { key: "pc2", title: "PC2 (in WCS)", prefix: "Pc2" },
+                { key: "tcp", title: "TCP (from flange)", prefix: "Tcp" }
+            ];
+            var poseKeys = [
+                { k: "x", label: "X", min: -400, max: 400, step: 1, unit: " mm" },
+                { k: "y", label: "Y", min: -400, max: 400, step: 1, unit: " mm" },
+                { k: "z", label: "Z", min: -400, max: 400, step: 1, unit: " mm" },
+                { k: "a", label: "A", min: -180, max: 180, step: 0.5, unit: "\u00B0" },
+                { k: "b", label: "B", min: -180, max: 180, step: 0.5, unit: "\u00B0" },
+                { k: "c", label: "C", min: -180, max: 180, step: 0.5, unit: "\u00B0" }
+            ];
+
+            poseDefs.forEach(function (pose) {
+                heading(pose.title);
+                poseInputs[pose.key] = {};
+                poseKeys.forEach(function (axis) {
+                    var method = "set" + pose.prefix + axis.label;
+                    poseInputs[pose.key][axis.k] = addRange(axis.label, axis.min, axis.max, axis.step, 0, function (inp, lab) {
+                        wrapper[method](inp.value);
+                        lab.textContent = axis.label + "  " + Number(inp.value).toFixed(axis.k === "a" || axis.k === "b" || axis.k === "c" ? 1 : 0) + axis.unit;
+                    });
+                });
+            });
+
+            function setJoints(vals) {
                 vals.forEach(function (v, i) {
                     inputs[i].value = v;
                     inputs[i].dispatchEvent(new Event("input"));
                 });
             }
 
+            function setPose(key, pose) {
+                ["x", "y", "z", "a", "b", "c"].forEach(function (k) {
+                    poseInputs[key][k].value = pose[k];
+                    poseInputs[key][k].dispatchEvent(new Event("input"));
+                });
+            }
+
+            function zeroPoses() {
+                poseDefs.forEach(function (pose) {
+                    setPose(pose.key, { x: 0, y: 0, z: 0, a: 0, b: 0, c: 0 });
+                });
+            }
+
             document.getElementById("home").onclick = function () {
-                setAll([0, 0, 0, 0, 0, 0]);
+                setJoints([0, 0, 0, 0, 0, 0]);
                 grip.value = 100;
                 grip.dispatchEvent(new Event("input"));
+                zeroPoses();
+            };
+
+            document.getElementById("offsets").onclick = function () {
+                setPose("mcs", { x: 0, y: 0, z: 0, a: 0, b: 0, c: 15 });
+                setPose("pc1", { x: 180, y: 40, z: 0, a: 0, b: 0, c: 20 });
+                setPose("pc2", { x: 60, y: -20, z: 10, a: 0, b: 0, c: -10 });
+                setPose("tcp", { x: 0, y: 0, z: 80, a: 0, b: 0, c: 45 });
             };
 
             var waving = false;
@@ -108,7 +182,7 @@
             (function tick() {
                 if (waving) {
                     var t = (performance.now() - t0) / 1000;
-                    setAll([
+                    setJoints([
                         25 * Math.sin(t * 0.7),
                         20 * Math.sin(t * 0.9),
                         35 * Math.sin(t * 1.1),
