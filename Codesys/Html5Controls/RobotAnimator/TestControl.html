@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>RobotAnimator Test Page</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <meta name="theme-color" content="#0E141B" />
+        <style>
+            html, body { margin: 0; height: 100%; background: #0E141B; color: #E8EEF5; font-family: "Segoe UI", sans-serif; }
+            #stage { position: absolute; inset: 0 240px 0 0; }
+            #panel {
+                position: absolute; top: 0; right: 0; bottom: 0; width: 240px;
+                background: #171F2A; border-left: 1px solid #2A3646;
+                box-sizing: border-box; padding: 16px 14px; overflow: auto;
+            }
+            h1 { font-size: 16px; margin: 0 0 4px; color: #2EE6D6; }
+            p.hint { font-size: 11px; color: #8B9BB0; margin: 0 0 16px; }
+            label { display: block; font-size: 11px; color: #8B9BB0; margin: 10px 0 4px; }
+            input[type=range] { width: 100%; }
+            button {
+                width: 100%; margin-top: 14px; padding: 8px;
+                background: #243041; color: #E8EEF5; border: 1px solid #3A4A5C;
+                border-radius: 4px; cursor: pointer;
+            }
+            button:hover { border-color: #2EE6D6; color: #2EE6D6; }
+        </style>
+        <script type="text/javascript" src="ElementWrapper.js"></script>
+    </head>
+    <body>
+        <div id="stage"></div>
+        <aside id="panel">
+            <h1>Robot Animator</h1>
+            <p class="hint">Generic industrial body with a two-finger gripper. Drag to orbit, wheel to zoom. Joints in degrees; gripper 0% closed / 100% open.</p>
+            <div id="sliders"></div>
+            <button id="wave" type="button">Demo wave</button>
+            <button id="home" type="button">Home (zeros)</button>
+        </aside>
+        <script>
+            var mount = document.getElementById("stage");
+            var savedBody = document.body;
+            var origAppend = savedBody.appendChild.bind(savedBody);
+            document.body.appendChild = function (node) {
+                mount.appendChild(node);
+                return node;
+            };
+            var wrapper = new RobotAnimatorElementWrapper();
+            document.body.appendChild = origAppend;
+
+            var names = ["J1", "J2", "J3", "J4", "J5", "J6"];
+            var box = document.getElementById("sliders");
+            var inputs = [];
+            names.forEach(function (name, i) {
+                var lab = document.createElement("label");
+                lab.textContent = name;
+                var inp = document.createElement("input");
+                inp.type = "range";
+                inp.min = -180;
+                inp.max = 180;
+                inp.step = 0.1;
+                inp.value = [0, -35, 55, 0, 40, 0][i];
+                inp.addEventListener("input", function () {
+                    wrapper["_setJoint"](i, inp.value);
+                    lab.textContent = name + "  " + Number(inp.value).toFixed(1) + "°";
+                });
+                inp.dispatchEvent(new Event("input"));
+                box.appendChild(lab);
+                box.appendChild(inp);
+                inputs.push(inp);
+            });
+
+            var gripLab = document.createElement("label");
+            gripLab.textContent = "Gripper";
+            var grip = document.createElement("input");
+            grip.type = "range";
+            grip.min = 0;
+            grip.max = 100;
+            grip.step = 1;
+            grip.value = 100;
+            grip.addEventListener("input", function () {
+                wrapper.setGripper(grip.value);
+                gripLab.textContent = "Gripper  " + grip.value + "% open";
+            });
+            grip.dispatchEvent(new Event("input"));
+            box.appendChild(gripLab);
+            box.appendChild(grip);
+
+            function setAll(vals) {
+                vals.forEach(function (v, i) {
+                    inputs[i].value = v;
+                    inputs[i].dispatchEvent(new Event("input"));
+                });
+            }
+
+            document.getElementById("home").onclick = function () {
+                setAll([0, 0, 0, 0, 0, 0]);
+                grip.value = 100;
+                grip.dispatchEvent(new Event("input"));
+            };
+
+            var waving = false;
+            var t0 = 0;
+            document.getElementById("wave").onclick = function () {
+                waving = !waving;
+                t0 = performance.now();
+                this.textContent = waving ? "Stop wave" : "Demo wave";
+            };
+            (function tick() {
+                if (waving) {
+                    var t = (performance.now() - t0) / 1000;
+                    setAll([
+                        25 * Math.sin(t * 0.7),
+                        20 * Math.sin(t * 0.9),
+                        35 * Math.sin(t * 1.1),
+                        40 * Math.sin(t * 1.3),
+                        30 * Math.sin(t * 1.5),
+                        50 * Math.sin(t * 1.8)
+                    ]);
+                    grip.value = Math.round(50 + 50 * Math.sin(t * 2.2));
+                    grip.dispatchEvent(new Event("input"));
+                }
+                requestAnimationFrame(tick);
+            })();
+        </script>
+    </body>
+</html>
