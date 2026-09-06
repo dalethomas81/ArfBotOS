@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-06T12:26:22.9112502" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-06T12:24:31.6680771" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-06T15:40:12.1293726" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-06T15:14:06.0196146" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -669,6 +669,17 @@ RESERVED: INT:=46;</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> visu</xhtml>
               </documentation>
             </variable>
+            <variable name="EulerConvention">
+              <type>
+                <derived name="SMC_ORI_CONVENTION" />
+              </type>
+              <initialValue>
+                <simpleValue value="SMC_ORI_CONVENTION.ZYZ" />
+              </initialValue>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> https://content.helpme-codesys.com/en/libs/SM3_CNC/4.14.0.0/SM_CNC_Data-types/SoftMotion-CNC/SMC_ORI_CONVENTION.html</xhtml>
+              </documentation>
+            </variable>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                 <Attributes>
@@ -1212,6 +1223,17 @@ RESERVED: INT:=46;</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> visu</xhtml>
                       </documentation>
                     </variable>
+                    <variable name="EulerConvention">
+                      <type>
+                        <derived name="SMC_ORI_CONVENTION" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="SMC_ORI_CONVENTION.ZYZ" />
+                      </initialValue>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> https://content.helpme-codesys.com/en/libs/SM3_CNC/4.14.0.0/SM_CNC_Data-types/SoftMotion-CNC/SMC_ORI_CONVENTION.html</xhtml>
+                      </documentation>
+                    </variable>
                   </globalVars>
                 </MixedAttrsVarList>
               </data>
@@ -1348,22 +1370,22 @@ RESERVED: INT:=46;</xhtml>
               <initialValue>
                 <arrayValue>
                   <value>
-                    <simpleValue value="16000.0" />
+                    <simpleValue value="32000.0" />
                   </value>
                   <value>
-                    <simpleValue value="20000.0" />
+                    <simpleValue value="40000.0" />
                   </value>
                   <value>
-                    <simpleValue value="20000.0" />
+                    <simpleValue value="40000.0" />
                   </value>
                   <value>
-                    <simpleValue value="26880.0" />
+                    <simpleValue value="35840.0" />
                   </value>
                   <value>
-                    <simpleValue value="7850.0" />
+                    <simpleValue value="15700.0" />
                   </value>
                   <value>
-                    <simpleValue value="8081.25" />
+                    <simpleValue value="16162.5" />
                   </value>
                 </arrayValue>
               </initialValue>
@@ -1376,7 +1398,8 @@ RESERVED: INT:=46;</xhtml>
               </addData>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> dh parameters
- axis params</xhtml>
+ axis params
+PulsesPerRevolution: ARRAY [0..5] OF LREAL := [32000.0, 40000.0, 40000.0, 35840.0, 15700.0, 16162.5];</xhtml>
               </documentation>
             </variable>
             <variable name="HomingGroupOne">
@@ -3879,6 +3902,7 @@ TrackPosition(
 	J4:=IoConfig_Globals.J4,
 	J5:=IoConfig_Globals.J5,
 	J6:=IoConfig_Globals.J6,
+    OriConvention:= GVL.EulerConvention,
 	VisuStruct3DTrack=&gt;,
 	Arm=&gt;,
 	Elbow=&gt;,
@@ -5622,12 +5646,12 @@ END_IF
 
 // apply pulses per revolution and convert degrees per second to frequency (required by PTO controller)
 // pulses per revolution is how many pulses it takes for 1 revolution of the output side of the mechanical reduction.
-(*SetVelocity[0] := LREAL_TO_INT((IoConfig_Globals.J1.out.iSetVelocity * PersistentVars.PulsesPerRevolution[0]) / 360.0); // AR4 is 16000.0 for J1
-SetVelocity[1] := LREAL_TO_INT((IoConfig_Globals.J2.out.iSetVelocity * PersistentVars.PulsesPerRevolution[1]) / 360.0); // AR4 is 20000.0 for J2
-SetVelocity[2] := LREAL_TO_INT((IoConfig_Globals.J3.out.iSetVelocity * PersistentVars.PulsesPerRevolution[2]) / 360.0); // AR4 is 20000.0 for J3
-SetVelocity[3] := LREAL_TO_INT((IoConfig_Globals.J4.out.iSetVelocity * PersistentVars.PulsesPerRevolution[3]) / 360.0); // AR4 is 26880.0 for J4
-SetVelocity[4] := LREAL_TO_INT((IoConfig_Globals.J5.out.iSetVelocity * PersistentVars.PulsesPerRevolution[4]) / 360.0); // AR4 is 07850.0 for J5
-SetVelocity[5] := LREAL_TO_INT((IoConfig_Globals.J6.out.iSetVelocity * PersistentVars.PulsesPerRevolution[5]) / 360.0); // AR4 is 8081.25 for J6*)
+(*SetVelocity[0] := LREAL_TO_INT((IoConfig_Globals.J1.out.iSetVelocity * PersistentVars.PulsesPerRevolution[0]) / 360.0); // AR4 is 32000.0 for J1
+SetVelocity[1] := LREAL_TO_INT((IoConfig_Globals.J2.out.iSetVelocity * PersistentVars.PulsesPerRevolution[1]) / 360.0); // AR4 is 40000.0 for J2
+SetVelocity[2] := LREAL_TO_INT((IoConfig_Globals.J3.out.iSetVelocity * PersistentVars.PulsesPerRevolution[2]) / 360.0); // AR4 is 40000.0 for J3
+SetVelocity[3] := LREAL_TO_INT((IoConfig_Globals.J4.out.iSetVelocity * PersistentVars.PulsesPerRevolution[3]) / 360.0); // AR4 is 35840.0 for J4
+SetVelocity[4] := LREAL_TO_INT((IoConfig_Globals.J5.out.iSetVelocity * PersistentVars.PulsesPerRevolution[4]) / 360.0); // AR4 is 15700.0 for J5
+SetVelocity[5] := LREAL_TO_INT((IoConfig_Globals.J6.out.iSetVelocity * PersistentVars.PulsesPerRevolution[5]) / 360.0); // AR4 is 16162.5 for J6*)
 
 // iSetVelocity is scaled counts, NOT °/s after the SoftMotion remap.
 // deg/s = iSetVelocity * (MaxTU / MaxInt)
@@ -10030,7 +10054,7 @@ F_BuildCncCmd := _Command;
                         <derived name="SMC_ORI_CONVENTION" />
                       </type>
                       <initialValue>
-                        <simpleValue value="SMC_ORI_CONVENTION.ZYX" />
+                        <simpleValue value="SMC_ORI_CONVENTION.ZYZ" />
                       </initialValue>
                     </variable>
                   </inputVars>
