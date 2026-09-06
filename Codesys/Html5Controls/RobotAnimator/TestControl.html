@@ -34,22 +34,14 @@
         <div id="stage"></div>
         <aside id="panel">
             <h1>Robot Animator</h1>
-            <p class="hint">Drag to orbit, wheel to zoom, double-click to reset zoom. Joints in degrees. Offsets are SoftMotion poses: X Y Z mm, A B C deg (Rx Ry Rz). MCS, PC1, and PC2 are all relative to world (WCS). TCP is from the flange.</p>
+            <p class="hint">Drag to orbit, wheel to zoom, double-click to reset zoom. Joints in degrees. Offsets are SoftMotion poses: X Y Z mm, A B C deg. Euler convention is SMC_ORI_CONVENTION INT: 0=ADDAXES, 1=ZYZ (default), 2=ZYX, 3=XYZ. MCS, PC1, and PC2 are relative to world (WCS). TCP is from the flange.</p>
             <div id="sliders"></div>
             <button id="wave" type="button">Demo wave</button>
             <button id="offsets" type="button">Demo offsets</button>
             <button id="home" type="button">Home (zeros)</button>
         </aside>
         <script>
-            var mount = document.getElementById("stage");
-            var savedBody = document.body;
-            var origAppend = savedBody.appendChild.bind(savedBody);
-            document.body.appendChild = function (node) {
-                mount.appendChild(node);
-                return node;
-            };
-            var wrapper = new RobotAnimatorElementWrapper();
-            document.body.appendChild = origAppend;
+            var wrapper = new RobotAnimatorElementWrapper(document.getElementById("stage"));
 
             var box = document.getElementById("sliders");
             var inputs = [];
@@ -76,11 +68,42 @@
                 return inp;
             }
 
+            heading("Euler convention");
+            var eulerLabels = {
+                ZYZ: { a: "A (Z)", b: "B (Y')", c: "C (Z'')" },
+                ZYX: { a: "A (Z)", b: "B (Y')", c: "C (X'')" },
+                XYZ: { a: "A (X)", b: "B (Y')", c: "C (Z'')" },
+                ADDAXES: { a: "A (ignored)", b: "B (ignored)", c: "C (ignored)" }
+            };
+            var convLab = document.createElement("label");
+            convLab.textContent = "Convention (INT)";
+            var conv = document.createElement("select");
+            conv.style.width = "100%";
+            conv.style.background = "#243041";
+            conv.style.color = "#E8EEF5";
+            conv.style.border = "1px solid #3A4A5C";
+            conv.style.padding = "6px";
+            [
+                ["0", "0  ADDAXES"],
+                ["1", "1  ZYZ (SoftMotion / tool offset)"],
+                ["2", "2  ZYX (yaw-pitch-roll)"],
+                ["3", "3  XYZ"]
+            ].forEach(function (opt) {
+                var o = document.createElement("option");
+                o.value = opt[0];
+                o.textContent = opt[1];
+                conv.appendChild(o);
+            });
+            conv.value = "1";
+            box.appendChild(convLab);
+            box.appendChild(conv);
+
             heading("HUD boxes");
             [
                 ["Show joints", "setShowJoints"],
                 ["Show gripper", "setShowGripper"],
-                ["Show coordinates", "setShowCoordinates"]
+                ["Show offsets", "setShowCoordinates"],
+                ["Show TCP", "setShowTcp"]
             ].forEach(function (item) {
                 var lab = document.createElement("label");
                 lab.className = "check";
@@ -126,17 +149,42 @@
                 { k: "c", label: "C", min: -180, max: 180, step: 0.5, unit: "\u00B0" }
             ];
 
+            function eulerName(axis) {
+                var names = eulerLabels[wrapper.oriConvention] || eulerLabels.ZYZ;
+                if (axis === "a" || axis === "b" || axis === "c") {
+                    return names[axis];
+                }
+                return axis.toUpperCase();
+            }
+
             poseDefs.forEach(function (pose) {
                 heading(pose.title);
                 poseInputs[pose.key] = {};
                 poseKeys.forEach(function (axis) {
                     var method = "set" + pose.prefix + axis.label;
-                    poseInputs[pose.key][axis.k] = addRange(axis.label, axis.min, axis.max, axis.step, 0, function (inp, lab) {
-                        wrapper[method](inp.value);
-                        lab.textContent = axis.label + "  " + Number(inp.value).toFixed(axis.k === "a" || axis.k === "b" || axis.k === "c" ? 1 : 0) + axis.unit;
+                    var inp = addRange(eulerName(axis.k), axis.min, axis.max, axis.step, 0, function (el, lab) {
+                        wrapper[method](el.value);
+                        lab.textContent = eulerName(axis.k) + "  " + Number(el.value).toFixed(axis.k === "a" || axis.k === "b" || axis.k === "c" ? 1 : 0) + axis.unit;
                     });
+                    poseInputs[pose.key][axis.k] = inp;
                 });
             });
+
+            function refreshEulerLabels() {
+                poseDefs.forEach(function (pose) {
+                    poseKeys.forEach(function (axis) {
+                        var inp = poseInputs[pose.key][axis.k];
+                        inp.dispatchEvent(new Event("input"));
+                    });
+                });
+            }
+
+            function applyConvention() {
+                wrapper.setOriConvention(Number(conv.value));
+                refreshEulerLabels();
+            }
+            conv.addEventListener("change", applyConvention);
+            wrapper.setOriConvention(Number(conv.value));
 
             function setJoints(vals) {
                 vals.forEach(function (v, i) {
@@ -166,10 +214,10 @@
             };
 
             document.getElementById("offsets").onclick = function () {
-                setPose("mcs", { x: 0, y: 0, z: 0, a: 0, b: 0, c: 15 });
-                setPose("pc1", { x: 180, y: 40, z: 0, a: 0, b: 0, c: 20 });
-                setPose("pc2", { x: 60, y: -20, z: 10, a: 0, b: 0, c: -10 });
-                setPose("tcp", { x: 0, y: 0, z: 80, a: 0, b: 0, c: 45 });
+                setPose("mcs", { x: 0, y: 0, z: 0, a: 15, b: 0, c: 0 });
+                setPose("pc1", { x: 180, y: 40, z: 0, a: 20, b: 0, c: 0 });
+                setPose("pc2", { x: 60, y: -20, z: 10, a: -10, b: 0, c: 0 });
+                setPose("tcp", { x: 0, y: 0, z: 80, a: 0, b: 45, c: 30 });
             };
 
             var waving = false;

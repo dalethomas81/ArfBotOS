@@ -513,6 +513,79 @@ pre.log {
 }
 .file-card a { display: block; margin-bottom: 8px; word-break: break-all; }
 
+body.body-animator {
+    height: 100vh;
+    overflow: hidden;
+}
+.page.animator-page {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    height: calc(100vh - 48px);
+    display: flex;
+    min-height: 0;
+}
+.animator-stage {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    background: var(--canvas);
+}
+.animator-panel {
+    width: 280px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border-left: 1px solid var(--frame-soft);
+    box-sizing: border-box;
+    padding: 16px 14px;
+    overflow: auto;
+}
+.animator-panel h1 {
+    font-size: 16px;
+    margin: 0 0 4px;
+    color: var(--accent);
+}
+.animator-panel h2 {
+    font-size: 12px;
+    margin: 16px 0 6px;
+    color: var(--warning);
+    letter-spacing: 0.04em;
+}
+.animator-panel .hint {
+    font-size: 11px;
+    color: var(--muted);
+    margin: 0 0 16px;
+}
+.animator-panel label {
+    display: block;
+    font-size: 11px;
+    color: var(--muted);
+    margin: 8px 0 2px;
+}
+.animator-panel label.check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0;
+    color: var(--text);
+}
+.animator-panel input[type="range"] { width: 100%; }
+.animator-panel input[type="checkbox"] { margin: 0; }
+.animator-panel select {
+    width: 100%;
+    background: var(--control);
+    color: var(--text);
+    border: 1px solid var(--frame);
+    border-radius: var(--radius);
+    padding: 6px;
+    font-family: var(--font);
+}
+.animator-panel button {
+    width: 100%;
+    margin-top: 10px;
+}
+
 @media (max-width: 800px) {
     .steps, .status-grid, .device-card {
         grid-template-columns: 1fr;
@@ -520,4 +593,19 @@ pre.log {
     .row-actions { justify-content: flex-start; }
     .topbar { flex-wrap: wrap; }
     #imgcontainer { max-width: 100%; }
+    body.body-animator { height: auto; overflow: auto; }
+    .page.animator-page {
+        flex-direction: column;
+        height: auto;
+        min-height: calc(100vh - 48px);
+    }
+    .animator-stage {
+        min-height: 320px;
+        height: 50vh;
+    }
+    .animator-panel {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid var(--frame-soft);
+    }
 }

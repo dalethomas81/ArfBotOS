@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block body_class %}body-animator{% endblock %}
+{% block page_class %}animator-page{% endblock %}
+
+{% block content %}
+    <div id="stage" class="animator-stage"></div>
+    <aside class="animator-panel">
+        <h1>Robot Animator</h1>
+        <p class="hint">
+            Drag to orbit, wheel to zoom, double-click to reset zoom.
+            Joints in degrees. Offsets are SoftMotion poses: X Y Z mm, A B C deg.
+            Euler convention is SMC_ORI_CONVENTION INT: 0=ADDAXES, 1=ZYZ (default), 2=ZYX, 3=XYZ.
+            MCS, PC1, and PC2 are relative to world (WCS). TCP is from the flange.
+        </p>
+        <div id="sliders"></div>
+        <button id="wave" type="button">Demo wave</button>
+        <button id="offsets" type="button">Demo offsets</button>
+        <button id="home" type="button">Home (zeros)</button>
+    </aside>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('animator.element_wrapper_js') }}"></script>
+    <script src="{{ url_for('static', filename='js/animator-page.js') }}"></script>
+{% endblock %}

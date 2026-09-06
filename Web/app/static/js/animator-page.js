@@ -1,0 +1,206 @@
+/* Panel + sliders for the Flask Robot Animator page. Requires ElementWrapper.js. */
+(function () {
+    "use strict";
+
+    var stage = document.getElementById("stage");
+    var box = document.getElementById("sliders");
+    if (!stage || !box || typeof RobotAnimatorElementWrapper !== "function") {
+        return;
+    }
+
+    var wrapper = new RobotAnimatorElementWrapper(stage);
+
+    var inputs = [];
+
+    function heading(text) {
+        var h = document.createElement("h2");
+        h.textContent = text;
+        box.appendChild(h);
+    }
+
+    function addRange(labelText, min, max, step, value, onInput) {
+        var lab = document.createElement("label");
+        lab.textContent = labelText;
+        var inp = document.createElement("input");
+        inp.type = "range";
+        inp.min = min;
+        inp.max = max;
+        inp.step = step;
+        inp.value = value;
+        inp.addEventListener("input", function () { onInput(inp, lab); });
+        box.appendChild(lab);
+        box.appendChild(inp);
+        inp.dispatchEvent(new Event("input"));
+        return inp;
+    }
+
+    heading("Euler convention");
+    var eulerLabels = {
+        ZYZ: { a: "A (Z)", b: "B (Y')", c: "C (Z'')" },
+        ZYX: { a: "A (Z)", b: "B (Y')", c: "C (X'')" },
+        XYZ: { a: "A (X)", b: "B (Y')", c: "C (Z'')" },
+        ADDAXES: { a: "A (ignored)", b: "B (ignored)", c: "C (ignored)" }
+    };
+    var convLab = document.createElement("label");
+    convLab.textContent = "Convention (INT)";
+    var conv = document.createElement("select");
+    [
+        ["0", "0  ADDAXES"],
+        ["1", "1  ZYZ (SoftMotion / tool offset)"],
+        ["2", "2  ZYX (yaw-pitch-roll)"],
+        ["3", "3  XYZ"]
+    ].forEach(function (opt) {
+        var o = document.createElement("option");
+        o.value = opt[0];
+        o.textContent = opt[1];
+        conv.appendChild(o);
+    });
+    conv.value = "1";
+    box.appendChild(convLab);
+    box.appendChild(conv);
+
+    heading("HUD boxes");
+    [
+        ["Show joints", "setShowJoints"],
+        ["Show gripper", "setShowGripper"],
+        ["Show offsets", "setShowCoordinates"],
+        ["Show TCP", "setShowTcp"]
+    ].forEach(function (item) {
+        var lab = document.createElement("label");
+        lab.className = "check";
+        var inp = document.createElement("input");
+        inp.type = "checkbox";
+        inp.checked = true;
+        inp.addEventListener("change", function () {
+            wrapper[item[1]](inp.checked);
+        });
+        lab.appendChild(inp);
+        lab.appendChild(document.createTextNode(item[0]));
+        box.appendChild(lab);
+    });
+
+    heading("Joints");
+    var names = ["J1", "J2", "J3", "J4", "J5", "J6"];
+    var homeJoints = [0, -35, 55, 0, 40, 0];
+    names.forEach(function (name, i) {
+        inputs.push(addRange(name, -180, 180, 0.1, homeJoints[i], function (inp, lab) {
+            wrapper["_setJoint"](i, inp.value);
+            lab.textContent = name + "  " + Number(inp.value).toFixed(1) + "\u00B0";
+        }));
+    });
+
+    var grip = addRange("Gripper", 0, 100, 1, 100, function (inp, lab) {
+        wrapper.setGripper(inp.value);
+        lab.textContent = "Gripper  " + inp.value + "% open";
+    });
+
+    var poseInputs = {};
+    var poseDefs = [
+        { key: "mcs", title: "MCS (robot base in WCS)", prefix: "Mcs" },
+        { key: "pc1", title: "PC1 (in WCS)", prefix: "Pc1" },
+        { key: "pc2", title: "PC2 (in WCS)", prefix: "Pc2" },
+        { key: "tcp", title: "TCP (from flange)", prefix: "Tcp" }
+    ];
+    var poseKeys = [
+        { k: "x", label: "X", min: -400, max: 400, step: 1, unit: " mm" },
+        { k: "y", label: "Y", min: -400, max: 400, step: 1, unit: " mm" },
+        { k: "z", label: "Z", min: -400, max: 400, step: 1, unit: " mm" },
+        { k: "a", label: "A", min: -180, max: 180, step: 0.5, unit: "\u00B0" },
+        { k: "b", label: "B", min: -180, max: 180, step: 0.5, unit: "\u00B0" },
+        { k: "c", label: "C", min: -180, max: 180, step: 0.5, unit: "\u00B0" }
+    ];
+
+    function eulerName(axis) {
+        var names = eulerLabels[wrapper.oriConvention] || eulerLabels.ZYZ;
+        if (axis === "a" || axis === "b" || axis === "c") {
+            return names[axis];
+        }
+        return axis.toUpperCase();
+    }
+
+    poseDefs.forEach(function (pose) {
+        heading(pose.title);
+        poseInputs[pose.key] = {};
+        poseKeys.forEach(function (axis) {
+            var method = "set" + pose.prefix + axis.label;
+            var inp = addRange(eulerName(axis.k), axis.min, axis.max, axis.step, 0, function (el, lab) {
+                wrapper[method](el.value);
+                lab.textContent = eulerName(axis.k) + "  " + Number(el.value).toFixed(axis.k === "a" || axis.k === "b" || axis.k === "c" ? 1 : 0) + axis.unit;
+            });
+            poseInputs[pose.key][axis.k] = inp;
+        });
+    });
+
+    function refreshEulerLabels() {
+        poseDefs.forEach(function (pose) {
+            poseKeys.forEach(function (axis) {
+                poseInputs[pose.key][axis.k].dispatchEvent(new Event("input"));
+            });
+        });
+    }
+
+    function applyConvention() {
+        wrapper.setOriConvention(Number(conv.value));
+        refreshEulerLabels();
+    }
+    conv.addEventListener("change", applyConvention);
+    wrapper.setOriConvention(Number(conv.value));
+
+    function setJoints(vals) {
+        vals.forEach(function (v, i) {
+            inputs[i].value = v;
+            inputs[i].dispatchEvent(new Event("input"));
+        });
+    }
+
+    function setPose(key, pose) {
+        ["x", "y", "z", "a", "b", "c"].forEach(function (k) {
+            poseInputs[key][k].value = pose[k];
+            poseInputs[key][k].dispatchEvent(new Event("input"));
+        });
+    }
+
+    function zeroPoses() {
+        poseDefs.forEach(function (pose) {
+            setPose(pose.key, { x: 0, y: 0, z: 0, a: 0, b: 0, c: 0 });
+        });
+    }
+
+    document.getElementById("home").onclick = function () {
+        setJoints([0, 0, 0, 0, 0, 0]);
+        grip.value = 100;
+        grip.dispatchEvent(new Event("input"));
+        zeroPoses();
+    };
+
+    document.getElementById("offsets").onclick = function () {
+        setPose("mcs", { x: 0, y: 0, z: 0, a: 15, b: 0, c: 0 });
+        setPose("pc1", { x: 180, y: 40, z: 0, a: 20, b: 0, c: 0 });
+        setPose("pc2", { x: 60, y: -20, z: 10, a: -10, b: 0, c: 0 });
+        setPose("tcp", { x: 0, y: 0, z: 80, a: 0, b: 45, c: 30 });
+    };
+
+    var waving = false;
+    var t0 = 0;
+    document.getElementById("wave").onclick = function () {
+        waving = !waving;
+        t0 = performance.now();
+        this.textContent = waving ? "Stop wave" : "Demo wave";
+    };
+    (function tick() {
+        if (waving) {
+            var t = (performance.now() - t0) / 1000;
+            setJoints([
+                25 * Math.sin(t * 0.7),
+                20 * Math.sin(t * 0.9),
+                35 * Math.sin(t * 1.1),
+                40 * Math.sin(t * 1.3),
+                30 * Math.sin(t * 1.5),
+                50 * Math.sin(t * 1.8)
+            ]);
+            grip.value = Math.round(50 + 50 * Math.sin(t * 2.2));
+            grip.dispatchEvent(new Event("input"));
+        }
+        requestAnimationFrame(tick);
+    }());
+}());

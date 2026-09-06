@@ -12,7 +12,9 @@ From this folder:
 python -m http.server 8765
 ```
 
-Open http://localhost:8765/TestControl.html — drag to orbit, wheel to zoom, sliders are joint degrees. MCS / PC1 / PC2 are X Y Z mm and A B C deg (Rx Ry Rz), all relative to **WCS** (SoftMotion). TCP is relative to the flange. **Demo offsets** places sample frames.
+Open http://localhost:8765/TestControl.html — drag to orbit, wheel to zoom, sliders are joint degrees. MCS / PC1 / PC2 are X Y Z mm and A B C deg, all relative to **WCS** (SoftMotion). TCP is relative to the flange. A B C follow the selected Euler convention (**ZYZ** is the SoftMotion robotics / tool-offset default). **Demo offsets** places sample frames, including a tilted TCP so switching convention is visible.
+
+On the Pi, the same control is also a Flask tab at `http://<pi>:5000/animator` (Vision / Animator / Bluetooth). The installer copies `ElementWrapper.js` into the web tree. Use `attachTo(host)` when embedding in a page that already has a chrome; WebVisu still mounts full-frame.
 
 ## Install into CODESYS
 
@@ -24,7 +26,7 @@ The descriptor `RobotAnimator.html5control.xml` must match the CODESYS Visualiza
    or **Tools → Visualization Element Repository → HTML5 Controls → Open Editor**.
 3. File → Open → `RobotAnimator.html5control.xml`.
 4. Confirm General: Company `ArfBotOS`, Name `RobotAnimator` (no spaces), Category **Special Controls**, image `ElementImage.svg`, additional file `ElementWrapper.js`.
-5. Control Properties should already list `J1`..`J6` and `Gripper` (`LREAL`, Variable editor, call methods `setJ1`..`setJ6` / `setGripper`, property type Initialize so live values stream).
+5. Control Properties should already list `J1`..`J6` and `Gripper` (`LREAL`), **Euler convention** (`STRING`, default `ZYZ`), and the MCS / PC1 / PC2 / TCP pose groups. Property type Initialize so live values stream.
 6. **Save and Install**.
 
 Alternatively skip the editor: **Tools → Visualization Element Repository → HTML5 Controls → Install** and pick the `.html5control.xml`.
@@ -53,3 +55,9 @@ If Process View is a blank dark rectangle: the overlay slot is there but the can
 ## Kinematics
 
 DH matches the ArfBotAxisGroup 6-DOF config: `d1` ≥ 0, joint-0 twist +90°, MCS Z up. J2 has the built-in +90° DH offset. At zero, TCS X = MCS +Z, TCS Y = MCS −Y, TCS Z = MCS +X. J1–J6 inputs are kinematic joint angles — encoder polarity belongs in visu bindings or the axis group, not inside the control.
+
+A B C on MCS / PC1 / PC2 / TCP are SoftMotion Euler angles, not Rx Ry Rz. Default **ZYZ** matches `MC_COORD_REF` and `SMC_GroupSetTool`: `R = Rz(A)·Ry(B)·Rz(C)` (A about reference Z, B about Y′, C about Z″).
+
+**Euler convention** is an `INT` that follows `SMC_ORI_CONVENTION` and the project text list `OriConvention`: 0=ADDAXES, 1=ZYZ (default), 2=ZYX, 3=XYZ. Bind a GVL or other IEC variable (`INT` or `SMC_ORI_CONVENTION`) and change it from code or from a Combo Box Integer that uses that text list. The setter still accepts the names `ZYZ` / `ZYX` / `XYZ` / `ADDAXES` if a string is passed.
+
+The **TCP** HUD is forward kinematics: flange DH chain plus tool offset, reported as X Y Z A B C in MCS, PCS_1, PCS_2, and WCS using that same Euler convention (ZYZ wraps B to 0°..180°, C = 0° at singularities). Line colors match OFFSETS (MCS warning, PC1 green, PC2 teal; WCS is world). OFFSETS stay the input frames.

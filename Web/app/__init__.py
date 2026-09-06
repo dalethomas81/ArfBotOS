@@ -9,8 +9,10 @@ def create_app(config_class=Config):
 
     enable_vision = env_flag("ARFBOT_ENABLE_VISION", True)
     enable_bluetooth = env_flag("ARFBOT_ENABLE_BLUETOOTH", True)
+    enable_animator = env_flag("ARFBOT_ENABLE_ANIMATOR", True)
     app.config["ENABLE_VISION"] = enable_vision
     app.config["ENABLE_BLUETOOTH"] = enable_bluetooth
+    app.config["ENABLE_ANIMATOR"] = enable_animator
 
     if enable_vision:
         from .vision import bp as vision_bp
@@ -22,12 +24,19 @@ def create_app(config_class=Config):
 
         app.register_blueprint(bluetooth_bp)
 
+    if enable_animator:
+        from .animator import bp as animator_bp
+
+        app.register_blueprint(animator_bp)
+
     @app.route("/")
     def home():
         if enable_vision:
             return redirect("/vision")
         if enable_bluetooth:
             return redirect("/bluetooth")
+        if enable_animator:
+            return redirect("/animator")
         return "ArfBot web is running, but no pages are enabled.", 404
 
     @app.context_processor
@@ -35,6 +44,7 @@ def create_app(config_class=Config):
         return {
             "enable_vision": enable_vision,
             "enable_bluetooth": enable_bluetooth,
+            "enable_animator": enable_animator,
         }
 
     return app

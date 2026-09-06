@@ -2,7 +2,7 @@
 # ArfBotOS Raspberry Pi installer.
 #
 # Automates the Linux-side Software Installation steps from the wiki:
-# camera overlay, OpenCV, vision/bluetooth web UI, DualSense service, and
+# camera overlay, OpenCV, vision/bluetooth/animator web UI, DualSense service, and
 # CODESYS SysProcess AllowAll when the runtime is already present.
 #
 # Does NOT install: Raspberry Pi OS, the CODESYS Windows IDE/runtime,
@@ -74,11 +74,11 @@ Usage:
 
 Options:
   --plc-only          PLC Pi without vision. Installs DualSense, the Bluetooth
-                      pairing web UI, and CODESYS SysProcess config. Skips
-                      camera, OpenCV, and vision scripts.
+                      pairing web UI, the robot animator page, and CODESYS
+                      SysProcess config. Skips camera, OpenCV, and vision scripts.
   --vision-only       Dedicated vision Pi. Installs camera, OpenCV, PyServer,
-                      and the vision web UI. Skips DualSense, Bluetooth pairing,
-                      and CODESYS config.
+                      the vision web UI, and the robot animator page. Skips
+                      DualSense, Bluetooth pairing, and CODESYS config.
   --skip-camera       Do not patch config.txt or install picamera2.
   --skip-controller   Do not install the DualSense controller service.
   --skip-codesys      Do not patch CODESYSControl.cfg.
@@ -227,10 +227,14 @@ require_repo_files() {
             "${REPO_ROOT}/Web/app/vision.py"
             "${REPO_ROOT}/Web/app/bluetooth.py"
             "${REPO_ROOT}/Web/app/bluetoothctl_wrapper.py"
+            "${REPO_ROOT}/Web/app/animator.py"
             "${REPO_ROOT}/Web/app/static/css/arfbot-night.css"
+            "${REPO_ROOT}/Web/app/static/js/animator-page.js"
             "${REPO_ROOT}/Web/app/templates/base.html"
             "${REPO_ROOT}/Web/app/templates/bluetooth/index.html"
             "${REPO_ROOT}/Web/app/templates/vision/template.html"
+            "${REPO_ROOT}/Web/app/templates/animator/index.html"
+            "${REPO_ROOT}/Codesys/Html5Controls/RobotAnimator/ElementWrapper.js"
         )
     fi
     if ! is_true "${SKIP_CONTROLLER}"; then
@@ -666,6 +670,9 @@ deploy_web_files() {
         printf 'DRY-RUN: mkdir -p %s\n' "${WEB_DST}"
     fi
     copy_dir_contents "${REPO_ROOT}/Web" "${WEB_DST}"
+    copy_file \
+        "${REPO_ROOT}/Codesys/Html5Controls/RobotAnimator/ElementWrapper.js" \
+        "${WEB_DST}/app/static/js/ElementWrapper.js"
 }
 
 deploy_controller_files() {
@@ -750,7 +757,7 @@ EOF
         fi
         write_unit /etc/systemd/system/VisionWeb.service <<EOF
 [Unit]
-Description=ArfBotOS web server (vision + bluetooth)
+Description=ArfBotOS web server (vision + bluetooth + animator)
 After=network-online.target bluetooth.service multi-user.target
 Wants=network-online.target
 
@@ -761,6 +768,7 @@ RestartSec=3
 Environment=FLASK_APP=wsgi.py
 Environment=ARFBOT_ENABLE_VISION=${enable_vision}
 Environment=ARFBOT_ENABLE_BLUETOOTH=${enable_bluetooth}
+Environment=ARFBOT_ENABLE_ANIMATOR=1
 WorkingDirectory=${WEB_DST}
 ExecStart=${flask_bin} run -h 0.0.0.0 -p 5000 --with-threads
 
@@ -992,6 +1000,18 @@ verify_install() {
             warn "missing ${WEB_DST}/wsgi.py"
             failed=1
         fi
+        if [[ -f "${WEB_DST}/app/static/js/ElementWrapper.js" ]]; then
+            log "ok: ${WEB_DST}/app/static/js/ElementWrapper.js"
+        else
+            warn "missing ${WEB_DST}/app/static/js/ElementWrapper.js"
+            failed=1
+        fi
+        if [[ -f "${WEB_DST}/app/animator.py" ]]; then
+            log "ok: ${WEB_DST}/app/animator.py"
+        else
+            warn "missing ${WEB_DST}/app/animator.py"
+            failed=1
+        fi
     fi
 
     if command -v systemctl >/dev/null 2>&1 && ! is_true "${DRY_RUN}"; then
@@ -1028,6 +1048,7 @@ EOF
     if needs_web; then
         cat <<EOF
   web files:       ${WEB_DST}
+  animator web:    http://${ip:-<pi-ip>}:5000/animator
 EOF
     fi
     if ! is_true "${SKIP_CONTROLLER}"; then

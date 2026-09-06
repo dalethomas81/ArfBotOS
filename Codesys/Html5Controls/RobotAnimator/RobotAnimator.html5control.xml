@@ -4,7 +4,7 @@
 		<Name>RobotAnimator</Name>
 		<Company>ArfBotOS</Company>
 		<Description>6-axis robot visualizer driven by joint angles (degrees)</Description>
-		<Version>0.0.0.20</Version>
+		<Version>0.0.0.28</Version>
 		<Image>ElementImage.svg</Image>
 		<Category>Special Controls</Category>
 		<ControlText>ControlTexts</ControlText>
@@ -264,6 +264,42 @@
         <Single Name="HierarchicalGenericValue" Type="{d0c829a1-7995-459f-862b-f92b21ac994f}" Method="IArchivable">
           <Single Name="HierarchicalGenericValue_Value" Type="bool">True</Single>
           <Single Name="HierarchicalGenericValue_EditorType" Type="int">4</Single>
+        </Single>
+      </Single>
+    </Single>
+    <Single Type="{1626d958-cc88-4833-ad94-2fe3d1ca1a4a}" Method="IArchivable">
+      <Single Name="HierarchicalPropertiesNodeBaseNodeId" Type="long">15</Single>
+      <Single Name="HierarchicalPropertiesNodeBaseParent" Type="long">-1</Single>
+      <Single Name="HierarchicalPropertiesNodeBaseNodeName" Type="string">Property</Single>
+      <Single Name="HierarchicalPropertiesNodeBaseDataEntry" Type="{36c29c7f-f2b6-44b2-b62f-0a5c394cfbfe}" Method="IArchivable">
+        <Single Name="HierarchicalPropertiesDataEntryName" Type="string">Show TCP</Single>
+        <Single Name="HierarchicalPropertiesDataEntryTextId" Type="string"></Single>
+        <Single Name="HierarchicalPropertiesDataEntryVariable" Type="string">setShowTcp</Single>
+        <Single Name="HierarchicalPropertiesDataEntryDescriptionId" Type="string">ShowTcp_Desc</Single>
+        <Single Name="HierarchicalPropertiesDataEntryPropertyType" Type="int">1</Single>
+        <Single Name="HierarchicalPropertiesDataEntryVariableType" Type="string">BOOL</Single>
+        <Single Name="HierarchicalPropertiesDataEntryMappingType" Type="int">0</Single>
+        <Single Name="HierarchicalGenericValue" Type="{d0c829a1-7995-459f-862b-f92b21ac994f}" Method="IArchivable">
+          <Single Name="HierarchicalGenericValue_Value" Type="bool">True</Single>
+          <Single Name="HierarchicalGenericValue_EditorType" Type="int">4</Single>
+        </Single>
+      </Single>
+    </Single>
+    <Single Type="{1626d958-cc88-4833-ad94-2fe3d1ca1a4a}" Method="IArchivable">
+      <Single Name="HierarchicalPropertiesNodeBaseNodeId" Type="long">14</Single>
+      <Single Name="HierarchicalPropertiesNodeBaseParent" Type="long">-1</Single>
+      <Single Name="HierarchicalPropertiesNodeBaseNodeName" Type="string">Property</Single>
+      <Single Name="HierarchicalPropertiesNodeBaseDataEntry" Type="{36c29c7f-f2b6-44b2-b62f-0a5c394cfbfe}" Method="IArchivable">
+        <Single Name="HierarchicalPropertiesDataEntryName" Type="string">Euler convention</Single>
+        <Single Name="HierarchicalPropertiesDataEntryTextId" Type="string"></Single>
+        <Single Name="HierarchicalPropertiesDataEntryVariable" Type="string">setOriConvention</Single>
+        <Single Name="HierarchicalPropertiesDataEntryDescriptionId" Type="string">OriConvention_Desc</Single>
+        <Single Name="HierarchicalPropertiesDataEntryPropertyType" Type="int">1</Single>
+        <Single Name="HierarchicalPropertiesDataEntryVariableType" Type="string">INT</Single>
+        <Single Name="HierarchicalPropertiesDataEntryMappingType" Type="int">0</Single>
+        <Single Name="HierarchicalGenericValue" Type="{d0c829a1-7995-459f-862b-f92b21ac994f}" Method="IArchivable">
+          <Single Name="HierarchicalGenericValue_Value" Type="string">1</Single>
+          <Single Name="HierarchicalGenericValue_EditorType" Type="int">1</Single>
         </Single>
       </Single>
     </Single>

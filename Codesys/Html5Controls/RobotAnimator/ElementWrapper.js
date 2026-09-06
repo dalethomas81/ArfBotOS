@@ -2,6 +2,7 @@
  * Generic industrial 6-axis body (cylinders / housings / wrist / flange).
  * Joint inputs are degrees (SoftMotion axis fActPosition).
  * DH matches SMC_TrafoConfig_ArticulatedRobot_6DOF (millimetres).
+ * Pose A B C default to ZY'Z' Euler (MC_COORD_REF / SMC_GroupSetTool).
  */
 var RobotAnimatorElementWrapper;
 
@@ -163,11 +164,142 @@ var RobotAnimatorElementWrapper;
         return { x: 0, y: 0, z: 0, a: 0, b: 0, c: 0 };
     }
 
-    function poseT(p) {
+    // SoftMotion SMC_ORI_CONVENTION. Robotics MC_COORD_REF / SMC_GroupSetTool is ZYZ:
+    // first A about reference Z, then B about Y', then C about Z''.
+    // R = Rz(A)·Ry(B)·Rz(C); columns are the new axes in the reference frame.
+    function parseOriConvention(value) {
+        var s, n;
+        if (value == null || value === "") {
+            return "ZYZ";
+        }
+        if (typeof value === "number" && isFinite(value)) {
+            n = Math.round(value);
+        } else {
+            s = String(value).toUpperCase().replace(/^\s+|\s+$/g, "");
+            if (s === "ZYZ" || s === "ZY'Z'" || s === "ZY\u2019Z\u2019") {
+                return "ZYZ";
+            }
+            if (s === "ZYX" || s === "YPR" || s === "RPY" || s.indexOf("YAW") === 0) {
+                return "ZYX";
+            }
+            if (s === "XYZ") {
+                return "XYZ";
+            }
+            if (s === "ADDAXES" || s === "ADD" || s === "AXES") {
+                return "ADDAXES";
+            }
+            n = parseInt(s, 10);
+            if (!isFinite(n)) {
+                return "ZYZ";
+            }
+        }
+        if (n === 0) {
+            return "ADDAXES";
+        }
+        if (n === 2) {
+            return "ZYX";
+        }
+        if (n === 3) {
+            return "XYZ";
+        }
+        return "ZYZ";
+    }
+
+    function poseR(p, convention) {
+        var a = (p && p.a) || 0;
+        var b = (p && p.b) || 0;
+        var c = (p && p.c) || 0;
+        if (convention === "ZYX") {
+            return mul4(rotZ(a), mul4(rotY(b), rotX(c)));
+        }
+        if (convention === "XYZ") {
+            return mul4(rotX(a), mul4(rotY(b), rotZ(c)));
+        }
+        if (convention === "ADDAXES") {
+            return ident();
+        }
+        return mul4(rotZ(a), mul4(rotY(b), rotZ(c)));
+    }
+
+    function poseT(p, convention) {
         if (!p) {
             return ident();
         }
-        return mul4(trans(p.x || 0, p.y || 0, p.z || 0), mul4(rotZ(p.c || 0), mul4(rotY(p.b || 0), rotX(p.a || 0))));
+        return mul4(trans(p.x || 0, p.y || 0, p.z || 0), poseR(p, convention || "ZYZ"));
+    }
+
+    function inv4(m) {
+        var tx = m[3];
+        var ty = m[7];
+        var tz = m[11];
+        return [
+            m[0], m[4], m[8], -(m[0] * tx + m[4] * ty + m[8] * tz),
+            m[1], m[5], m[9], -(m[1] * tx + m[5] * ty + m[9] * tz),
+            m[2], m[6], m[10], -(m[2] * tx + m[6] * ty + m[10] * tz),
+            0, 0, 0, 1
+        ];
+    }
+
+    // Inverse of poseR. ZYZ matches SoftMotion: B in 0..180, C = 0 at singularities.
+    function matToEuler(m, convention) {
+        var r00 = m[0];
+        var r01 = m[1];
+        var r02 = m[2];
+        var r10 = m[4];
+        var r11 = m[5];
+        var r12 = m[6];
+        var r20 = m[8];
+        var r21 = m[9];
+        var r22 = m[10];
+        var a;
+        var b;
+        var c;
+        var s;
+        var deg = 180 / Math.PI;
+        if (convention === "ZYX") {
+            s = Math.sqrt(r00 * r00 + r10 * r10);
+            if (s > 1e-8) {
+                a = Math.atan2(r10, r00);
+                b = Math.atan2(-r20, s);
+                c = Math.atan2(r21, r22);
+            } else {
+                a = Math.atan2(-r01, r11);
+                b = Math.atan2(-r20, s);
+                c = 0;
+            }
+        } else if (convention === "XYZ") {
+            s = Math.sqrt(r00 * r00 + r01 * r01);
+            if (s > 1e-8) {
+                a = Math.atan2(-r12, r22);
+                b = Math.atan2(r02, s);
+                c = Math.atan2(-r01, r00);
+            } else {
+                a = Math.atan2(r21, r11);
+                b = Math.atan2(r02, s);
+                c = 0;
+            }
+        } else {
+            s = Math.sqrt(r02 * r02 + r12 * r12);
+            if (s > 1e-8) {
+                a = Math.atan2(r12, r02);
+                b = Math.atan2(s, r22);
+                c = Math.atan2(r21, -r20);
+            } else if (r22 < 0) {
+                a = Math.atan2(-r10, -r00);
+                b = Math.PI;
+                c = 0;
+            } else {
+                a = Math.atan2(r10, r00);
+                b = 0;
+                c = 0;
+            }
+        }
+        return { a: a * deg, b: b * deg, c: c * deg };
+    }
+
+    function poseFromMatrix(m, convention) {
+        var e = matToEuler(m, convention || "ZYZ");
+        return { x: m[3], y: m[7], z: m[11], a: e.a, b: e.b, c: e.c };
     }
 
     // SoftMotion 6-DOF as configured on ArfBotAxisGroup (Z up, d1 >= 0, joint-0
@@ -182,12 +314,12 @@ var RobotAnimatorElementWrapper;
         ];
     }
 
-    function visPose(p) {
-        return mul4(flipY(), poseT(p));
+    function visPose(p, convention) {
+        return mul4(flipY(), poseT(p, convention));
     }
 
-    function frames(q, mcs) {
-        var T = visPose(mcs);
+    function frames(q, mcs, convention) {
+        var T = visPose(mcs, convention);
         var list = [T];
         var th0 = AXIS_SIGN[0] * q[0] + AXIS_OFFSET[0];
         var th1 = AXIS_SIGN[1] * q[1] + AXIS_OFFSET[1];
@@ -245,7 +377,8 @@ var RobotAnimatorElementWrapper;
         var self = this;
         this.joints = [0, 0, 0, 0, 0, 0];
         this.gripper = 1;
-        this.showHud = { joints: true, gripper: true, coordinates: true };
+        this.showHud = { joints: true, gripper: true, coordinates: true, tcp: true };
+        this.oriConvention = "ZYZ";
         this.offsets = {
             mcs: emptyPose(),
             pc1: emptyPose(),
@@ -253,6 +386,10 @@ var RobotAnimatorElementWrapper;
             tcp: emptyPose()
         };
         this._frames = { mcs: ident(), pc1: ident(), pc2: ident(), tcp: ident() };
+        this._tcpMcs = emptyPose();
+        this._tcpWcs = emptyPose();
+        this._tcpPc1 = emptyPose();
+        this._tcpPc2 = emptyPose();
         this.yaw = 0.95 + Math.PI;
         this.pitch = 0.55;
         this.distance = 1400;
@@ -268,16 +405,21 @@ var RobotAnimatorElementWrapper;
         this._hudKey = "";
         this._initW = 0;
         this._initH = 0;
-        if (typeof idGenerator === "number") {
+        var hostEl = null;
+        if (idGenerator && typeof idGenerator === "object" && idGenerator.nodeType === 1) {
+            hostEl = idGenerator;
+        } else if (typeof idGenerator === "number") {
             this._initW = idGenerator;
             this._initH = typeof maybeHeight === "number" ? maybeHeight : 0;
         }
 
-        if (document.documentElement) {
-            document.documentElement.style.cssText = "width:100%;height:100%;margin:0;padding:0;";
-        }
-        if (document.body) {
-            document.body.style.cssText = "width:100%;height:100%;margin:0;padding:0;overflow:hidden;background:" + CANVAS + ";";
+        if (!hostEl) {
+            if (document.documentElement) {
+                document.documentElement.style.cssText = "width:100%;height:100%;margin:0;padding:0;";
+            }
+            if (document.body) {
+                document.body.style.cssText = "width:100%;height:100%;margin:0;padding:0;overflow:hidden;background:" + CANVAS + ";";
+            }
         }
 
         this.domNode = document.createElement("div");
@@ -310,17 +452,28 @@ var RobotAnimatorElementWrapper;
         this.coordHud.style.cssText = "position:absolute;right:6px;top:6px;" + hudBoxCss;
         this.domNode.appendChild(this.coordHud);
 
+        this.tcpHud = document.createElement("div");
+        this.tcpHud.style.cssText = "position:absolute;left:50%;bottom:6px;transform:translateX(-50%);" + hudBoxCss;
+        this.domNode.appendChild(this.tcpHud);
+
         this.axisHud = document.createElement("div");
-        this.axisHud.style.cssText = "position:absolute;left:0;right:0;bottom:5px;z-index:2;text-align:center;" +
+        this.axisHud.style.cssText = "position:absolute;left:50%;top:6px;transform:translateX(-50%);z-index:2;text-align:center;" +
             "font-size:9px;letter-spacing:0.08em;pointer-events:none;text-shadow:0 1px 2px #000;color:" + MUTED + ";";
         this.axisHud.innerHTML =
-            "<span style='color:#FF4D6A;'>X</span> red &nbsp;·&nbsp; " +
-            "<span style='color:" + SUCCESS + ";'>Y</span> green &nbsp;·&nbsp; " +
-            "<span style='color:" + ACCENT + ";'>Z</span> teal";
+            "<span style='color:#FF4D6A;'>X</span> &nbsp; " +
+            "<span style='color:" + SUCCESS + ";'>Y</span> &nbsp; " +
+            "<span style='color:" + ACCENT + ";'>Z</span>";
         this.domNode.appendChild(this.axisHud);
         this._applyHudVisibility();
 
-        document.body.appendChild(this.domNode);
+        this._hostEl = null;
+        this._pageTakenOver = false;
+        if (hostEl) {
+            this.attachTo(hostEl);
+        } else if (document.body) {
+            document.body.appendChild(this.domNode);
+            this._pageTakenOver = true;
+        }
 
         this.canvas.addEventListener("pointerdown", function (e) {
             self.dragging = true;
@@ -362,9 +515,49 @@ var RobotAnimatorElementWrapper;
         this._loop();
     };
 
+    RobotAnimatorElementWrapper.prototype.attachTo = function (host) {
+        if (!host) {
+            return this;
+        }
+        this._hostEl = host;
+        if (this._pageTakenOver) {
+            if (document.documentElement) {
+                document.documentElement.style.cssText = "";
+            }
+            if (document.body) {
+                document.body.style.cssText = "";
+            }
+            this._pageTakenOver = false;
+        }
+        if (this.domNode.parentNode) {
+            this.domNode.parentNode.removeChild(this.domNode);
+        }
+        if (!host.style.position) {
+            host.style.position = "relative";
+        }
+        this.domNode.style.cssText = "position:absolute;left:0;top:0;right:0;bottom:0;width:100%;height:100%;overflow:hidden;background:" + CANVAS + ";font-family:'Segoe UI',sans-serif;";
+        host.appendChild(this.domNode);
+        if (typeof ResizeObserver !== "undefined") {
+            var self = this;
+            if (this._ro) {
+                try { this._ro.disconnect(); } catch (err) {}
+            }
+            this._ro = new ResizeObserver(function () { self._draw(); });
+            this._ro.observe(host);
+        }
+        this._draw();
+        return this;
+    };
+
     RobotAnimatorElementWrapper.prototype._hostSize = function () {
-        var w = window.innerWidth || 0;
-        var h = window.innerHeight || 0;
+        var w = 0;
+        var h = 0;
+        if (this._hostEl) {
+            w = this._hostEl.clientWidth || 0;
+            h = this._hostEl.clientHeight || 0;
+        }
+        if (w < 2) { w = window.innerWidth || 0; }
+        if (h < 2) { h = window.innerHeight || 0; }
         if (w < 2) { w = this._initW || 0; }
         if (h < 2) { h = this._initH || 0; }
         if (w < 2 && this.domNode) { w = this.domNode.clientWidth || 0; }
@@ -482,6 +675,9 @@ var RobotAnimatorElementWrapper;
         if (this.coordHud) {
             this.coordHud.style.display = this.showHud.coordinates ? "" : "none";
         }
+        if (this.tcpHud) {
+            this.tcpHud.style.display = this.showHud.tcp ? "" : "none";
+        }
     };
 
     RobotAnimatorElementWrapper.prototype.setShowJoints = function (value) {
@@ -497,6 +693,15 @@ var RobotAnimatorElementWrapper;
     RobotAnimatorElementWrapper.prototype.setShowCoordinates = function (value) {
         this.showHud.coordinates = this._asBool(value);
         this._applyHudVisibility();
+    };
+
+    RobotAnimatorElementWrapper.prototype.setShowTcp = function (value) {
+        this.showHud.tcp = this._asBool(value);
+        this._applyHudVisibility();
+    };
+
+    RobotAnimatorElementWrapper.prototype.setOriConvention = function (value) {
+        this.oriConvention = parseOriConvention(value);
     };
 
     RobotAnimatorElementWrapper.prototype.setGripper = function (value) {
@@ -887,13 +1092,19 @@ var RobotAnimatorElementWrapper;
         ctx.fillStyle = CANVAS;
         ctx.fillRect(0, 0, w, h);
 
-        var fs, parts, i, lines, html;
+        var fs, parts, i, lines, html, ori, TtcpMcs;
         try {
-            this._frames.mcs = visPose(this.offsets.mcs);
-            this._frames.pc1 = visPose(this.offsets.pc1);
-            this._frames.pc2 = visPose(this.offsets.pc2);
-            fs = frames(this.joints, this.offsets.mcs);
-            this._frames.tcp = mul4(fs[6], poseT(this.offsets.tcp));
+            ori = this.oriConvention || "ZYZ";
+            this._frames.mcs = visPose(this.offsets.mcs, ori);
+            this._frames.pc1 = visPose(this.offsets.pc1, ori);
+            this._frames.pc2 = visPose(this.offsets.pc2, ori);
+            fs = frames(this.joints, this.offsets.mcs, ori);
+            this._frames.tcp = mul4(fs[6], poseT(this.offsets.tcp, ori));
+            TtcpMcs = mul4(inv4(this._frames.mcs), this._frames.tcp);
+            this._tcpMcs = poseFromMatrix(TtcpMcs, ori);
+            this._tcpWcs = poseFromMatrix(mul4(poseT(this.offsets.mcs, ori), TtcpMcs), ori);
+            this._tcpPc1 = poseFromMatrix(mul4(inv4(this._frames.pc1), this._frames.tcp), ori);
+            this._tcpPc2 = poseFromMatrix(mul4(inv4(this._frames.pc2), this._frames.tcp), ori);
             parts = this._bodyParts(fs);
             this._fitCamera(parts);
             this._grid();
@@ -927,10 +1138,14 @@ var RobotAnimatorElementWrapper;
             this._error = String(err && err.message ? err.message : err);
         }
 
-        function poseLine(name, p, color) {
+        function poseLine(name, p, color, digits) {
+            var n = digits == null ? 0 : digits;
+            if (!p) {
+                p = emptyPose();
+            }
             return "<span style='color:" + color + ";font-weight:600;'>" + name + "</span>  " +
-                p.x.toFixed(0) + " " + p.y.toFixed(0) + " " + p.z.toFixed(0) +
-                "  " + p.a.toFixed(0) + "\u00B0 " + p.b.toFixed(0) + "\u00B0 " + p.c.toFixed(0) + "\u00B0";
+                p.x.toFixed(n) + " " + p.y.toFixed(n) + " " + p.z.toFixed(n) +
+                "  " + p.a.toFixed(n) + "\u00B0 " + p.b.toFixed(n) + "\u00B0 " + p.c.toFixed(n) + "\u00B0";
         }
         function hudHeading(label) {
             return "<div style='color:" + MUTED + ";font-size:8px;letter-spacing:0.08em;margin-bottom:2px;'>" + label + "</div>";
@@ -944,17 +1159,26 @@ var RobotAnimatorElementWrapper;
         }
         html = hudHeading("JOINTS") + lines.join("<br>");
         var gripHtml = hudHeading("GRIPPER") + Math.round(this.gripper * 100) + "% open";
-        var coordHtml = hudHeading("COORDINATES") +
+        var coordHtml = hudHeading("OFFSETS") +
             poseLine("MCS", this.offsets.mcs, WARNING) + "<br>" +
             poseLine("PC1", this.offsets.pc1, SUCCESS) + "<br>" +
             poseLine("PC2", this.offsets.pc2, ACCENT) + "<br>" +
             poseLine("TCP", this.offsets.tcp, "#FF6B9D");
-        var key = html + "\n" + gripHtml + "\n" + coordHtml;
+        var tcpHtml = hudHeading("TCP") +
+            "<span style='color:" + MUTED + ";'>Convention</span>  " + (this.oriConvention || "ZYZ") + "<br>" +
+            poseLine("MCS", this._tcpMcs, WARNING, 1) + "<br>" +
+            poseLine("PC1", this._tcpPc1, SUCCESS, 1) + "<br>" +
+            poseLine("PC2", this._tcpPc2, ACCENT, 1) + "<br>" +
+            poseLine("WCS", this._tcpWcs, TEXT, 1);
+        var key = html + "\n" + gripHtml + "\n" + coordHtml + "\n" + tcpHtml;
         if (key !== this._hudKey) {
             this._hudKey = key;
             this.jointsHud.innerHTML = html;
             this.gripHud.innerHTML = gripHtml;
             this.coordHud.innerHTML = coordHtml;
+            if (this.tcpHud) {
+                this.tcpHud.innerHTML = tcpHtml;
+            }
         }
     };
 })();
