@@ -25,7 +25,7 @@ var RobotAnimatorElementWrapper;
         a1: 64.2,
         a2: 305.0,
         a3: 0.0,
-        d1: -169.77,
+        d1: 169.77,
         d3: 0.0,
         d4: 222.63,
         d6: 36.25
@@ -170,17 +170,24 @@ var RobotAnimatorElementWrapper;
         return mul4(trans(p.x || 0, p.y || 0, p.z || 0), mul4(rotZ(p.c || 0), mul4(rotY(p.b || 0), rotX(p.a || 0))));
     }
 
-    function worldUp() {
+    // SoftMotion 6-DOF as configured on ArfBotAxisGroup (Z up, d1 >= 0, joint-0
+    // twist +90°). At zero: TCS X = MCS +Z, TCS Y = MCS -Y, TCS Z = MCS +X.
+    // Display mirrors Y so MCS/TCS +Y match the real robot (X and Z already did).
+    function flipY() {
         return [
             1, 0, 0, 0,
             0, -1, 0, 0,
-            0, 0, -1, 0,
+            0, 0, 1, 0,
             0, 0, 0, 1
         ];
     }
 
+    function visPose(p) {
+        return mul4(flipY(), poseT(p));
+    }
+
     function frames(q, mcs) {
-        var T = mul4(poseT(mcs), worldUp());
+        var T = visPose(mcs);
         var list = [T];
         var th0 = AXIS_SIGN[0] * q[0] + AXIS_OFFSET[0];
         var th1 = AXIS_SIGN[1] * q[1] + AXIS_OFFSET[1];
@@ -189,7 +196,7 @@ var RobotAnimatorElementWrapper;
         var th4 = AXIS_SIGN[4] * q[4] + AXIS_OFFSET[4];
         var th5 = AXIS_SIGN[5] * q[5] + AXIS_OFFSET[5];
         var steps = [
-            [th0, DH.d1, DH.a1, -90],
+            [th0, DH.d1, DH.a1, 90],
             [th1, 0, DH.a2, 0],
             [th2, DH.d3, DH.a3, 90],
             [th3, DH.d4, 0, 90],
@@ -829,7 +836,7 @@ var RobotAnimatorElementWrapper;
         this._pushCyl(parts, o5, o6, 12, METAL);
 
         this._housing(parts, fs[6], axisZ, 10, 18, DARK);
-        this._addGripper(parts, fs[6]);
+        this._addGripper(parts, mul4(fs[6], rotZ(90)));
 
         return parts;
     };
@@ -882,9 +889,9 @@ var RobotAnimatorElementWrapper;
 
         var fs, parts, i, lines, html;
         try {
-            this._frames.mcs = poseT(this.offsets.mcs);
-            this._frames.pc1 = poseT(this.offsets.pc1);
-            this._frames.pc2 = poseT(this.offsets.pc2);
+            this._frames.mcs = visPose(this.offsets.mcs);
+            this._frames.pc1 = visPose(this.offsets.pc1);
+            this._frames.pc2 = visPose(this.offsets.pc2);
             fs = frames(this.joints, this.offsets.mcs);
             this._frames.tcp = mul4(fs[6], poseT(this.offsets.tcp));
             parts = this._bodyParts(fs);
@@ -910,7 +917,7 @@ var RobotAnimatorElementWrapper;
                     this._drawBall(parts[i]);
                 }
             }
-            this._drawPoseFrame(ident(), 90, TEXT);
+            this._drawPoseFrame(flipY(), 90, TEXT);
             this._drawPoseFrame(this._frames.mcs, 70, WARNING);
             this._drawPoseFrame(this._frames.pc1, 58, SUCCESS);
             this._drawPoseFrame(this._frames.pc2, 48, ACCENT);

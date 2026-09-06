@@ -52,4 +52,4 @@ If Process View is a blank dark rectangle: the overlay slot is there but the can
 
 ## Kinematics
 
-Default DH is AR4 millimetres in the SoftMotion 6-DOF convention (`d1` negative). J2 has a built-in +90° DH offset. J1–J6 inputs are kinematic joint angles — if this robot’s `fActPosition` differs (J4 reversed, J6 flange +90°), map that on the visu bindings or in the axis group, not inside the control.
+DH matches the ArfBotAxisGroup 6-DOF config: `d1` ≥ 0, joint-0 twist +90°, MCS Z up. J2 has the built-in +90° DH offset. At zero, TCS X = MCS +Z, TCS Y = MCS −Y, TCS Z = MCS +X. J1–J6 inputs are kinematic joint angles — encoder polarity belongs in visu bindings or the axis group, not inside the control.

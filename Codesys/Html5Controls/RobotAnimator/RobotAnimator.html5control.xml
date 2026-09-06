@@ -4,7 +4,7 @@
 		<Name>RobotAnimator</Name>
 		<Company>ArfBotOS</Company>
 		<Description>6-axis robot visualizer driven by joint angles (degrees)</Description>
-		<Version>0.0.0.14</Version>
+		<Version>0.0.0.20</Version>
 		<Image>ElementImage.svg</Image>
 		<Category>Special Controls</Category>
 		<ControlText>ControlTexts</ControlText>
