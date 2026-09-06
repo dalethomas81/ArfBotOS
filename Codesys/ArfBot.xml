@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-05T17:33:48.0670429" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-05T17:29:06.3310967" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-06T12:26:22.9112502" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-06T12:24:31.6680771" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -73,7 +73,7 @@
               </data>
             </addData>
           </task>
-          <task name="VISU_TASK" interval="PT0.011S" priority="31">
+          <task name="VISU_TASK" interval="PT0.1S" priority="31">
             <pouInstance name="VisuElems.Visu_Prg" typeName="">
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml" />
@@ -91,7 +91,7 @@
             </pouInstance>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
-                <TaskSettings KindOfTask="Cyclic" Interval="11" IntervalUnit="ms" WithinSPSTimeSlicing="true">
+                <TaskSettings KindOfTask="Cyclic" Interval="100" IntervalUnit="ms" WithinSPSTimeSlicing="true">
                   <Watchdog Enabled="false" TimeUnit="ms" />
                 </TaskSettings>
               </data>
@@ -4020,7 +4020,7 @@ PersistentVars.Programs[0].Commands[0].CommandString := 'DIR ABS 50.0 ACS VAR ST
 PersistentVars.Programs[0].Commands[0].CommandComment := 'take on a pose';
 PersistentVars.Programs[0].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
 PersistentVars.Programs[0].Commands[1].CommandString := 'STO 46 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 ';
-PersistentVars.Programs[0].Commands[1].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[0].Commands[1].CommandComment := 'Rotate TCP according to ZYZ convention';
 PersistentVars.Programs[0].Commands[3].CommandType := DUT_CommandType.LogicCommand;
 PersistentVars.Programs[0].Commands[3].CommandString := 'IF REGISTER 40 EQU 0 THEN JUMP 5 ELSE JUMP 12 ';
 PersistentVars.Programs[0].Commands[3].CommandComment := 'determine if pick or place';
@@ -4063,7 +4063,7 @@ END_FOR
 PersistentVars.Programs[1].ProgramName := 'Vision Pick and Place';
 PersistentVars.Programs[1].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
 PersistentVars.Programs[1].Commands[0].CommandString := 'STO 46 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 E 90.0 ';
-PersistentVars.Programs[1].Commands[0].CommandComment := 'Set the TCP offset';
+PersistentVars.Programs[1].Commands[0].CommandComment := 'Rotate TCP according to ZYZ convention';
 PersistentVars.Programs[1].Commands[1].CommandType := DUT_CommandType.MoveCommand;
 PersistentVars.Programs[1].Commands[1].CommandString := 'DIR ABS 60.0 ACS VAR STO 40 ';
 PersistentVars.Programs[1].Commands[1].CommandComment := 'Take a pose';
@@ -4106,9 +4106,10 @@ FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 END_FOR
 PersistentVars.Programs[2].ProgramName := 'PCS1 Corners';
 PersistentVars.Programs[2].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
-PersistentVars.Programs[2].Commands[0].CommandString := 'STO 0046 +0000.00 +0000.00 +0000.00 +0090.00 +0000.00 +0000.00';
+PersistentVars.Programs[2].Commands[0].CommandString := 'STO 46 E 0.0 E 0.0 E 0.0 E 180.0 E 180.0 E 0.0 ';
+PersistentVars.Programs[2].Commands[0].CommandComment := 'Rotate TCP according to ZYZ convention';
 PersistentVars.Programs[2].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
-PersistentVars.Programs[2].Commands[1].CommandString := 'STO 0048 +0283.23 -0066.77 +0195.00 -0127.52 +0179.00 +0102.00';
+PersistentVars.Programs[2].Commands[1].CommandString := 'STO 48 E 282.23 E -0066.77 E 0195.00 E 0.0 E 0.0 E -0030.00 ';
 PersistentVars.Programs[2].Commands[2].CommandType := DUT_CommandType.MoveCommand;
 PersistentVars.Programs[2].Commands[2].CommandString := 'DIR ABS 050 PC1 LIT 0 0 0 0 0 0';
 PersistentVars.Programs[2].Commands[3].CommandType := DUT_CommandType.MoveCommand;
@@ -4154,7 +4155,7 @@ FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 END_FOR
 PersistentVars.Programs[5].ProgramName := 'VarSet Validation';
 PersistentVars.Programs[5].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
-PersistentVars.Programs[5].Commands[0].CommandString := 'STO 1 6.0 5.0 4.0 3.0 2.0 1.0 ';
+PersistentVars.Programs[5].Commands[0].CommandString := 'STO 1 E 6.0 E 5.0 E 4.0 E 3.0 E 2.0 E 1.0 ';
 PersistentVars.Programs[5].Commands[1].CommandType := DUT_CommandType.VarSetCommand;
 PersistentVars.Programs[5].Commands[1].CommandString := 'VIS 2 1 2 3 4 5 6';
 PersistentVars.Programs[5].Commands[2].CommandType := DUT_CommandType.VarSetCommand;
@@ -4192,7 +4193,7 @@ PersistentVars.Programs[7].Commands[3].CommandString := 'IF COUNTER 7 EQU 0 THEN
 PersistentVars.Programs[7].Commands[3].CommandComment := 'apply or jump over';
 PersistentVars.Programs[7].Commands[4].CommandType := DUT_CommandType.VarSetCommand;
 PersistentVars.Programs[7].Commands[4].CommandString := 'STO 46 E 0.0 E 0.0 E 70.0 E 0.0 E 0.0 E 0.0 ';
-PersistentVars.Programs[7].Commands[4].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[7].Commands[4].CommandComment := 'offset TCP Z';
 PersistentVars.Programs[7].Commands[5].CommandType := DUT_CommandType.LogicCommand;
 PersistentVars.Programs[7].Commands[5].CommandString := 'IF PASS THEN JUMP 19 ';
 PersistentVars.Programs[7].Commands[5].CommandComment := 'go to move commands';
@@ -4201,7 +4202,7 @@ PersistentVars.Programs[7].Commands[7].CommandString := 'IF COUNTER 7 EQU 1 THEN
 PersistentVars.Programs[7].Commands[7].CommandComment := 'apply or jump over';
 PersistentVars.Programs[7].Commands[8].CommandType := DUT_CommandType.VarSetCommand;
 PersistentVars.Programs[7].Commands[8].CommandString := 'STO 46 E 0.0 E 0.0 E 170.0 E 0.0 E 0.0 E 0.0 ';
-PersistentVars.Programs[7].Commands[8].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[7].Commands[8].CommandComment := 'offset TCP Z';
 PersistentVars.Programs[7].Commands[9].CommandType := DUT_CommandType.LogicCommand;
 PersistentVars.Programs[7].Commands[9].CommandString := 'IF PASS THEN JUMP 19 ';
 PersistentVars.Programs[7].Commands[9].CommandComment := 'go to move commands';
@@ -4210,7 +4211,7 @@ PersistentVars.Programs[7].Commands[11].CommandString := 'IF COUNTER 7 EQU 2 THE
 PersistentVars.Programs[7].Commands[11].CommandComment := 'apply or jump over';
 PersistentVars.Programs[7].Commands[12].CommandType := DUT_CommandType.VarSetCommand;
 PersistentVars.Programs[7].Commands[12].CommandString := 'STO 46 E 0.0 E -100.0 E 70.0 E 0.0 E 0.0 E 0.0 ';
-PersistentVars.Programs[7].Commands[12].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[7].Commands[12].CommandComment := 'offset TCP X and Y';
 PersistentVars.Programs[7].Commands[13].CommandType := DUT_CommandType.LogicCommand;
 PersistentVars.Programs[7].Commands[13].CommandString := 'IF PASS THEN JUMP 19 ';
 PersistentVars.Programs[7].Commands[13].CommandComment := 'go to move commands';
@@ -4219,7 +4220,7 @@ PersistentVars.Programs[7].Commands[15].CommandString := 'IF COUNTER 7 EQU 3 THE
 PersistentVars.Programs[7].Commands[15].CommandComment := 'apply or jump over';
 PersistentVars.Programs[7].Commands[16].CommandType := DUT_CommandType.VarSetCommand;
 PersistentVars.Programs[7].Commands[16].CommandString := 'STO 46 E 100.0 E 0.0 E 70.0 E 0.0 E 0.0 E 0.0 ';
-PersistentVars.Programs[7].Commands[16].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[7].Commands[16].CommandComment := 'offset TCP X and Z';
 PersistentVars.Programs[7].Commands[17].CommandType := DUT_CommandType.LogicCommand;
 PersistentVars.Programs[7].Commands[17].CommandString := 'IF PASS THEN JUMP 19 ';
 PersistentVars.Programs[7].Commands[17].CommandComment := 'go to move commands';
@@ -4228,19 +4229,19 @@ PersistentVars.Programs[7].Commands[19].CommandString := 'DIR ABS 50.0 ACS VAR S
 PersistentVars.Programs[7].Commands[19].CommandComment := 'take on a pose';
 PersistentVars.Programs[7].Commands[20].CommandType := DUT_CommandType.MoveCommand;
 PersistentVars.Programs[7].Commands[20].CommandString := 'LIN ABS 70.0 TCS LIT 0.0 0.0 0.0 0.0 0.0 -45.0 ';
-PersistentVars.Programs[7].Commands[20].CommandComment := 'rotate around TCP Z';
+PersistentVars.Programs[7].Commands[20].CommandComment := 'rotate TCP Z with ZYZ convention';
 PersistentVars.Programs[7].Commands[21].CommandType := DUT_CommandType.MoveCommand;
 PersistentVars.Programs[7].Commands[21].CommandString := 'LIN ABS 70.0 TCS LIT 0.0 0.0 0.0 0.0 -30.0 0.0 ';
-PersistentVars.Programs[7].Commands[21].CommandComment := 'rotate around TCP Y';
+PersistentVars.Programs[7].Commands[21].CommandComment := 'rotate around TCP Y with ZYZ convention';
 PersistentVars.Programs[7].Commands[22].CommandType := DUT_CommandType.MoveCommand;
 PersistentVars.Programs[7].Commands[22].CommandString := 'LIN ABS 70.0 TCS LIT 0.0 0.0 0.0 90.0 30.0 -90.0 ';
-PersistentVars.Programs[7].Commands[22].CommandComment := 'rotate around TCP X with z$' y z$'$'';
+PersistentVars.Programs[7].Commands[22].CommandComment := 'rotate around TCP X with ZYZ convention';
 PersistentVars.Programs[7].Commands[23].CommandType := DUT_CommandType.MoveCommand;
 PersistentVars.Programs[7].Commands[23].CommandString := 'LIN ABS 70.0 TCS LIT 0.0 0.0 0.0 90.0 -30.0 -90.0 ';
-PersistentVars.Programs[7].Commands[23].CommandComment := 'rotate around TCP X with z$' y z$'$'';
+PersistentVars.Programs[7].Commands[23].CommandComment := 'rotate around TCP X with ZYZ convention';
 PersistentVars.Programs[7].Commands[24].CommandType := DUT_CommandType.MoveCommand;
 PersistentVars.Programs[7].Commands[24].CommandString := 'LIN ABS 70.0 TCS LIT 0.0 0.0 0.0 0.0 30.0 0.0 ';
-PersistentVars.Programs[7].Commands[24].CommandComment := 'rotate around TCP Y';
+PersistentVars.Programs[7].Commands[24].CommandComment := 'rotate around TCP Y with ZYZ convention';
 PersistentVars.Programs[7].Commands[25].CommandType := DUT_CommandType.MoveCommand;
 PersistentVars.Programs[7].Commands[25].CommandString := 'DIR ABS 70.0 ACS VAR STO 35 ';
 PersistentVars.Programs[7].Commands[25].CommandComment := 'take on a pose';
@@ -4349,7 +4350,7 @@ PersistentVars.Programs[15].Commands[3].CommandString := 'DIR ABS 30.0 ACS LIT -
 PersistentVars.Programs[15].Commands[3].CommandComment := 'Taught position';
 PersistentVars.Programs[15].Commands[6].CommandType := DUT_CommandType.VarSetCommand;
 PersistentVars.Programs[15].Commands[6].CommandString := 'STO 46 E 0.0 E 0.0 E 300.0 E 0.0 E 0.0 E 0.0 ';
-PersistentVars.Programs[15].Commands[6].CommandComment := 'set the TCP offset';
+PersistentVars.Programs[15].Commands[6].CommandComment := 'offset the TCP Z';
 PersistentVars.Programs[15].Commands[7].CommandType := DUT_CommandType.MoveCommand;
 PersistentVars.Programs[15].Commands[7].CommandString := 'LIN ABS 20.0 TCS LIT 0.0 0.0 0.0 0.0 -30.0 0.0 ';
 PersistentVars.Programs[15].Commands[7].CommandComment := 'rotate around TCP Y';
@@ -13507,7 +13508,7 @@ _MC_MoveCircularAbsolute(
 	BufferMode:= , 
 	TransitionMode:= , 
 	TransitionParameter:= , 
-	OrientationMode:= , 
+	OrientationMode:= SMC_ORIENTATION_MODE.Axis, 
 	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed &gt; 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
 	AccFactor:= SEL(AccFactor &gt; 1, AccFactor, 1), 
 	JerkFactor:= SEL(JerkFactor &gt; 1, JerkFactor, 1), 
@@ -13538,7 +13539,7 @@ _MC_MoveCircularRelative(
 	BufferMode:= , 
 	TransitionMode:= , 
 	TransitionParameter:= , 
-	OrientationMode:= , 
+	OrientationMode:= SMC_ORIENTATION_MODE.Axis, 
 	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed &gt; 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
 	AccFactor:= SEL(AccFactor &gt; 1, AccFactor, 1), 
 	JerkFactor:= SEL(JerkFactor &gt; 1, JerkFactor, 1), 
@@ -13606,7 +13607,7 @@ _MC_MoveLinearAbsolute(
 	BufferMode:= , 
 	TransitionMode:= , 
 	TransitionParameter:= , 
-	OrientationMode:= , 
+	OrientationMode:= SMC_ORIENTATION_MODE.Axis, 
 	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed &gt; 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
 	AccFactor:= SEL(AccFactor &gt; 1, AccFactor, 1), 
 	JerkFactor:= SEL(JerkFactor &gt; 1, JerkFactor, 1), 
@@ -13632,7 +13633,7 @@ _MC_MoveLinearRelative(
 	BufferMode:= , 
 	TransitionMode:= , 
 	TransitionParameter:= , 
-	OrientationMode:= , 
+	OrientationMode:= SMC_ORIENTATION_MODE.Axis, 
 	VelFactor:= SEL(_MoveCommandParser.stCommand.Speed &gt; 100, _MoveCommandParser.stCommand.Speed / 100.0, 1), // cannot be greater than 1
 	AccFactor:= SEL(AccFactor &gt; 1, AccFactor, 1), 
 	JerkFactor:= SEL(JerkFactor &gt; 1, JerkFactor, 1), 
