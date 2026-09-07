@@ -1,4 +1,4 @@
-/* ArfBotOS RobotAnimator — CODESYS WebVisu HTML5 control.
+/* ArfBotOS RobotAnimator - CODESYS WebVisu HTML5 control.
  * Generic industrial 6-axis body (cylinders / housings / wrist / flange).
  * Joint inputs are degrees (SoftMotion axis fActPosition).
  * DH matches SMC_TrafoConfig_ArticulatedRobot_6DOF (millimetres).
@@ -423,7 +423,7 @@ var RobotAnimatorElementWrapper;
         }
 
         this.domNode = document.createElement("div");
-        this.domNode.style.cssText = "position:absolute;left:0;top:0;right:0;bottom:0;width:100%;height:100%;overflow:hidden;background:" + CANVAS + ";font-family:'Segoe UI',sans-serif;";
+        this.domNode.style.cssText = "position:absolute;left:0;top:0;right:0;bottom:0;width:100%;height:100%;overflow:hidden;background:" + CANVAS + ";font-family:sans-serif;";
         this.parentNode = this.domNode;
 
         this.canvas = document.createElement("canvas");
@@ -475,13 +475,16 @@ var RobotAnimatorElementWrapper;
             this._pageTakenOver = true;
         }
 
-        this.canvas.addEventListener("pointerdown", function (e) {
+        function onDown(e) {
             self.dragging = true;
             self.lastX = e.clientX;
             self.lastY = e.clientY;
-            try { self.canvas.setPointerCapture(e.pointerId); } catch (err) {}
-        });
-        this.canvas.addEventListener("pointermove", function (e) {
+            if (e.pointerId != null) {
+                try { self.canvas.setPointerCapture(e.pointerId); } catch (err) {}
+            }
+            if (e.preventDefault) { e.preventDefault(); }
+        }
+        function onMove(e) {
             if (!self.dragging) {
                 return;
             }
@@ -493,15 +496,26 @@ var RobotAnimatorElementWrapper;
             self.pitch += dy * 0.008;
             if (self.pitch > 1.45) { self.pitch = 1.45; }
             if (self.pitch < 0.08) { self.pitch = 0.08; }
-        });
-        this.canvas.addEventListener("pointerup", function () { self.dragging = false; });
-        this.canvas.addEventListener("pointercancel", function () { self.dragging = false; });
-        this.canvas.addEventListener("wheel", function (e) {
-            e.preventDefault();
+        }
+        function onUp() { self.dragging = false; }
+        function onWheel(e) {
+            if (e.preventDefault) { e.preventDefault(); }
             self._zoom *= (e.deltaY > 0) ? 1.08 : 0.92;
             if (self._zoom < 0.45) { self._zoom = 0.45; }
             if (self._zoom > 2.8) { self._zoom = 2.8; }
-        }, { passive: false });
+        }
+        this.canvas.addEventListener("pointerdown", onDown);
+        this.canvas.addEventListener("pointermove", onMove);
+        this.canvas.addEventListener("pointerup", onUp);
+        this.canvas.addEventListener("pointercancel", onUp);
+        this.canvas.addEventListener("mousedown", onDown);
+        this.canvas.addEventListener("mousemove", onMove);
+        this.canvas.addEventListener("mouseup", onUp);
+        try {
+            this.canvas.addEventListener("wheel", onWheel, { passive: false });
+        } catch (err) {
+            this.canvas.addEventListener("wheel", onWheel, false);
+        }
         this.canvas.addEventListener("dblclick", function () {
             self._zoom = 1;
         });
@@ -513,6 +527,9 @@ var RobotAnimatorElementWrapper;
             self._raf = window.requestAnimationFrame(self._loop);
         };
         this._loop();
+        // Safari unique-origin overlay iframes often never fire rAF after the first
+        // paint, so PLC setter updates would never redraw. Interval still runs.
+        this._tick = window.setInterval(function () { self._draw(); }, 50);
     };
 
     RobotAnimatorElementWrapper.prototype.attachTo = function (host) {
@@ -549,6 +566,26 @@ var RobotAnimatorElementWrapper;
         return this;
     };
 
+    RobotAnimatorElementWrapper.prototype._applyShellSize = function (w, h) {
+        if (!(w >= 2) || !(h >= 2)) {
+            return;
+        }
+        var pxw = Math.round(w) + "px";
+        var pxh = Math.round(h) + "px";
+        if (this._pageTakenOver) {
+            if (document.documentElement) {
+                document.documentElement.style.cssText = "margin:0;padding:0;width:" + pxw + ";height:" + pxh + ";";
+            }
+            if (document.body) {
+                document.body.style.cssText = "margin:0;padding:0;overflow:hidden;width:" + pxw + ";height:" + pxh + ";background:" + CANVAS + ";";
+            }
+        }
+        if (this.domNode) {
+            this.domNode.style.width = pxw;
+            this.domNode.style.height = pxh;
+        }
+    };
+
     RobotAnimatorElementWrapper.prototype._hostSize = function () {
         var w = 0;
         var h = 0;
@@ -556,10 +593,10 @@ var RobotAnimatorElementWrapper;
             w = this._hostEl.clientWidth || 0;
             h = this._hostEl.clientHeight || 0;
         }
+        if (w < 2 && this._initW >= 2) { w = this._initW; }
+        if (h < 2 && this._initH >= 2) { h = this._initH; }
         if (w < 2) { w = window.innerWidth || 0; }
         if (h < 2) { h = window.innerHeight || 0; }
-        if (w < 2) { w = this._initW || 0; }
-        if (h < 2) { h = this._initH || 0; }
         if (w < 2 && this.domNode) { w = this.domNode.clientWidth || 0; }
         if (h < 2 && this.domNode) { h = this.domNode.clientHeight || 0; }
         if (w < 2 && document.documentElement) { w = document.documentElement.clientWidth || 0; }
@@ -1081,6 +1118,7 @@ var RobotAnimatorElementWrapper;
         var h = Math.max(1, size.h);
         this._cssW = w;
         this._cssH = h;
+        this._applyShellSize(w, h);
         if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
             canvas.width = Math.floor(w * dpr);
             canvas.height = Math.floor(h * dpr);
@@ -1181,4 +1219,24 @@ var RobotAnimatorElementWrapper;
             }
         }
     };
+
+    // Safari srcdoc iframes (sandbox unique origin) report event.origin as "null",
+    // so webvisu-support.js drops MethodCall messages. Re-dispatch those here.
+    try {
+        if (window.MessageHelper && window.CdsInfo) {
+            window.addEventListener("message", function (message) {
+                var target = window.CdsInfo.TargetOrigin;
+                if (!message || message.data == null) {
+                    return;
+                }
+                if (target && message.origin === target) {
+                    return;
+                }
+                if (message.origin === "null" || message.origin === "" || !target) {
+                    MessageHelper.ProcessMessageData(message);
+                    MessageHelper.ProcessMessageDataWithPromise(message);
+                }
+            });
+        }
+    } catch (err) {}
 })();
