@@ -415,3 +415,4 @@ Codesys/Scripts/*.out.txt
 Codesys/Scripts/temp/
 .DS_Store
 /Codesys/Scripts/st
+OpenCV/FastTemplateMatching/_bench_out/

@@ -6,6 +6,7 @@ import sys
 import os
 import datetime
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 # fundamental constants
 CV_PI   = 3.1415926535897932384626433832795
@@ -16,7 +17,7 @@ DBL_EPSILON = 2.2204460492503131e-016 # smallest such that 1.0+DBL_EPSILON != 1.
 VISION_TOLERANCE = 0.0000001
 D2R = (CV_PI / 180.0)
 R2D = (180.0 / CV_PI)
-MATCH_CANDIDATE_NUM = 5
+MATCH_CANDIDATE_NUM = 10
 
 SUBITEM_INDEX = 0
 SUBITEM_SCORE = 1
@@ -307,12 +308,16 @@ def rotate_image(image, angle):
 
     return rotated
 
+def _xy(pt):
+    arr = numpy.asarray(pt, dtype=numpy.float64).reshape(-1)
+    return float(arr[0]), float(arr[1])
+
 def crop_image(image, top_left, bot_right):
-    y = int(top_left[1])
-    x = int(top_left[0])
-    h = int(bot_right[1] - top_left[1])
-    w = int(bot_right[0] - top_left[0])
-    cropped = image[y:y+h, x:x+w].copy() # image slicing creates a pointer. So use copy()
+    x0, y0 = _xy(top_left)
+    x1, y1 = _xy(bot_right)
+    x, y = int(x0), int(y0)
+    w, h = int(x1 - x0), int(y1 - y0)
+    cropped = image[y:y+h, x:x+w].copy()
     return cropped
 
 def str_to_bool (val):
@@ -379,35 +384,29 @@ def sort_pt_with_center(vecSort):
 
     return vecSortedNp
 
+def _pt2i(pt):
+    x, y = _xy(pt)
+    return (int(round(x)), int(round(y)))
+
 def draw_line(img,pt1,pt2,color = colorGreen,thickness=1,style='dotted',gap=1):
-    if gap <= 0:
-        gap = 1
-
-    if thickness < 1:
-        thickness = 1
-
-    dist =((pt1[0]-pt2[0])**2+(pt1[1]-pt2[1])**2)**.5
-    pts= []
-    for i in  numpy.arange(0,dist,gap):
-        r=i/dist
-        x=int((pt1[0]*(1-r)+pt2[0]*r)+.5)
-        y=int((pt1[1]*(1-r)+pt2[1]*r)+.5)
-        p = (x,y)
-        pts.append(p)
-
-    if style=='dotted':
-        for p in pts:
-            img = cv2.circle(img,p,int(thickness),color,-1)
-    else:
-        s=pts[0]
-        e=pts[0]
-        i=0
-        for p in pts:
-            s=e
-            e=p
-            if i%2==1:
-                img = cv2.line(img,s,e,color,int(thickness))
-            i+=1
+    t = max(1, int(round(thickness)))
+    p1 = _pt2i(pt1)
+    p2 = _pt2i(pt2)
+    if style == 'dotted':
+        gap = max(1.0, float(gap))
+        dx = p2[0] - p1[0]
+        dy = p2[1] - p1[1]
+        dist = math.hypot(dx, dy)
+        if dist < 1:
+            cv2.circle(img, p1, t, color, -1)
+            return img
+        n = max(1, int(dist / gap))
+        for i in range(0, n + 1, 2):
+            x = int(p1[0] + dx * i / n)
+            y = int(p1[1] + dy * i / n)
+            cv2.circle(img, (x, y), t, color, -1)
+        return img
+    cv2.line(img, p1, p2, color, t, cv2.LINE_AA)
     return img
 
 def draw_dash_line(matDraw, ptStart, ptEnd, color1=(0, 0, 255), color2=(255, 255, 255)):
@@ -468,66 +467,42 @@ def IM_Conv_SIMD(pCharKernel, pCharConv, iLength):
 
 def CCOEFF_Denominator(matSrc, pTemplData, matResult, iLayer):
     if pTemplData.vecResultEqual1[iLayer]:
-        matResult = numpy.ones(matResult.shape, dtype=numpy.float32)
-        return
+        return numpy.ones(matResult.shape, dtype=numpy.float32)
 
-    sum, sqsum = cv2.integral2(matSrc, sdepth=cv2.CV_64F, sqdepth=cv2.CV_64F)
+    sum_img, sqsum = cv2.integral2(matSrc, sdepth=cv2.CV_64F, sqdepth=cv2.CV_64F)
+    h, w = pTemplData.vecPyramid[iLayer].shape[:2]
+    rh, rw = matResult.shape[:2]
 
-    vecPyramid_rows = pTemplData.vecPyramid[iLayer].shape[0]
-    vecPyramid_cols = pTemplData.vecPyramid[iLayer].shape[1]
-    sqsum_step = sqsum.shape[1]
-    sum_step = sum.shape[1]
+    p0 = sum_img[0:rh, 0:rw]
+    p1 = sum_img[0:rh, w:w + rw]
+    p2 = sum_img[h:h + rh, 0:rw]
+    p3 = sum_img[h:h + rh, w:w + rw]
+    q0 = sqsum[0:rh, 0:rw]
+    q1 = sqsum[0:rh, w:w + rw]
+    q2 = sqsum[h:h + rh, 0:rw]
+    q3 = sqsum[h:h + rh, w:w + rw]
 
-    _q0 = numpy.array(sqsum[0:, 0:])
-    q0 = _q0.flatten()
-    q1 = q0[vecPyramid_cols:]
-    q2 = q0[vecPyramid_rows * sqsum_step:]
-    q3 = q2[vecPyramid_cols:]
-    
-    _p0 = numpy.array(sum[0:, 0:])
-    p0 = _p0.flatten()
-    p1 = p0[vecPyramid_cols:]
-    p2 = p0[vecPyramid_rows * sum_step:]
-    p3 = p2[vecPyramid_cols:]
-    
-    dTemplMean0 = pTemplData.vecTemplMean[iLayer][0]
-    dTemplNorm = pTemplData.vecTemplNorm[iLayer]
-    dInvArea = pTemplData.vecInvArea[iLayer]
-    #_matResult = matResult.flatten()
-    for i in range(matResult.shape[0]):
-        rrow = matResult[i]
-        idx = i * sum.shape[1]
-        idx2 = i * sqsum.shape[1]
-        for j in range(matResult.shape[1]):
-            try:
-                num = rrow[j]
-                # X + (Y*W)
-                t = p0[idx] - p1[idx] - p2[idx] + p3[idx]
-                wndMean2 = t * t
-                num -= t * dTemplMean0
-                wndMean2 *= dInvArea
-                t = q0[idx2] - q1[idx2] - q2[idx2] + q3[idx2]
-                wndSum2 = t
-                diff2 = max(wndSum2 - wndMean2, 0)
-                if diff2 <= min(0.5, 10 * numpy.finfo(float).eps * wndSum2):
-                    t = 0
-                else:
-                    t = numpy.sqrt(diff2) * dTemplNorm
-                if abs(num) < t:
-                    num /= t
-                elif abs(num) < t * 1.125:
-                    num = 1 if num > 0 else -1
-                else:
-                    num = 0
-                rrow[j] = num
+    window_sum = p0 - p1 - p2 + p3
+    window_sqsum = q0 - q1 - q2 + q3
+    dTemplMean0 = float(pTemplData.vecTemplMean[iLayer][0])
+    dTemplNorm = float(pTemplData.vecTemplNorm[iLayer])
+    dInvArea = float(pTemplData.vecInvArea[iLayer])
 
-                idx += 1
-                idx2 += 1
+    num = matResult.astype(numpy.float64, copy=False) - window_sum * dTemplMean0
+    wndMean2 = window_sum * window_sum * dInvArea
+    diff2 = numpy.maximum(window_sqsum - wndMean2, 0.0)
+    eps = numpy.finfo(numpy.float64).eps
+    too_small = diff2 <= numpy.minimum(0.5, 10.0 * eps * window_sqsum)
+    t = numpy.sqrt(diff2, dtype=numpy.float64) * dTemplNorm
+    t = numpy.where(too_small, 0.0, t)
 
-            except:
-                pass
-
-    return matResult
+    abs_num = numpy.abs(num)
+    out = numpy.zeros(matResult.shape, dtype=numpy.float32)
+    mask_div = abs_num < t
+    mask_clip = (~mask_div) & (abs_num < t * 1.125)
+    numpy.divide(num, t, out=out, where=mask_div)
+    out[mask_clip] = numpy.sign(num[mask_clip])
+    return out
 
 def FilterWithRotatedRect(vec, iMethod, dMaxOverLap):
     iMatchSize = len(vec)
@@ -570,26 +545,17 @@ def FilterWithRotatedRect(vec, iMethod, dMaxOverLap):
 def RefreshSrcView(matSrc, matDst, vecSingleTargetData, boxRatio):
 
     global m_dNewScale
-    dashGap = 5.4 * m_dNewScale * boxRatio
-    solidLineThickness = 0.9 * m_dNewScale * boxRatio
-    dashLineThickness = 1.35 * m_dNewScale * boxRatio
-    fontScale = 0.675 * m_dNewScale * boxRatio
-    fontthickness = int(0.9 * m_dNewScale * boxRatio)
-    markCrossLength = 4.5 * m_dNewScale  * boxRatio
+    solidLineThickness = max(1, int(round(0.9 * m_dNewScale * boxRatio)))
+    fontScale = max(0.4, 0.675 * m_dNewScale * boxRatio)
+    fontthickness = max(1, int(round(0.9 * m_dNewScale * boxRatio)))
+    markCrossLength = 4.5 * m_dNewScale * boxRatio
     srcRows = matSrc.shape[0]
     srcCols = matSrc.shape[1]
     dstRows = matDst.shape[0]
     dstCols = matDst.shape[1]
-    #matResize = cv2.Mat
-    #matColorSrc = cv2.Mat
     size = (int(m_dNewScale * srcCols), int(m_dNewScale * srcRows))
     matColorSrc = cv2.cvtColor(src=matSrc, code=cv2.COLOR_GRAY2BGR)
     matResize = cv2.resize(src=matColorSrc, dsize=size)
-    #iPosX = m_hScrollBar.GetScrollPos()
-    #iPosY = m_vScrollBar.GetScrollPos()
-    iW = int(srcCols * m_dSrcScale)
-    iH = int(srcRows * m_dSrcScale)
-    #rectShow = cv2.Rect(cv2.Point(iPosX, iPosY), cv2.Size(iW, iH))
     iSize = len(vecSingleTargetData)
     if m_bShowResult:
         for i in range(iSize):
@@ -598,53 +564,31 @@ def RefreshSrcView(matSrc, matDst, vecSingleTargetData, boxRatio):
             ptRB = vecSingleTargetData[i].ptRB * m_dNewScale
             ptRT = vecSingleTargetData[i].ptRT * m_dNewScale
             ptC = vecSingleTargetData[i].ptCenter * m_dNewScale
-            
-            # draw rectangles
-            matResize = draw_line(img=matResize,pt1=ptLT,pt2=ptLB,color=colorGreen,thickness=solidLineThickness,style='none',gap=0)
-            matResize = draw_line(img=matResize,pt1=ptLB,pt2=ptRB,color=colorGreen,thickness=solidLineThickness,style='none',gap=0)
-            matResize = draw_line(img=matResize,pt1=ptRB,pt2=ptRT,color=colorGreen,thickness=solidLineThickness,style='none',gap=0)
-            matResize = draw_line(img=matResize,pt1=ptRT,pt2=ptLT,color=colorGreen,thickness=solidLineThickness,style='none',gap=0)
 
-            matResize = draw_line(img=matResize,pt1=ptLT,pt2=ptLB,color=colorRed,thickness=dashLineThickness,style='dotted',gap=dashGap)
-            matResize = draw_line(img=matResize,pt1=ptLB,pt2=ptRB,color=colorRed,thickness=dashLineThickness,style='dotted',gap=dashGap)
-            matResize = draw_line(img=matResize,pt1=ptRB,pt2=ptRT,color=colorRed,thickness=dashLineThickness,style='dotted',gap=dashGap)
-            matResize = draw_line(img=matResize,pt1=ptRT,pt2=ptLT,color=colorRed,thickness=dashLineThickness,style='dotted',gap=dashGap)
-            
-            # draw corners
-            ptDis1 = numpy.array([0,0])
-            ptDis2 = numpy.array([0,0])
+            box = numpy.array([_pt2i(ptLT), _pt2i(ptLB), _pt2i(ptRB), _pt2i(ptRT)], dtype=numpy.int32)
+            cv2.polylines(matResize, [box], True, colorGreen, solidLineThickness, cv2.LINE_AA)
+
             if dstCols > dstRows:
                 ptDis1 = (ptLB - ptLT) / 3
                 ptDis2 = (ptRT - ptLT) / 3 * (dstRows / float(dstCols))
             else:
                 ptDis1 = (ptLB - ptLT) / 3 * (dstCols / float(dstRows))
                 ptDis2 = (ptRT - ptLT) / 3
-            matResize = draw_line(img=matResize, pt1=ptLT, pt2=ptLT + ptDis1 / 2,color=colorGreen,thickness=solidLineThickness,style='none',gap=0)
-            matResize = draw_line(img=matResize, pt1=ptLT, pt2=ptLT + ptDis2 / 2,color=colorGreen,thickness=solidLineThickness,style='none',gap=0)
-            matResize = draw_line(img=matResize, pt1=ptRT, pt2=ptRT + ptDis1 / 2,color=colorGreen,thickness=solidLineThickness,style='none',gap=0)
-            matResize = draw_line(img=matResize, pt1=ptRT, pt2=ptRT - ptDis2 / 2,color=colorGreen,thickness=solidLineThickness,style='none',gap=0)
-            matResize = draw_line(img=matResize, pt1=ptRB, pt2=ptRB - ptDis1 / 2,color=colorGreen,thickness=solidLineThickness,style='none',gap=0)
-            matResize = draw_line(img=matResize, pt1=ptRB, pt2=ptRB - ptDis2 / 2,color=colorGreen,thickness=solidLineThickness,style='none',gap=0)
-            matResize = draw_line(img=matResize, pt1=ptLB, pt2=ptLB - ptDis1 / 2,color=colorGreen,thickness=solidLineThickness,style='none',gap=0)
-            matResize = draw_line(img=matResize, pt1=ptLB, pt2=ptLB + ptDis2 / 2,color=colorGreen,thickness=solidLineThickness,style='none',gap=0)
+            cv2.line(matResize, _pt2i(ptLT), _pt2i(ptLT + ptDis1 / 2), colorGreen, solidLineThickness, cv2.LINE_AA)
+            cv2.line(matResize, _pt2i(ptLT), _pt2i(ptLT + ptDis2 / 2), colorGreen, solidLineThickness, cv2.LINE_AA)
+            cv2.line(matResize, _pt2i(ptRT), _pt2i(ptRT + ptDis1 / 2), colorGreen, solidLineThickness, cv2.LINE_AA)
+            cv2.line(matResize, _pt2i(ptRT), _pt2i(ptRT - ptDis2 / 2), colorGreen, solidLineThickness, cv2.LINE_AA)
+            cv2.line(matResize, _pt2i(ptRB), _pt2i(ptRB - ptDis1 / 2), colorGreen, solidLineThickness, cv2.LINE_AA)
+            cv2.line(matResize, _pt2i(ptRB), _pt2i(ptRB - ptDis2 / 2), colorGreen, solidLineThickness, cv2.LINE_AA)
+            cv2.line(matResize, _pt2i(ptLB), _pt2i(ptLB - ptDis1 / 2), colorGreen, solidLineThickness, cv2.LINE_AA)
+            cv2.line(matResize, _pt2i(ptLB), _pt2i(ptLB + ptDis2 / 2), colorGreen, solidLineThickness, cv2.LINE_AA)
+            cv2.line(matResize, _pt2i(ptLT + ptDis1), _pt2i(ptLT + ptDis2), colorGreen, solidLineThickness, cv2.LINE_AA)
 
-            # draw corner line
-            matResize = draw_line(img=matResize, pt1=ptLT + ptDis1, pt2=ptLT + ptDis2, color=colorGreen, thickness=solidLineThickness, style='none', gap=0)
-            matResize = draw_line(img=matResize, pt1=ptLT + ptDis1, pt2=ptLT + ptDis2, color=colorRed, thickness=dashLineThickness, style='dotted', gap=dashGap)
-
-            # matDraw, iX, iY, iLength, color, iThickness
             matResize = draw_mark_cross(matResize, ptC[0], ptC[1], markCrossLength, colorGreen, solidLineThickness)
 
-            str = f"{i}"
+            label = f"{i}"
             _ptText = (ptLT + ptRT) / 2
-            _ptText_i = (numpy.rint(_ptText)).astype(int)
-            matResize = cv2.putText(img=matResize, text=str, org=(_ptText_i[0],_ptText_i[1]), fontFace=cv2.FONT_HERSHEY_PLAIN, fontScale=fontScale, color=colorGreen, thickness=fontthickness)
-
-    #cv2.namedWindow("SrcView", cv2.WINDOW_NORMAL)
-    #cv2.resizeWindow("SrcView", int(size[0]), int(size[1]))
-    ##cv2.imshow("SrcView", matResize(rectShow))
-    #cv2.imshow("SrcView", matResize)
-    #cv2.waitKey(0)
+            matResize = cv2.putText(img=matResize, text=label, org=_pt2i(_ptText), fontFace=cv2.FONT_HERSHEY_PLAIN, fontScale=fontScale, color=colorGreen, thickness=fontthickness)
 
     return matResize
 
@@ -681,8 +625,6 @@ def GetBestRotationSize(sizeSrc, sizeDst, dRAngle):
         dAngle -= 180
     elif dAngle > 270 and dAngle < 360:
         dAngle -= 270
-    else:
-        print("Unknown")
     fH1 = sizeDst[1] * math.sin(dAngle * math.pi / 180) * math.cos(dAngle * math.pi / 180)
     fH2 = sizeDst[0] * math.sin(dAngle * math.pi / 180) * math.cos(dAngle * math.pi / 180)
     iHalfHeight = int(math.ceil(fTopY - ptCenter[1] - fH1))
@@ -721,19 +663,16 @@ def GetNextMaxLocNoBlockMax(matResult, ptMaxLoc, sizeTemplate, dMaxOverlap):
 # x’ = x * cos(θ) – y * sin(θ) 
 # y’ = x * sin(θ) + y * cos(θ)
 def ptRotatePt2f(ptInput, ptOrg, dAngle):
-    # Calculate width and height based on origin coordinates
-    dWidth = ptOrg[0] * 2
-    dHeight = ptOrg[1] * 2
-    # Adjust y-coordinates to work with the origin at the bottom left
-    dY1 = dHeight - ptInput[1]
-    dY2 = dHeight - ptOrg[1]
-    # Apply rotation matrix
-    dX = (ptInput[0] - ptOrg[0]) * math.cos(dAngle) - (dY1 - ptOrg[1]) * math.sin(dAngle) + ptOrg[0]
-    dY = (ptInput[0] - ptOrg[0]) * math.sin(dAngle) + (dY1 - ptOrg[1]) * math.cos(dAngle) + dY2
-    # Adjust back to the original coordinate system
+    x, y = _xy(ptInput)
+    ox, oy = _xy(ptOrg)
+    dWidth = ox * 2
+    dHeight = oy * 2
+    dY1 = dHeight - y
+    dY2 = dHeight - oy
+    dX = (x - ox) * math.cos(dAngle) - (dY1 - oy) * math.sin(dAngle) + ox
+    dY = (x - ox) * math.sin(dAngle) + (dY1 - oy) * math.cos(dAngle) + dY2
     dY = -dY + dHeight
-    # Return new coordinates
-    return numpy.array([dX, dY]) 
+    return numpy.array([dX, dY], dtype=numpy.float64) 
     
 def rotate_coordinates_counterclockwise(CoordinatesToRotate, CoordinatesToRotateAround, AngleToRotateInRadians):
     # Translate the coordinates to the origin
@@ -784,44 +723,24 @@ def get_top_layer(matTempl, iMinDstLength):
     return iTopLayer
 
 def match_template(matSrc, pTemplData, matResult, iLayer, bUseSIMD):
-    if bUseSIMD:
-        matResult = numpy.zeros((matSrc.shape[0] - pTemplData.vecPyramid[iLayer].shape[0] + 1, matSrc.shape[1] - pTemplData.vecPyramid[iLayer].shape[1] + 1), dtype=numpy.float32)
-        matTemplate = pTemplData.vecPyramid[iLayer]
-        t_r_end = matTemplate.shape[0]
-        for r in range(matResult.shape[0]):
-            r_matResult = matResult[r, :]
-            r_source = matSrc[r, :]
-            for c in range(matResult.shape[1]):
-                r_template = matTemplate
-                r_sub_source = r_source
-                for t_r in range(t_r_end):
-                    r_matResult[c] += IM_Conv_SIMD(r_template, r_sub_source, matTemplate.shape[1])
-                    r_template += matTemplate.shape[1]
-                    r_sub_source += matSrc.shape[1]
-    else:
-        #cv2.imshow("1", matSrc)
-        #cv2.waitKey(0)
-        #cv2.imshow("1", pTemplData.vecPyramid[iLayer])
-        #cv2.waitKey(0)
-        matResult = cv2.matchTemplate(image=matSrc, templ=pTemplData.vecPyramid[iLayer],  method=cv2.TM_CCORR)
-    
-    # the hell does this do?
-    matResult = CCOEFF_Denominator(matSrc, pTemplData, matResult, iLayer)
-
-    return matResult
+    templ = pTemplData.vecPyramid[iLayer]
+    if matSrc is None or templ is None:
+        return numpy.zeros((1, 1), dtype=numpy.float32)
+    if matSrc.shape[0] < templ.shape[0] or matSrc.shape[1] < templ.shape[1]:
+        return numpy.zeros((1, 1), dtype=numpy.float32)
+    if pTemplData.vecResultEqual1[iLayer]:
+        return numpy.ones(
+            (matSrc.shape[0] - templ.shape[0] + 1, matSrc.shape[1] - templ.shape[1] + 1),
+            dtype=numpy.float32,
+        )
+    # Native TM_CCOEFF_NORMED is the same score the C++ matcher computed via
+    # TM_CCORR + CCOEFF_Denominator, but runs in optimized C instead of Python.
+    return cv2.matchTemplate(matSrc, templ, cv2.TM_CCOEFF_NORMED)
 
 def filter_with_score(vec, dScore):
+    vec = [x for x in vec if x.dMatchScore >= dScore]
     vec.sort(key=lambda x: x.dMatchScore, reverse=True)
-    iSize = len(vec)
-    iIndexDelete = iSize + 1
-    for i in range(iSize):
-        if vec[i].dMatchScore < dScore:
-            iIndexDelete = i
-            break
-    if iIndexDelete == iSize + 1:
-        return
-    vecFiltered = vec[:iIndexDelete]
-    return vecFiltered
+    return vec
 
 def sub_pix_estimation(vec, dNewX, dNewY, dNewAngle, dAngleStep, iMaxScoreIndex):
     matA = numpy.zeros((27, 10), dtype=numpy.float64)
@@ -903,27 +822,20 @@ def learn_pattern(m_matDst):
         templSum2 = 0.0
 
         templMean, templSdv = cv2.meanStdDev(TemplData.vecPyramid[i])
-        # TODO convert to for loop the size of array so we can use different image imputs
-        templNorm = templSdv[0] * templSdv[0]# + templSdv[1] * templSdv[1] + templSdv[2] * templSdv[2] + templSdv[3] * templSdv[3]
-        #for sdvIdx in range(len(templSdv)):
-        #    templNorm = templNorm + templSdv[sdvIdx] * templSdv[sdvIdx]
+        mean0 = float(templMean[0, 0])
+        sdv0 = float(templSdv[0, 0])
+        templNorm = sdv0 * sdv0
 
         if templNorm < DBL_EPSILON:
             TemplData.vecResultEqual1[i] = True
 
-        # TODO convert to for loop the size of array so we can use different image imputs
-        templSum2 = templNorm + templMean[0] * templMean[0]# + templMean[1] * templMean[1] + templMean[2] * templMean[2] + templMean[3] * templMean[3]
-        #templSum2 = templNorm
-        #for meanIdx in range(len(templMean)):
-        #    templSum2 = templSum2 + templMean[meanIdx] * templMean[meanIdx]
-            
+        templSum2 = templNorm + mean0 * mean0
         templSum2 /= invArea
         templNorm = math.sqrt(templNorm)
-        templNorm /= math.sqrt(invArea) # care of accuracy here
+        templNorm /= math.sqrt(invArea)
         
         TemplData.vecInvArea[i] = invArea
-        for j in range(len(templMean)):
-            TemplData.vecTemplMean[i][j] = templMean[j]
+        TemplData.vecTemplMean[i][0] = mean0
         TemplData.vecTemplNorm[i] = templNorm
 	
         TemplData.bIsPatternLearned = True
@@ -937,17 +849,48 @@ def overlay_images(top_image, bottom_image, origin):
     # replace values at coordinates
     result_image[origin[0]:origin[0]+h, origin[1]:origin[1]+w] = top_image[0:h, 0:w]
     return result_image
+
+def _coarse_match_angle(srcTop, pTemplData, iTopLayer, angle, ptCenter, iMaxPos, dMaxOverlap, minScore):
+    sizeBest = GetBestRotationSize(srcTop.shape, pTemplData.vecPyramid[iTopLayer].shape, angle)
+    fTranslationY = (sizeBest[0] - 1) / 2.0 - ptCenter[1]
+    fTranslationX = (sizeBest[1] - 1) / 2.0 - ptCenter[0]
+    matR = cv2.getRotationMatrix2D(ptCenter, angle, 1)
+    matR[0, 2] += fTranslationX
+    matR[1, 2] += fTranslationY
+    border = int(pTemplData.iBorderColor)
+    matRotatedSrc = cv2.warpAffine(
+        srcTop,
+        matR,
+        (sizeBest[1], sizeBest[0]),
+        flags=cv2.INTER_LINEAR,
+        borderMode=cv2.BORDER_CONSTANT,
+        borderValue=(border, border, border),
+    )
+    matResult = match_template(matRotatedSrc, pTemplData, None, iTopLayer, False)
+    if matResult is None or matResult.size == 0:
+        return []
+    _minVal, dMaxVal, minLoc, ptMaxLoc = cv2.minMaxLoc(matResult)
+    if dMaxVal < minScore:
+        return []
+    peaks = [s_MatchParameter((ptMaxLoc[0] - fTranslationX, ptMaxLoc[1] - fTranslationY), dMaxVal, angle)]
+    nExtra = max(0, iMaxPos + MATCH_CANDIDATE_NUM - 1)
+    sizeTemplate = pTemplData.vecPyramid[iTopLayer].shape
+    for _ in range(nExtra):
+        dValue, ptMaxLoc = GetNextMaxLocNoBlockMax(matResult, ptMaxLoc, sizeTemplate, dMaxOverlap)
+        if dValue < minScore:
+            break
+        peaks.append(s_MatchParameter((ptMaxLoc[0] - fTranslationX, ptMaxLoc[1] - fTranslationY), dValue, angle))
+    return peaks
     
 ######################################################################################################################################################
 
 def main(m_matSrc, m_matDst, savelocation, iMaxPos, dMaxOverlap, dScore, dToleranceAngle, pixel_ratio, rotation_offset, origin, roi_top_left, roi_bot_right, debug):
-    
-    #cv2.imshow("m_matDst", m_matDst)
-    #cv2.waitKey(0)
-    #cv2.imshow("m_matSrc", m_matSrc)
-    #cv2.waitKey(0)
+    global m_vecSingleTargetData
+    m_vecSingleTargetData = []
 
-    #
+    if m_matSrc is None or m_matDst is None:
+        return False
+
     m_TemplData = learn_pattern(m_matDst)
     
     # make a copy of just the region of interest
@@ -1014,170 +957,125 @@ def main(m_matSrc, m_matDst, savelocation, iMaxPos, dMaxOverlap, dScore, dTolera
     iTopSrcW = vecMatSrcPyr[iTopLayer].shape[1]
     iTopSrcH = vecMatSrcPyr[iTopLayer].shape[0]
     ptCenter = ((iTopSrcW - 1) / 2.0, (iTopSrcH - 1) / 2.0)
-    #vector<s_MatchParameter> vecMatchParameter (iSize * (m_iMaxPos + MATCH_CANDIDATE_NUM));
-    iSize = len(vecAngles)
 
-    vecMatchParameter = [s_MatchParameter()]
-    #Caculate lowest score at every layer
     vecLayerScore = [dScore] * (iTopLayer + 1)
     for iLayer in range(1, iTopLayer + 1):
         vecLayerScore[iLayer] = vecLayerScore[iLayer - 1] * 0.9
 
-    sizePat = pTemplData.vecPyramid[iTopLayer].shape
-    sizePatArea = sizePat[0] * sizePat[1]
-    bCalMaxByBlock = (vecMatSrcPyr[iTopLayer].size / sizePatArea > 500) and (iMaxPos > 10)
+    srcTop = vecMatSrcPyr[iTopLayer]
+    minScoreTop = vecLayerScore[iTopLayer]
+    vecMatchParameter = []
 
-    for i in range(iSize):
-        matRotatedSrc = numpy.zeros_like(vecMatSrcPyr[iTopLayer])
-        matR = cv2.getRotationMatrix2D(ptCenter, vecAngles[i], 1)
-        matResult = numpy.zeros_like(vecMatSrcPyr[iTopLayer])
-        ptMaxLoc = (0, 0)
-        dValue = 0
-        dMaxVal = 0
-        sizeBest = GetBestRotationSize(vecMatSrcPyr[iTopLayer].shape, pTemplData.vecPyramid[iTopLayer].shape, vecAngles[i])
-        fTranslationY = (sizeBest[0] - 1) / 2.0 - ptCenter[1]
-        fTranslationX = (sizeBest[1] - 1) / 2.0 - ptCenter[0]
-        matR[0, 2] += fTranslationX
-        matR[1, 2] += fTranslationY
+    def _run_coarse_sequential():
+        found = []
+        for angle in vecAngles:
+            found.extend(
+                _coarse_match_angle(srcTop, pTemplData, iTopLayer, angle, ptCenter, iMaxPos, dMaxOverlap, minScoreTop)
+            )
+        return found
 
-        matRotatedSrc = cv2.warpAffine(src=vecMatSrcPyr[iTopLayer], 
-                       dst=matRotatedSrc, 
-                       M=matR, 
-                       dsize=(sizeBest[1],sizeBest[0]), 
-                       flags=cv2.INTER_LINEAR, 
-                       borderMode=cv2.BORDER_CONSTANT, 
-                       borderValue=(pTemplData.iBorderColor, pTemplData.iBorderColor, pTemplData.iBorderColor))
-        
-        matResult = match_template(matRotatedSrc, pTemplData, matResult, iTopLayer, False)
-        
-        if bCalMaxByBlock:
-            ############################
-            # TODO this path not tested
-            ############################
-            blockMax = s_BlockMax(matResult, pTemplData.vecPyramid[iTopLayer].shape)
-            blockMax.GetMaxValueLoc(dMaxVal, ptMaxLoc)
-            if dMaxVal < vecLayerScore[iTopLayer]:
-                continue
-            vecMatchParameter.append(s_MatchParameter((ptMaxLoc[0] - fTranslationX, ptMaxLoc[1] - fTranslationY), dMaxVal, vecAngles[i]))
-            for j in range(iMaxPos + MATCH_CANDIDATE_NUM - 1):
-                ptMaxLoc = GetNextMaxLoc(matResult, ptMaxLoc, pTemplData.vecPyramid[iTopLayer].shape, dValue, dMaxOverlap, blockMax)
-                if dMaxVal < vecLayerScore[iTopLayer]:
-                    continue
-                vecMatchParameter.append(s_MatchParameter((ptMaxLoc[0] - fTranslationX, ptMaxLoc[1] - fTranslationY), dValue, vecAngles[i]))
-        else:
-            _minVal, dMaxVal, minLoc, ptMaxLoc = cv2.minMaxLoc(matResult)
-            if dMaxVal < vecLayerScore[iTopLayer]:
-                continue
-            vecMatchParameter.append(s_MatchParameter((ptMaxLoc[0] - fTranslationX, ptMaxLoc[1] - fTranslationY), dMaxVal, vecAngles[i]))
-            for j in range(iMaxPos + MATCH_CANDIDATE_NUM - 1):
-                dValue, ptMaxLoc = GetNextMaxLocNoBlockMax(matResult, ptMaxLoc, pTemplData.vecPyramid[iTopLayer].shape, dMaxOverlap)
-                if dMaxVal < vecLayerScore[iTopLayer]:
-                    continue
-                vecMatchParameter.append(s_MatchParameter((ptMaxLoc[0] - fTranslationX, ptMaxLoc[1] - fTranslationY), dValue, vecAngles[i]))
+    workers = min(4, os.cpu_count() or 1, max(1, len(vecAngles)))
+    if workers <= 1 or len(vecAngles) < 4:
+        vecMatchParameter = _run_coarse_sequential()
+    else:
+        # Raspberry Pi OpenCV/OpenBLAS already uses multiple cores per
+        # matchTemplate. Limit OpenCV to one thread while we parallelize angles
+        # so the Pi is not oversubscribed.
+        prev_threads = 0
+        try:
+            prev_threads = cv2.getNumThreads()
+            cv2.setNumThreads(1)
+        except Exception:
+            prev_threads = 0
+        try:
+            with ThreadPoolExecutor(max_workers=workers) as pool:
+                jobs = [
+                    pool.submit(
+                        _coarse_match_angle, srcTop, pTemplData, iTopLayer, angle, ptCenter, iMaxPos, dMaxOverlap, minScoreTop
+                    )
+                    for angle in vecAngles
+                ]
+                for job in jobs:
+                    vecMatchParameter.extend(job.result())
+        except Exception:
+            vecMatchParameter = _run_coarse_sequential()
+        finally:
+            if prev_threads:
+                try:
+                    cv2.setNumThreads(prev_threads)
+                except Exception:
+                    pass
 
     vecMatchParameter.sort(key=lambda x: x.dMatchScore, reverse=True)
-
-    ###############################################################
-    # TODO iMatchSize comes up short when comparing to c++ version
-    ###############################################################
-    iMatchSize = len(vecMatchParameter)
+    iSearchSize = min(iMaxPos + MATCH_CANDIDATE_NUM, len(vecMatchParameter))
     iDstW = pTemplData.vecPyramid[iTopLayer].shape[1]
     iDstH = pTemplData.vecPyramid[iTopLayer].shape[0]
-    #end of first phase
 
     iStopLayer = 0
-    #int iSearchSize = min (iMaxPos + MATCH_CANDIDATE_NUM, (int)vecMatchParameter.size ());//It may not be necessary to search all of them, it is too time-consuming
-    vecAllResult = [s_MatchParameter()]
-    for i in range(iMatchSize):
-    #for (int i = 0; i < iSearchSize; i++)
+    vecAllResult = []
+    for i in range(iSearchSize):
         dRAngle = -vecMatchParameter[i].dMatchAngle * D2R
         ptLT = ptRotatePt2f(vecMatchParameter[i].pt, ptCenter, dRAngle)
         dAngleStep = math.atan(2.0 / max(iDstW, iDstH)) * R2D
         vecMatchParameter[i].dAngleStart = vecMatchParameter[i].dMatchAngle - dAngleStep
         vecMatchParameter[i].dAngleEnd = vecMatchParameter[i].dMatchAngle + dAngleStep
         if iTopLayer <= iStopLayer:
-            ##################################################
-            # TODO this path not tested. no point2D in python
-            ##################################################
-            vecMatchParameter[i].pt = cv2.Point2d(ptLT * (1 if iTopLayer == 0 else 2))
+            vecMatchParameter[i].pt = ptLT * (1.0 if iTopLayer == 0 else 2.0)
             vecAllResult.append(vecMatchParameter[i])
         else:
             for iLayer in range(iTopLayer - 1, iStopLayer - 1, -1):
-                #search angle
-                dAngleStep = math.atan(2.0 / max(pTemplData.vecPyramid[iLayer].shape)) * R2D #min changed to max
-                vecAngles = []
-                #double dAngleS = vecMatchParameter[i].dAngleStart, dAngleE = vecMatchParameter[i].dAngleEnd;
+                dAngleStep = math.atan(2.0 / max(pTemplData.vecPyramid[iLayer].shape)) * R2D
                 dMatchedAngle = vecMatchParameter[i].dMatchAngle
-                if m_bToleranceRange:
-                    ############################
-                    # TODO this path not tested
-                    ############################
-                    for j in range(-1, 2):
-                        vecAngles.append(dMatchedAngle + dAngleStep * j)
+                if dToleranceAngle < VISION_TOLERANCE:
+                    refine_angles = [0.0]
                 else:
-                    if dToleranceAngle < VISION_TOLERANCE:
-                        ############################
-                        # TODO this path not tested
-                        ############################
-                        vecAngles.append(0.0)
-                    else:
-                        for j in range(-1, 2):
-                            vecAngles.append(dMatchedAngle + dAngleStep * j)
-                
+                    refine_angles = [dMatchedAngle + dAngleStep * j for j in range(-1, 2)]
+
                 ptSrcCenter = ((vecMatSrcPyr[iLayer].shape[1] - 1) / 2.0, (vecMatSrcPyr[iLayer].shape[0] - 1) / 2.0)
-                iSize = len(vecAngles)
-                vecNewMatchParameter = [s_MatchParameter() for _ in range(iSize)]
+                vecNewMatchParameter = []
                 iMaxScoreIndex = 0
                 dBigValue = -1
-                for j in range(iSize):
-                    matResult = None
-                    matRotatedSrc = None
-                    dMaxValue = 0
-                    ptMaxLoc = None
-                    matRotatedSrc = GetRotatedROI(vecMatSrcPyr[iLayer], pTemplData.vecPyramid[iLayer].shape, ptLT * 2, vecAngles[j])
-                    matResult = match_template(matRotatedSrc, pTemplData, matResult, iLayer, UseSIMD)
+                for j, ang in enumerate(refine_angles):
+                    matRotatedSrc = GetRotatedROI(vecMatSrcPyr[iLayer], pTemplData.vecPyramid[iLayer].shape, ptLT * 2, ang)
+                    matResult = match_template(matRotatedSrc, pTemplData, None, iLayer, False)
                     minVal, dMaxValue, minLoc, ptMaxLoc = cv2.minMaxLoc(matResult)
-                    vecNewMatchParameter[j] = s_MatchParameter(ptMaxLoc, dMaxValue, vecAngles[j])
-                    if vecNewMatchParameter[j].dMatchScore > dBigValue:
+                    cand = s_MatchParameter(ptMaxLoc, dMaxValue, ang)
+                    if bSubPixelEstimation:
+                        if ptMaxLoc[0] == 0 or ptMaxLoc[1] == 0 or ptMaxLoc[0] == matResult.shape[1] - 1 or ptMaxLoc[1] == matResult.shape[0] - 1:
+                            cand.bPosOnBorder = True
+                        if not cand.bPosOnBorder:
+                            for y in range(-1, 2):
+                                for x in range(-1, 2):
+                                    cand.vecResult[y + 1][x + 1] = matResult[ptMaxLoc[1] + x, ptMaxLoc[0] + y]
+                    vecNewMatchParameter.append(cand)
+                    if cand.dMatchScore > dBigValue:
                         iMaxScoreIndex = j
-                        dBigValue = vecNewMatchParameter[j].dMatchScore
-
-                    #subpixel estimation
-                    if ptMaxLoc[0] == 0 or ptMaxLoc[1] == 0 or ptMaxLoc[0] == matResult.shape[1] - 1 or ptMaxLoc[1] == matResult.shape[0] - 1:
-                        vecNewMatchParameter[j].bPosOnBorder = True
-                    if not vecNewMatchParameter[j].bPosOnBorder:
-                        for y in range(-1, 2):
-                            for x in range(-1, 2):
-                                vecNewMatchParameter[j].vecResult[y + 1][x + 1] = matResult[ptMaxLoc[1] + x, ptMaxLoc[0] + y]
-                    #subpixel estimation
+                        dBigValue = cand.dMatchScore
 
                 if vecNewMatchParameter[iMaxScoreIndex].dMatchScore < vecLayerScore[iLayer]:
                     break
                 if bSubPixelEstimation and iLayer == 0 and not vecNewMatchParameter[iMaxScoreIndex].bPosOnBorder and iMaxScoreIndex != 0 and iMaxScoreIndex != 2:
-                    ############################
-                    # TODO this path not tested
-                    ############################
-                    dNewX, dNewY, dNewAngle = 0, 0, 0
+                    dNewX, dNewY, dNewAngle = [0], [0], [0]
                     sub_pix_estimation(vecNewMatchParameter, dNewX, dNewY, dNewAngle, dAngleStep, iMaxScoreIndex)
-                    vecNewMatchParameter[iMaxScoreIndex].pt = cv2.Point2d(dNewX, dNewY)
-                    vecNewMatchParameter[iMaxScoreIndex].dMatchAngle = dNewAngle
+                    vecNewMatchParameter[iMaxScoreIndex].pt = numpy.array([dNewX[0], dNewY[0]], dtype=numpy.float64)
+                    vecNewMatchParameter[iMaxScoreIndex].dMatchAngle = dNewAngle[0]
 
                 dNewMatchAngle = vecNewMatchParameter[iMaxScoreIndex].dMatchAngle
-                ptPaddingLT = ptRotatePt2f(ptLT * 2, ptSrcCenter, dNewMatchAngle * D2R) - (3, 3)
-                pt = (vecNewMatchParameter[iMaxScoreIndex].pt[0] + ptPaddingLT[0], vecNewMatchParameter[iMaxScoreIndex].pt[1] + ptPaddingLT[1])
+                ptPaddingLT = ptRotatePt2f(ptLT * 2, ptSrcCenter, dNewMatchAngle * D2R) - numpy.array([3.0, 3.0])
+                pt = numpy.array([
+                    vecNewMatchParameter[iMaxScoreIndex].pt[0] + ptPaddingLT[0],
+                    vecNewMatchParameter[iMaxScoreIndex].pt[1] + ptPaddingLT[1],
+                ], dtype=numpy.float64)
                 pt = ptRotatePt2f(pt, ptSrcCenter, -dNewMatchAngle * D2R)
                 if iLayer == iStopLayer:
-                    vecNewMatchParameter[iMaxScoreIndex].pt = pt * (1 if iStopLayer == 0 else 2)
+                    vecNewMatchParameter[iMaxScoreIndex].pt = pt * (1.0 if iStopLayer == 0 else 2.0)
                     vecAllResult.append(vecNewMatchParameter[iMaxScoreIndex])
                 else:
                     vecMatchParameter[i].dMatchAngle = dNewMatchAngle
                     vecMatchParameter[i].dAngleStart = vecMatchParameter[i].dMatchAngle - dAngleStep / 2
                     vecMatchParameter[i].dAngleEnd = vecMatchParameter[i].dMatchAngle + dAngleStep / 2
                     ptLT = pt
-                    
-    ###########################################################################################
-    # TODO vecAllResult has one extra index here compared to c++ version. looks to be index 0.
-    ###########################################################################################
+
     vecAllResult = filter_with_score(vecAllResult, dScore)
 
     #Finally filter out overlapping
@@ -1229,42 +1127,25 @@ def main(m_matSrc, m_matDst, savelocation, iMaxPos, dMaxOverlap, dScore, dTolera
 
     floatPrecision = 2
     numpy.set_printoptions(precision=floatPrecision)
+    roi_x, roi_y = _xy(roi_top_left)
+    ox, oy = _xy(origin)
+    origin_xy = numpy.array([ox, oy], dtype=numpy.float64)
     for i in range(len(m_vecSingleTargetData)):
-        
-        # translate the points around the origin taken from calibration data
-        ptCenterWithRoi = (m_vecSingleTargetData[i].ptCenter[0] + roi_top_left[0][0], m_vecSingleTargetData[i].ptCenter[1] + roi_top_left[1][0])
-        trans_XY = ptRotatePt2f(ptCenterWithRoi, origin, math.radians(rotation_offset))
-        trans_XY = trans_XY - origin
-        trans_X = trans_XY[0][0] / pixel_ratio # add back roi and convert to user units
-        trans_Y = trans_XY[1][0] / pixel_ratio # add back roi and convert to user units
+        cx, cy = _xy(m_vecSingleTargetData[i].ptCenter)
+        ptCenterWithRoi = numpy.array([cx + roi_x, cy + roi_y], dtype=numpy.float64)
+        trans_XY = ptRotatePt2f(ptCenterWithRoi, origin_xy, math.radians(float(rotation_offset)))
+        trans_X = (trans_XY[0] - ox) / pixel_ratio
+        trans_Y = (trans_XY[1] - oy) / pixel_ratio
 
-        # create string to send as result
-        # LOC obj:0 cx:123.45 cy:678.90 a:55.94 s:0.95
         result = "LOC "
         result = result + "obj:" + str(i) + " "
         result = result + "cx:" + str(round(trans_X,floatPrecision)) + " "
         result = result + "cy:" + str(round(trans_Y,floatPrecision)) + " "
-        #result = result + "a:" + str(round(-(m_vecSingleTargetData[i].dMatchedAngle + rotation_offset),floatPrecision)) + " "
         result = result + "a:" + str(round(m_vecSingleTargetData[i].dMatchedAngle,floatPrecision)) + " "
         result = result + "s:" + str(round(m_vecSingleTargetData[i].dMatchScore,floatPrecision)) + " "
         print(result)
     
-    # mark region of interest image with found objects
     markedRoi = RefreshSrcView(m_matRoi, m_matDst, m_vecSingleTargetData, pixel_ratio)
-    #cv2.imshow("markedRoi", markedRoi)
-    #cv2.waitKey(0)
-    
-    # add region of interest back on top of original
-    matColorSrc = cv2.cvtColor(src=m_matSrc, code=cv2.COLOR_GRAY2BGR)
-    #cv2.imshow("matColorSrc", matColorSrc)
-    #cv2.waitKey(0)
-    org = [round(roi_top_left[1][0]),round(roi_top_left[0][0])]
-    resultImage = overlay_images(markedRoi, matColorSrc, org)
-    #cv2.imshow("resultImage", resultImage)
-    #cv2.waitKey(0)
-
-    # save image to disk
-    #cv2.imwrite(savelocation, resultImage)
     cv2.imwrite(savelocation, markedRoi)
 
 # testing command line

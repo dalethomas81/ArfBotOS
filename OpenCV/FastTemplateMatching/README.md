@@ -62,14 +62,7 @@ The main matcher is substantially more advanced than the simple template matcher
 
 ### 1. Template learning
 
-`learn_pattern()` builds a pyramid of the template image and precomputes per-layer values such as:
-
-- mean intensity
-- normalization terms
-- inverse area
-- border color used when rotating source images
-
-These values are later reused during matching so the full template statistics do not need to be recalculated for every candidate.
+`learn_pattern()` builds a pyramid of the template image and records the border color used when rotating source images.
 
 ### 2. Coarse rotation search
 
@@ -77,15 +70,15 @@ At the top pyramid layer, the script:
 
 - builds a matching pyramid for the ROI
 - generates candidate angles from `-dToleranceAngle` to `+dToleranceAngle`
-- rotates the ROI to each candidate angle
+- rotates the ROI to each candidate angle (angles can run in parallel)
 - runs template matching on the rotated ROI
 - stores the best candidate locations, scores, and angles
 
-Matching uses `cv2.matchTemplate(..., cv2.TM_CCORR)` followed by a custom normalization step in `CCOEFF_Denominator()` so the score behaves more like a normalized correlation score.
+Matching uses OpenCV's native `cv2.matchTemplate(..., cv2.TM_CCOEFF_NORMED)`. That is the same normalized correlation score the older Python port computed with `TM_CCORR` plus a pixel-by-pixel `CCOEFF_Denominator()` loop, but it runs in optimized C.
 
 ### 3. Coarse-to-fine refinement
 
-After the first pass, each candidate is refined one pyramid level at a time:
+After the first pass, only the top `iMaxPos + 10` candidates are refined one pyramid level at a time (the previous Python port refined every coarse peak):
 
 - the search angle is narrowed around the current best angle
 - a rotated local ROI is extracted
@@ -167,6 +160,58 @@ Debug mode is useful for development on a desktop machine:
 - it also skips the undistortion step that runs in normal mode
 
 Because of that, debug results are good for algorithm development, but final tuning should still be done with live calibrated images.
+
+## Raspberry Pi Runtime
+
+This script is deployed to `/var/opt/codesys/PlcLogic/Application/Vision/` and launched by the PLC as:
+
+```text
+sudo python /var/opt/codesys/PlcLogic/Application/Vision/FastTemplateMatching.py ...
+```
+
+That is **system Python**, not the `/opt/arfbot/venv` used by the web UI. OpenCV must therefore come from apt:
+
+```bash
+sudo apt-get install -y python3-opencv python3-numpy python-is-python3 python3-picamera2
+```
+
+`scripts/install-pi.sh` installs those packages and checks that `cv2` is 4.5+ with `TM_CCOEFF_NORMED`. Do **not** `pip install opencv-python` on the Pi; a pip wheel can hide the distro build and is invisible to `sudo python`.
+
+| Raspberry Pi OS | apt `python3-opencv` | Status |
+|---|---|---|
+| Bookworm 64-bit Lite (documented target) | 4.6.x | supported |
+| Trixie 64-bit | 4.10.x | supported |
+
+The matcher uses only OpenCV 4.5 APIs (`matchTemplate`/`TM_CCOEFF_NORMED`, `warpAffine`, `pyrDown`, `minMaxLoc`). Live capture still uses `Picamera2` with `YUV420`.
+
+## Performance
+
+The previous Python port spent most of its time in a nested-loop `CCOEFF_Denominator()` and then refined every coarse peak instead of the top few. The matcher now:
+
+- uses native `TM_CCOEFF_NORMED` (about 60x faster than the old Python score loop on a 200x300 search)
+- refines only `iMaxPos + 5` coarse candidates
+- draws results with OpenCV primitives instead of per-pixel Python line drawing
+- can match several coarse angles at once
+
+On this machine, representative times were:
+
+| Case | Image | Time | Result |
+|---|---|---|---|
+| Test5 | 640x400, small template | 19 ms | 1 match, score 0.99 |
+| Test6 | 640x400, battery | 21 ms | 1 match, score 0.90 |
+| Test3 | 640x480, two e-clips | 44 ms | 2 matches |
+| Test1 | 2592x1944, five bits | 133 ms | 5 matches |
+| Test4 | 2016x2000, strippers | 258 ms | 1 match, score 1.00 |
+| Src5 rotations | 2592x1944, ±180° | ~60 ms | found at 0/45/90/180° |
+| Src6 | 4096x3000 | 547 ms | 1 match, score 0.97 |
+
+Run the same set with:
+
+```bash
+python _bench.py
+```
+
+`_bench.py` calls `main()` on the `Test*` folders and `Test Images` Src/Dst pairs. It writes annotated images to `_bench_out/`.
 
 ## Current Notes
 
