@@ -1,15 +1,16 @@
 # ArfBot web
 
-One Flask app on port 5000 that hosts both operator pages:
+One Flask app on port 5000 that hosts the operator pages:
 
 | URL | Page |
 | --- | --- |
 | `http://<pi>:5000/vision` | Vision template capture |
 | `http://<pi>:5000/vision/files` | Saved templates |
+| `http://<pi>:5000/animator` | 6-axis robot animator (joints, TCP / MCS / PCS, Euler convention) |
 | `http://<pi>:5000/bluetooth` | Bluetooth pairing (DualSense and other adapters) |
 | `http://<pi>:5000/vision/output_sized?width=365&height=255` | HMI vision result image |
 
-`/` redirects to `/vision` when vision is enabled, or `/bluetooth` on a `--plc-only` install. Old `/template`, `/files/`, and `/output_sized` URLs redirect to the new paths.
+`/` redirects to `/vision` when vision is enabled, `/bluetooth` on a `--plc-only` install, or `/animator` if that is the only enabled page. Old `/template`, `/files/`, and `/output_sized` URLs redirect to the new paths.
 
 The CODESYS HMI loads `/vision/output_sized`. Template files still go to `/var/opt/codesys/PlcLogic/Application/Vision/Templates`. The latest processed image is still `/var/opt/codesys/PlcLogic/visu/outputimage.jpg`.
 
@@ -26,7 +27,9 @@ Web/
     vision.py             camera / templates / /vision/output_sized
     bluetooth.py          pairing API under /bluetooth/api/...
     bluetoothctl_wrapper.py
+    animator.py           /animator page; serves ElementWrapper.js
     static/css/arfbot-night.css
+    static/js/animator-page.js
     templates/
   tests/
 ```
@@ -39,10 +42,13 @@ Web/
 | --- | --- | --- |
 | `ARFBOT_ENABLE_VISION` | `1` | Register vision routes (`/vision`, `/vision/output_sized`, templates) |
 | `ARFBOT_ENABLE_BLUETOOTH` | `1` | Register `/bluetooth` |
+| `ARFBOT_ENABLE_ANIMATOR` | `1` | Register `/animator` (always on in the Pi installer) |
 | `ARFBOT_TEMPLATE_DIR` | `/var/opt/codesys/PlcLogic/Application/Vision/Templates` | Saved crops |
 | `ARFBOT_VISU_OUTPUT` | `/var/opt/codesys/PlcLogic/visu/outputimage.jpg` | HMI image |
 
-If Bluetooth is on and vision is off, `/` redirects to `/bluetooth`.
+The animator page loads the same `ElementWrapper.js` as the CODESYS HTML5 control (`Codesys/Html5Controls/RobotAnimator/`). From a git checkout it is served from that path. The installer also copies it to `Web/app/static/js/ElementWrapper.js` on the Pi. Sliders drive joints and SoftMotion poses locally; they are not live axis-group values (those stay on the WebVisu control).
+
+If Bluetooth is on and vision is off, `/` redirects to `/bluetooth`. If only the animator is on, `/` redirects to `/animator`.
 
 ## Deploy
 
@@ -77,5 +83,5 @@ JSON body for device actions: `{"mac":"AA:BB:CC:DD:EE:FF"}`.
 From this folder (no Bluetooth hardware required):
 
 ```bash
-python3 -m unittest tests.test_bluetoothctl_wrapper -v
+python3 -m unittest tests.test_bluetoothctl_wrapper tests.test_app_factory -v
 ```

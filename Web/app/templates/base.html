@@ -11,10 +11,16 @@
         <link rel="stylesheet" href="{{ url_for('static', filename='css/arfbot-night.css') }}">
         {% block head %}{% endblock %}
     </head>
-    <body>
+    <body class="{% block body_class %}{% endblock %}">
         <header class="topbar">
             {% if enable_vision %}
             <a class="brand" href="{{ url_for('vision.template') }}">
+                <span class="brand-mark"></span>
+                ARFBOT
+                <span class="brand-sub">Night</span>
+            </a>
+            {% elif enable_animator %}
+            <a class="brand" href="{{ url_for('animator.index') }}">
                 <span class="brand-mark"></span>
                 ARFBOT
                 <span class="brand-sub">Night</span>
@@ -33,6 +39,9 @@
                 <a href="{{ url_for('vision.template') }}" {% if request.endpoint in ['vision.template'] %}class="active"{% endif %}>Vision</a>
                 <a href="{{ url_for('vision.files') }}" {% if request.endpoint in ['vision.files'] %}class="active"{% endif %}>Files</a>
                 {% endif %}
+                {% if enable_animator %}
+                <a href="{{ url_for('animator.index') }}" {% if request.endpoint and request.endpoint.startswith('animator.') %}class="active"{% endif %}>Animator</a>
+                {% endif %}
                 {% if enable_bluetooth %}
                 <a href="{{ url_for('bluetooth.index') }}" {% if request.endpoint and request.endpoint.startswith('bluetooth.') %}class="active"{% endif %}>Bluetooth</a>
                 {% endif %}
@@ -50,5 +59,6 @@
             {% endwith %}
             {% block content %}{% endblock %}
         </main>
+        {% block scripts %}{% endblock %}
     </body>
 </html>

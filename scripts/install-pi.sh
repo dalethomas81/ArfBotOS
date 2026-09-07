@@ -2,7 +2,7 @@
 # ArfBotOS Raspberry Pi installer.
 #
 # Automates the Linux-side Software Installation steps from the wiki:
-# camera overlay, OpenCV, vision/bluetooth web UI, DualSense service, and
+# camera overlay, OpenCV, vision/bluetooth/animator web UI, DualSense service, and
 # CODESYS SysProcess AllowAll when the runtime is already present.
 #
 # Does NOT install: Raspberry Pi OS, the CODESYS Windows IDE/runtime,
@@ -74,11 +74,11 @@ Usage:
 
 Options:
   --plc-only          PLC Pi without vision. Installs DualSense, the Bluetooth
-                      pairing web UI, and CODESYS SysProcess config. Skips
-                      camera, OpenCV, and vision scripts.
+                      pairing web UI, the robot animator page, and CODESYS
+                      SysProcess config. Skips camera, OpenCV, and vision scripts.
   --vision-only       Dedicated vision Pi. Installs camera, OpenCV, PyServer,
-                      and the vision web UI. Skips DualSense, Bluetooth pairing,
-                      and CODESYS config.
+                      the vision web UI, and the robot animator page. Skips
+                      DualSense, Bluetooth pairing, and CODESYS config.
   --skip-camera       Do not patch config.txt or install picamera2.
   --skip-controller   Do not install the DualSense controller service.
   --skip-codesys      Do not patch CODESYSControl.cfg.
@@ -227,10 +227,14 @@ require_repo_files() {
             "${REPO_ROOT}/Web/app/vision.py"
             "${REPO_ROOT}/Web/app/bluetooth.py"
             "${REPO_ROOT}/Web/app/bluetoothctl_wrapper.py"
+            "${REPO_ROOT}/Web/app/animator.py"
             "${REPO_ROOT}/Web/app/static/css/arfbot-night.css"
+            "${REPO_ROOT}/Web/app/static/js/animator-page.js"
             "${REPO_ROOT}/Web/app/templates/base.html"
             "${REPO_ROOT}/Web/app/templates/bluetooth/index.html"
             "${REPO_ROOT}/Web/app/templates/vision/template.html"
+            "${REPO_ROOT}/Web/app/templates/animator/index.html"
+            "${REPO_ROOT}/Codesys/Html5Controls/RobotAnimator/ElementWrapper.js"
         )
     fi
     if ! is_true "${SKIP_CONTROLLER}"; then
@@ -567,11 +571,23 @@ install_packages() {
     log "installing apt packages"
     export DEBIAN_FRONTEND=noninteractive
     run apt-get update
-    apt_install_available python3 python3-venv python3-pip git
+    apt_install_available python3 python3-venv python3-pip git python-is-python3
     if ! is_true "${SKIP_VISION}"; then
+        # Distro OpenCV, not pip opencv-python. The PLC launches vision with
+        # `sudo python .../FastTemplateMatching.py`, which is system Python.
+        # FastTemplateMatching needs OpenCV 4.5+ (TM_CCOEFF_NORMED, warpAffine,
+        # pyrDown). Bookworm ships 4.6; Trixie ships 4.10.
         apt_install_available python3-opencv python3-numpy
         if ! is_true "${SKIP_CAMERA}"; then
             apt_install_available python3-picamera2 python3-libcamera i2c-tools
+        fi
+    fi
+    # PLC vision commands are `sudo python ...`. Bookworm/Trixie provide this
+    # via python-is-python3; keep a fallback if that package is missing.
+    if ! command -v python >/dev/null 2>&1 && command -v python3 >/dev/null 2>&1; then
+        log "creating /usr/local/bin/python -> python3 for PLC SysProcess"
+        if ! is_true "${DRY_RUN}"; then
+            ln -sfn "$(command -v python3)" /usr/local/bin/python
         fi
     fi
     if ! is_true "${SKIP_CONTROLLER}"; then
@@ -620,6 +636,8 @@ ensure_venv() {
     if needs_web; then
         "${pip}" install flask
     fi
+    # Never pip-install opencv-python here. It shadows apt python3-opencv and
+    # is the wrong install for `sudo python` on the Pi.
     if ! is_true "${SKIP_CONTROLLER}"; then
         if ! "${pip}" install "git+https://github.com/flok/pydualsense.git"; then
             warn "pydualsense from GitHub failed; falling back to PyPI"
@@ -666,6 +684,9 @@ deploy_web_files() {
         printf 'DRY-RUN: mkdir -p %s\n' "${WEB_DST}"
     fi
     copy_dir_contents "${REPO_ROOT}/Web" "${WEB_DST}"
+    copy_file \
+        "${REPO_ROOT}/Codesys/Html5Controls/RobotAnimator/ElementWrapper.js" \
+        "${WEB_DST}/app/static/js/ElementWrapper.js"
 }
 
 deploy_controller_files() {
@@ -750,7 +771,7 @@ EOF
         fi
         write_unit /etc/systemd/system/VisionWeb.service <<EOF
 [Unit]
-Description=ArfBotOS web server (vision + bluetooth)
+Description=ArfBotOS web server (vision + bluetooth + animator)
 After=network-online.target bluetooth.service multi-user.target
 Wants=network-online.target
 
@@ -761,6 +782,7 @@ RestartSec=3
 Environment=FLASK_APP=wsgi.py
 Environment=ARFBOT_ENABLE_VISION=${enable_vision}
 Environment=ARFBOT_ENABLE_BLUETOOTH=${enable_bluetooth}
+Environment=ARFBOT_ENABLE_ANIMATOR=1
 WorkingDirectory=${WEB_DST}
 ExecStart=${flask_bin} run -h 0.0.0.0 -p 5000 --with-threads
 
@@ -951,11 +973,37 @@ verify_install() {
     py="$(venv_python)"
     local failed=0
     if ! is_true "${SKIP_VISION}"; then
-        verify_import "${py}" "import cv2; print('cv2', cv2.__version__)" "OpenCV" || failed=1
+        local opencv_check
+        opencv_check="$(cat <<'PY'
+import cv2, numpy
+ver = tuple(int(x) for x in cv2.__version__.split('.')[:2])
+if ver < (4, 5):
+    raise SystemExit('OpenCV %s is too old; need 4.5+' % cv2.__version__)
+if not hasattr(cv2, 'TM_CCOEFF_NORMED'):
+    raise SystemExit('cv2.TM_CCOEFF_NORMED missing')
+img = numpy.zeros((32, 32), dtype=numpy.uint8)
+templ = numpy.zeros((8, 8), dtype=numpy.uint8)
+res = cv2.matchTemplate(img, templ, cv2.TM_CCOEFF_NORMED)
+print('cv2', cv2.__version__, 'numpy', numpy.__version__, 'match', res.shape)
+PY
+)"
+        verify_import "${py}" "${opencv_check}" "OpenCV (venv)" || failed=1
+        # PLC SysProcess uses `sudo python`, not the venv.
+        local sys_py="python3"
+        if command -v python >/dev/null 2>&1; then
+            sys_py="python"
+        fi
+        verify_import "${sys_py}" "${opencv_check}" "OpenCV (system ${sys_py}, PLC path)" || failed=1
         if ! is_true "${SKIP_CAMERA}"; then
             verify_import "${py}" "from picamera2 import Picamera2; print('picamera2 ok')" "picamera2" || failed=1
+            verify_import "${sys_py}" "from picamera2 import Picamera2; print('picamera2 ok')" "picamera2 (system ${sys_py})" || failed=1
         fi
         verify_import "${py}" "import flask; print('flask ok')" "Flask" || failed=1
+        local cv2_path=""
+        cv2_path="$("${py}" -c "import cv2; print(getattr(cv2, '__file__', ''))" 2>/dev/null || true)"
+        if printf '%s\n' "${cv2_path}" | grep -qi 'site-packages'; then
+            warn "cv2 is coming from a pip wheel (${cv2_path}), not apt python3-opencv. Uninstall opencv-python and keep the distro package."
+        fi
     fi
     if is_true "${SKIP_VISION}" && ! is_true "${SKIP_CONTROLLER}"; then
         verify_import "${py}" "import flask; print('flask ok')" "Flask" || failed=1
@@ -990,6 +1038,18 @@ verify_install() {
             log "ok: ${WEB_DST}/wsgi.py"
         else
             warn "missing ${WEB_DST}/wsgi.py"
+            failed=1
+        fi
+        if [[ -f "${WEB_DST}/app/static/js/ElementWrapper.js" ]]; then
+            log "ok: ${WEB_DST}/app/static/js/ElementWrapper.js"
+        else
+            warn "missing ${WEB_DST}/app/static/js/ElementWrapper.js"
+            failed=1
+        fi
+        if [[ -f "${WEB_DST}/app/animator.py" ]]; then
+            log "ok: ${WEB_DST}/app/animator.py"
+        else
+            warn "missing ${WEB_DST}/app/animator.py"
             failed=1
         fi
     fi
@@ -1028,6 +1088,7 @@ EOF
     if needs_web; then
         cat <<EOF
   web files:       ${WEB_DST}
+  animator web:    http://${ip:-<pi-ip>}:5000/animator
 EOF
     fi
     if ! is_true "${SKIP_CONTROLLER}"; then

@@ -49,6 +49,8 @@ class FactoryTests(unittest.TestCase):
 
         self.assertIn("/bluetooth", rules)
         self.assertIn("/bluetooth/api/status", rules)
+        self.assertIn("/animator", rules)
+        self.assertIn("/animator/element-wrapper.js", rules)
         self.assertNotIn("/output_sized", rules)
         self.assertNotIn("/vision/output_sized", rules)
         self.assertNotIn("/captured_image", rules)
@@ -87,11 +89,65 @@ class FactoryTests(unittest.TestCase):
         self.assertIn("/captured_image", rules)
         self.assertIn("/bluetooth", rules)
         self.assertIn("/bluetooth/api/setup", rules)
+        self.assertIn("/animator", rules)
+        self.assertIn("/animator/", rules)
+        self.assertIn("/animator/element-wrapper.js", rules)
 
         client = application.test_client()
         response = client.get("/")
         self.assertIn(response.status_code, (301, 302, 308))
         self.assertIn("/vision", response.headers.get("Location", ""))
+
+
+class AnimatorPageTests(unittest.TestCase):
+    def _app(self, **flags):
+        try:
+            import flask  # noqa: F401
+        except ImportError:
+            self.skipTest("flask not installed")
+        env = {
+            "ARFBOT_ENABLE_VISION": "0",
+            "ARFBOT_ENABLE_BLUETOOTH": "0",
+            "ARFBOT_ENABLE_ANIMATOR": "1",
+        }
+        env.update(flags)
+        with patch.dict(os.environ, env):
+            from app import create_app
+
+            return create_app()
+
+    def test_animator_page_and_wrapper_js(self):
+        application = self._app()
+        client = application.test_client()
+
+        page = client.get("/animator")
+        self.assertEqual(page.status_code, 200)
+        html = page.get_data(as_text=True)
+        self.assertIn("Robot Animator", html)
+        self.assertIn('id="stage"', html)
+        self.assertIn("Animator", html)
+        self.assertIn("/animator/element-wrapper.js", html)
+        self.assertIn("animator-page.js", html)
+
+        js = client.get("/animator/element-wrapper.js")
+        self.assertEqual(js.status_code, 200)
+        body = js.get_data(as_text=True)
+        self.assertIn("RobotAnimatorElementWrapper", body)
+        self.assertIn("attachTo", body)
+        self.assertIn("setOriConvention", body)
+
+    def test_animator_can_be_disabled(self):
+        application = self._app(ARFBOT_ENABLE_ANIMATOR="0", ARFBOT_ENABLE_BLUETOOTH="1")
+        rules = {rule.rule for rule in application.url_map.iter_rules()}
+        self.assertNotIn("/animator", rules)
+        self.assertIn("/bluetooth", rules)
+
+    def test_home_redirects_to_animator_when_only_page(self):
+        application = self._app()
+        client = application.test_client()
+        response = client.get("/")
+        self.assertIn(response.status_code, (301, 302, 308))
+        self.assertIn("/animator", response.headers.get("Location", ""))
 
 
 if __name__ == "__main__":
