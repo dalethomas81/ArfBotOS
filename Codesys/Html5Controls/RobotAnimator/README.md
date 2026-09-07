@@ -52,6 +52,14 @@ Debug in the browser: `http://<pi>:8080/webvisu.htm?CFG_DebugHTML5=true` then De
 
 If Process View is a blank dark rectangle: the overlay slot is there but the canvas had no size (WebVisu iframe). Use control **0.0.0.2**, Save and Install, download the application, then hard-refresh the browser. Unsigned HTML5 files also stay blank until you **trust** the element (Visualization messages → signature warning → Yes).
 
+Safari-only blank overlay, or joints frozen while Edge updates: Visualization 4.10 overlay iframes are unique-origin `srcdoc`. Safari may skip `srcdoc` if `src=about:blank` was set first, report `event.origin` as `"null"` (so live `setJ*` messages are dropped), and stop `requestAnimationFrame` after the first paint. Wrapper 0.0.0.30 redraws on a timer and accepts `origin: "null"` messages. After each application download, on the Pi:
+
+```bash
+sudo python3 Codesys/Html5Controls/RobotAnimator/patch_webvisu_safari.py
+```
+
+Then hard-refresh Safari. The stock `webvisu.js` is overwritten on every download, so the patch must be re-run.
+
 ## Kinematics
 
 DH matches the ArfBotAxisGroup 6-DOF config: `d1` ≥ 0, joint-0 twist +90°, MCS Z up. J2 has the built-in +90° DH offset. At zero, TCS X = MCS +Z, TCS Y = MCS −Y, TCS Z = MCS +X. J1–J6 inputs are kinematic joint angles — encoder polarity belongs in visu bindings or the axis group, not inside the control.
