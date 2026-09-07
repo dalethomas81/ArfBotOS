@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-06T15:40:12.1293726" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-06T15:14:06.0196146" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-06T17:29:05.7025838" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-06T16:01:25.1150114" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -1249,13 +1249,6 @@ RESERVED: INT:=46;</xhtml>
                   </baseType>
                 </array>
               </type>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="0" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <variable name="StoredPositions">
               <type>
@@ -1266,13 +1259,6 @@ RESERVED: INT:=46;</xhtml>
                   </baseType>
                 </array>
               </type>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="1" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <variable name="VisionRegisters">
               <type>
@@ -1283,13 +1269,6 @@ RESERVED: INT:=46;</xhtml>
                   </baseType>
                 </array>
               </type>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="2" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <variable name="Flags">
               <type>
@@ -1300,13 +1279,6 @@ RESERVED: INT:=46;</xhtml>
                   </baseType>
                 </array>
               </type>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="3" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <variable name="PositionControllers">
               <type>
@@ -1317,13 +1289,6 @@ RESERVED: INT:=46;</xhtml>
                   </baseType>
                 </array>
               </type>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="4" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <variable name="VisionSystemIpAddress">
               <type>
@@ -1332,13 +1297,6 @@ RESERVED: INT:=46;</xhtml>
               <initialValue>
                 <simpleValue value="'127.0.0.1'" />
               </initialValue>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="5" />
-                  </Attributes>
-                </data>
-              </addData>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> vision</xhtml>
               </documentation>
@@ -1350,13 +1308,6 @@ RESERVED: INT:=46;</xhtml>
               <initialValue>
                 <simpleValue value="50011" />
               </initialValue>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="6" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <variable name="PulsesPerRevolution">
               <type>
@@ -1389,17 +1340,9 @@ RESERVED: INT:=46;</xhtml>
                   </value>
                 </arrayValue>
               </initialValue>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="7" />
-                  </Attributes>
-                </data>
-              </addData>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> dh parameters
- axis params
-PulsesPerRevolution: ARRAY [0..5] OF LREAL := [32000.0, 40000.0, 40000.0, 35840.0, 15700.0, 16162.5];</xhtml>
+ axis params</xhtml>
               </documentation>
             </variable>
             <variable name="HomingGroupOne">
@@ -1428,13 +1371,6 @@ PulsesPerRevolution: ARRAY [0..5] OF LREAL := [32000.0, 40000.0, 40000.0, 35840.
                   </value>
                 </structValue>
               </initialValue>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="8" />
-                  </Attributes>
-                </data>
-              </addData>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> homing</xhtml>
               </documentation>
@@ -1465,13 +1401,6 @@ PulsesPerRevolution: ARRAY [0..5] OF LREAL := [32000.0, 40000.0, 40000.0, 35840.
                   </value>
                 </structValue>
               </initialValue>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="9" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <variable name="HomingGroupThree">
               <type>
@@ -1499,20 +1428,11 @@ PulsesPerRevolution: ARRAY [0..5] OF LREAL := [32000.0, 40000.0, 40000.0, 35840.
                   </value>
                 </structValue>
               </initialValue>
-              <addData>
-                <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
-                  <Attributes>
-                    <Attribute Name="order_in_persistent_editor" Value="10" />
-                  </Attributes>
-                </data>
-              </addData>
             </variable>
             <addData>
               <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                 <Attributes>
                   <Attribute Name="qualified_only" Value="" />
-                  <Attribute Name="checksumnoinit_override" Value="4096552271" />
-                  <Attribute Name="init_related_code" Value="bac351e4-1440-4031-887f-c3d65d99e6dc" />
                 </Attributes>
               </data>
               <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
@@ -5643,15 +5563,6 @@ IF AR4OperationalFtrig.Q THEN
 	PersistentVars.Flags[GVL.HOME_COMPLETE].Value := FALSE;
 	GVL.PowerOn := FALSE;
 END_IF
-
-// apply pulses per revolution and convert degrees per second to frequency (required by PTO controller)
-// pulses per revolution is how many pulses it takes for 1 revolution of the output side of the mechanical reduction.
-(*SetVelocity[0] := LREAL_TO_INT((IoConfig_Globals.J1.out.iSetVelocity * PersistentVars.PulsesPerRevolution[0]) / 360.0); // AR4 is 32000.0 for J1
-SetVelocity[1] := LREAL_TO_INT((IoConfig_Globals.J2.out.iSetVelocity * PersistentVars.PulsesPerRevolution[1]) / 360.0); // AR4 is 40000.0 for J2
-SetVelocity[2] := LREAL_TO_INT((IoConfig_Globals.J3.out.iSetVelocity * PersistentVars.PulsesPerRevolution[2]) / 360.0); // AR4 is 40000.0 for J3
-SetVelocity[3] := LREAL_TO_INT((IoConfig_Globals.J4.out.iSetVelocity * PersistentVars.PulsesPerRevolution[3]) / 360.0); // AR4 is 35840.0 for J4
-SetVelocity[4] := LREAL_TO_INT((IoConfig_Globals.J5.out.iSetVelocity * PersistentVars.PulsesPerRevolution[4]) / 360.0); // AR4 is 15700.0 for J5
-SetVelocity[5] := LREAL_TO_INT((IoConfig_Globals.J6.out.iSetVelocity * PersistentVars.PulsesPerRevolution[5]) / 360.0); // AR4 is 16162.5 for J6*)
 
 // iSetVelocity is scaled counts, NOT °/s after the SoftMotion remap.
 // deg/s = iSetVelocity * (MaxTU / MaxInt)
