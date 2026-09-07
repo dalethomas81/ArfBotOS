@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-07T07:57:27.1444822" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-06T20:52:03.2725776" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-07T08:41:00.5768559" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-07T08:39:54.3125883" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -669,7 +669,7 @@ RESERVED: INT:=46;</xhtml>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> visu</xhtml>
               </documentation>
             </variable>
-            <variable name="EulerConvention">
+            <variable name="OriConvention">
               <type>
                 <derived name="SMC_ORI_CONVENTION" />
               </type>
@@ -1223,7 +1223,7 @@ RESERVED: INT:=46;</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> visu</xhtml>
                       </documentation>
                     </variable>
-                    <variable name="EulerConvention">
+                    <variable name="OriConvention">
                       <type>
                         <derived name="SMC_ORI_CONVENTION" />
                       </type>
@@ -3901,7 +3901,7 @@ TrackPosition(
 	J4:=IoConfig_Globals.J4,
 	J5:=IoConfig_Globals.J5,
 	J6:=IoConfig_Globals.J6,
-    OriConvention:= GVL.EulerConvention,
+    OriConvention:= GVL.OriConvention,
 	VisuStruct3DTrack=&gt;,
 	Arm=&gt;,
 	Elbow=&gt;,
@@ -6494,6 +6494,9 @@ CASE _SequenceMain OF
 		END_IF;
 		
 	STEP_SET_KINEMATICS: // set kinematics
+        // orientation convention is always ZYZ for softmotion
+        GVL.OriConvention := SMC_ORI_CONVENTION.ZYZ;
+        //
 		IF GroupHandler.M_SetKinematics(_SMC_GroupJog2.CoordSystem) THEN
 			_SequenceMain := STEP_WAIT_KINEMATICS;
 		ELSE
@@ -9813,14 +9816,15 @@ ErrorDescription := '';</xhtml>
                               <derived name="SMC_ORI_CONVENTION" />
                             </type>
                             <initialValue>
-                              <simpleValue value="SMC_ORI_CONVENTION.XYZ" />
+                              <simpleValue value="SMC_ORI_CONVENTION.ZYZ" />
                             </initialValue>
                           </variable>
                         </inputVars>
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">_OriConvention := OriConvention;</xhtml>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">_OriConvention := OriConvention;
+GVL.OriConvention := OriConvention;</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -13285,6 +13289,9 @@ CASE SUPER^._SeqMain OF
 		END_IF;
 		
 	_STEP_SET_KINEMATICS: // set kinematics
+        // orientation convention is always ZYZ for softmotion
+        GVL.OriConvention := SMC_ORI_CONVENTION.ZYZ;
+        //
 		_PosRef.c := _MoveCommandParser.stCommand.CoordRef;
 		_PosRef2.c := _MoveCommandParser.stCommand.CoordRef2;
 		IF GroupHandler.M_SetKinematics(_MoveCommandParser.stCommand.CoordSystem) THEN
@@ -21739,6 +21746,9 @@ CASE _SequenceSetKinematics OF
 		END_IF
 		
 	3: // set kinematics
+        // orientation convention is always ZYZ for softmotion
+        GVL.OriConvention := SMC_ORI_CONVENTION.ZYZ;
+        //
 		_SMC_SetKinConfiguration.Execute := TRUE;
 		_SequenceSetKinematics := _SequenceSetKinematics + 1;
 		
