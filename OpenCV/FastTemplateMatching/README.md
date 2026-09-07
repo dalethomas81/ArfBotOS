@@ -109,7 +109,7 @@ The fields are:
 - `obj`: zero-based object index
 - `cx`: calibrated X coordinate
 - `cy`: calibrated Y coordinate
-- `a`: matched angle in degrees
+- `a`: yaw in degrees, Z-up right-hand, in the same frame as `cx`/`cy`
 - `s`: match score
 
 The coordinate conversion works like this:
@@ -119,6 +119,9 @@ The coordinate conversion works like this:
 3. Rotate that point around the calibrated `origin` using `rotation_offset`.
 4. Subtract `origin`.
 5. Divide by `pixelratio` to convert pixels into user units.
+6. Report `a` as `-image_angle + rotation_offset`, wrapped to ±180°. Overlay boxes stay in image space; only the `LOC` line uses this machine/PCS yaw.
+
+When PCS1 is taught to the vision origin, `cx`/`cy`/`a` are PCS1.
 
 ## Result Image
 

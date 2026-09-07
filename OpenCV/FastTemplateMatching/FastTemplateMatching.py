@@ -1130,18 +1130,27 @@ def main(m_matSrc, m_matDst, savelocation, iMaxPos, dMaxOverlap, dScore, dTolera
     roi_x, roi_y = _xy(roi_top_left)
     ox, oy = _xy(origin)
     origin_xy = numpy.array([ox, oy], dtype=numpy.float64)
+    rot_off = float(rotation_offset)
     for i in range(len(m_vecSingleTargetData)):
         cx, cy = _xy(m_vecSingleTargetData[i].ptCenter)
         ptCenterWithRoi = numpy.array([cx + roi_x, cy + roi_y], dtype=numpy.float64)
-        trans_XY = ptRotatePt2f(ptCenterWithRoi, origin_xy, math.radians(float(rotation_offset)))
+        trans_XY = ptRotatePt2f(ptCenterWithRoi, origin_xy, math.radians(rot_off))
         trans_X = (trans_XY[0] - ox) / pixel_ratio
         trans_Y = (trans_XY[1] - oy) / pixel_ratio
+
+        # Overlay keeps image-space dMatchedAngle. LOC a: is Z-up right-hand
+        # yaw in the same frame as cx/cy (PCS1 when that frame is taught to vision).
+        a_machine = -m_vecSingleTargetData[i].dMatchedAngle + rot_off
+        while a_machine <= -180.0:
+            a_machine += 360.0
+        while a_machine > 180.0:
+            a_machine -= 360.0
 
         result = "LOC "
         result = result + "obj:" + str(i) + " "
         result = result + "cx:" + str(round(trans_X,floatPrecision)) + " "
         result = result + "cy:" + str(round(trans_Y,floatPrecision)) + " "
-        result = result + "a:" + str(round(m_vecSingleTargetData[i].dMatchedAngle,floatPrecision)) + " "
+        result = result + "a:" + str(round(a_machine,floatPrecision)) + " "
         result = result + "s:" + str(round(m_vecSingleTargetData[i].dMatchScore,floatPrecision)) + " "
         print(result)
     
