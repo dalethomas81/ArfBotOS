@@ -109,7 +109,7 @@ The fields are:
 - `obj`: zero-based object index
 - `cx`: calibrated X coordinate
 - `cy`: calibrated Y coordinate
-- `a`: matched angle in degrees
+- `a`: yaw in degrees about vision/PCS +Z, in the same frame as `cx`/`cy`
 - `s`: match score
 
 The coordinate conversion works like this:
@@ -119,6 +119,17 @@ The coordinate conversion works like this:
 3. Rotate that point around the calibrated `origin` using `rotation_offset`.
 4. Subtract `origin`.
 5. Divide by `pixelratio` to convert pixels into user units.
+6. Report `a` as `-image_angle + rotation_offset`, wrapped to ±180°. Overlay boxes stay in image space; only the `LOC` line uses this yaw.
+
+### Vision frame vs MCS vs PCS1
+
+MCS is Z-up. The camera looks down the table, so it looks along **MCS −Z**.
+
+A typical vision PCS is **PCS1 = A0 B180 C−90** (SoftMotion ZYZ: `R = Rz(A)·Ry(B)·Rz(C)`). `B180` flips Z, so **PCS1 +Z = MCS −Z** (into the table, same direction the camera looks). TCP `A0 B0 C90` is the tool on the flange and is independent of that.
+
+In the camera image, calibration draws **red +X right** and **green +Y down**. Looking into that image is looking along PCS1 +Z, so X-right × Y-down is right-handed for PCS1. There is no yaw that would make those arrows match **MCS** Z-up; they are not supposed to.
+
+`origin` is the **first inner checkerboard corner** (where the arrows start), not the outer plate corner. Teach PCS1 zero there, with +X/+Y along the arrows. Then `cx`/`cy`/`a` are PCS1.
 
 ## Result Image
 
@@ -217,6 +228,6 @@ python _bench.py
 
 - The source image and template are treated as grayscale.
 - The ROI search comes from `roi.yaml`, while calibrated coordinate conversion comes from `cal.yaml`.
-- The final reported angle is the detected template angle; the commented code shows there was once consideration to also fold in `rotation_offset`.
+- `LOC a:` includes `rotation_offset` and is yaw about vision/PCS +Z (into the table for PCS1 A0 B180 C-90), not MCS Z-up.
 - Several branches are marked in comments as not yet tested, including some tolerance-range, block-max, and sub-pixel paths.
 - The script builds a full annotated image with ROI overlay internally, but currently saves `markedRoi` rather than the full overlaid image.

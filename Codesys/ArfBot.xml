@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-07T08:41:00.5768559" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-07T08:39:54.3125883" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-07T19:54:33.8343693" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-07T19:41:26.2606178" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -8700,6 +8700,11 @@ END_CASE</xhtml>
                         <INT />
                       </type>
                     </variable>
+                    <variable name="SelectedRecipeRowIndexLast">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
                     <variable name="RecipeRowSelected">
                       <type>
                         <BOOL />
@@ -8746,6 +8751,36 @@ END_CASE</xhtml>
                       </type>
                     </variable>
                     <variable name="JumpRowChanged">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="ScrollingBegin">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="ScrollingSingleUp">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="ScrollingSingleDown">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="ScrollingPageUp">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="ScrollingPageDown">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="ScrollingEnd">
                       <type>
                         <BOOL />
                       </type>
@@ -8921,6 +8956,13 @@ END_CASE</xhtml>
                   <ST>
                     <xhtml xmlns="http://www.w3.org/1999/xhtml">//
 GVL.lrGripperOpen := SEL(GVL.CmdIO.Output[0], 0.0, 100.0);
+
+// scrolling
+IF ScrollingBegin OR ScrollingSingleUp OR ScrollingSingleDown OR ScrollingPageUp OR ScrollingPageDown OR ScrollingEnd
+    AND_THEN SelectedRecipeRowIndex &lt;&gt; SelectedRecipeRowIndexLast THEN
+        SelectedRecipeRowIndexLast := SelectedRecipeRowIndex;
+        ScrollingBegin := ScrollingSingleUp := ScrollingSingleDown := ScrollingPageUp := ScrollingPageDown := ScrollingEnd := FALSE;
+END_IF
 
 //
 IF (InsertLineAbove OR InsertLineBelow) AND RecipeRowSelected THEN
@@ -12250,8 +12292,11 @@ CASE SUPER^._SeqMain OF
                                         uTimeout:=_VisionCommandParser.stCommand.Timeout);
 			
 			DUT_Command_VisionType.LocatePart: //
+                // clear the parts count register
 				_PartsCount := 0;
 				LogicCmdIO.Register[_VisionCommandParser.stCommand.Locate.ResultPosition] := 0;
+                
+                // call vision
 				_Vision.M_LocatePart( 	iImageWidth:= _VisionCommandParser.stCommand.ImageWidth, 
 										iImageHeight:= _VisionCommandParser.stCommand.ImageHeight, 
 										iMaxPos:= _VisionCommandParser.stCommand.Locate.MaxParts, 
