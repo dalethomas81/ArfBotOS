@@ -79,11 +79,13 @@ That gives pixels per user unit.
 
 The script uses:
 
-- the checkerboard top-left detected corner as `origin`
+- the first OpenCV inner corner as `origin` (where the red/green arrows start — not the outer plate corner)
 - the same point again as `top_left` for backward compatibility
-- the checkerboard bottom-right detected corner as `bot_right`
+- the last inner corner as `bot_right`
 
-Downstream scripts use these saved points for coordinate conversion and cropping.
+Downstream scripts convert locate pixels into millimetres relative to that inner-corner origin. Teach PCS1 zero on the arrow origin, not the printed edge of the board.
+
+Red is vision +X, green is vision +Y (image right and down). With a camera looking down, that frame is right-handed for a PCS whose +Z points into the table (PCS1 A0 B180 C-90). MCS stays Z-up.
 
 ## Result Image
 

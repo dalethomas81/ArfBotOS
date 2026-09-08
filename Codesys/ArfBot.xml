@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-07T11:15:00.3345231" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-07T11:13:44.0185699" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-07T19:54:33.8343693" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-07T19:41:26.2606178" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -12292,8 +12292,11 @@ CASE SUPER^._SeqMain OF
                                         uTimeout:=_VisionCommandParser.stCommand.Timeout);
 			
 			DUT_Command_VisionType.LocatePart: //
+                // clear the parts count register
 				_PartsCount := 0;
 				LogicCmdIO.Register[_VisionCommandParser.stCommand.Locate.ResultPosition] := 0;
+                
+                // call vision
 				_Vision.M_LocatePart( 	iImageWidth:= _VisionCommandParser.stCommand.ImageWidth, 
 										iImageHeight:= _VisionCommandParser.stCommand.ImageHeight, 
 										iMaxPos:= _VisionCommandParser.stCommand.Locate.MaxParts, 
