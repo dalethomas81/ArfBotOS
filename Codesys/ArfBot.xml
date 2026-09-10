@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-08T21:56:45.29838" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-08T21:56:29.39266" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-09T20:00:00.9430155" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-09T19:53:34.5210633" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -11212,6 +11212,17 @@ END_IF</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> calibrate vision</xhtml>
                       </documentation>
                     </variable>
+                    <variable name="_CommandTypeCap">
+                      <type>
+                        <string length="3" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'CAP'" />
+                      </initialValue>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> capture image</xhtml>
+                      </documentation>
+                    </variable>
                     <variable name="_CommandTypeAcq">
                       <type>
                         <string length="3" />
@@ -11220,7 +11231,7 @@ END_IF</xhtml>
                         <simpleValue value="'ACQ'" />
                       </initialValue>
                       <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> acquire (capture) image</xhtml>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> legacy alias for CAP</xhtml>
                       </documentation>
                     </variable>
                     <variable name="_CommandTypeLoc">
@@ -11238,18 +11249,19 @@ END_IF</xhtml>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// C|A|L ImageWidth ImageHeight Timeout
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// CAL|CAP|LOC ImageWidth ImageHeight Timeout
 
-// C Calibrate vision system
+// CAL Calibrate vision system
     // CheckerSize (user units) XCount YCount 
-    // C 2016 2000 60 25.0 6 9
+    // CAL 2016 2000 60 25.0 6 9
     
-// A Aquire image
-    // A 2016 2000 60
+// CAP Capture image
+    // CAP 2016 2000 60
+    // ACQ is still accepted as a legacy alias
     
-// L Locate part 
+// LOC Locate part 
     // MaxParts MaxOverlap Score ToleranceAngle ResultPostion TemplateName ScriptName
-    // L 2016 2000 60 10 0.0 0.8 90.0 1 template.jpg FastTemplateMatching.py
+    // LOC 2016 2000 60 10 0.0 0.8 90.0 1 template.jpg FastTemplateMatching.py
 	// MaxParts - max number of parts to find in image
 	// MaxOverlap - max overlap of parts in image
 	// Score - min required score for parts
@@ -11266,7 +11278,7 @@ _CmdParams:=F_SplitCmd(Command:=Command);
 
 _CommandType:= _CmdParams[0];
 IF _CommandType = _CommandTypeCal THEN
-    // C 2016 2000 0060 025.0 0006 0009
+    // CAL 2016 2000 0060 025.0 0006 0009
 	stCommand.CommandType:=DUT_Command_VisionType.Calibrate;
     stCommand.Calibrate.CheckerSize:=STRING_TO_REAL(_CmdParams[4]);
     stCommand.Calibrate.CheckerXCount:=STRING_TO_UINT(_CmdParams[5]);
@@ -11280,12 +11292,12 @@ IF _CommandType = _CommandTypeCal THEN
 			RETURN;
 	END_IF
     
-ELSIF _CommandType = _CommandTypeAcq THEN
-    // A 2016 2000 0060
-	stCommand.CommandType:=DUT_Command_VisionType.Acquire;
+ELSIF (_CommandType = _CommandTypeCap) OR (_CommandType = _CommandTypeAcq) THEN
+    // CAP 2016 2000 0060
+	stCommand.CommandType:=DUT_Command_VisionType.Capture;
     
 ELSIF _CommandType = _CommandTypeLoc THEN
-    // L 2016 2000 0060 0010 000.0 0.8 090.0 001 template.jpg FastTemplatMatching.py
+    // LOC 2016 2000 0060 0010 000.0 0.8 090.0 001 template.jpg FastTemplatMatching.py
 	stCommand.CommandType:=DUT_Command_VisionType.LocatePart;
     stCommand.Locate.MaxParts:=STRING_TO_UINT(_CmdParams[4]);
     stCommand.Locate.MaxOverlap:=STRING_TO_REAL(_CmdParams[5]);
@@ -11370,15 +11382,15 @@ END_IF</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> calibrate vision</xhtml>
                       </documentation>
                     </variable>
-                    <variable name="_CommandTypeAcq">
+                    <variable name="_CommandTypeCap">
                       <type>
                         <string length="3" />
                       </type>
                       <initialValue>
-                        <simpleValue value="'ACQ'" />
+                        <simpleValue value="'CAP'" />
                       </initialValue>
                       <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> acquire (capture) image</xhtml>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> capture image</xhtml>
                       </documentation>
                     </variable>
                     <variable name="_CommandTypeLoc">
@@ -11396,18 +11408,18 @@ END_IF</xhtml>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// C|A|L ImageWidth ImageHeight Timeout
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// CAL|CAP|LOC ImageWidth ImageHeight Timeout
 
-// C Calibrate vision system
+// CAL Calibrate vision system
     // CheckerSize (user units) XCount YCount 
-    // C 2016 2000 60 25.0 6 9
+    // CAL 2016 2000 60 25.0 6 9
     
-// A Aquire image
-    // A 2016 2000 60
+// CAP Capture image
+    // CAP 2016 2000 60
     
-// L Locate part 
+// LOC Locate part 
     // MaxParts MaxOverlap Score ToleranceAngle ResultPostion TemplateName ScriptName
-    // L 2016 2000 60 10 0.0 0.8 90.0 1 template.jpg FastTemplateMatching.py
+    // LOC 2016 2000 60 10 0.0 0.8 90.0 1 template.jpg FastTemplateMatching.py
 	// MaxParts - max number of parts to find in image
 	// MaxOverlap - max overlap of parts in image
 	// Score - min required score for parts
@@ -11423,8 +11435,8 @@ _Command:='';
 CASE stCommand.CommandType OF
 	DUT_Command_VisionType.Calibrate:
 		F_AddElement(_Command, _Delimiter, _CommandTypeCal);
-	DUT_Command_VisionType.Acquire:
-		F_AddElement(_Command, _Delimiter, _CommandTypeAcq);
+	DUT_Command_VisionType.Capture:
+		F_AddElement(_Command, _Delimiter, _CommandTypeCap);
 	DUT_Command_VisionType.LocatePart:
 		F_AddElement(_Command, _Delimiter, _CommandTypeLoc);
 END_CASE
@@ -11437,17 +11449,17 @@ F_AddElement(_Command, _Delimiter, UDINT_TO_STRING(stCommand.Timeout));
 //
 CASE stCommand.CommandType OF
 	DUT_Command_VisionType.Calibrate:
-		// C 2016 2000 60 25.0 6 9
+		// CAL 2016 2000 60 25.0 6 9
 		F_AddElement(_Command, _Delimiter, REAL_TO_STRING(stCommand.Calibrate.CheckerSize));
 		F_AddElement(_Command, _Delimiter, UINT_TO_STRING(stCommand.Calibrate.CheckerXCount));
 		F_AddElement(_Command, _Delimiter, UINT_TO_STRING(stCommand.Calibrate.CheckerYCount));
 		
-	DUT_Command_VisionType.Acquire:
-		// A 2016 2000 60
+	DUT_Command_VisionType.Capture:
+		// CAP 2016 2000 60
 		// we are done
 		
 	DUT_Command_VisionType.LocatePart:
-		// L 2016 2000 60 10 0.0 0.8 90.0 1 template.jpg FastTemplateMatching.py
+		// LOC 2016 2000 60 10 0.0 0.8 90.0 1 template.jpg FastTemplateMatching.py
 		F_AddElement(_Command, _Delimiter, UINT_TO_STRING(stCommand.Locate.MaxParts));
 		F_AddElement(_Command, _Delimiter, REAL_TO_STRING(stCommand.Locate.MaxOverlap));
 		F_AddElement(_Command, _Delimiter, REAL_TO_STRING(stCommand.Locate.Score));
@@ -12286,7 +12298,7 @@ CASE SUPER^._SeqMain OF
 											iCalCheckerY:= _VisionCommandParser.stCommand.Calibrate.CheckerYCount,
                                             uTimeout:=_VisionCommandParser.stCommand.Timeout);
 			
-			DUT_Command_VisionType.Acquire: //
+			DUT_Command_VisionType.Capture: //
 				_Vision.M_CaptureImage(	iImageWidth:= _VisionCommandParser.stCommand.ImageWidth, 
 										iImageHeight:= _VisionCommandParser.stCommand.ImageHeight,
                                         uTimeout:=_VisionCommandParser.stCommand.Timeout);
@@ -12437,10 +12449,10 @@ END_IF
 //
 _VisionDoneRtrig(clk:=_Vision.P_Done);
 IF _VisionDoneRtrig.Q THEN
-	VisionStateText := 'DONE.';
+	VisionStateText := 'DONE';
 	VisionStateText := CONCAT(VisionStateText, ' Found ');
 	VisionStateText := CONCAT(VisionStateText, UDINT_TO_STRING(_PartsCount));
-	VisionStateText := CONCAT(VisionStateText, ' parts.');
+	VisionStateText := CONCAT(VisionStateText, ' parts');
 END_IF</xhtml>
                   </ST>
                 </body>
@@ -24904,9 +24916,9 @@ END_IF</xhtml>
             <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
               <DeviceType>
                 <DeviceIdentification>
-                  <Type>4102</Type>
-                  <Id>0000 0012</Id>
-                  <Version>4.13.0.0</Version>
+                  <Type>4097</Type>
+                  <Id>0000 000a</Id>
+                  <Version>3.5.22.30</Version>
                 </DeviceIdentification>
                 <Connector moduleType="256" interface="Common.PCI" connectorId="0">
                   <HostParameterSet />
