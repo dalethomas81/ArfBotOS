@@ -41,9 +41,11 @@ INSTALLER_SCRIPT_REF="main"
 REPO_URL="${ARFBOT_REPO:-${DEFAULT_REPO_URL}}"
 REPO_REF="${ARFBOT_REF:-}"
 
-VISION_DST="/var/opt/codesys/PlcLogic/Application/Vision"
-WEB_DST="/var/opt/codesys/PlcLogic/Application/Web"
-CONTROLLER_DST="/var/opt/codesys/PlcLogic/Application/Controller"
+APPLICATION_DST="/var/opt/codesys/PlcLogic/Application"
+VISION_DST="${APPLICATION_DST}/Vision"
+WEB_DST="${APPLICATION_DST}/Web"
+CONTROLLER_DST="${APPLICATION_DST}/Controller"
+RELEASE_FILE="${APPLICATION_DST}/RELEASE"
 VENV_DIR="/opt/arfbot/venv"
 UDEV_RULES_DST="/etc/udev/rules.d/70-ps5-controller.rules"
 
@@ -412,6 +414,8 @@ bootstrap_from_git() {
         die "clone is missing ${next} (check --ref ${REPO_REF})"
     fi
     chmod +x "${next}" || true
+    # Write before exec so an older cloned installer still leaves the tag file.
+    write_release_file
     log "re-executing ${next}"
     exec bash "${next}" "$@"
 }
@@ -447,6 +451,32 @@ require_pi() {
         return 0
     fi
     die "this installer is meant to run on a Raspberry Pi (use --force to override)"
+}
+
+release_tag() {
+    local tag="${REPO_REF:-}"
+    if [[ -z "${tag}" && -n "${REPO_ROOT}" && -d "${REPO_ROOT}/.git" ]] && command -v git >/dev/null 2>&1; then
+        tag="$(git -C "${REPO_ROOT}" describe --tags --always --dirty 2>/dev/null || true)"
+    fi
+    if [[ -z "${tag}" ]]; then
+        tag="unknown"
+    fi
+    printf '%s\n' "${tag}"
+}
+
+write_release_file() {
+    local tag=""
+    tag="$(release_tag)"
+    tag="${tag%$'\n'}"
+    log "writing release tag ${tag} to ${RELEASE_FILE}"
+    if is_true "${DRY_RUN}"; then
+        printf 'DRY-RUN: printf %%s\\n %s > %s\n' "${tag}" "${RELEASE_FILE}"
+        return 0
+    fi
+    as_root mkdir -p "${APPLICATION_DST}"
+    printf '%s\n' "${tag}" | as_root tee "${RELEASE_FILE}" >/dev/null
+    as_root chmod 644 "${RELEASE_FILE}"
+    chown_to_invoking_user "${RELEASE_FILE}"
 }
 
 copy_file() {
@@ -981,6 +1011,9 @@ configure_codesys() {
 
 chown_deploy_tree() {
     local home=""
+    if [[ -e "${RELEASE_FILE}" ]]; then
+        chown_to_invoking_user "${RELEASE_FILE}"
+    fi
     if ! is_true "${SKIP_VISION}"; then
         chown_to_invoking_user "${VISION_DST}"
     fi
@@ -1079,6 +1112,14 @@ PY
 
     if is_true "${DRY_RUN}"; then
         log "dry-run: skipping destination file checks"
+    elif [[ -s "${RELEASE_FILE}" ]]; then
+        log "ok: ${RELEASE_FILE} ($(tr -d '\n' < "${RELEASE_FILE}"))"
+    else
+        warn "missing ${RELEASE_FILE}"
+        failed=1
+    fi
+    if is_true "${DRY_RUN}"; then
+        :
     elif ! is_true "${SKIP_VISION}"; then
         local required_files=(
             "${VISION_DST}/PyServer.py"
@@ -1143,6 +1184,7 @@ ArfBotOS Pi install finished
   mode:            $(install_mode)
   clone / files:   ${REPO_ROOT}
   git ref:         ${REPO_REF:-local checkout}
+  release file:    ${RELEASE_FILE}
   venv:            ${VENV_DIR}
 EOF
     if ! is_true "${SKIP_VISION}"; then
@@ -1226,6 +1268,7 @@ main() {
     deploy_vision_files
     deploy_web_files
     deploy_controller_files
+    write_release_file
     install_systemd_units
     configure_codesys
     chown_deploy_tree
