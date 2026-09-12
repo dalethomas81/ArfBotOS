@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-12T14:27:26.8417984" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-12T14:23:59.5422312" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-12T16:46:07.7346949" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-12T16:44:52.4520695" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -1569,6 +1569,40 @@ RESERVED: INT:=46;</xhtml>
               </data>
               <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                 <ObjectId>3ec4e751-fd63-4486-9e96-20e1d2f269ab</ObjectId>
+              </data>
+            </addData>
+          </globalVars>
+          <globalVars name="GVL_Version">
+            <variable name="sPlcVersion">
+              <type>
+                <string length="80" />
+              </type>
+              <initialValue>
+                <simpleValue value="'v2.2026.37.0-RobotAnimator-7-gcb5df5e'" />
+              </initialValue>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> git describe --tags --always --dirty
+ git describe --tags --always main</xhtml>
+              </documentation>
+            </variable>
+            <variable name="sRelease">
+              <type>
+                <string length="80" />
+              </type>
+            </variable>
+            <variable name="sVersionLine">
+              <type>
+                <string length="160" />
+              </type>
+            </variable>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
+                <Attributes>
+                  <Attribute Name="qualified_only" Value="" />
+                </Attributes>
+              </data>
+              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                <ObjectId>02cb4726-2332-4e35-9d3d-9ab324dd7797</ObjectId>
               </data>
             </addData>
           </globalVars>
@@ -3730,10 +3764,100 @@ FirstScan:=FALSE;</xhtml>
                         <returnType>
                           <BOOL />
                         </returnType>
+                        <localVars>
+                          <variable name="_hRelease">
+                            <type>
+                              <derived name="SysTypes.RTS_IEC_HANDLE" />
+                            </type>
+                            <documentation>
+                              <xhtml xmlns="http://www.w3.org/1999/xhtml"> release</xhtml>
+                            </documentation>
+                          </variable>
+                          <variable name="_udiReleaseResult">
+                            <type>
+                              <derived name="SysTypes.RTS_IEC_RESULT" />
+                            </type>
+                          </variable>
+                          <variable name="_udiReleaseRead">
+                            <type>
+                              <LWORD />
+                            </type>
+                          </variable>
+                          <variable name="_abyRelease">
+                            <type>
+                              <array>
+                                <dimension lower="0" upper="80" />
+                                <baseType>
+                                  <BYTE />
+                                </baseType>
+                              </array>
+                            </type>
+                          </variable>
+                          <variable name="_iRelease">
+                            <type>
+                              <INT />
+                            </type>
+                          </variable>
+                          <variable name="_nRelease">
+                            <type>
+                              <UDINT />
+                            </type>
+                          </variable>
+                          <variable name="_pReleaseLen">
+                            <type>
+                              <pointer>
+                                <baseType>
+                                  <BYTE />
+                                </baseType>
+                              </pointer>
+                            </type>
+                          </variable>
+                        </localVars>
                       </interface>
                       <body>
                         <ST>
-                          <xhtml xmlns="http://www.w3.org/1999/xhtml">
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">// get release tag to display on HMI
+GVL_Version.sRelease := '';
+_hRelease := SysFile.SysFileOpen(
+    szFile := 'Application/RELEASE',
+    am := SysFile.ACCESS_MODE.AM_READ,
+    pResult := ADR(_udiReleaseResult));
+IF _hRelease &lt;&gt; SysTypes.RTS_INVALID_HANDLE THEN
+    _udiReleaseRead := SysFile.SysFileRead(
+        hFile := _hRelease,
+        pbyBuffer := ADR(_abyRelease),
+        ulSize := SIZEOF(_abyRelease) - 1,
+        pResult := ADR(_udiReleaseResult));
+    SysFile.SysFileClose(_hRelease);
+
+    _nRelease := LWORD_TO_UDINT(_udiReleaseRead);
+    IF _nRelease &gt; 80 THEN
+        _nRelease := 80;
+    END_IF
+    WHILE _nRelease &gt; 0 AND
+        (_abyRelease[_nRelease - 1] = 10
+        OR _abyRelease[_nRelease - 1] = 13
+        OR _abyRelease[_nRelease - 1] = 0) DO
+        _nRelease := _nRelease - 1;
+    END_WHILE
+
+    MemUtils.MemCpy(
+        pbyDest := ADR(GVL_Version.sRelease),
+        pbySrc := ADR(_abyRelease),
+        dwSize := UDINT_TO_DWORD(_nRelease));
+    _pReleaseLen := ADR(GVL_Version.sRelease) - 1;
+    _pReleaseLen^ := UDINT_TO_BYTE(_nRelease);
+    
+    GVL_Version.sVersionLine := CONCAT(
+        CONCAT('Installer ', GVL_Version.sRelease),
+        CONCAT('  PLC ', GVL_Version.sPlcVersion));
+    
+END_IF
+IF GVL_Version.sRelease = '' THEN
+    GVL_Version.sVersionLine := 'unknown version';
+    
+END_IF
+
 // check if arfbot has been initialized
 IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
 	// poses
@@ -25099,11 +25223,11 @@ END_IF</xhtml>
                   <PlaceholderRedirection Placeholder="NetBaseSrv" Redirection="Net Base Services, 4.0.0.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="Standard" Redirection="Standard, 3.5.22.0 (System)" />
                   <PlaceholderRedirection Placeholder="Standard64" Redirection="Standard64, 3.5.20.0 (System)" />
-                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.9.1.0 (System)" />
                   <PlaceholderRedirection Placeholder="UTF8" Redirection="UTF-8 Encoding Support, 4.1.0.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElem3DPath" Redirection="VisuElem3DPath, 4.7.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemsWinControls" Redirection="VisuElemsWinControls, 4.9.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemCamDisplayer" Redirection="VisuElemCamDisplayer, 4.7.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="MemoryBlockManager" Redirection="Memory Block Manager, 3.5.21.30 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemMeter" Redirection="VisuElemMeter, 4.9.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemsSpecialControls" Redirection="VisuElemsSpecialControls, 4.7.0.0 (System)" />
@@ -25115,14 +25239,14 @@ END_IF</xhtml>
                   <PlaceholderRedirection Placeholder="System_VisuElemsDateTime" Redirection="VisuElemsDateTime, 4.9.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="VisuUtils" Redirection="Visu Utils, 4.9.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="FloatingPointUtils" Redirection="FloatingPointUtils, 4.0.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemTextEditor" Redirection="VisuElemTextEditor, 4.8.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemXYChart" Redirection="VisuElemXYChart, 4.8.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="OMAC_PackML_State_Machine" Redirection="OMAC PackML State Machine, 1.0.0.4 (3S - Smart Software Solutions GmbH)" />
-                  <PlaceholderRedirection Placeholder="CBML" Redirection="Common Behaviour Model, 4.0.0.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemTrace" Redirection="VisuElemTrace, 4.9.0.0 (System)" />
-                  <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.9.1.0 (System)" />
                   <PlaceholderRedirection Placeholder="Collections" Redirection="Collections, 3.5.17.0 (System)" />
                   <PlaceholderRedirection Placeholder="StringSegs" Redirection="Immutable String Segments, 3.5.18.0 (3S - Smart Software Solutions GmbH)" />
-                  <PlaceholderRedirection Placeholder="System_VisuElemTextEditor" Redirection="VisuElemTextEditor, 4.8.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="CBML" Redirection="Common Behaviour Model, 4.0.0.0 (CODESYS)" />
                 </PlaceholderRedirections>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
@@ -36674,6 +36798,7 @@ END_IF</xhtml>
             <Folder Name="GVL">
               <Object Name="GVL" ObjectId="1430d1bd-aa92-442c-bf72-190d0e907494" />
               <Object Name="PersistentVars" ObjectId="3ec4e751-fd63-4486-9e96-20e1d2f269ab" />
+              <Object Name="GVL_Version" ObjectId="02cb4726-2332-4e35-9d3d-9ab324dd7797" />
             </Folder>
             <Folder Name="DUT">
               <Object Name="DUT_Command" ObjectId="bc90f47c-5d1d-4a76-b85b-4fab785a8038" />
