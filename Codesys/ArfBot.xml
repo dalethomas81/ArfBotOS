@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-07T20:54:52.4983659" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-07T20:54:35.9140869" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-12T14:27:26.8417984" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-12T14:23:59.5422312" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -136,6 +136,23 @@
               </data>
               <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
                 <ObjectId>ea09100e-839b-4071-804c-d88dc427910c</ObjectId>
+              </data>
+            </addData>
+          </task>
+          <task name="AlarmManagerTask" interval="PT0.05S" priority="31">
+            <pouInstance name="AlarmManager.Alarm_Prg" typeName="">
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml" />
+              </documentation>
+            </pouInstance>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/tasksettings" handleUnknown="implementation">
+                <TaskSettings KindOfTask="Cyclic" Interval="50" IntervalUnit="ms" WithinSPSTimeSlicing="true">
+                  <Watchdog Enabled="false" TimeUnit="ms" />
+                </TaskSettings>
+              </data>
+              <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                <ObjectId>26f9a9d1-b170-4b7c-966e-685daf7abbfd</ObjectId>
               </data>
             </addData>
           </task>
@@ -595,6 +612,24 @@ RESERVED: INT:=46;</xhtml>
               </type>
             </variable>
             <variable name="Enable">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="sLastFault">
+              <type>
+                <string />
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> alarms</xhtml>
+              </documentation>
+            </variable>
+            <variable name="xClearHistory">
+              <type>
+                <BOOL />
+              </type>
+            </variable>
+            <variable name="xActiveAlarm">
               <type>
                 <BOOL />
               </type>
@@ -1149,6 +1184,24 @@ RESERVED: INT:=46;</xhtml>
                       </type>
                     </variable>
                     <variable name="Enable">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="sLastFault">
+                      <type>
+                        <string />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> alarms</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="xClearHistory">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
+                    <variable name="xActiveAlarm">
                       <type>
                         <BOOL />
                       </type>
@@ -3631,6 +3684,8 @@ RESERVED: INT:=46;</xhtml>
 	GVL.ResetRtrig(CLK:=GVL.Reset);
 	IF GVL.ResetRtrig.Q THEN
 		GVL.Reset := FALSE;
+        AlarmManager.AlarmGlobals.g_AlarmHandler.AcknowledgeAll();
+        //AlarmManager.AlarmGlobals.g_AlarmHandler.AcknowledgeAllOfGroup(Alm_AlarmConfiguration_Alarmgroup_IDs.ID_Processors); // only processors
 	END_IF
 	
 	GVL.LicenseStatus();
@@ -3696,6 +3751,27 @@ IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.A := 0.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.B := 30.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.C := 0.0;
+	
+	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.X := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.Y := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.Z := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.A := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.B := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.C := 0.0;
+	
+	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.X := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.Y := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.Z := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.A := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.B := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.C := 0.0;
+	
+	PersistentVars.StoredPositions[GVL.POSE_5_IDX].Position.X := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_5_IDX].Position.Y := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_5_IDX].Position.Z := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_5_IDX].Position.A := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_5_IDX].Position.B := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_5_IDX].Position.C := 0.0;
 		 
 	// decoder
 	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.X := 300.0; // TODO need to verify all 6 of these
@@ -3745,14 +3821,17 @@ PersistentVars.StoredPositions[GVL.POSE_4_IDX].Comment := 'Pose 4 coordinates';
 PersistentVars.StoredPositions[GVL.POSE_5_IDX].Comment := 'Pose 5 coordinates';
 
 //
-PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Comment := 'Finish home at Pose';
+PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Comment := 'Pose 2 After Home';
+
+PersistentVars.Flags[GVL.INIT_DRV_IDX].Comment := 'Drives Initialized';
+PersistentVars.Flags[GVL.INIT_DRV_IDX].Value := FALSE;
 
 //
-PersistentVars.Flags[GVL.HOME_COMPLETE].Comment := 'Axes are homed';
+PersistentVars.Flags[GVL.HOME_COMPLETE].Comment := 'Axes Homed';
 PersistentVars.Flags[GVL.HOME_COMPLETE].Value := FALSE;
 
 //
-PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';</xhtml>
+PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables Intitialized';</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -3841,7 +3920,7 @@ ProcessPrograms(
 	AxisGroup:= ArfBotAxisGroup,
 	GroupHandler:= GroupHandler,
 	CmdIO:=GVL.CmdIO,
-	Enable:= GVL.Enable AND PersistentVars.Flags[GVL.HOME_COMPLETE].Value,
+	Enable:= GVL.Enable AND PersistentVars.Flags[GVL.HOME_COMPLETE].Value AND NOT GVL.xActiveAlarm,
 	Error=&gt; ,
 	StatusText=&gt;);
 
@@ -7251,6 +7330,16 @@ END_IF</xhtml>
                         <derived name="FB_LogicCmdProcessor" />
                       </type>
                     </variable>
+                    <variable name="_ErrorRtrig">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="7" />
+                          <baseType>
+                            <derived name="R_TRIG" />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
                     <variable name="_FirstScan">
                       <type>
                         <BOOL />
@@ -7357,35 +7446,44 @@ END_CASE
 _UnitModeCurrentState := SUPER^._UnitMode.CurrentState;
 
 //
-IF _ProcessMoveCommand.Error THEN
+_ErrorRtrig[0](CLK:=_ProcessMoveCommand.Error);
+IF _ErrorRtrig[0].Q THEN
 	SUPER^.M_Error(Description:=CONCAT('Move Error: ', _ProcessMoveCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
-IF _ProcessPauseCommand.Error THEN
+_ErrorRtrig[1](CLK:=_ProcessPauseCommand.Error);
+IF _ErrorRtrig[1].Q THEN
 	SUPER^.M_Error(Description:=CONCAT('Pause Error: ', _ProcessPauseCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
-(*IF _ProcessInputCommand.Error THEN
+(*
+_ErrorRtrig[2](CLK:=_ProcessInputCommand.Error);
+IF _ErrorRtrig[2].Q THEN
 	SUPER^._M_Error(Description:=CONCAT('Input Error: ', _ProcessInputCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF*)
-IF _ProcessOutputCommand.Error THEN
+_ErrorRtrig[3](CLK:=_ProcessOutputCommand.Error);
+IF _ErrorRtrig[3].Q THEN
 	SUPER^.M_Error(Description:=CONCAT('Output Error: ', _ProcessOutputCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
-END_IF       
-IF _ProcessVisionCommand.Error THEN
+END_IF 
+_ErrorRtrig[4](CLK:=_ProcessVisionCommand.Error);      
+IF _ErrorRtrig[4].Q THEN
 	SUPER^.M_Error(Description:=CONCAT('Vision Error: ', _ProcessVisionCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
-IF _ProcessVarSetCommand.Error THEN
+_ErrorRtrig[5](CLK:=_ProcessVarSetCommand.Error);
+IF _ErrorRtrig[5].Q THEN
 	SUPER^.M_Error(Description:=CONCAT('Variable Error: ', _ProcessVarSetCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
-IF _ProcessCncCommand.Error THEN
+_ErrorRtrig[6](CLK:=_ProcessCncCommand.Error);
+IF _ErrorRtrig[6].Q THEN
 	SUPER^.M_Error(Description:=CONCAT('CNC Error: ', _ProcessCncCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
-IF _ProcessLogicCommand.Error THEN
+_ErrorRtrig[7](CLK:=_ProcessLogicCommand.Error);
+IF _ErrorRtrig[7].Q THEN
 	SUPER^.M_Error(Description:=CONCAT('Logic Error: ', _ProcessLogicCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
@@ -7660,6 +7758,13 @@ SUPER^.M_StateComplete();</xhtml>
                         <returnType>
                           <BOOL />
                         </returnType>
+                        <localVars>
+                          <variable name="_ErrorDescription">
+                            <type>
+                              <string />
+                            </type>
+                          </variable>
+                        </localVars>
                         <addData>
                           <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
                             <AccessModifiers Protected="true" />
@@ -7682,6 +7787,21 @@ CASE _SeqMain OF
 	_STEP_CMD: //
 		IF NOT Enable THEN
 			_SeqMain := _STEP_DONE;
+            _ErrorDescription := '';
+            IF NOT GVL.Enable THEN
+                _ErrorDescription := 'Robot not enabled';
+            END_IF
+            IF NOT PersistentVars.Flags[GVL.HOME_COMPLETE].Value THEN
+                _ErrorDescription := CONCAT(_ErrorDescription, ' | Robot not homed');
+            END_IF
+            IF GVL.xActiveAlarm THEN
+                _ErrorDescription := CONCAT(_ErrorDescription, ' | Active alarms exist');
+            END_IF
+            IF _ErrorDescription = '' THEN
+                _ErrorDescription := 'Not enabled';
+            END_IF
+            _M_Error(Description := _ErrorDescription);
+            
 		ELSIF _CurrentCmdIdx &lt;= GVL.PROG_CMDS_ARR_END AND _CurrentCmdIdx &gt;= GVL.PROG_CMDS_ARR_BEG THEN
 			//
 			IF _Commands[_CurrentCmdIdx].CommandType = DUT_CommandType.Disabled THEN
@@ -8122,6 +8242,30 @@ END_IF
 ELSE
 	M_SetCommands := FALSE;
 END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_Error" ObjectId="952a5379-be9c-4794-a3c6-2f48232566af">
+                      <interface>
+                        <inputVars>
+                          <variable name="Description">
+                            <type>
+                              <string />
+                            </type>
+                          </variable>
+                        </inputVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">SUPER^.M_Error(Description := CONCAT('Command Processor: ', Description));</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -8690,6 +8834,24 @@ END_CASE</xhtml>
               <pou name="_30_Visu" pouType="program">
                 <interface>
                   <localVars>
+                    <variable name="itfAlarmConfiguration">
+                      <type>
+                        <derived name="AlarmManager.IAlarmConfiguration" />
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> alarms</xhtml>
+                      </documentation>
+                    </variable>
+                    <variable name="itfAlarmConfiguration7">
+                      <type>
+                        <derived name="AlarmManager.IAlarmConfiguration7" />
+                      </type>
+                    </variable>
+                    <variable name="iAlarmCfg">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
                     <variable name="SelectedProgramNumber">
                       <type>
                         <INT />
@@ -9123,6 +9285,17 @@ IF (OpenDialog.xExecute AND OpenDialog.xDone)
 	OR OpenDialog.xError 
 	THEN
 		OpenDialog.xExecute := FALSE;
+END_IF
+
+// alarms
+IF GVL.xClearHistory THEN
+    FOR iAlarmCfg := 0 TO AlarmManager.AlarmGlobals.g_AlarmHandler.AlarmConfigurationCount - 1 DO
+        itfAlarmConfiguration := AlarmManager.AlarmGlobals.g_AlarmHandler.GetAlarmConfiguration(iAlarmCfg);
+        IF __QUERYINTERFACE(itfAlarmConfiguration, itfAlarmConfiguration7) THEN
+            itfAlarmConfiguration7.ClearHistory(xKeepActiveAlarms := TRUE); // xKeepActiveAlarms := TRUE so a live fault isn’t ripped out of the recorder.
+        END_IF
+    END_FOR
+    GVL.xClearHistory := FALSE;
 END_IF</xhtml>
                   </ST>
                 </body>
@@ -11212,6 +11385,17 @@ END_IF</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> calibrate vision</xhtml>
                       </documentation>
                     </variable>
+                    <variable name="_CommandTypeCap">
+                      <type>
+                        <string length="3" />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="'CAP'" />
+                      </initialValue>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> capture image</xhtml>
+                      </documentation>
+                    </variable>
                     <variable name="_CommandTypeAcq">
                       <type>
                         <string length="3" />
@@ -11220,7 +11404,7 @@ END_IF</xhtml>
                         <simpleValue value="'ACQ'" />
                       </initialValue>
                       <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> acquire (capture) image</xhtml>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> legacy alias for CAP</xhtml>
                       </documentation>
                     </variable>
                     <variable name="_CommandTypeLoc">
@@ -11238,18 +11422,19 @@ END_IF</xhtml>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// C|A|L ImageWidth ImageHeight Timeout
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// CAL|CAP|LOC ImageWidth ImageHeight Timeout
 
-// C Calibrate vision system
+// CAL Calibrate vision system
     // CheckerSize (user units) XCount YCount 
-    // C 2016 2000 60 25.0 6 9
+    // CAL 2016 2000 60 25.0 6 9
     
-// A Aquire image
-    // A 2016 2000 60
+// CAP Capture image
+    // CAP 2016 2000 60
+    // ACQ is still accepted as a legacy alias
     
-// L Locate part 
+// LOC Locate part 
     // MaxParts MaxOverlap Score ToleranceAngle ResultPostion TemplateName ScriptName
-    // L 2016 2000 60 10 0.0 0.8 90.0 1 template.jpg FastTemplateMatching.py
+    // LOC 2016 2000 60 10 0.0 0.8 90.0 1 template.jpg FastTemplateMatching.py
 	// MaxParts - max number of parts to find in image
 	// MaxOverlap - max overlap of parts in image
 	// Score - min required score for parts
@@ -11266,7 +11451,7 @@ _CmdParams:=F_SplitCmd(Command:=Command);
 
 _CommandType:= _CmdParams[0];
 IF _CommandType = _CommandTypeCal THEN
-    // C 2016 2000 0060 025.0 0006 0009
+    // CAL 2016 2000 0060 025.0 0006 0009
 	stCommand.CommandType:=DUT_Command_VisionType.Calibrate;
     stCommand.Calibrate.CheckerSize:=STRING_TO_REAL(_CmdParams[4]);
     stCommand.Calibrate.CheckerXCount:=STRING_TO_UINT(_CmdParams[5]);
@@ -11280,12 +11465,12 @@ IF _CommandType = _CommandTypeCal THEN
 			RETURN;
 	END_IF
     
-ELSIF _CommandType = _CommandTypeAcq THEN
-    // A 2016 2000 0060
-	stCommand.CommandType:=DUT_Command_VisionType.Acquire;
+ELSIF (_CommandType = _CommandTypeCap) OR (_CommandType = _CommandTypeAcq) THEN
+    // CAP 2016 2000 0060
+	stCommand.CommandType:=DUT_Command_VisionType.Capture;
     
 ELSIF _CommandType = _CommandTypeLoc THEN
-    // L 2016 2000 0060 0010 000.0 0.8 090.0 001 template.jpg FastTemplatMatching.py
+    // LOC 2016 2000 0060 0010 000.0 0.8 090.0 001 template.jpg FastTemplatMatching.py
 	stCommand.CommandType:=DUT_Command_VisionType.LocatePart;
     stCommand.Locate.MaxParts:=STRING_TO_UINT(_CmdParams[4]);
     stCommand.Locate.MaxOverlap:=STRING_TO_REAL(_CmdParams[5]);
@@ -11370,15 +11555,15 @@ END_IF</xhtml>
                         <xhtml xmlns="http://www.w3.org/1999/xhtml"> calibrate vision</xhtml>
                       </documentation>
                     </variable>
-                    <variable name="_CommandTypeAcq">
+                    <variable name="_CommandTypeCap">
                       <type>
                         <string length="3" />
                       </type>
                       <initialValue>
-                        <simpleValue value="'ACQ'" />
+                        <simpleValue value="'CAP'" />
                       </initialValue>
                       <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> acquire (capture) image</xhtml>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> capture image</xhtml>
                       </documentation>
                     </variable>
                     <variable name="_CommandTypeLoc">
@@ -11396,18 +11581,18 @@ END_IF</xhtml>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// C|A|L ImageWidth ImageHeight Timeout
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// CAL|CAP|LOC ImageWidth ImageHeight Timeout
 
-// C Calibrate vision system
+// CAL Calibrate vision system
     // CheckerSize (user units) XCount YCount 
-    // C 2016 2000 60 25.0 6 9
+    // CAL 2016 2000 60 25.0 6 9
     
-// A Aquire image
-    // A 2016 2000 60
+// CAP Capture image
+    // CAP 2016 2000 60
     
-// L Locate part 
+// LOC Locate part 
     // MaxParts MaxOverlap Score ToleranceAngle ResultPostion TemplateName ScriptName
-    // L 2016 2000 60 10 0.0 0.8 90.0 1 template.jpg FastTemplateMatching.py
+    // LOC 2016 2000 60 10 0.0 0.8 90.0 1 template.jpg FastTemplateMatching.py
 	// MaxParts - max number of parts to find in image
 	// MaxOverlap - max overlap of parts in image
 	// Score - min required score for parts
@@ -11423,8 +11608,8 @@ _Command:='';
 CASE stCommand.CommandType OF
 	DUT_Command_VisionType.Calibrate:
 		F_AddElement(_Command, _Delimiter, _CommandTypeCal);
-	DUT_Command_VisionType.Acquire:
-		F_AddElement(_Command, _Delimiter, _CommandTypeAcq);
+	DUT_Command_VisionType.Capture:
+		F_AddElement(_Command, _Delimiter, _CommandTypeCap);
 	DUT_Command_VisionType.LocatePart:
 		F_AddElement(_Command, _Delimiter, _CommandTypeLoc);
 END_CASE
@@ -11437,17 +11622,17 @@ F_AddElement(_Command, _Delimiter, UDINT_TO_STRING(stCommand.Timeout));
 //
 CASE stCommand.CommandType OF
 	DUT_Command_VisionType.Calibrate:
-		// C 2016 2000 60 25.0 6 9
+		// CAL 2016 2000 60 25.0 6 9
 		F_AddElement(_Command, _Delimiter, REAL_TO_STRING(stCommand.Calibrate.CheckerSize));
 		F_AddElement(_Command, _Delimiter, UINT_TO_STRING(stCommand.Calibrate.CheckerXCount));
 		F_AddElement(_Command, _Delimiter, UINT_TO_STRING(stCommand.Calibrate.CheckerYCount));
 		
-	DUT_Command_VisionType.Acquire:
-		// A 2016 2000 60
+	DUT_Command_VisionType.Capture:
+		// CAP 2016 2000 60
 		// we are done
 		
 	DUT_Command_VisionType.LocatePart:
-		// L 2016 2000 60 10 0.0 0.8 90.0 1 template.jpg FastTemplateMatching.py
+		// LOC 2016 2000 60 10 0.0 0.8 90.0 1 template.jpg FastTemplateMatching.py
 		F_AddElement(_Command, _Delimiter, UINT_TO_STRING(stCommand.Locate.MaxParts));
 		F_AddElement(_Command, _Delimiter, REAL_TO_STRING(stCommand.Locate.MaxOverlap));
 		F_AddElement(_Command, _Delimiter, REAL_TO_STRING(stCommand.Locate.Score));
@@ -11696,7 +11881,12 @@ IF ErrorDescription = '' THEN
 ELSE // add a space and tack on the additional error description
 	ErrorDescription := CONCAT(ErrorDescription, ' ');
 	ErrorDescription := CONCAT(ErrorDescription, Description);
-END_IF</xhtml>
+END_IF
+
+GVL.sLastFault := ErrorDescription;
+AlarmManager.AlarmGlobals.g_AlarmHandler.RaiseEvent(
+    Alm_AlarmConfiguration_Alarmgroup_IDs.ID_Processors,
+    Alm_Processors_Alarm_IDs.ID_ProcessorFault);</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -12286,7 +12476,7 @@ CASE SUPER^._SeqMain OF
 											iCalCheckerY:= _VisionCommandParser.stCommand.Calibrate.CheckerYCount,
                                             uTimeout:=_VisionCommandParser.stCommand.Timeout);
 			
-			DUT_Command_VisionType.Acquire: //
+			DUT_Command_VisionType.Capture: //
 				_Vision.M_CaptureImage(	iImageWidth:= _VisionCommandParser.stCommand.ImageWidth, 
 										iImageHeight:= _VisionCommandParser.stCommand.ImageHeight,
                                         uTimeout:=_VisionCommandParser.stCommand.Timeout);
@@ -12437,10 +12627,10 @@ END_IF
 //
 _VisionDoneRtrig(clk:=_Vision.P_Done);
 IF _VisionDoneRtrig.Q THEN
-	VisionStateText := 'DONE.';
+	VisionStateText := 'DONE';
 	VisionStateText := CONCAT(VisionStateText, ' Found ');
 	VisionStateText := CONCAT(VisionStateText, UDINT_TO_STRING(_PartsCount));
-	VisionStateText := CONCAT(VisionStateText, ' parts.');
+	VisionStateText := CONCAT(VisionStateText, ' parts');
 END_IF</xhtml>
                   </ST>
                 </body>
@@ -18734,6 +18924,11 @@ END_IF</xhtml>
                         </array>
                       </type>
                     </variable>
+                    <variable name="_ErrorRtrig">
+                      <type>
+                        <derived name="R_TRIG" />
+                      </type>
+                    </variable>
                     <variable name="_i">
                       <type>
                         <INT />
@@ -18859,7 +19054,8 @@ END_CASE
 _UnitModeCurrentState := SUPER^._UnitMode.CurrentState;
 
 //
-IF _ProcessCommands.Error THEN
+_ErrorRtrig(CLK:=_ProcessCommands.Error);
+IF _ErrorRtrig.Q THEN
 	SUPER^.M_Error(Description:=CONCAT('Command Processor Error: ', _ProcessCommands.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
@@ -19112,6 +19308,13 @@ SUPER^.M_StateComplete();</xhtml>
                         <returnType>
                           <BOOL />
                         </returnType>
+                        <localVars>
+                          <variable name="_ErrorDescription">
+                            <type>
+                              <string />
+                            </type>
+                          </variable>
+                        </localVars>
                         <addData>
                           <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
                             <AccessModifiers Protected="true" />
@@ -19135,6 +19338,20 @@ CASE _SeqMain OF
 	_STEP_PRG: //
 		IF NOT Enable THEN
 			_SeqMain := _STEP_DONE;
+            IF NOT GVL.Enable THEN
+                _ErrorDescription := 'Robot not enabled';
+            END_IF
+            IF NOT PersistentVars.Flags[GVL.HOME_COMPLETE].Value THEN
+                _ErrorDescription := CONCAT(_ErrorDescription, ' | Robot not homed');
+            END_IF
+            IF GVL.xActiveAlarm THEN
+                _ErrorDescription := CONCAT(_ErrorDescription, ' | Active alarms exist');
+            END_IF
+            IF _ErrorDescription = '' THEN
+                _ErrorDescription := 'Not enabled';
+            END_IF
+            _M_Error(Description := _ErrorDescription);
+            
 		ELSIF _CurrentPrgIdx &lt;= GVL.PROG_ARR_END AND _CurrentPrgIdx &gt;= GVL.PROG_ARR_BEG THEN
 			//
 			StatusText := '';
@@ -19511,6 +19728,30 @@ END_IF
 ELSE
 	M_SetProgram := FALSE;
 END_IF</xhtml>
+                        </ST>
+                      </body>
+                      <addData />
+                    </Method>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/method" handleUnknown="implementation">
+                    <Method name="_M_Error" ObjectId="550d07b8-7cb3-4a0b-9a2c-a0ae95e6fa63">
+                      <interface>
+                        <inputVars>
+                          <variable name="Description">
+                            <type>
+                              <string />
+                            </type>
+                          </variable>
+                        </inputVars>
+                        <addData>
+                          <data name="http://www.3s-software.com/plcopenxml/accessmodifiers" handleUnknown="implementation">
+                            <AccessModifiers Private="true" />
+                          </data>
+                        </addData>
+                      </interface>
+                      <body>
+                        <ST>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">SUPER^.M_Error(Description := CONCAT('Program Processor: ', Description));</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -24852,10 +25093,11 @@ END_IF</xhtml>
                 <Library Name="#System_VisuElemsDateTime" Namespace="VisuElemsDateTime" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemsDateTime, 4.9.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
                 <Library Name="#System_VisuElemXYChart" Namespace="VisuElemXYChart" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuElemXYChart, 4.10.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
                 <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.7.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
+                <Library Name="#AlarmManager" Namespace="AlarmManager" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="AlarmManager, 3.4.2.0 (System)" />
                 <PlaceholderRedirections>
                   <PlaceholderRedirection Placeholder="System_VisuElemsAlarm" Redirection="VisuElemsAlarm, 4.9.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="NetBaseSrv" Redirection="Net Base Services, 4.0.0.0 (CODESYS)" />
-                  <PlaceholderRedirection Placeholder="Standard" Redirection="Standard, 3.5.18.0 (System)" />
+                  <PlaceholderRedirection Placeholder="Standard" Redirection="Standard, 3.5.22.0 (System)" />
                   <PlaceholderRedirection Placeholder="Standard64" Redirection="Standard64, 3.5.20.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.9.1.0 (System)" />
                   <PlaceholderRedirection Placeholder="UTF8" Redirection="UTF-8 Encoding Support, 4.1.0.0 (CODESYS)" />
@@ -36033,6 +36275,7 @@ END_IF</xhtml>
             <Object Name="VISU_TASK" ObjectId="7d686a67-c501-4ade-ac77-336899e42115" />
             <Object Name="VisionTask" ObjectId="38fa2b4a-d999-444c-83ca-1f85ed269224" />
             <Object Name="EtherCAT_Task" ObjectId="ea09100e-839b-4071-804c-d88dc427910c" />
+            <Object Name="AlarmManagerTask" ObjectId="26f9a9d1-b170-4b7c-966e-685daf7abbfd" />
             <Folder Name="FUN">
               <Folder Name="move">
                 <Object Name="FB_ParseMoveCmd" ObjectId="35e49e9e-292d-48d5-910d-e69db317cc55" />
@@ -36103,6 +36346,9 @@ END_IF</xhtml>
                   <Object Name="M_Clearing" ObjectId="766fbc5b-b0ec-40a6-bc48-5f02adefd0a5" />
                 </Folder>
                 <Object Name="P_CurrentCommand" ObjectId="49585069-1976-4ffb-8b46-f97b3eeaff68" />
+                <Folder Name="private">
+                  <Object Name="_M_Error" ObjectId="952a5379-be9c-4794-a3c6-2f48232566af" />
+                </Folder>
               </Object>
               <Folder Name="cnc">
                 <Object Name="ST_CncCmd" ObjectId="bfbed99a-036f-4373-a7be-6feb43a2d296" />
@@ -36376,6 +36622,9 @@ END_IF</xhtml>
                   <Object Name="M_Clearing" ObjectId="22f71b16-1005-4eeb-9083-a836421fff95" />
                 </Folder>
                 <Object Name="P_CurrentCommandIndex" ObjectId="281f805b-eec8-45a7-8dbb-820c1b32fafe" />
+                <Folder Name="private">
+                  <Object Name="_M_Error" ObjectId="550d07b8-7cb3-4a0b-9a2c-a0ae95e6fa63" />
+                </Folder>
               </Object>
               <Object Name="F_RoundLreal" ObjectId="6e4b5325-49a6-45c7-a436-b44a2066c3ea" />
               <Folder Name="group">
