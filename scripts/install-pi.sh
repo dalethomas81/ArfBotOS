@@ -8,6 +8,12 @@
 # Does NOT install: Raspberry Pi OS, the CODESYS Windows IDE/runtime,
 # CODESYS licenses, or Arduino/Teensy firmware.
 #
+# curl always fetches this script from main so installer fixes ship without a
+# release. The clone itself defaults to the latest GitHub release tag (same
+# tree as the release source zip). Override with --ref / ARFBOT_REF:
+#   --ref main                         tip of main
+#   --ref v2.2026.37.1-AlarmHistory    pin a release
+#
 # PLC Pi (recommended): image 64-bit Lite, Tools > Update Raspberry Pi (64 SL),
 # download ArfBot.project, then:
 #   curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/main/scripts/install-pi.sh | bash
@@ -28,12 +34,12 @@
 set -euo pipefail
 
 DEFAULT_REPO_URL="https://github.com/dalethomas81/ArfBotOS.git"
-# Keep this matching the branch this file is published from so
-# `curl | bash` clones the same tree it just downloaded.
-DEFAULT_REPO_REF="main"
+# Always curl install-pi.sh from main. The clone ref is resolved later:
+# empty / "latest" -> GitHub releases/latest tag.
+INSTALLER_SCRIPT_REF="main"
 
 REPO_URL="${ARFBOT_REPO:-${DEFAULT_REPO_URL}}"
-REPO_REF="${ARFBOT_REF:-${DEFAULT_REPO_REF}}"
+REPO_REF="${ARFBOT_REF:-}"
 
 VISION_DST="/var/opt/codesys/PlcLogic/Application/Vision"
 WEB_DST="/var/opt/codesys/PlcLogic/Application/Web"
@@ -68,8 +74,8 @@ usage() {
 ArfBotOS Raspberry Pi installer
 
 Usage:
-  curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${DEFAULT_REPO_REF}/scripts/install-pi.sh | bash
-  curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${DEFAULT_REPO_REF}/scripts/install-pi.sh | bash -s -- [options]
+  curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${INSTALLER_SCRIPT_REF}/scripts/install-pi.sh | bash
+  curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${INSTALLER_SCRIPT_REF}/scripts/install-pi.sh | bash -s -- [options]
   sudo ./scripts/install-pi.sh [options]
 
 Options:
@@ -84,7 +90,8 @@ Options:
   --skip-codesys      Do not patch CODESYSControl.cfg.
   --repo URL          Git remote to clone when not run from a checkout
                       (default: ${DEFAULT_REPO_URL}).
-  --ref REF           Branch or tag to clone (default: ${DEFAULT_REPO_REF}).
+  --ref REF           Branch or tag to clone. Default: latest GitHub release.
+                      --ref main for tip-of-tree. --ref latest is the default.
   --no-start          Enable systemd units but do not start them.
   --recreate-venv     Delete /opt/arfbot/venv and create it again.
   --force             Allow running on a machine that is not a Raspberry Pi.
@@ -101,13 +108,13 @@ Typical PLC Pi (Raspberry Pi OS 64-bit Lite):
   1. Image the Pi and SSH in
   2. From Windows CODESYS: Tools > Update Raspberry Pi (Raspberry Pi 64 SL)
   3. Multiple Download of ArfBot.project
-  4. curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${DEFAULT_REPO_REF}/scripts/install-pi.sh | bash
+  4. curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${INSTALLER_SCRIPT_REF}/scripts/install-pi.sh | bash
 
 PLC Pi without vision (same order, then):
-  curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${DEFAULT_REPO_REF}/scripts/install-pi.sh | bash -s -- --plc-only
+  curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${INSTALLER_SCRIPT_REF}/scripts/install-pi.sh | bash -s -- --plc-only
 
 Dedicated vision Pi (64-bit Lite, no CODESYS):
-  curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${DEFAULT_REPO_REF}/scripts/install-pi.sh | bash -s -- --vision-only
+  curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${INSTALLER_SCRIPT_REF}/scripts/install-pi.sh | bash -s -- --vision-only
 
 If you ran this installer before the CODESYS runtime was present, run it
 again afterward so it can set SysProcess Command=AllowAll. It will not redo
@@ -173,6 +180,62 @@ parse_args() {
     if is_true "${PLC_ONLY}" && is_true "${VISION_ONLY}"; then
         die "--plc-only and --vision-only cannot be used together"
     fi
+}
+
+github_repo_slug() {
+    local url="$1"
+    url="${url%.git}"
+    url="${url%/}"
+    if [[ "${url}" =~ github.com[:/]+([^/]+)/([^/]+) ]]; then
+        printf '%s/%s\n' "${BASH_REMATCH[1]}" "${BASH_REMATCH[2]}"
+        return 0
+    fi
+    return 1
+}
+
+parse_tag_name_from_release_json() {
+    local json="$1"
+    local tag=""
+    if command -v python3 >/dev/null 2>&1; then
+        tag="$(printf '%s' "${json}" | python3 -c 'import json,sys; print(json.load(sys.stdin)["tag_name"])' 2>/dev/null || true)"
+    fi
+    if [[ -z "${tag}" ]]; then
+        tag="$(printf '%s' "${json}" | sed -n 's/.*"tag_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' | head -1)"
+    fi
+    if [[ -z "${tag}" ]]; then
+        return 1
+    fi
+    printf '%s\n' "${tag}"
+}
+
+fetch_latest_release_tag() {
+    local slug=""
+    local json=""
+    local tag=""
+    local api=""
+    slug="$(github_repo_slug "${REPO_URL}")" \
+        || die "cannot resolve latest release for ${REPO_URL}; pass --ref TAG or --ref main"
+    api="https://api.github.com/repos/${slug}/releases/latest"
+    if ! command -v curl >/dev/null 2>&1; then
+        die "curl is required to resolve the latest release; pass --ref TAG or --ref main"
+    fi
+    json="$(curl -fsSL -A "ArfBotOS-install-pi" -H "Accept: application/vnd.github+json" "${api}")" \
+        || die "could not query GitHub releases for ${slug}; pass --ref TAG or --ref main"
+    tag="$(parse_tag_name_from_release_json "${json}")" \
+        || die "GitHub latest-release response had no tag_name; pass --ref TAG or --ref main"
+    printf '%s\n' "${tag}"
+}
+
+resolve_repo_ref() {
+    local slug=""
+    if [[ -n "${REPO_REF}" && "${REPO_REF}" != "latest" ]]; then
+        return 0
+    fi
+    slug="$(github_repo_slug "${REPO_URL}" || true)"
+    log "resolving latest GitHub release${slug:+ for ${slug}}"
+    REPO_REF="$(fetch_latest_release_tag)"
+    log "using latest release ${REPO_REF}"
+    export ARFBOT_REF="${REPO_REF}"
 }
 
 resolve_script_paths() {
@@ -321,6 +384,8 @@ ensure_git() {
 bootstrap_from_git() {
     local dest
     dest="$(user_home)/ArfBotOS"
+    resolve_repo_ref
+    export ARFBOT_REF="${REPO_REF}"
     log "not running from an ArfBotOS checkout; cloning ${REPO_URL} (${REPO_REF}) into ${dest}"
     ensure_git
     if is_true "${DRY_RUN}"; then
@@ -1077,6 +1142,7 @@ print_next_steps() {
 ArfBotOS Pi install finished
   mode:            $(install_mode)
   clone / files:   ${REPO_ROOT}
+  git ref:         ${REPO_REF:-local checkout}
   venv:            ${VENV_DIR}
 EOF
     if ! is_true "${SKIP_VISION}"; then
@@ -1132,11 +1198,11 @@ Controller dest:   ${CONTROLLER_DST}
 Venv:              ${VENV_DIR}
 
 PLC Pi:
-  curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${REPO_REF}/scripts/install-pi.sh | bash
-  curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${REPO_REF}/scripts/install-pi.sh | bash -s -- --plc-only
+  curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${INSTALLER_SCRIPT_REF}/scripts/install-pi.sh | bash
+  curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${INSTALLER_SCRIPT_REF}/scripts/install-pi.sh | bash -s -- --plc-only
 
 Dedicated vision Pi:
-  curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${REPO_REF}/scripts/install-pi.sh | bash -s -- --vision-only
+  curl -sSL https://raw.githubusercontent.com/dalethomas81/ArfBotOS/${INSTALLER_SCRIPT_REF}/scripts/install-pi.sh | bash -s -- --vision-only
 EOF
 }
 
