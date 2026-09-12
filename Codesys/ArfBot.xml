@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-09T20:21:41.5338449" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-09T20:21:21.0546502" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-12T09:39:59.1527138" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-12T09:38:18.2689758" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -3696,6 +3696,27 @@ IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.A := 0.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.B := 30.0;
 	PersistentVars.StoredPositions[GVL.POSE_2_IDX].Position.C := 0.0;
+	
+	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.X := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.Y := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.Z := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.A := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.B := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.C := 0.0;
+	
+	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.X := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.Y := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.Z := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.A := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.B := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.C := 0.0;
+	
+	PersistentVars.StoredPositions[GVL.POSE_5_IDX].Position.X := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_5_IDX].Position.Y := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_5_IDX].Position.Z := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_5_IDX].Position.A := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_5_IDX].Position.B := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_5_IDX].Position.C := 0.0;
 		 
 	// decoder
 	PersistentVars.StoredPositions[GVL.DEC_START_POS].Position.X := 300.0; // TODO need to verify all 6 of these
@@ -3745,14 +3766,17 @@ PersistentVars.StoredPositions[GVL.POSE_4_IDX].Comment := 'Pose 4 coordinates';
 PersistentVars.StoredPositions[GVL.POSE_5_IDX].Comment := 'Pose 5 coordinates';
 
 //
-PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Comment := 'Finish home at Pose';
+PersistentVars.Flags[GVL.HOM_TO_POSE_IDX].Comment := 'Pose 2 After Home';
+
+PersistentVars.Flags[GVL.INIT_DRV_IDX].Comment := 'Drives Initialized';
+PersistentVars.Flags[GVL.INIT_DRV_IDX].Value := FALSE;
 
 //
-PersistentVars.Flags[GVL.HOME_COMPLETE].Comment := 'Axes are homed';
+PersistentVars.Flags[GVL.HOME_COMPLETE].Comment := 'Axes Homed';
 PersistentVars.Flags[GVL.HOME_COMPLETE].Value := FALSE;
 
 //
-PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables are Intitialized';</xhtml>
+PersistentVars.Flags[GVL.INIT_POS_IDX].Comment := 'Variables Intitialized';</xhtml>
                         </ST>
                       </body>
                       <addData />
@@ -7251,6 +7275,16 @@ END_IF</xhtml>
                         <derived name="FB_LogicCmdProcessor" />
                       </type>
                     </variable>
+                    <variable name="_ErrorRtrig">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="7" />
+                          <baseType>
+                            <derived name="R_TRIG" />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
                     <variable name="_FirstScan">
                       <type>
                         <BOOL />
@@ -7357,35 +7391,44 @@ END_CASE
 _UnitModeCurrentState := SUPER^._UnitMode.CurrentState;
 
 //
-IF _ProcessMoveCommand.Error THEN
+_ErrorRtrig[0](CLK:=_ProcessMoveCommand.Error);
+IF _ErrorRtrig[0].Q THEN
 	SUPER^.M_Error(Description:=CONCAT('Move Error: ', _ProcessMoveCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
-IF _ProcessPauseCommand.Error THEN
+_ErrorRtrig[1](CLK:=_ProcessPauseCommand.Error);
+IF _ErrorRtrig[1].Q THEN
 	SUPER^.M_Error(Description:=CONCAT('Pause Error: ', _ProcessPauseCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
-(*IF _ProcessInputCommand.Error THEN
+(*
+_ErrorRtrig[2](CLK:=_ProcessInputCommand.Error);
+IF _ErrorRtrig[2].Q THEN
 	SUPER^._M_Error(Description:=CONCAT('Input Error: ', _ProcessInputCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF*)
-IF _ProcessOutputCommand.Error THEN
+_ErrorRtrig[3](CLK:=_ProcessOutputCommand.Error);
+IF _ErrorRtrig[3].Q THEN
 	SUPER^.M_Error(Description:=CONCAT('Output Error: ', _ProcessOutputCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
-END_IF       
-IF _ProcessVisionCommand.Error THEN
+END_IF 
+_ErrorRtrig[4](CLK:=_ProcessVisionCommand.Error);      
+IF _ErrorRtrig[4].Q THEN
 	SUPER^.M_Error(Description:=CONCAT('Vision Error: ', _ProcessVisionCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
-IF _ProcessVarSetCommand.Error THEN
+_ErrorRtrig[5](CLK:=_ProcessVarSetCommand.Error);
+IF _ErrorRtrig[5].Q THEN
 	SUPER^.M_Error(Description:=CONCAT('Variable Error: ', _ProcessVarSetCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
-IF _ProcessCncCommand.Error THEN
+_ErrorRtrig[6](CLK:=_ProcessCncCommand.Error);
+IF _ErrorRtrig[6].Q THEN
 	SUPER^.M_Error(Description:=CONCAT('CNC Error: ', _ProcessCncCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
-IF _ProcessLogicCommand.Error THEN
+_ErrorRtrig[7](CLK:=_ProcessLogicCommand.Error);
+IF _ErrorRtrig[7].Q THEN
 	SUPER^.M_Error(Description:=CONCAT('Logic Error: ', _ProcessLogicCommand.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
@@ -18746,6 +18789,11 @@ END_IF</xhtml>
                         </array>
                       </type>
                     </variable>
+                    <variable name="_ErrorRtrig">
+                      <type>
+                        <derived name="R_TRIG" />
+                      </type>
+                    </variable>
                     <variable name="_i">
                       <type>
                         <INT />
@@ -18871,7 +18919,8 @@ END_CASE
 _UnitModeCurrentState := SUPER^._UnitMode.CurrentState;
 
 //
-IF _ProcessCommands.Error THEN
+_ErrorRtrig(CLK:=_ProcessCommands.Error);
+IF _ErrorRtrig.Q THEN
 	SUPER^.M_Error(Description:=CONCAT('Command Processor Error: ', _ProcessCommands.ErrorDescription));
 	StatusText:=SUPER^.ErrorDescription;
 END_IF
@@ -24916,9 +24965,9 @@ END_IF</xhtml>
             <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
               <DeviceType>
                 <DeviceIdentification>
-                  <Type>4097</Type>
-                  <Id>0000 000a</Id>
-                  <Version>3.5.22.30</Version>
+                  <Type>4102</Type>
+                  <Id>0000 0012</Id>
+                  <Version>4.13.0.0</Version>
                 </DeviceIdentification>
                 <Connector moduleType="256" interface="Common.PCI" connectorId="0">
                   <HostParameterSet />
