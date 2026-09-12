@@ -1,0 +1,77 @@
+name: PLC export and version stamp
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch main
+        run: git fetch origin main
+
+      - name: ArfBot.xml must differ from main
+        run: |
+          set -euo pipefail
+          if git diff --quiet origin/main...HEAD -- Codesys/ArfBot.xml; then
+            echo "::error::Codesys/ArfBot.xml has no diff vs main."
+            echo "Export PLCopen XML (Project → Export) after changing the PLC project or stamping GVL_Version.sPlcVersion."
+            exit 1
+          fi
+          echo "ArfBot.xml differs from main."
+
+      - name: If ArfBot.project changed, XML must also change
+        run: |
+          set -euo pipefail
+          if git diff --quiet origin/main...HEAD -- Codesys/ArfBot.project; then
+            echo "ArfBot.project unchanged; skip paired-export check."
+            exit 0
+          fi
+          if git diff --quiet origin/main...HEAD -- Codesys/ArfBot.xml; then
+            echo "::error::ArfBot.project changed but ArfBot.xml did not. Re-export PLCopen XML."
+            exit 1
+          fi
+          echo "Project and XML both changed."
+
+      - name: GVL_Version.sPlcVersion must be stamped and bumped
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import re
+          import subprocess
+          import sys
+
+          def extract(path):
+              try:
+                  text = open(path, encoding="utf-8", errors="replace").read()
+              except OSError:
+                  return ""
+              m = re.search(
+                  r'<variable name="sPlcVersion">.*?<simpleValue value="([^"]*)"',
+                  text,
+                  re.S,
+              )
+              if m:
+                  return m.group(1).strip().strip("'")
+              m = re.search(r"sPlcVersion\s*:[^']*'([^']*)'", text)
+              return m.group(1).strip() if m else ""
+
+          pr = extract("Codesys/ArfBot.xml")
+          if not pr or pr == "unknown":
+              print("::error::GVL_Version.sPlcVersion is missing or 'unknown' in Codesys/ArfBot.xml.")
+              print("Stamp it (git describe --tags --always), then re-export ArfBot.xml.")
+              sys.exit(1)
+          print("PR stamp:", pr)
+
+          subprocess.check_call(["git", "show", "origin/main:Codesys/ArfBot.xml"], stdout=open("/tmp/main.xml", "w"))
+          main = extract("/tmp/main.xml")
+          print("main stamp:", main or "<none>")
+          if main and pr == main:
+              print("::error::PLC XML changed but sPlcVersion is still %r. Bump GVL_Version and re-export." % pr)
+              sys.exit(1)
+          PY
