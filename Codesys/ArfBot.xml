@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-12T23:35:27.3416103" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-12T23:35:08.4708555" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-13T08:29:11.9483724" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-13T08:24:35.15781" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -15344,8 +15344,8 @@ SUPER^._UnitMode.Reset();</xhtml>
                       <addData>
                         <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                           <Attributes>
-                            <Attribute Name="noinit" />
                             <Attribute Name="instance-path" Value="" />
+                            <Attribute Name="noinit" />
                           </Attributes>
                         </data>
                       </addData>
@@ -25235,31 +25235,31 @@ END_IF</xhtml>
                 <Library Name="#System_VisuInputs" Namespace="VisuInputs" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="VisuInputs, 4.7.0.0 (System)" ResolverGuid="2717eb6a-dd07-4c66-8d8d-cacebd7b18ae" />
                 <Library Name="#AlarmManager" Namespace="AlarmManager" HideWhenReferencedAsDependency="false" PublishSymbolsInContainer="false" SystemLibrary="true" LinkAllContent="false" DefaultResolution="AlarmManager, 3.4.2.0 (System)" />
                 <PlaceholderRedirections>
-                  <PlaceholderRedirection Placeholder="System_VisuElemsAlarm" Redirection="VisuElemsAlarm, 4.9.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemsAlarm" Redirection="VisuElemsAlarm, 4.10.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="NetBaseSrv" Redirection="Net Base Services, 4.0.0.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="Standard" Redirection="Standard, 3.5.22.0 (System)" />
                   <PlaceholderRedirection Placeholder="Standard64" Redirection="Standard64, 3.5.20.0 (System)" />
                   <PlaceholderRedirection Placeholder="UTF8" Redirection="UTF-8 Encoding Support, 4.1.0.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElem3DPath" Redirection="VisuElem3DPath, 4.7.0.0 (System)" />
-                  <PlaceholderRedirection Placeholder="System_VisuElemsWinControls" Redirection="VisuElemsWinControls, 4.9.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemsWinControls" Redirection="VisuElemsWinControls, 4.10.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemCamDisplayer" Redirection="VisuElemCamDisplayer, 4.7.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="MemoryBlockManager" Redirection="Memory Block Manager, 3.5.21.30 (CODESYS)" />
-                  <PlaceholderRedirection Placeholder="System_VisuElemMeter" Redirection="VisuElemMeter, 4.9.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemMeter" Redirection="VisuElemMeter, 4.10.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemsSpecialControls" Redirection="VisuElemsSpecialControls, 4.7.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="ElementCollections" Redirection="Element Collections, 4.0.0.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuNativeControl" Redirection="VisuNativeControl, 4.9.0.0 (System)" />
-                  <PlaceholderRedirection Placeholder="StringUtils" Redirection="StringUtils, 3.5.20.0 (System)" />
+                  <PlaceholderRedirection Placeholder="StringUtils" Redirection="StringUtils, 3.5.22.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuInputs" Redirection="VisuInputs, 4.7.0.0 (System)" />
-                  <PlaceholderRedirection Placeholder="Util" Redirection="Util, 3.5.21.0 (System)" />
+                  <PlaceholderRedirection Placeholder="Util" Redirection="Util, 3.5.22.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemsDateTime" Redirection="VisuElemsDateTime, 4.9.0.0 (System)" />
-                  <PlaceholderRedirection Placeholder="VisuUtils" Redirection="Visu Utils, 4.9.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="VisuUtils" Redirection="Visu Utils, 4.10.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="FloatingPointUtils" Redirection="FloatingPointUtils, 4.0.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemTextEditor" Redirection="VisuElemTextEditor, 4.8.0.0 (System)" />
-                  <PlaceholderRedirection Placeholder="System_VisuElemXYChart" Redirection="VisuElemXYChart, 4.8.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemXYChart" Redirection="VisuElemXYChart, 4.10.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="OMAC_PackML_State_Machine" Redirection="OMAC PackML State Machine, 1.0.0.4 (3S - Smart Software Solutions GmbH)" />
-                  <PlaceholderRedirection Placeholder="System_VisuElemTrace" Redirection="VisuElemTrace, 4.9.0.0 (System)" />
-                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.9.1.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemTrace" Redirection="VisuElemTrace, 4.10.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.10.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="Collections" Redirection="Collections, 3.5.17.0 (System)" />
                   <PlaceholderRedirection Placeholder="StringSegs" Redirection="Immutable String Segments, 3.5.18.0 (3S - Smart Software Solutions GmbH)" />
                   <PlaceholderRedirection Placeholder="CBML" Redirection="Common Behaviour Model, 4.0.0.0 (CODESYS)" />
@@ -36299,30 +36299,30 @@ END_IF</xhtml>
           <PlaceholderRedirection Placeholder="CAA ResMan" Redirection="CAA Ressource Manager Extern, 3.5.17.0 (CAA Technical Workgroup)" />
           <PlaceholderRedirection Placeholder="CAA FB Factory" Redirection="CAA FB Factory, 3.5.19.0 (CAA Technical Workgroup)" />
           <PlaceholderRedirection Placeholder="CmpEventMgr" Redirection="CmpEventMgr, 3.5.17.0 (System)" />
-          <PlaceholderRedirection Placeholder="SysTimeRtc" Redirection="SysTimeRtc, 3.5.21.30 (System)" />
+          <PlaceholderRedirection Placeholder="SysTimeRtc" Redirection="SysTimeRtc, 3.5.22.0 (System)" />
           <PlaceholderRedirection Placeholder="SysProcess" Redirection="SysProcess, 3.5.17.0 (System)" />
-          <PlaceholderRedirection Placeholder="System_VisuElemsWinControls" Redirection="VisuElemsWinControls, 4.9.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="System_VisuElemsWinControls" Redirection="VisuElemsWinControls, 4.10.0.0 (System)" />
           <PlaceholderRedirection Placeholder="CmpCodeMeter" Redirection="NotImplementedByDevice, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="CAA Tick" Redirection="CAA Tick Extern, 3.5.17.0 (CAA Technical Workgroup)" />
           <PlaceholderRedirection Placeholder="CmpApp" Redirection="CmpApp, 3.5.21.0 (System)" />
           <PlaceholderRedirection Placeholder="ElementCollections" Redirection="Element Collections, 4.0.0.0 (CODESYS)" />
-          <PlaceholderRedirection Placeholder="CmpUserMgr Implementation" Redirection="CmpUserMgr Implementation, 3.5.21.0 (System)" />
+          <PlaceholderRedirection Placeholder="CmpUserMgr Implementation" Redirection="CmpUserMgr Implementation, 3.5.22.0 (System)" />
           <PlaceholderRedirection Placeholder="CmpCrypto Implementation" Redirection="NotImplementedByDevice, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="CAA Callback" Redirection="CAA Callback Extern, 3.5.17.0 (CAA Technical Workgroup)" />
           <PlaceholderRedirection Placeholder="SysTarget" Redirection="SysTarget, 3.5.17.0 (System)" />
-          <PlaceholderRedirection Placeholder="Standard" Redirection="Standard, 3.5.18.0 (System)" />
-          <PlaceholderRedirection Placeholder="System_VisuElemMeter" Redirection="VisuElemMeter, 4.9.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="Standard" Redirection="Standard, 3.5.22.0 (System)" />
+          <PlaceholderRedirection Placeholder="System_VisuElemMeter" Redirection="VisuElemMeter, 4.10.0.0 (System)" />
           <PlaceholderRedirection Placeholder="CmpTraceMgr" Redirection="CmpTraceMgr, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="SysProcess Implementation" Redirection="SysProcess Implementation, 3.5.17.0 (System)" />
-          <PlaceholderRedirection Placeholder="StringUtils" Redirection="StringUtils, 3.5.20.0 (System)" />
+          <PlaceholderRedirection Placeholder="StringUtils" Redirection="StringUtils, 3.5.22.0 (System)" />
           <PlaceholderRedirection Placeholder="CmpTargetVisu" Redirection="NotImplementedByDevice, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="CBML" Redirection="Common Behaviour Model, 4.0.0.0 (CODESYS)" />
           <PlaceholderRedirection Placeholder="CAA Behaviour Model" Redirection="CAA Behaviour Model, 3.5.19.0 (CAA Technical Workgroup)" />
           <PlaceholderRedirection Placeholder="System_VisuElem3DPath" Redirection="VisuElem3DPath, 4.7.0.0 (System)" />
           <PlaceholderRedirection Placeholder="CAA Types" Redirection="CAA Types Extern, 3.5.17.0 (CAA Technical Workgroup)" />
-          <PlaceholderRedirection Placeholder="SysTask" Redirection="SysTask, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="SysTask" Redirection="SysTask, 3.5.22.0 (System)" />
           <PlaceholderRedirection Placeholder="SysTime" Redirection="SysTime, 3.5.17.0 (System)" />
-          <PlaceholderRedirection Placeholder="System_VisuElemXYChart" Redirection="VisuElemXYChart, 4.8.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="System_VisuElemXYChart" Redirection="VisuElemXYChart, 4.10.0.0 (System)" />
           <PlaceholderRedirection Placeholder="Rts Service Handler" Redirection="Rts Service Handler, 3.5.17.0 (3S - Smart Software Solutions GmbH)" />
           <PlaceholderRedirection Placeholder="System_VisuElemTextEditor" Redirection="VisuElemTextEditor, 4.8.0.0 (System)" />
           <PlaceholderRedirection Placeholder="CAA TickUtil" Redirection="CAA TickUtil Extern, 3.5.17.0 (CAA Technical Workgroup)" />
@@ -36339,13 +36339,13 @@ END_IF</xhtml>
           <PlaceholderRedirection Placeholder="SysShm Implementation" Redirection="SysShm Implementation, 3.5.21.0 (System)" />
           <PlaceholderRedirection Placeholder="SysSem" Redirection="SysSem, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="CmpEventMgr Implementation" Redirection="NotImplementedByDevice, 3.5.17.0 (System)" />
-          <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.9.1.0 (System)" />
-          <PlaceholderRedirection Placeholder="Util" Redirection="Util, 3.5.21.0 (System)" />
+          <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.10.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="Util" Redirection="Util, 3.5.22.0 (System)" />
           <PlaceholderRedirection Placeholder="CmpSchedule" Redirection="CmpSchedule, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="CmpIecTask" Redirection="CmpIecTask, 3.5.21.0 (System)" />
           <PlaceholderRedirection Placeholder="CmpSettings" Redirection="NotImplementedByDevice, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="CAA Storage" Redirection="CAA Storage, 3.5.21.0 (CAA Technical Workgroup)" />
-          <PlaceholderRedirection Placeholder="System_VisuElemTrace" Redirection="VisuElemTrace, 4.9.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="System_VisuElemTrace" Redirection="VisuElemTrace, 4.10.0.0 (System)" />
           <PlaceholderRedirection Placeholder="System_VisuElemCamDisplayer" Redirection="VisuElemCamDisplayer, 4.7.0.0 (System)" />
           <PlaceholderRedirection Placeholder="CmpDynamicText" Redirection="CmpDynamicText, 3.5.20.0 (System)" />
           <PlaceholderRedirection Placeholder="FloatingPointUtils" Redirection="FloatingPointUtils, 4.0.0.0 (System)" />
@@ -36354,13 +36354,13 @@ END_IF</xhtml>
           <PlaceholderRedirection Placeholder="Collections" Redirection="Collections, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="CmpSrv" Redirection="CmpSrv, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="SysSem Implementation" Redirection="SysSem Implementation, 3.5.17.0 (System)" />
-          <PlaceholderRedirection Placeholder="CmpVisuHandler" Redirection="CmpVisuHandler, 3.5.19.0 (System)" />
+          <PlaceholderRedirection Placeholder="CmpVisuHandler" Redirection="CmpVisuHandler, 3.5.22.0 (System)" />
           <PlaceholderRedirection Placeholder="CAA MemBlockMan" Redirection="NotImplementedByDevice, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="SysMem" Redirection="SysMem, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="CAA Storage Imp" Redirection="3S Storage, 3.5.17.0 (3S - Smart Software Solutions GmbH)" />
           <PlaceholderRedirection Placeholder="CmpBitmapPool" Redirection="CmpBitmapPool, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
-          <PlaceholderRedirection Placeholder="System_VisuElemsAlarm" Redirection="VisuElemsAlarm, 4.9.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="System_VisuElemsAlarm" Redirection="VisuElemsAlarm, 4.10.0.0 (System)" />
         </PlaceholderRedirections>
         <addData>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
