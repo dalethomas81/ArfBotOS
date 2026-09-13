@@ -10,9 +10,10 @@
 from __future__ import print_function
 import os
 import re
-import subprocess
 import sys
 import traceback
+
+from System.Diagnostics import Process, ProcessStartInfo
 
 
 MAX_VERSION_LEN = 80
@@ -51,36 +52,36 @@ def write_log():
     handle.close()
 
 
-def decode_output(raw):
-    if raw is None:
-        return ""
-    if not isinstance(raw, str):
-        try:
-            raw = raw.decode("utf-8")
-        except Exception:
-            raw = str(raw)
-    return raw.strip()
+def quote_arg(arg):
+    arg = str(arg)
+    if not arg or any(ch in arg for ch in ' \t"'):
+        return '"' + arg.replace('"', '\\"') + '"'
+    return arg
 
 
-def run_git(args, cwd):
-    last_err = ""
-    for exe in ("git", "git.exe"):
-        try:
-            proc = subprocess.Popen(
-                [exe] + list(args),
-                cwd=cwd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
-            out, err = proc.communicate()
-            out = decode_output(out)
-            err = decode_output(err)
-            if proc.returncode == 0:
-                return out
-            last_err = err or out or "exit {0}".format(proc.returncode)
-        except Exception as exc:
-            last_err = str(exc)
-    raise RuntimeError("git {0} failed in {1}: {2}".format(" ".join(args), cwd, last_err))
+def run_git(args, cwd, allowed_codes=(0,)):
+    psi = ProcessStartInfo()
+    psi.FileName = "git.exe"
+    psi.Arguments = " ".join([quote_arg(a) for a in args])
+    psi.WorkingDirectory = cwd
+    psi.RedirectStandardOutput = True
+    psi.RedirectStandardError = True
+    psi.UseShellExecute = False
+    psi.CreateNoWindow = True
+
+    proc = Process()
+    proc.StartInfo = psi
+    if not proc.Start():
+        raise RuntimeError("Could not start git.exe")
+    out = proc.StandardOutput.ReadToEnd().strip()
+    err = proc.StandardError.ReadToEnd().strip()
+    proc.WaitForExit()
+    code = proc.ExitCode
+    proc.Close()
+    if code not in allowed_codes:
+        raise RuntimeError("git {0} failed in {1} (exit {2}): {3}".format(
+            " ".join(args), cwd, code, err or out or "no output"))
+    return out, code
 
 
 def find_git_root(start):
@@ -127,7 +128,7 @@ def latest_tag_on_main(git_root):
     last_err = None
     for ref in TAG_REFS:
         try:
-            tag = run_git(["describe", "--tags", "--abbrev=0", ref], git_root)
+            tag, _code = run_git(["describe", "--tags", "--abbrev=0", ref], git_root)
             if tag:
                 emit("Tag from {0}: {1}".format(ref, tag))
                 return tag, ref
@@ -138,21 +139,24 @@ def latest_tag_on_main(git_root):
 
 
 def is_dirty(git_root):
-    porcelain = run_git(["status", "--porcelain", "-uno"], git_root)
+    porcelain, _code = run_git(["status", "--porcelain", "-uno"], git_root)
     return porcelain != ""
 
 
 def describe_version(git_root):
     tag, ref = latest_tag_on_main(git_root)
-    sha = run_git(["rev-parse", "--short", "HEAD"], git_root)
-    branch = run_git(["rev-parse", "--abbrev-ref", "HEAD"], git_root)
-    count = run_git(["rev-list", "--count", "{0}..HEAD".format(tag)], git_root)
+    sha, _code = run_git(["rev-parse", "--short", "HEAD"], git_root)
+    branch, _code = run_git(["rev-parse", "--abbrev-ref", "HEAD"], git_root)
+    count, _code = run_git(["rev-list", "--count", "{0}..HEAD".format(tag)], git_root)
     dirty = is_dirty(git_root)
 
-    try:
-        run_git(["merge-base", "--is-ancestor", tag, "HEAD"], git_root)
-    except Exception:
-        emit("WARNING: tag {0} is not an ancestor of HEAD. Count {1} may be misleading.".format(tag, count))
+    _out, ancestor_code = run_git(
+        ["merge-base", "--is-ancestor", tag, "HEAD"],
+        git_root,
+        allowed_codes=(0, 1),
+    )
+    if ancestor_code != 0:
+        emit("Note: tag {0} is not in this branch history. Count {1} is commits on HEAD not reachable from that tag.".format(tag, count))
 
     if count == "0":
         version = tag
