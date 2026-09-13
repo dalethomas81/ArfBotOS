@@ -19,18 +19,5 @@
 5. Wait for programming to be complete. if programming fails, refer to troubleshooting at www.bausano.net  
 <img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Robots/AR4/Media/EasyCAT-Confirm.png" alt="menu" width="600"/>  
 
-_note: if you are not using the EK1100, EL1809, and EL2809 (remote input and output) you may see a `Networkadapter opened` error in the EtherCAT Master device in CODESYS. In this case, you will need to disable the unused devices and download the program again._  
-<img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Robots/AR4/Media/EtherCat-Error-NetworkOpened.png" alt="menu" width="600"/>  
-
-### Disable Unused IO
-
-1. Make sure you are offline with the PLC from within CODESYS.
-2. Find the EK1100 in the Device Tree.
-3. Right-click and select Disable (this will not show if you are online with the PLC).  
-<img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Robots/AR4/Media/EtherCAT-Disable-Unused.png" alt="menu" width="600"/> 
-4. Download the project by selecting Online->Multiple Download and following the prompts. The EtherCAT chain will now be restored working with only the AR4 robot connected.  
-<img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Robots/AR4/Media/EtherCAT-Running-After-Disable-Unused.png" alt="menu" width="600"/>  
-
-ArfBotOS will automatically map the IO of the device that is enabled in the Device tree. You can select `IoOption1` or `IoOption2` or neither. Simply right-click on the devices and enable/disable them according to how you will use it then download to the PLC.  
-<img src="https://github.com/dalethomas81/ArfBotOS/blob/main/Resources/images/readme/IoOption.png" alt="menu" width="600"/>  
+Do **not** right-click Disable unused IO. `IoOption1` (EK1100 / EL1809 / EL2809) and `IoOption2` (EasyCAT IO) stay in the tree as Optional slaves. Assign station aliases once, then you can hot-swap IO without a recompile. That procedure is in the wiki: [Installation — Station aliases](https://github.com/dalethomas81/ArfBotOS/wiki/Installation#station-aliases).  
  
