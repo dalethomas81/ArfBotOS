@@ -220,21 +220,26 @@ def main():
     emit("script finished.")
 
 
-try:
-    main()
-except Exception as exc:
-    emit("ERROR: {0}".format(exc))
-    emit(traceback.format_exc())
-    write_log()
-    if not ALREADY_OPEN:
-        try:
-            system.exit(1)
-        except Exception:
-            pass
-else:
+def run():
+    try:
+        main()
+    except Exception as exc:
+        emit("ERROR: {0}".format(exc))
+        emit(traceback.format_exc())
+        write_log()
+        if not ALREADY_OPEN:
+            try:
+                system.exit(1)
+            except Exception:
+                pass
+        return
     write_log()
     if not ALREADY_OPEN:
         try:
             system.exit(0)
         except Exception:
             pass
+
+
+if __name__ == "__main__":
+    run()

@@ -25,15 +25,17 @@ Example:
 python Codesys\Scripts\RunCodesysScript.py --script Codesys\Scripts\ListDeviceTree.py --project Codesys\ArfBot.project --no-ui --text-prompts
 ```
 
-## Stamp PLC version (git)
+## Prepare a PLC commit (stamp + export)
 
 With the ArfBot project open:
 
-**Tools → Scripting → Execute Script File…** → `Codesys/Scripts/StampPlcVersion.py`
+**Tools → Scripting → Execute Script File…** → `Codesys/Scripts/PreparePlcCommit.py`
 
-That sets `GVL_Version.sPlcVersion` to `<tag-from-main>-<n>-g<sha>[-dirty]`, saves the project, and prints the value in the CODESYS Messages window. Then download so the HMI shows it.
+That sets `GVL_Version.sPlcVersion` to `<tag-from-main>-<n>-g<sha>[-dirty]`, saves `ArfBot.project`, and exports `Codesys/ArfBot.xml`. Then `git add` both files and commit. Download if you want the HMI to show the new string.
 
 The tag is `git describe --tags --abbrev=0 main` (falls back to `origin/main`). The hash and commit count are from the branch you have checked out. `-dirty` is included when tracked files differ from `HEAD` (computed before the GVL write).
+
+Stamp-only: `StampPlcVersion.py`. Export-only: `PLCOpenExport.py`.
 
 ## Included Scripts
 - `RunCodesysScript.py`: Python wrapper that detects the local CODESYS install and launches a script through the CODESYS command line.
@@ -42,7 +44,9 @@ The tag is `git describe --tags --abbrev=0 main` (falls back to `origin/main`). 
 - `parse_retain.py`: Decodes `BackupRetain.ret` / `Application.ret` program data and regenerates `st/M_BuildTests_impl.st`.
 - `PatchBuildTests.py`: Writes `st/M_BuildTests_impl.st` into `_00_Main.M_BuildTests` and saves `ArfBot.project`. Does not re-export PLCopen XML (that export changes format).
 - `PatchLicenseStatus.py`: Creates/updates `FB_LicenseStatus`, wires `GVL.LicenseStatus` and `_00_Main`, adds Component Manager + CmpEventMgr, then builds.
-- `StampPlcVersion.py`: Writes `GVL_Version.sPlcVersion` from git (latest tag on `main`, commit count and hash from current `HEAD`, `-dirty` if the working tree is dirty). Run from **Tools → Scripting → Execute Script File**.
+- `PreparePlcCommit.py`: Daily helper — stamps `sPlcVersion` then exports `ArfBot.xml`. Run from **Tools → Scripting → Execute Script File**.
+- `StampPlcVersion.py`: Stamp-only (`GVL_Version.sPlcVersion` from git).
+- `PLCOpenExport.py`: Export-only PLCopen XML next to the open `.project`.
 
 ## Temp scripts
 One-shot probes, dumps, and experiments go in `Codesys/Scripts/temp/` (gitignored). Do not commit them.
