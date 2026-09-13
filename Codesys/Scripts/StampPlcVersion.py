@@ -5,7 +5,7 @@
 #
 # Format matches git describe: <tag>-<n>-g<sha>[-dirty]
 #
-# Run from CODESYS: Tools → Scripting → Execute Script File
+# Run from CODESYS: Tools -> Scripting -> Execute Script File
 # Or: python Codesys\Scripts\RunCodesysScript.py --script Codesys\Scripts\StampPlcVersion.py --project Codesys\ArfBot.project --no-ui --text-prompts
 from __future__ import print_function
 import os
