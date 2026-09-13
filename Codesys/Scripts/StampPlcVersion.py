@@ -97,6 +97,30 @@ def find_git_root(start):
         path = parent
 
 
+def bind_host(host=None):
+    # CODESYS injects projects/system only into the executed script, not imports.
+    if host is None:
+        host = sys.modules.get("__main__")
+    if host is None:
+        return
+    g = globals()
+    for name in ("projects", "system"):
+        if hasattr(host, name):
+            g[name] = getattr(host, name)
+
+
+def launched_headless():
+    return len(sys.argv) > 1 and str(sys.argv[1]).lower().endswith(".project")
+
+
+def maybe_exit(code):
+    if launched_headless() and not ALREADY_OPEN:
+        try:
+            system.exit(code)
+        except Exception:
+            pass
+
+
 def find_textual(root, name):
     matches = root.find(name, recursive=True)
     if not matches:
@@ -112,6 +136,7 @@ def find_textual(root, name):
 
 def ensure_project():
     global ALREADY_OPEN
+    bind_host()
     if projects.primary is not None:
         ALREADY_OPEN = True
         return projects.primary
@@ -227,18 +252,10 @@ def run():
         emit("ERROR: {0}".format(exc))
         emit(traceback.format_exc())
         write_log()
-        if not ALREADY_OPEN:
-            try:
-                system.exit(1)
-            except Exception:
-                pass
+        maybe_exit(1)
         return
     write_log()
-    if not ALREADY_OPEN:
-        try:
-            system.exit(0)
-        except Exception:
-            pass
+    maybe_exit(0)
 
 
 if __name__ == "__main__":

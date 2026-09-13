@@ -11,6 +11,7 @@ _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _SCRIPT_DIR)
 import StampPlcVersion as stamp
 
+stamp.bind_host(sys.modules.get("__main__"))
 if not (len(sys.argv) > 2 and sys.argv[2]):
     stamp.LOG_FILE = os.path.join(_SCRIPT_DIR, "PreparePlcCommit.out.txt")
 
@@ -70,15 +71,7 @@ except Exception as exc:
     stamp.emit("ERROR: {0}".format(exc))
     stamp.emit(traceback.format_exc())
     stamp.write_log()
-    if not stamp.ALREADY_OPEN:
-        try:
-            system.exit(1)
-        except Exception:
-            pass
+    stamp.maybe_exit(1)
 else:
     stamp.write_log()
-    if not stamp.ALREADY_OPEN:
-        try:
-            system.exit(0)
-        except Exception:
-            pass
+    stamp.maybe_exit(0)
