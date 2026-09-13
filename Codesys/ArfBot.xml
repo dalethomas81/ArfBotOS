@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-12T17:06:13.0420134" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-12T17:06:01.4073359" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-12T23:35:27.3416103" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-12T23:35:08.4708555" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -1578,7 +1578,7 @@ RESERVED: INT:=46;</xhtml>
                 <string length="80" />
               </type>
               <initialValue>
-                <simpleValue value="'v2.2026.37.1-AlarmHistory-8-g5b2171c'" />
+                <simpleValue value="'v2.2026.37.1-AlarmHistory-11-g0523240'" />
               </initialValue>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> git describe --tags --always --dirty
@@ -3705,7 +3705,8 @@ RESERVED: INT:=46;</xhtml>
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">{region "utility"}
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">
+{region "utility"}
     (* Get the current task info *)
     {IF defined (IsSimulationMode)}
         GVL.dwMainInterval := 1000;
@@ -16287,6 +16288,14 @@ END_IF</xhtml>
                         <simpleValue value="20" />
                       </initialValue>
                     </variable>
+                    <variable name="_STEP_ERROR">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="9999" />
+                      </initialValue>
+                    </variable>
                   </localVars>
                   <localVars>
                     <variable name="_UnitModeCurrentState">
@@ -16410,6 +16419,7 @@ CASE SUPER^._SeqMain OF
 			SUPER^._SeqMain := _STEP_ONE;
 		ELSE
 			SUPER^.M_Error(Description:=CONCAT('Command parsing error: ',_CncCmdParser.ErrorDescription));
+			SUPER^._SeqMain := _STEP_ERROR;
 		END_IF
         
     _STEP_ONE:
@@ -16417,6 +16427,9 @@ CASE SUPER^._SeqMain OF
 			// next, please
 			SUPER^._SeqMain := _STEP_DONE;
 		END_IF
+        
+    _STEP_ERROR:
+        // hang out here so we dont spam errors
 
 END_CASE
 
@@ -16495,18 +16508,21 @@ _SMC_Interpolator(
 CASE WORD_TO_INT(_SMC_Interpolator.wM) OF
 	0:	// reset acknowledgment
 		_SMC_Interpolator.bAcknM := FALSE;
-        
-	MCODE_INPUT_WAIT_START..MCODE_INPUT_WAIT_END: // wait on input
+    
+    // M200 - M215 wait on inputs 0 - 15    
+	MCODE_INPUT_WAIT_START..MCODE_INPUT_WAIT_END:
         // TODO should we put a timeout or bypass here?
         IF CmdIo.Input[WORD_TO_INT(_SMC_Interpolator.wM) - MCODE_INPUT_WAIT] THEN
             _SMC_Interpolator.bAcknM := TRUE;
         END_IF
-        
-	MCODE_OUTPUT_SET_START..MCODE_OUTPUT_SET_END: // set output
+    
+    // M300 - M315 set outputs 0 - 15
+	MCODE_OUTPUT_SET_START..MCODE_OUTPUT_SET_END:
         CmdIo.Output[WORD_TO_INT(_SMC_Interpolator.wM) - MCODE_OUTPUT_SET] := TRUE;
         _SMC_Interpolator.bAcknM := TRUE;
-        
-	MCODE_OUTPUT_CLR_START..MCODE_OUTPUT_CLR_END: // clear output
+    
+    // M400 - M415 clear outputs 0 - 15   
+	MCODE_OUTPUT_CLR_START..MCODE_OUTPUT_CLR_END:
         CmdIo.Output[WORD_TO_INT(_SMC_Interpolator.wM) - MCODE_OUTPUT_CLR] := FALSE;
         _SMC_Interpolator.bAcknM := TRUE;
         
