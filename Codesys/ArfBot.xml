@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-13T08:29:11.9483724" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-13T08:24:35.15781" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-13T12:30:50.335609" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-13T12:30:37.4665596" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -4360,7 +4360,7 @@ PersistentVars.Programs[3].ProgramName := 'Cnc Validation';
 PersistentVars.Programs[3].Commands[0].CommandType := DUT_CommandType.MoveCommand;
 PersistentVars.Programs[3].Commands[0].CommandString := 'DIR ABS 30.0 ACS VAR STO 34 ';
 PersistentVars.Programs[3].Commands[1].CommandType := DUT_CommandType.CncCommand;
-PersistentVars.Programs[3].Commands[1].CommandString := 'ArfBotOS-HelloWorld.cnc ';
+PersistentVars.Programs[3].Commands[1].CommandString := 'CNC_FromFile.cnc';
 
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
@@ -15344,8 +15344,8 @@ SUPER^._UnitMode.Reset();</xhtml>
                       <addData>
                         <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                           <Attributes>
-                            <Attribute Name="instance-path" Value="" />
                             <Attribute Name="noinit" />
+                            <Attribute Name="instance-path" Value="" />
                           </Attributes>
                         </data>
                       </addData>
@@ -24348,16 +24348,6 @@ END_IF</xhtml>
                         <simpleValue value="0" />
                       </initialValue>
                     </variable>
-                    <variable name="IoOption1Enabled">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
-                    <variable name="IoOption2Enabled">
-                      <type>
-                        <BOOL />
-                      </type>
-                    </variable>
                     <variable name="FirstScan">
                       <type>
                         <BOOL />
@@ -24375,22 +24365,25 @@ IF FirstScan THEN
     //
 END_IF
 
+// leaving this pragma here for reference and for learning.
+// it is not needed and was an attempt to parameterize configuring the IO
+// the project define evaluates and could be a super handy technique in the future so I'll leave it here for reference.
+// the defines for the project can be found in the Toolbar under Project -&gt; Project Settings... -&gt; Compile options -&gt; Edit project defines...
 {IF project_defined(IoOption1)}
-    IoOption := 1;
+    //IoOption := 1;
     //_M_MapIoOption1();
 {ELSIF project_defined(IoOption2)}
-    IoOption := 2;
+    //IoOption := 2;
     //_M_MapIoOption2();
 {ELSE}
-    IoOption := 0;
+    //IoOption := 0;
 {END_IF}
 
-IF IoOption1.Enable THEN
-    IoOption1Enabled := TRUE;
+// detect if the slave is connected and map its IO
+IF IoOption1.wState = ETC_SLAVE_STATE.ETC_SLAVE_OPERATIONAL THEN
     _M_MapIoOption1();
 END_IF
-IF IoOption2.Enable THEN
-    IoOption2Enabled := TRUE;
+IF IoOption2.wState = ETC_SLAVE_STATE.ETC_SLAVE_OPERATIONAL THEN
     _M_MapIoOption2();
 END_IF
 
@@ -25239,11 +25232,11 @@ END_IF</xhtml>
                   <PlaceholderRedirection Placeholder="NetBaseSrv" Redirection="Net Base Services, 4.0.0.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="Standard" Redirection="Standard, 3.5.22.0 (System)" />
                   <PlaceholderRedirection Placeholder="Standard64" Redirection="Standard64, 3.5.20.0 (System)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.10.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="UTF8" Redirection="UTF-8 Encoding Support, 4.1.0.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElem3DPath" Redirection="VisuElem3DPath, 4.7.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemsWinControls" Redirection="VisuElemsWinControls, 4.10.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemCamDisplayer" Redirection="VisuElemCamDisplayer, 4.7.0.0 (System)" />
-                  <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="MemoryBlockManager" Redirection="Memory Block Manager, 3.5.21.30 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemMeter" Redirection="VisuElemMeter, 4.10.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemsSpecialControls" Redirection="VisuElemsSpecialControls, 4.7.0.0 (System)" />
@@ -25255,14 +25248,14 @@ END_IF</xhtml>
                   <PlaceholderRedirection Placeholder="System_VisuElemsDateTime" Redirection="VisuElemsDateTime, 4.9.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="VisuUtils" Redirection="Visu Utils, 4.10.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="FloatingPointUtils" Redirection="FloatingPointUtils, 4.0.0.0 (System)" />
-                  <PlaceholderRedirection Placeholder="System_VisuElemTextEditor" Redirection="VisuElemTextEditor, 4.8.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemXYChart" Redirection="VisuElemXYChart, 4.10.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="OMAC_PackML_State_Machine" Redirection="OMAC PackML State Machine, 1.0.0.4 (3S - Smart Software Solutions GmbH)" />
+                  <PlaceholderRedirection Placeholder="CBML" Redirection="Common Behaviour Model, 4.0.0.0 (CODESYS)" />
                   <PlaceholderRedirection Placeholder="System_VisuElemTrace" Redirection="VisuElemTrace, 4.10.0.0 (System)" />
-                  <PlaceholderRedirection Placeholder="System_VisuElems" Redirection="VisuElems, 4.10.0.0 (System)" />
+                  <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
                   <PlaceholderRedirection Placeholder="Collections" Redirection="Collections, 3.5.17.0 (System)" />
                   <PlaceholderRedirection Placeholder="StringSegs" Redirection="Immutable String Segments, 3.5.18.0 (3S - Smart Software Solutions GmbH)" />
-                  <PlaceholderRedirection Placeholder="CBML" Redirection="Common Behaviour Model, 4.0.0.0 (CODESYS)" />
+                  <PlaceholderRedirection Placeholder="System_VisuElemTextEditor" Redirection="VisuElemTextEditor, 4.8.0.0 (System)" />
                 </PlaceholderRedirections>
                 <addData>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
@@ -25862,8 +25855,18 @@ END_IF</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1074855938" type="std:WORD">
                                         <Attributes />
-                                        <Value name="_x0031_074855938" visiblename="StationAlias">0</Value>
+                                        <Value name="_x0031_074855938" visiblename="StationAlias">1010</Value>
                                         <Name>StationAlias</Name>
+                                      </Parameter>
+                                      <Parameter ParameterId="1074855941" type="std:UINT">
+                                        <Attributes download="false" />
+                                        <Value name="_x0031_074855941" visiblename="DeviceIdenticationADO">18</Value>
+                                        <Name>DeviceIdenticationADO</Name>
+                                      </Parameter>
+                                      <Parameter ParameterId="1074855942" type="std:USINT">
+                                        <Attributes />
+                                        <Value name="_x0031_074855942" visiblename="DeviceIdenticationMode">1</Value>
+                                        <Name>DeviceIdenticationMode</Name>
                                       </Parameter>
                                       <Parameter ParameterId="1074855968" type="std:UINT">
                                         <Attributes offlineaccess="read" onlineaccess="read" />
@@ -28783,7 +28786,7 @@ END_IF</xhtml>
                         <addData>
                           <data name="Device" handleUnknown="discard">
                             <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
-                              <DeviceType Disable="true">
+                              <DeviceType>
                                 <DeviceIdentification>
                                   <Type>65</Type>
                                   <Id>2_044C2C5200120000</Id>
@@ -28899,8 +28902,23 @@ END_IF</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="1074855938" type="std:WORD">
                                         <Attributes />
-                                        <Value name="_x0031_074855938" visiblename="StationAlias">0</Value>
+                                        <Value name="_x0031_074855938" visiblename="StationAlias">1020</Value>
                                         <Name>StationAlias</Name>
+                                      </Parameter>
+                                      <Parameter ParameterId="1074855939" type="std:BOOL">
+                                        <Attributes />
+                                        <Value name="_x0031_074855939" visiblename="Optional">True</Value>
+                                        <Name>Optional</Name>
+                                      </Parameter>
+                                      <Parameter ParameterId="1074855941" type="std:UINT">
+                                        <Attributes download="false" />
+                                        <Value name="_x0031_074855941" visiblename="DeviceIdenticationADO">18</Value>
+                                        <Name>DeviceIdenticationADO</Name>
+                                      </Parameter>
+                                      <Parameter ParameterId="1074855942" type="std:USINT">
+                                        <Attributes />
+                                        <Value name="_x0031_074855942" visiblename="DeviceIdenticationMode">1</Value>
+                                        <Name>DeviceIdenticationMode</Name>
                                       </Parameter>
                                       <Parameter ParameterId="1074855984" type="std:STRING(255)" IndexInDevDesc="13">
                                         <Attributes channel="diag" offlineaccess="none" />
@@ -29172,8 +29190,23 @@ END_IF</xhtml>
                                               </Parameter>
                                               <Parameter ParameterId="1074855938" type="std:WORD">
                                                 <Attributes />
-                                                <Value name="_x0031_074855938" visiblename="StationAlias">0</Value>
+                                                <Value name="_x0031_074855938" visiblename="StationAlias">1021</Value>
                                                 <Name>StationAlias</Name>
+                                              </Parameter>
+                                              <Parameter ParameterId="1074855939" type="std:BOOL">
+                                                <Attributes />
+                                                <Value name="_x0031_074855939" visiblename="Optional">True</Value>
+                                                <Name>Optional</Name>
+                                              </Parameter>
+                                              <Parameter ParameterId="1074855941" type="std:UINT">
+                                                <Attributes download="false" />
+                                                <Value name="_x0031_074855941" visiblename="DeviceIdenticationADO">18</Value>
+                                                <Name>DeviceIdenticationADO</Name>
+                                              </Parameter>
+                                              <Parameter ParameterId="1074855942" type="std:USINT">
+                                                <Attributes />
+                                                <Value name="_x0031_074855942" visiblename="DeviceIdenticationMode">1</Value>
+                                                <Name>DeviceIdenticationMode</Name>
                                               </Parameter>
                                               <Parameter ParameterId="1074855968" type="std:UINT">
                                                 <Attributes offlineaccess="read" onlineaccess="read" />
@@ -30227,6 +30260,11 @@ END_IF</xhtml>
                                                 <Description>Input</Description>
                                               </Parameter>
                                             </ParameterSection>
+                                            <Parameter ParameterId="805306368" type="std:BOOL">
+                                              <Attributes download="false" offlineaccess="none" onlineaccess="none" />
+                                              <Value name="_x0038_05306368" visiblename="EnableExpertSettings" offlineaccess="none" onlineaccess="none">True</Value>
+                                              <Name>EnableExpertSettings</Name>
+                                            </Parameter>
                                           </HostParameterSet>
                                           <DriverInfo />
                                         </Connector>
@@ -30395,8 +30433,23 @@ END_IF</xhtml>
                                               </Parameter>
                                               <Parameter ParameterId="1074855938" type="std:WORD">
                                                 <Attributes />
-                                                <Value name="_x0031_074855938" visiblename="StationAlias">0</Value>
+                                                <Value name="_x0031_074855938" visiblename="StationAlias">1022</Value>
                                                 <Name>StationAlias</Name>
+                                              </Parameter>
+                                              <Parameter ParameterId="1074855939" type="std:BOOL">
+                                                <Attributes />
+                                                <Value name="_x0031_074855939" visiblename="Optional">True</Value>
+                                                <Name>Optional</Name>
+                                              </Parameter>
+                                              <Parameter ParameterId="1074855941" type="std:UINT">
+                                                <Attributes download="false" />
+                                                <Value name="_x0031_074855941" visiblename="DeviceIdenticationADO">18</Value>
+                                                <Name>DeviceIdenticationADO</Name>
+                                              </Parameter>
+                                              <Parameter ParameterId="1074855942" type="std:USINT">
+                                                <Attributes />
+                                                <Value name="_x0031_074855942" visiblename="DeviceIdenticationMode">1</Value>
+                                                <Name>DeviceIdenticationMode</Name>
                                               </Parameter>
                                               <Parameter ParameterId="1074855968" type="std:UINT">
                                                 <Attributes offlineaccess="read" onlineaccess="read" />
@@ -31464,6 +31517,11 @@ END_IF</xhtml>
                                                 <Description>Output</Description>
                                               </Parameter>
                                             </ParameterSection>
+                                            <Parameter ParameterId="805306368" type="std:BOOL">
+                                              <Attributes download="false" offlineaccess="none" onlineaccess="none" />
+                                              <Value name="_x0038_05306368" visiblename="EnableExpertSettings" offlineaccess="none" onlineaccess="none">True</Value>
+                                              <Name>EnableExpertSettings</Name>
+                                            </Parameter>
                                           </HostParameterSet>
                                           <DriverInfo />
                                         </Connector>
@@ -31487,7 +31545,7 @@ END_IF</xhtml>
                         <addData>
                           <data name="Device" handleUnknown="discard">
                             <Device xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="">
-                              <DeviceType Disable="true">
+                              <DeviceType>
                                 <DeviceIdentification>
                                   <Type>65</Type>
                                   <Id>79A_00DEFEDE00005A01</Id>
@@ -31572,18 +31630,18 @@ END_IF</xhtml>
                                       </Parameter>
                                       <Parameter ParameterId="805306384" type="std:BOOL" IndexInDevDesc="3">
                                         <Attributes />
-                                        <Value name="_x0038_05306384" visiblename="CheckProductID" desc="CheckProductID">TRUE</Value>
+                                        <Value name="_x0038_05306384" visiblename="CheckProductID" desc="CheckProductID">True</Value>
                                         <Name>CheckProductID</Name>
                                         <Description>CheckProductID</Description>
                                       </Parameter>
                                       <Parameter ParameterId="805306400" type="std:BOOL" IndexInDevDesc="4">
                                         <Attributes />
-                                        <Value name="_x0038_05306400" visiblename="CheckVendorID">TRUE</Value>
+                                        <Value name="_x0038_05306400" visiblename="CheckVendorID">True</Value>
                                         <Name>CheckVendorID</Name>
                                       </Parameter>
                                       <Parameter ParameterId="805306408" type="std:BYTE" IndexInDevDesc="5">
                                         <Attributes />
-                                        <Value name="_x0038_05306408" visiblename="CheckRevisionNbr" desc="CheckVendorID">1</Value>
+                                        <Value name="_x0038_05306408" visiblename="CheckRevisionNbr" desc="CheckVendorID">0</Value>
                                         <Name>CheckRevisionNbr</Name>
                                         <Description>CheckVendorID</Description>
                                       </Parameter>
@@ -31679,23 +31737,23 @@ END_IF</xhtml>
                                         <Description>AutoIncr Address of the Slave</Description>
                                       </Parameter>
                                       <Parameter ParameterId="1074855938" type="std:WORD">
-                                        <Attributes download="false" />
-                                        <Value name="_x0031_074855938" visiblename="StationAlias">1002</Value>
+                                        <Attributes />
+                                        <Value name="_x0031_074855938" visiblename="StationAlias">1030</Value>
                                         <Name>StationAlias</Name>
                                       </Parameter>
                                       <Parameter ParameterId="1074855939" type="std:BOOL">
-                                        <Attributes download="false" />
-                                        <Value name="_x0031_074855939" visiblename="Optional">False</Value>
+                                        <Attributes />
+                                        <Value name="_x0031_074855939" visiblename="Optional">True</Value>
                                         <Name>Optional</Name>
                                       </Parameter>
                                       <Parameter ParameterId="1074855941" type="std:UINT">
                                         <Attributes download="false" />
-                                        <Value name="_x0031_074855941" visiblename="DeviceIdenticationADO">0</Value>
+                                        <Value name="_x0031_074855941" visiblename="DeviceIdenticationADO">18</Value>
                                         <Name>DeviceIdenticationADO</Name>
                                       </Parameter>
                                       <Parameter ParameterId="1074855942" type="std:USINT">
-                                        <Attributes download="false" />
-                                        <Value name="_x0031_074855942" visiblename="DeviceIdenticationMode">0</Value>
+                                        <Attributes />
+                                        <Value name="_x0031_074855942" visiblename="DeviceIdenticationMode">1</Value>
                                         <Name>DeviceIdenticationMode</Name>
                                       </Parameter>
                                       <Parameter ParameterId="1074855968" type="std:UINT">
@@ -36303,10 +36361,9 @@ END_IF</xhtml>
           <PlaceholderRedirection Placeholder="SysProcess" Redirection="SysProcess, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="System_VisuElemsWinControls" Redirection="VisuElemsWinControls, 4.10.0.0 (System)" />
           <PlaceholderRedirection Placeholder="CmpCodeMeter" Redirection="NotImplementedByDevice, 3.5.17.0 (System)" />
-          <PlaceholderRedirection Placeholder="CAA Tick" Redirection="CAA Tick Extern, 3.5.17.0 (CAA Technical Workgroup)" />
+          <PlaceholderRedirection Placeholder="SysFile" Redirection="SysFile, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="CmpApp" Redirection="CmpApp, 3.5.21.0 (System)" />
           <PlaceholderRedirection Placeholder="ElementCollections" Redirection="Element Collections, 4.0.0.0 (CODESYS)" />
-          <PlaceholderRedirection Placeholder="CmpUserMgr Implementation" Redirection="CmpUserMgr Implementation, 3.5.22.0 (System)" />
           <PlaceholderRedirection Placeholder="CmpCrypto Implementation" Redirection="NotImplementedByDevice, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="CAA Callback" Redirection="CAA Callback Extern, 3.5.17.0 (CAA Technical Workgroup)" />
           <PlaceholderRedirection Placeholder="SysTarget" Redirection="SysTarget, 3.5.17.0 (System)" />
@@ -36320,14 +36377,15 @@ END_IF</xhtml>
           <PlaceholderRedirection Placeholder="CAA Behaviour Model" Redirection="CAA Behaviour Model, 3.5.19.0 (CAA Technical Workgroup)" />
           <PlaceholderRedirection Placeholder="System_VisuElem3DPath" Redirection="VisuElem3DPath, 4.7.0.0 (System)" />
           <PlaceholderRedirection Placeholder="CAA Types" Redirection="CAA Types Extern, 3.5.17.0 (CAA Technical Workgroup)" />
-          <PlaceholderRedirection Placeholder="SysTask" Redirection="SysTask, 3.5.22.0 (System)" />
+          <PlaceholderRedirection Placeholder="CAA Storage Imp" Redirection="3S Storage, 3.5.17.0 (3S - Smart Software Solutions GmbH)" />
           <PlaceholderRedirection Placeholder="SysTime" Redirection="SysTime, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="System_VisuElemXYChart" Redirection="VisuElemXYChart, 4.10.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="SysTask" Redirection="SysTask, 3.5.22.0 (System)" />
           <PlaceholderRedirection Placeholder="Rts Service Handler" Redirection="Rts Service Handler, 3.5.17.0 (3S - Smart Software Solutions GmbH)" />
           <PlaceholderRedirection Placeholder="System_VisuElemTextEditor" Redirection="VisuElemTextEditor, 4.8.0.0 (System)" />
           <PlaceholderRedirection Placeholder="CAA TickUtil" Redirection="CAA TickUtil Extern, 3.5.17.0 (CAA Technical Workgroup)" />
           <PlaceholderRedirection Placeholder="Standard64" Redirection="Standard64, 3.5.20.0 (System)" />
-          <PlaceholderRedirection Placeholder="SysTimeCore" Redirection="SysTimeCore, 3.5.17.0 (System)" />
+          <PlaceholderRedirection Placeholder="CmpUserMgr Implementation" Redirection="CmpUserMgr Implementation, 3.5.22.0 (System)" />
           <PlaceholderRedirection Placeholder="System_VisuElemsSpecialControls" Redirection="VisuElemsSpecialControls, 4.7.0.0 (System)" />
           <PlaceholderRedirection Placeholder="SysShm" Redirection="SysShm, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="System_VisuInputs" Redirection="VisuInputs, 4.7.0.0 (System)" />
@@ -36348,8 +36406,8 @@ END_IF</xhtml>
           <PlaceholderRedirection Placeholder="System_VisuElemTrace" Redirection="VisuElemTrace, 4.10.0.0 (System)" />
           <PlaceholderRedirection Placeholder="System_VisuElemCamDisplayer" Redirection="VisuElemCamDisplayer, 4.7.0.0 (System)" />
           <PlaceholderRedirection Placeholder="CmpDynamicText" Redirection="CmpDynamicText, 3.5.20.0 (System)" />
+          <PlaceholderRedirection Placeholder="CAA Tick" Redirection="CAA Tick Extern, 3.5.17.0 (CAA Technical Workgroup)" />
           <PlaceholderRedirection Placeholder="FloatingPointUtils" Redirection="FloatingPointUtils, 4.0.0.0 (System)" />
-          <PlaceholderRedirection Placeholder="SysFile" Redirection="SysFile, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="System_VisuNativeControl" Redirection="VisuNativeControl, 4.9.0.0 (System)" />
           <PlaceholderRedirection Placeholder="Collections" Redirection="Collections, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="CmpSrv" Redirection="CmpSrv, 3.5.17.0 (System)" />
@@ -36357,10 +36415,10 @@ END_IF</xhtml>
           <PlaceholderRedirection Placeholder="CmpVisuHandler" Redirection="CmpVisuHandler, 3.5.22.0 (System)" />
           <PlaceholderRedirection Placeholder="CAA MemBlockMan" Redirection="NotImplementedByDevice, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="SysMem" Redirection="SysMem, 3.5.17.0 (System)" />
-          <PlaceholderRedirection Placeholder="CAA Storage Imp" Redirection="3S Storage, 3.5.17.0 (3S - Smart Software Solutions GmbH)" />
           <PlaceholderRedirection Placeholder="CmpBitmapPool" Redirection="CmpBitmapPool, 3.5.17.0 (System)" />
           <PlaceholderRedirection Placeholder="VisuSymbols" Redirection="VisuSymbols, 4.5.0.0 (System)" />
           <PlaceholderRedirection Placeholder="System_VisuElemsAlarm" Redirection="VisuElemsAlarm, 4.10.0.0 (System)" />
+          <PlaceholderRedirection Placeholder="SysTimeCore" Redirection="SysTimeCore, 3.5.17.0 (System)" />
         </PlaceholderRedirections>
         <addData>
           <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
