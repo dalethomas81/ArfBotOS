@@ -18,8 +18,11 @@ jobs:
       - name: ArfBot.xml must differ from main
         run: |
           set -euo pipefail
-          if git diff --quiet origin/main...HEAD -- Codesys/ArfBot.xml; then
-            echo "::error::Codesys/ArfBot.xml has no diff vs main."
+          # Two-dot (or blob) compare: file on main vs file in this checkout.
+          # Three-dot (A...B) uses a merge-base; with criss-cross main/dev merges
+          # git can pick a base equal to HEAD and report an empty diff.
+          if git diff --quiet origin/main HEAD -- Codesys/ArfBot.xml; then
+            echo "::error::Codesys/ArfBot.xml is identical to main."
             echo "Export PLCopen XML (Project → Export) after changing the PLC project or stamping GVL_Version.sPlcVersion."
             exit 1
           fi
@@ -28,12 +31,12 @@ jobs:
       - name: If ArfBot.project changed, XML must also change
         run: |
           set -euo pipefail
-          if git diff --quiet origin/main...HEAD -- Codesys/ArfBot.project; then
+          if git diff --quiet origin/main HEAD -- Codesys/ArfBot.project; then
             echo "ArfBot.project unchanged; skip paired-export check."
             exit 0
           fi
-          if git diff --quiet origin/main...HEAD -- Codesys/ArfBot.xml; then
-            echo "::error::ArfBot.project changed but ArfBot.xml did not. Re-export PLCopen XML."
+          if git diff --quiet origin/main HEAD -- Codesys/ArfBot.xml; then
+            echo "::error::ArfBot.project changed but ArfBot.xml is identical to main. Re-export PLCopen XML."
             exit 1
           fi
           echo "Project and XML both changed."

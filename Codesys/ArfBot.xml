@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-12T16:46:07.7346949" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-12T16:44:52.4520695" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-12T16:59:03.7424811" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-12T16:58:41.7952343" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -1578,7 +1578,7 @@ RESERVED: INT:=46;</xhtml>
                 <string length="80" />
               </type>
               <initialValue>
-                <simpleValue value="'v2.2026.37.0-RobotAnimator-7-gcb5df5e'" />
+                <simpleValue value="'v2.2026.37.1-AlarmHistory-5-g06119e5'" />
               </initialValue>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> git describe --tags --always --dirty
