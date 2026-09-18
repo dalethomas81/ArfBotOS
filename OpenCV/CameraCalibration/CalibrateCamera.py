@@ -22,7 +22,9 @@ def capture_image(debug, width, height):
         config = camera.create_preview_configuration(main={"size": (width, height), "format": "RGB888"})
         camera.configure(config)
         camera.start()
-        time.sleep(0.1)
+        # First frames are often dark while auto-exposure settles.
+        time.sleep(0.4)
+        camera.capture_array()
         image = camera.capture_array()
         camera.stop()
         camera.close()
@@ -255,6 +257,158 @@ def rotate_coordinates_clockwise(CoordinatesToRotate, CoordinatesToRotateAround,
     # Return the new coordinates as a list of floats
     return [float(new_x), float(new_y)]
     
+def _log(msg):
+    sys.stderr.write(str(msg) + "\n")
+    sys.stderr.flush()
+
+def _as_corner_array(corners):
+    corners = numpy.asarray(corners, dtype=numpy.float32)
+    if corners.ndim == 2:
+        corners = corners.reshape(-1, 1, 2)
+    elif corners.ndim == 3 and corners.shape[1] != 1:
+        corners = corners.reshape(-1, 1, 2)
+    return corners
+
+def _gray_views(gray):
+    views = [("gray", gray)]
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    views.append(("clahe", clahe.apply(gray)))
+    views.append(("invert", cv2.bitwise_not(gray)))
+    return views
+
+def _sb_flags(exhaustive):
+    flags = 0
+    if hasattr(cv2, "CALIB_CB_NORMALIZE_IMAGE"):
+        flags |= cv2.CALIB_CB_NORMALIZE_IMAGE
+    if hasattr(cv2, "CALIB_CB_ACCURACY"):
+        flags |= cv2.CALIB_CB_ACCURACY
+    if exhaustive and hasattr(cv2, "CALIB_CB_EXHAUSTIVE"):
+        flags |= cv2.CALIB_CB_EXHAUSTIVE
+    return flags
+
+def _try_sb(image, pattern_size, exhaustive):
+    if not hasattr(cv2, "findChessboardCornersSB"):
+        return False, None
+    flags = _sb_flags(exhaustive)
+    try:
+        ret, corners = cv2.findChessboardCornersSB(image, pattern_size, flags=flags)
+    except TypeError:
+        ret, corners = cv2.findChessboardCornersSB(image, pattern_size, flags)
+    if ret:
+        return True, _as_corner_array(corners)
+    return False, None
+
+def _try_classic(image, pattern_size):
+    # FAST_CHECK is omitted: it false-negatives dense and square boards.
+    flags = cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_NORMALIZE_IMAGE
+    ret, corners = cv2.findChessboardCorners(image, pattern_size, flags=flags)
+    if ret:
+        return True, _as_corner_array(corners)
+    return False, None
+
+def _find_at_scale(gray, pattern_size, use_exhaustive):
+    views = _gray_views(gray)
+
+    for name, img in views:
+        found, corners = _try_sb(img, pattern_size, False)
+        if found:
+            _log("checkerboard found with findChessboardCornersSB (%s)" % name)
+            return True, corners, hasattr(cv2, "CALIB_CB_ACCURACY")
+
+    for name, img in views:
+        found, corners = _try_classic(img, pattern_size)
+        if found:
+            _log("checkerboard found with findChessboardCorners (%s)" % name)
+            return True, corners, False
+
+    if use_exhaustive:
+        for name, img in views[:2]:
+            found, corners = _try_sb(img, pattern_size, True)
+            if found:
+                _log("checkerboard found with findChessboardCornersSB exhaustive (%s)" % name)
+                return True, corners, hasattr(cv2, "CALIB_CB_ACCURACY")
+
+    return False, None, False
+
+def estimate_inner_corners(gray):
+    """Rough inner-corner count from checker period. Overlay hint only."""
+    h, w = gray.shape[:2]
+    k = 15
+    gray_f = gray.astype(numpy.float32)
+    mu = cv2.blur(gray_f, (k, k))
+    var = cv2.blur(gray_f * gray_f, (k, k)) - mu * mu
+    var_n = cv2.normalize(var, None, 0, 255, cv2.NORM_MINMAX).astype(numpy.uint8)
+    ys, xs = numpy.where(var_n > 40)
+    if xs.size < 100:
+        return None
+    crop = gray[int(ys.min()):int(ys.max()) + 1, int(xs.min()):int(xs.max()) + 1]
+    if crop.size == 0 or min(crop.shape[:2]) < 20:
+        return None
+    row = cv2.GaussianBlur(crop[crop.shape[0] // 2:crop.shape[0] // 2 + 1, :].astype(numpy.float32), (1, 5), 0).ravel()
+    row = row - row.mean()
+    corr = numpy.correlate(row, row, mode="full")
+    corr = corr[corr.size // 2:]
+    period = None
+    for i in range(4, min(80, corr.size - 1)):
+        if corr[i] > corr[i - 1] and corr[i] > corr[i + 1] and corr[i] > 0.2 * corr[0]:
+            period = i
+            break
+    if period is None:
+        return None
+    square_px = period / 2.0
+    if square_px < 3:
+        return None
+    inner_x = max(1, int(round(crop.shape[1] / square_px)) - 1)
+    inner_y = max(1, int(round(crop.shape[0] / square_px)) - 1)
+    return square_px, inner_x, inner_y, (w, h)
+
+def find_checkerboard(gray, pattern_size):
+    """Locate inner chessboard corners.
+
+    Square high-count boards often fail findChessboardCorners with
+    CALIB_CB_FAST_CHECK. Try the sector-based detector first, then classic
+    detection without FAST_CHECK. On small captures, retry at 2x/3x because
+    5 mm squares at 640x400 are only a few pixels.
+    """
+    inner = pattern_size[0] * pattern_size[1]
+    square = pattern_size[0] == pattern_size[1]
+    use_exhaustive = square or inner >= 80
+    patterns = [pattern_size]
+    if pattern_size[0] != pattern_size[1]:
+        patterns.append((pattern_size[1], pattern_size[0]))
+
+    scales = [1.0]
+    if min(gray.shape[:2]) < 1000:
+        scales.extend([2.0, 3.0])
+
+    for scale in scales:
+        if scale == 1.0:
+            img = gray
+        else:
+            img = cv2.resize(gray, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
+            _log("retrying checkerboard detect at %.1fx (%sx%s)" % (scale, img.shape[1], img.shape[0]))
+        for pattern in patterns:
+            found, corners, sub = _find_at_scale(img, pattern, use_exhaustive and scale == 1.0)
+            if found:
+                if scale != 1.0:
+                    corners = corners / scale
+                if pattern != pattern_size:
+                    _log("found swapped inner corners %sx%s" % (pattern[0], pattern[1]))
+                return True, corners, sub, pattern
+
+    _log("checkerboard not found for inner corners %sx%s" % (pattern_size[0], pattern_size[1]))
+    return False, None, False, pattern_size
+
+def subpix_window(corners, pattern_size):
+    avg = calculate_average_square_size(True, corners, pattern_size)
+    if avg is None or avg <= 0:
+        return (5, 5)
+    size = int(round(avg / 3.0))
+    if size % 2 == 0:
+        size -= 1
+    size = max(3, min(11, size))
+    return (size, size)
+
 def drawOrientation(image, origin, rotation):
     # y-green x-red z-blue
     start_point = (int(origin[0]), int(origin[1]))
@@ -290,38 +444,35 @@ def main(checkerboard, squaresize, resultfile, debug, width, height):
     # Vector for 2D points
     twodpoints = []
 
-    # 3D points real world coordinates
-    objectp3d = numpy.zeros((1, checkerboard[0]
-                        * checkerboard[1],
-                        3), numpy.float32)
-    objectp3d[0, :, :2] = numpy.mgrid[0:checkerboard[0],
-                                0:checkerboard[1]].T.reshape(-1, 2)
-    objectp3d = objectp3d * squaresize
     prev_img_shape = None
 
     image = capture_image(debug, width, height)
     grayColor = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Find the chess board corners
-    # If desired number of corners are
-    # found in the image then ret = true
-    ret, corners = cv2.findChessboardCorners(
-                    grayColor, checkerboard,
-                    cv2.CALIB_CB_ADAPTIVE_THRESH
-                    + cv2.CALIB_CB_FAST_CHECK +
-                    cv2.CALIB_CB_NORMALIZE_IMAGE)
+    ret, corners, already_subpixel, found_pattern = find_checkerboard(grayColor, checkerboard)
 
     # If desired number of corners can be detected then,
     # refine the pixel coordinates and display
     # them on the images of checker board
     if ret == True:
+        checkerboard = found_pattern
+        objectp3d = numpy.zeros((1, checkerboard[0]
+                            * checkerboard[1],
+                            3), numpy.float32)
+        objectp3d[0, :, :2] = numpy.mgrid[0:checkerboard[0],
+                                    0:checkerboard[1]].T.reshape(-1, 2)
+        objectp3d = objectp3d * squaresize
         
         threedpoints.append(objectp3d)
 
-        # Refining pixel coordinates
-        # for given 2d points.
-        corners2 = cv2.cornerSubPix(
-            grayColor, corners, (11, 11), (-1, -1), criteria)
+        # SB with CALIB_CB_ACCURACY is already sub-pixel. A fixed 11x11
+        # cornerSubPix window is too large for 5 mm squares.
+        if already_subpixel:
+            corners2 = corners
+        else:
+            win = subpix_window(corners, checkerboard)
+            corners2 = cv2.cornerSubPix(
+                grayColor, corners, win, (-1, -1), criteria)
         
         # get pixel average so we can calulate how many pixels per user units
         #pixel_average = get_pixel_average(corners2, checkerboard)
@@ -368,6 +519,19 @@ def main(checkerboard, squaresize, resultfile, debug, width, height):
         pixel_ratio = -1
         rotation_offset = -1
         reprojection_error = -1
+        fail = image.copy()
+        h, w = fail.shape[:2]
+        scale = max(0.5, min(w, h) / 640.0)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        label = "checkerboard not found %sx%s" % (checkerboard[0], checkerboard[1])
+        cv2.putText(fail, label, (16, int(32 * scale) + 8), font, 0.7 * scale, (0, 0, 255), max(1, int(2 * scale)))
+        hint = "%sx%s capture" % (w, h)
+        estimate = estimate_inner_corners(grayColor)
+        if estimate is not None:
+            square_px, inner_x, inner_y, _ = estimate
+            hint = "%sx%s  ~%.0fpx/sq  try %sx%s inner" % (w, h, square_px, inner_x, inner_y)
+        cv2.putText(fail, hint, (16, int(64 * scale) + 8), font, 0.55 * scale, (0, 0, 255), max(1, int(2 * scale)))
+        cv2.imwrite(resultfile, fail)
         
     return pixel_ratio, rotation_offset, reprojection_error
 

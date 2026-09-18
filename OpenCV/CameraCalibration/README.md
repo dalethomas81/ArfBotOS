@@ -11,8 +11,12 @@ At a high level the script runs this pipeline:
    - In debug mode it loads `Input.jpg`.
    - In normal mode it captures a frame using `Picamera2`.
 3. Convert the image to grayscale.
-4. Detect checkerboard corners with `cv2.findChessboardCorners()`.
-5. Refine the detected corners with `cv2.cornerSubPix()`.
+4. Detect checkerboard corners with `find_checkerboard()`:
+   - `cv2.findChessboardCornersSB()` first (better on dense / square boards such as 17x17)
+   - lighting-normalized views (CLAHE and inverted)
+   - classic `cv2.findChessboardCorners()` without `CALIB_CB_FAST_CHECK`
+   - exhaustive SB search last for square or high-count boards
+5. Refine classic detections with `cv2.cornerSubPix()` using a window scaled to square size. SB detections with `CALIB_CB_ACCURACY` are already sub-pixel.
 6. Build the 3D checkerboard reference points using the supplied checkerboard size and physical square size.
 7. Run `cv2.calibrateCamera()` to compute the intrinsic matrix, distortion coefficients, and reprojection error.
 8. Derive additional vision alignment values from the detected checkerboard:
@@ -26,7 +30,7 @@ At a high level the script runs this pipeline:
 11. Undistort the result image using the newly computed calibration.
 12. Save the annotated image and print a `CAL` summary line.
 
-If the checkerboard cannot be found, the script returns `-1` values for the computed outputs and does not generate a useful calibration result.
+If the checkerboard cannot be found, the script returns `-1` values, writes the raw capture to the result image with a "not found" overlay, and logs the detector attempts to stderr (`vision_log.txt` on the PLC path).
 
 ## Inputs
 
@@ -152,4 +156,5 @@ That makes it useful for tuning checkerboard detection on a desktop machine befo
 - This script calibrates from a single detected checkerboard image, not from a batch of multiple calibration views.
 - `filter_image()` contains an optional crop path, but the active calibration flow uses undistortion without cropping.
 - There are helper functions for rotating and cropping images that are not used in the current main path.
-- On failure to find the checkerboard, the script reports `-1` values rather than throwing an exception.
+- On failure to find the checkerboard, the script reports `-1` values, writes the raw capture with a "not found" overlay, and logs detector attempts to stderr.
+- `X`/`Y` are inner corners, not squares. An 18x18 square plate is `17 17`. Square high-count boards use `findChessboardCornersSB` because the classic FAST_CHECK path often misses them.
