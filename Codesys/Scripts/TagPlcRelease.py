@@ -6,7 +6,7 @@
 #   python Codesys\Scripts\TagPlcRelease.py --dry-run
 #   python Codesys\Scripts\TagPlcRelease.py --no-push
 #
-# IronPython (CODESYS) must not use subprocess — that raises
+# IronPython (CODESYS) must not use subprocess - that raises
 # DeprecationWarning: sys.exc_clear() not supported in 3.x as Script Messages errors.
 from __future__ import print_function
 import argparse
