@@ -1,9 +1,11 @@
 {% extends "base.html" %}
-{% block page_class %}centered{% endblock %}
+{% block page_class %}centered vision-page{% endblock %}
 
 {% block content %}
-    <h1>Saved Templates</h1>
-    <p>Templates live in /var/opt/codesys/PlcLogic/Application/Vision/Templates</p>
+    <h1 class="vision-title">Templates</h1>
+    {% set vision_tab = 'templates' %}
+    {% include "vision/_tabs.html" %}
+    <p class="muted">Saved crops in /var/opt/codesys/PlcLogic/Application/Vision/Templates. Names include the capture size (name_WIDTHxHEIGHT.jpg).</p>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script type="text/javascript">

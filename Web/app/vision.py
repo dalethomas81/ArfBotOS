@@ -227,14 +227,20 @@ def delete_template(filename=None):
     return data, 200
 
 
-@bp.route("/vision/files")
-@bp.route("/vision/files/")
-def files():
+@bp.route("/vision/templates")
+@bp.route("/vision/templates/")
+def templates():
     folder = upload_folder()
     if not os.path.exists(folder):
         os.makedirs(folder)
     filenames = os.listdir(folder)
     return render_template("vision/saved_templates.html", title="Templates", files=filenames)
+
+
+@bp.route("/vision/files")
+@bp.route("/vision/files/")
+def files():
+    return redirect(url_for("vision.templates"))
 
 
 @bp.route("/vision/files/<path:filename>")

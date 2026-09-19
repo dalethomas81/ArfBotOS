@@ -4,8 +4,8 @@ One Flask app on port 5000 that hosts the operator pages:
 
 | URL | Page |
 | --- | --- |
-| `http://<pi>:5000/vision` | Vision template capture and locate ROI |
-| `http://<pi>:5000/vision/files` | Saved templates |
+| `http://<pi>:5000/vision` | Vision: Capture, ROI, and Templates |
+| `http://<pi>:5000/vision/templates` | Saved templates (old `/vision/files` redirects here) |
 | `http://<pi>:5000/animator` | 6-axis robot animator (joints, TCP / MCS / PCS, Euler convention) |
 | `http://<pi>:5000/bluetooth` | Bluetooth pairing (DualSense and other adapters) |
 | `http://<pi>:5000/vision/output_sized?width=365&height=255` | HMI vision result image |
