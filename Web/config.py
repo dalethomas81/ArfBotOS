@@ -22,3 +22,7 @@ class Config(object):
         "ARFBOT_VISU_OUTPUT",
         "/var/opt/codesys/PlcLogic/visu/outputimage.jpg",
     )
+    ROI_FILE = os.environ.get(
+        "ARFBOT_ROI_FILE",
+        "/var/opt/codesys/PlcLogic/Application/Vision/roi.yaml",
+    )

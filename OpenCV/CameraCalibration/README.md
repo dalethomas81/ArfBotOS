@@ -114,6 +114,8 @@ The script supports these arguments:
 - `-w` or `--width`: capture width, default `3280`
 - `-h` or `--height`: capture height, default `2464`
 
+On the IMX477, size picks a sensor mode (FOV changes). 640×400 is a wide 2028×1080 crop; 640×640 is a zoomed 1332×990 center crop. Use the same size as Locate. See `Web/README.md`.
+
 Example:
 
 ```bash
@@ -148,7 +150,7 @@ That makes it useful for tuning checkerboard detection on a desktop machine befo
 ## Relationship To Other Files
 
 - `cal.yaml` is the important output of this script.
-- `roi.yaml` exists in this folder, but this script does not currently write or use it during the active code path.
+- `roi.yaml` exists in this folder, but this script does not currently write or use it during the active code path. Locate's live `roi.yaml` is next to the vision scripts and is edited from the Vision web utility.
 - The `patterns` folder is present for calibration-related assets, but the current script directly reads a captured image rather than iterating a set of pattern files.
 
 ## Current Notes

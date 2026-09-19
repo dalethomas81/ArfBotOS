@@ -47,12 +47,14 @@ This folder already contains sample inputs including:
 
 The calibration data comes from [`CalibrateCamera.py`](c:/Users/dalet/Github/ArfBotOS/OpenCV/CameraCalibration/CalibrateCamera.py) in `OpenCV/CameraCalibration/`. Running that script produces a `cal.yaml` file with the camera matrix, distortion coefficients, pixel ratio, rotation offset, and reference points used here for undistortion and coordinate conversion.
 
+Capture width×height must match calibration and ROI. On the IMX477, libcamera picks a different sensor mode per size (640×400 → 2028×1080 wide FOV; 640×640 → 1332×990 center crop / zoomed in; 2000×2000 → 4056×2160 then a square crop). See `Web/README.md`.
+
 `roi.yaml` provides the active search window:
 
 - `top_left`
 - `bot_right`
 
-The search happens only inside the ROI from `roi.yaml`, not across the whole captured image. That keeps the search faster and limits false positives.
+The search happens only inside the ROI from `roi.yaml`, not across the whole captured image. That keeps the search faster and limits false positives. The Vision web utility (`/vision`, ROI tab) writes this file. Coordinates are in capture pixels and must fit the Locate width/height. If the window sits outside the capture, locate writes a "ROI outside" overlay and finds nothing; a window that only partly overlaps is clipped to the frame.
 
 In this folder, the checked-in `cal.yaml` is an example calibration output. If the camera, lens, mounting angle, or working distance changes, `CalibrateCamera.py` should be run again and the resulting `cal.yaml` should replace the old one for accurate results.
 
