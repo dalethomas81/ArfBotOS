@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-13T13:43:53.5209151" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-13T13:43:53.3511968" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-18T21:38:01.8745165" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-18T21:38:01.7004818" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -1733,7 +1733,7 @@ END_VAR</xhtml>
                 <string length="80" />
               </type>
               <initialValue>
-                <simpleValue value="'v2.2026.37.1-AlarmHistory-23-gb1a767d-dirty'" />
+                <simpleValue value="'v2.2026.38.0-RoiEditor'" />
               </initialValue>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> git describe --tags --always --dirty (does not get the latest tag from main)
@@ -1762,7 +1762,7 @@ END_VAR</xhtml>
 VAR_GLOBAL
     // git describe --tags --always --dirty (does not get the latest tag from main)
     // git describe --tags --always main (gets the latest tag from main but the commit is wrong because its from the branch we work from - dev)
-    sPlcVersion : STRING(80) := 'v2.2026.37.1-AlarmHistory-23-gb1a767d-dirty';
+    sPlcVersion : STRING(80) := 'v2.2026.38.0-RoiEditor';
     sRelease : STRING(80);
     sVersionLine : STRING(160);
 END_VAR</xhtml>
@@ -1788,7 +1788,7 @@ END_VAR</xhtml>
                         <derived name="SMC_ORI_CONVENTION" />
                       </type>
                       <initialValue>
-                        <simpleValue value="SMC_ORI_CONVENTION.ZYX" />
+                        <simpleValue value="SMC_ORI_CONVENTION.ZYZ" />
                       </initialValue>
                     </variable>
                     <variable name="Filename">
@@ -1831,7 +1831,7 @@ END_VAR</xhtml>
                       <xhtml xmlns="http://www.w3.org/1999/xhtml">TYPE ST_CncCmd :
 STRUCT
 	StartPos: 		SMC_PosInfo;				
-	OriConvention: 	SMC_ORI_CONVENTION:=SMC_ORI_CONVENTION.ZYX;
+	OriConvention: 	SMC_ORI_CONVENTION:=SMC_ORI_CONVENTION.ZYZ;
 	Filename: 		STRING:='CNC_FromFile.cnc';
 	CoordinateType: DUT_Command_CoordinateType:=DUT_Command_CoordinateType.Variable;
 	ArrayIndex: 	INT:=GVL.DEC_START_POS;
@@ -4749,7 +4749,7 @@ IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
 	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.Y := 0.0;
 	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.Z := 0.0;
 	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.B := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.B := 90.0;
 	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.C := 0.0;
 	
 	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.X := 0.0;
@@ -7297,7 +7297,10 @@ IoConfig_Globals.J2.in.bLimitPos := rx_j2_limit;
 IoConfig_Globals.J3.in.bLimitPos := TRUE;
 IoConfig_Globals.J4.in.bLimitPos := TRUE;
 IoConfig_Globals.J5.in.bLimitPos := TRUE;
-IoConfig_Globals.J6.in.bLimitPos := rx_j6_limit;</xhtml>
+//IoConfig_Globals.J6.in.bLimitPos := rx_j6_limit;
+// J6 home flag is not a travel stop — 360 deg tool-Z / cone orbits will cross it.
+// Homing still uses rx_j6_limit as SMC_Homing.bReferenceSwitch (NOT J6_Limit).
+IoConfig_Globals.J6.in.bLimitPos := TRUE;</xhtml>
                         </ST>
                       </body>
                       <InterfaceAsPlainText>
@@ -12891,7 +12894,6 @@ VAR
 	_SMC_CheckVelocities: SMC_CheckVelocities;
 	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
-    // ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
 	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYZ;
 	_ExecuteRtrig: R_TRIG;
 	_Execute: BOOL;
@@ -12961,7 +12963,6 @@ VAR
 	_SMC_CheckVelocities: SMC_CheckVelocities;
 	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
-    // ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
 	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYZ;
 	_ExecuteRtrig: R_TRIG;
 	_Execute: BOOL;
@@ -13024,9 +13025,6 @@ END_VAR
                       <initialValue>
                         <simpleValue value="SMC_ORI_CONVENTION.ZYZ" />
                       </initialValue>
-                      <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> ATTENTION: ZYZ is the only orientation convention that was reliable during testing.</xhtml>
-                      </documentation>
                     </variable>
                     <variable name="_ExecuteRtrig">
                       <type>
@@ -13084,7 +13082,6 @@ VAR
 	_SMC_CheckVelocities: SMC_CheckVelocities;
 	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
-    // ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
 	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYZ;
 	_ExecuteRtrig: R_TRIG;
 	_Execute: BOOL;
@@ -13136,7 +13133,6 @@ VAR
 	_SMC_CheckVelocities: SMC_CheckVelocities;
 	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
-    // ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
 	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYZ;
 	_ExecuteRtrig: R_TRIG;
 	_Execute: BOOL;
@@ -13224,7 +13220,7 @@ _SMC_NCInterpreter(
 	nSizeOutQueue:= SIZEOF(_SMC_GEOINFO), 
 	pbyBufferOutQueue:= ADR(_SMC_GEOINFO), 
 	bEnableSyntaxChecks:= , 
-	eOriConv:= _OriConvention, // ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
+	eOriConv:= _OriConvention,
 	dCircleTolerance:= , 
 	pInterpreterStack:= , 
 	nInterpreterStackSizeBytes:= , 
@@ -13454,7 +13450,6 @@ VAR
 	_SMC_CheckVelocities: SMC_CheckVelocities;
 	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
-    // ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
 	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYZ;
 	_ExecuteRtrig: R_TRIG;
 	_Execute: BOOL;
@@ -14075,7 +14070,7 @@ CASE OriConvention OF
     SMC_ORI_CONVENTION.ZYX:
         // yaw(Z), pitch(Y) and roll(X)
         SMC_Matrix3_ToYawPitchRoll( mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
-                                    dRoll_rad=&gt; Position.dA, dPitch_rad=&gt; Position.dB, dYaw_rad=&gt; Position.dC);
+                                    dYaw_rad=&gt; Position.dA, dPitch_rad=&gt; Position.dB, dRoll_rad=&gt; Position.dC);
                                     Position.dA := F_RadToDeg(Position.dA);
                                     Position.dB := F_RadToDeg(Position.dB);
                                     Position.dC := F_RadToDeg(Position.dC);
@@ -17684,16 +17679,27 @@ _Vision(sIpAddress:= VisionSystemIpAddress, uPort:= VisionSystemPort);
 //
 _VisionBusyRtrig(clk:=_Vision.P_Busy);
 IF _VisionBusyRtrig.Q THEN
-	VisionStateText := 'BUSY';
+	VisionStateText := 'Busy';
 END_IF
 
 //
 _VisionDoneRtrig(clk:=_Vision.P_Done);
 IF _VisionDoneRtrig.Q THEN
-	VisionStateText := 'DONE';
-	VisionStateText := CONCAT(VisionStateText, ' Found ');
-	VisionStateText := CONCAT(VisionStateText, UDINT_TO_STRING(_PartsCount));
-	VisionStateText := CONCAT(VisionStateText, ' parts');
+	VisionStateText := 'Done';
+    
+    IF _ResultPosition_CAL &gt; 0 THEN
+        VisionStateText := CONCAT(VisionStateText, ': Calibration Complete');
+        //VisionStateText := CONCAT(VisionStateText, _Vision.P_Response); // TODO add the response output?
+        
+    ELSIF _ResultPosition_LOC &gt; 0 THEN 
+        VisionStateText := CONCAT(VisionStateText, ': Found ');
+        VisionStateText := CONCAT(VisionStateText, UDINT_TO_STRING(_PartsCount));
+        VisionStateText := CONCAT(VisionStateText, ' parts');
+        
+    ELSIF _ResultPosition_CAP &gt; 0 THEN
+        VisionStateText := CONCAT(VisionStateText, ': Capture complete');
+        
+    END_IF
 END_IF</xhtml>
                   </ST>
                 </body>
@@ -22411,7 +22417,7 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
@@ -22525,7 +22531,7 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
@@ -22587,6 +22593,9 @@ END_VAR
                       <initialValue>
                         <simpleValue value="SMC_ORI_CONVENTION.ZYX" />
                       </initialValue>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html</xhtml>
+                      </documentation>
                     </variable>
                     <variable name="_SMC_TrafoConfig_ArticulatedRobot_6DOF">
                       <type>
@@ -22711,7 +22720,7 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
@@ -22905,7 +22914,7 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
@@ -23039,7 +23048,7 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
@@ -23142,7 +23151,6 @@ CASE SUPER^._SeqMain OF
 	_STEP_COMMAND:
 		//
 		_CncCmdParser(Command:=Command);
-        // ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
 		_PlanPath.M_SetOriConvention(OriConvention:=_OriConvention);//_CncCmdParser.stCommand.OriConvention);
 		_PlanPath.M_SetStartPosition(StartPos:=_TrackPosition.Position);//_CncCmdParser.stCommand.StartPos);
 		_PlanPath.M_Execute(Filename:=_CncCmdParser.stCommand.Filename); // TODO I think we should be careful here. May need to sync CheckVelocities with the Interpolator
@@ -23262,7 +23270,6 @@ CASE WORD_TO_INT(_SMC_Interpolator.wM) OF
         
 END_CASE
 
-// ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
 _TrackPosition(
     OriConvention:=_OriConvention,
 	AxisGroup:=ArfBotAxisGroup,
@@ -23347,7 +23354,7 @@ _SMC_ControlAxisByPos_J4(
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
-	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ3, // this has to be negative for it to work right. the trafo function blocks just arent working right. (see notes above)
+	fSetPosition:= _SMC_Trafo_ArticulatedRobot_6DOF.dQ3,
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
@@ -23379,7 +23386,7 @@ _SMC_ControlAxisByPos_J6(
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
-	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ5, // this has to be negative for it to work right. the trafo function blocks just arent working right. (see notes above)
+	fSetPosition:= _SMC_Trafo_ArticulatedRobot_6DOF.dQ5,
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
@@ -23706,7 +23713,7 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
 	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
 	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
@@ -46826,13 +46833,13 @@ END_TYPE
                                       </Parameter>
                                       <Parameter ParameterId="1200" type="std:LREAL" IndexInDevDesc="6">
                                         <Attributes />
-                                        <Value name="_x0031_200" visiblename="fSWLimitPositive" desc="Software limit in positive direction">165</Value>
+                                        <Value name="_x0031_200" visiblename="fSWLimitPositive" desc="Software limit in positive direction">720</Value>
                                         <Name>fSWLimitPositive</Name>
                                         <Description>Software limit in positive direction</Description>
                                       </Parameter>
                                       <Parameter ParameterId="1201" type="std:LREAL" IndexInDevDesc="5">
                                         <Attributes />
-                                        <Value name="_x0031_201" visiblename="fSWLimitNegative" desc="Software limit in negative direction">-180</Value>
+                                        <Value name="_x0031_201" visiblename="fSWLimitNegative" desc="Software limit in negative direction">-720</Value>
                                         <Name>fSWLimitNegative</Name>
                                         <Description>Software limit in negative direction</Description>
                                       </Parameter>

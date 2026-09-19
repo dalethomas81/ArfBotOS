@@ -1,11 +1,17 @@
 {% extends "base.html" %}
-{% block page_class %}centered{% endblock %}
+{% block page_class %}centered vision-page{% endblock %}
 
 {% block content %}
-    <h1 class="vision-title">Click and Drag to Create a Template</h1>
+    <h1 class="vision-title" id="vision-title">Click and Drag to Create a Template</h1>
+
+    <div class="mode-toggle" role="tablist">
+        <button type="button" id="mode-template" class="active">Template</button>
+        <button type="button" id="mode-roi">ROI</button>
+    </div>
 
     <div id="results">
         <p id="current">pointer location: x: , y:</p>
+        <p id="roi-status">ROI: loading…</p>
     </div>
 
     <div class="controls">
@@ -18,84 +24,248 @@
         </form>
     </div>
 
+    <details class="capture-notes">
+        <summary>Capture size vs field of view (IMX477)</summary>
+        <p>libcamera picks a sensor mode from width×height, then center-crops to that aspect. Different sizes do not see the same scene. Use the same size for cal, ROI, templates, and Locate.</p>
+        <table>
+            <thead>
+                <tr><th>Requested</th><th>Sensor mode</th><th>Field of view</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>640×400</td><td>2028×1080</td><td>Full sensor width, 16:9. Widest of the small sizes.</td></tr>
+                <tr><td>640×640</td><td>1332×990</td><td>Center crop (~⅔ of the chip). Zoomed in; sides and some top/bottom are lost vs 640×400.</td></tr>
+                <tr><td>640×480</td><td>1332×990</td><td>Same cropped mode as 640×640.</td></tr>
+                <tr><td>1920×1080</td><td>2028×1080</td><td>Same wide 16:9 mode as 640×400.</td></tr>
+                <tr><td>2000×2000</td><td>4056×2160</td><td>Full-width 16:9, then a square crop of that.</td></tr>
+            </tbody>
+        </table>
+    </details>
+
     <div id="imgcontainer">
         <img class="img" id="cameraimage" src="{{ url_for('vision.captured_image') }}" alt="" />
         <canvas id="canvas" width="640" height="400"></canvas>
     </div>
 
-    <div class="controls">
+    <div class="controls" id="template-controls">
         <form>
             <label for="template_filename">Template Name:</label>
             <input type="text" id="template_filename" name="template_filename" />
-            <a href="#" id="save"><button type="button" class="primary">Save</button></a>
+            <a href="#" id="save"><button type="button" class="primary">Save Template</button></a>
         </form>
+    </div>
+
+    <div class="controls" id="roi-controls" hidden>
+        <button type="button" class="primary" id="save-roi">Save ROI</button>
+        <button type="button" class="secondary" id="reset-roi">Reset to Full Image</button>
     </div>
 
     <div id="croppedcontainer"></div>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script type="text/javascript">
-        var offsetLeft = 0; var offsetTop = 0;
-        var offsetHeight = 0; var offsetWidth = 0;
-        var startPointX = 0; var startPointY = 0;
-        var endPointX = 0; var endPointY = 0;
         var startPoint = [0.0, 0.0]; var endPoint = [0.0, 0.0];
         var captureWidth = 640; var captureHeight = 400;
+        var mode = "template";
+        var savedRoi = {x0: 0, y0: 0, x1: 640, y1: 400};
+        var pendingRoi = null;
 
         var canvas = document.getElementById('canvas');
         var ctx = canvas.getContext('2d');
-        var canvasx = $(canvas).offset().left;
-        var canvasy = $(canvas).offset().top;
         var last_mousex = last_mousey = 0;
         var mousex = mousey = 0;
         var mousedown = false;
 
+        function capturePoint(e) {
+            var rect = canvas.getBoundingClientRect();
+            var scaleX = canvas.width / Math.max(1, rect.width);
+            var scaleY = canvas.height / Math.max(1, rect.height);
+            var x = (e.clientX - rect.left) * scaleX;
+            var y = (e.clientY - rect.top) * scaleY;
+            x = Math.max(0, Math.min(canvas.width, x));
+            y = Math.max(0, Math.min(canvas.height, y));
+            return [x, y];
+        }
+
+        function overlayLineWidth() {
+            var rect = canvas.getBoundingClientRect();
+            return Math.max(2, 2 * canvas.width / Math.max(1, rect.width));
+        }
+
+        function fitCaptureFrame() {
+            captureWidth = Number(document.getElementById("width").value) || 640;
+            captureHeight = Number(document.getElementById("height").value) || 400;
+            canvas.width = captureWidth;
+            canvas.height = captureHeight;
+
+            var page = document.querySelector("main.page");
+            var maxW = Math.max(160, (page ? page.clientWidth : window.innerWidth) - 8);
+            var box = document.getElementById("imgcontainer");
+            var top = box.getBoundingClientRect().top;
+            var maxH = Math.max(160, window.innerHeight - top - 160);
+            var scale = Math.min(1, maxW / captureWidth, maxH / captureHeight);
+            var dispW = Math.max(1, Math.round(captureWidth * scale));
+            var dispH = Math.max(1, Math.round(captureHeight * scale));
+            box.style.width = dispW + "px";
+            box.style.height = dispH + "px";
+            canvas.style.width = dispW + "px";
+            canvas.style.height = dispH + "px";
+            drawOverlay();
+            updateRoiStatus();
+        }
+
+        function roiFromPoints(a, b) {
+            return {
+                x0: Math.min(a[0], b[0]),
+                y0: Math.min(a[1], b[1]),
+                x1: Math.max(a[0], b[0]),
+                y1: Math.max(a[1], b[1])
+            };
+        }
+
+        function isFullFrame(roi, w, h) {
+            return roi.x0 <= 0 && roi.y0 <= 0 && roi.x1 >= w && roi.y1 >= h;
+        }
+
+        function roiIssue(roi, w, h) {
+            if (!roi) return null;
+            var ix0 = Math.max(0, roi.x0);
+            var iy0 = Math.max(0, roi.y0);
+            var ix1 = Math.min(w, roi.x1);
+            var iy1 = Math.min(h, roi.y1);
+            if (ix1 - ix0 < 8 || iy1 - iy0 < 8) return "outside";
+            if (roi.x0 < -0.5 || roi.y0 < -0.5 || roi.x1 > w + 0.5 || roi.y1 > h + 0.5) return "clipped";
+            return null;
+        }
+
+        function formatRoi(roi) {
+            return Math.round(roi.x0) + "," + Math.round(roi.y0) + " – " +
+                Math.round(roi.x1) + "," + Math.round(roi.y1);
+        }
+
+        function updateRoiStatus() {
+            var shown = pendingRoi || savedRoi;
+            var note = pendingRoi && (pendingRoi.x0 !== savedRoi.x0 || pendingRoi.y0 !== savedRoi.y0 ||
+                pendingRoi.x1 !== savedRoi.x1 || pendingRoi.y1 !== savedRoi.y1) ? " (unsaved)" : "";
+            var issue = roiIssue(shown, captureWidth, captureHeight);
+            var el = document.getElementById('roi-status');
+            el.classList.toggle("warn", !!issue);
+            var text = "ROI: " + formatRoi(shown) + "  (" + captureWidth + "×" + captureHeight + ")" + note;
+            if (issue === "outside") {
+                text += " — outside this capture; locate will find nothing. Reset ROI or recapture at the size used when saving.";
+            } else if (issue === "clipped") {
+                text += " — extends past this capture; locate will clip to the frame.";
+            }
+            el.textContent = text;
+        }
+
+        function drawOverlay() {
+            var w = canvas.width;
+            var h = canvas.height;
+            ctx.clearRect(0, 0, w, h);
+            var roi = pendingRoi || savedRoi;
+            var issue = roiIssue(roi, w, h);
+            if (roi && !isFullFrame(roi, w, h)) {
+                ctx.fillStyle = "rgba(8, 12, 18, 0.55)";
+                ctx.fillRect(0, 0, w, h);
+                if (issue !== "outside") {
+                    var ix0 = Math.max(0, roi.x0);
+                    var iy0 = Math.max(0, roi.y0);
+                    var rw = Math.max(1, Math.min(w, roi.x1) - ix0);
+                    var rh = Math.max(1, Math.min(h, roi.y1) - iy0);
+                    ctx.clearRect(ix0, iy0, rw, rh);
+                    ctx.strokeStyle = issue === "clipped" ? "#FFB020" : "#2EE6D6";
+                    ctx.lineWidth = overlayLineWidth();
+                    ctx.strokeRect(ix0 + 0.5, iy0 + 0.5, rw, rh);
+                } else {
+                    ctx.fillStyle = "#FF4D6A";
+                    ctx.font = Math.max(18, Math.round(w / 28)) + "px Segoe UI, sans-serif";
+                    ctx.fillText("ROI is outside this capture", 16, Math.max(32, Math.round(h / 12)));
+                }
+            }
+            if (mousedown) {
+                ctx.beginPath();
+                ctx.rect(last_mousex, last_mousey, mousex - last_mousex, mousey - last_mousey);
+                ctx.strokeStyle = mode === "roi" ? "#FFB020" : "#2EE6D6";
+                ctx.lineWidth = overlayLineWidth();
+                ctx.stroke();
+            }
+        }
+
+        function setMode(next) {
+            mode = next;
+            document.getElementById("mode-template").classList.toggle("active", mode === "template");
+            document.getElementById("mode-roi").classList.toggle("active", mode === "roi");
+            document.getElementById("template-controls").hidden = mode !== "template";
+            document.getElementById("roi-controls").hidden = mode !== "roi";
+            document.getElementById("croppedcontainer").hidden = mode !== "template";
+            document.getElementById("vision-title").textContent = mode === "roi"
+                ? "Click and Drag to Set the Search ROI"
+                : "Click and Drag to Create a Template";
+            if (mode !== "roi") {
+                pendingRoi = null;
+            }
+            drawOverlay();
+            updateRoiStatus();
+        }
+
+        function loadRoi() {
+            return fetch("{{ url_for('vision.roi') }}")
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    savedRoi = {
+                        x0: data.top_left[0],
+                        y0: data.top_left[1],
+                        x1: data.bot_right[0],
+                        y1: data.bot_right[1]
+                    };
+                    pendingRoi = null;
+                    drawOverlay();
+                    updateRoiStatus();
+                })
+                .catch(function() {
+                    document.getElementById('roi-status').textContent = "ROI: unavailable";
+                });
+        }
+
         $(canvas).on('mousedown', function(e) {
-            last_mousex = parseInt(e.clientX-canvasx);
-            last_mousey = parseInt(e.clientY-canvasy);
+            e.preventDefault();
+            var pt = capturePoint(e);
+            last_mousex = pt[0];
+            last_mousey = pt[1];
+            mousex = pt[0];
+            mousey = pt[1];
             mousedown = true;
         });
 
         $(canvas).on('mouseup', function(e) {
             mousedown = false;
+            var pt = capturePoint(e);
+            mousex = pt[0];
+            mousey = pt[1];
 
-            if (last_mousex < mousex){
-                startPoint[0] = last_mousex;
-                endPoint[0] = mousex;
+            startPoint[0] = Math.min(last_mousex, mousex);
+            endPoint[0] = Math.max(last_mousex, mousex);
+            startPoint[1] = Math.min(last_mousey, mousey);
+            endPoint[1] = Math.max(last_mousey, mousey);
+
+            if (mode === "roi") {
+                pendingRoi = roiFromPoints(startPoint, endPoint);
+                drawOverlay();
+                updateRoiStatus();
             } else {
-                startPoint[0] = mousex;
-                endPoint[0] = last_mousex;
+                drawOverlay();
+                refreshCroppedImage();
             }
-
-            if (last_mousey < mousey){
-                startPoint[1] = last_mousey;
-                endPoint[1] = mousey;
-            } else {
-                startPoint[1] = mousey;
-                endPoint[1] = last_mousey;
-            }
-
-            refreshCroppedImage();
         });
 
         $(canvas).on('mousemove', function(e) {
-            mousex = parseInt(e.clientX-canvasx);
-            mousey = parseInt(e.clientY-canvasy);
-            if(mousedown) {
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                ctx.beginPath();
-                var width = mousex-last_mousex;
-                var height = mousey-last_mousey;
-                ctx.rect(last_mousex,last_mousey,width,height);
-                ctx.strokeStyle = '#2EE6D6';
-                ctx.lineWidth = 3;
-                ctx.stroke();
-            }
-
-            if (event.pageX > offsetLeft && event.pageY > offsetTop
-                && event.pageX < offsetLeft + offsetWidth
-                && event.pageY < offsetTop + offsetHeight) {
-                    document.getElementById('current').innerHTML = "pointer location x: " + (event.pageX - offsetLeft) + ", y: " + (event.pageY - offsetTop);
+            var pt = capturePoint(e);
+            mousex = pt[0];
+            mousey = pt[1];
+            document.getElementById('current').innerHTML =
+                "pointer location x: " + Math.round(mousex) + ", y: " + Math.round(mousey);
+            if (mousedown) {
+                drawOverlay();
             }
         });
 
@@ -116,35 +286,26 @@
             });
         });
         $(function() {
-            $('a#crop').on('click', function(e) {
-                refreshCroppedImage();
-                return false;
-            });
-        });
-        $(function() {
             $('a#save').on('click', function(e) {
                 saveCroppedImage();
                 return false;
             });
         });
 
+        document.getElementById("mode-template").addEventListener("click", function() { setMode("template"); });
+        document.getElementById("mode-roi").addEventListener("click", function() { setMode("roi"); });
+        document.getElementById("save-roi").addEventListener("click", saveRoi);
+        document.getElementById("reset-roi").addEventListener("click", function() {
+            pendingRoi = {x0: 0, y0: 0, x1: captureWidth, y1: captureHeight};
+            drawOverlay();
+            updateRoiStatus();
+        });
+
         function refreshCameraImage() {
-            captureWidth = document.getElementById("width").value;
-            captureHeight = document.getElementById("height").value;
-
+            captureWidth = Number(document.getElementById("width").value) || 640;
+            captureHeight = Number(document.getElementById("height").value) || 400;
             document.getElementById('cameraimage').src = "{{ url_for('vision.captured_image') }}" + "?width="+captureWidth+"&height="+captureHeight+"&uid=" + new Date().getTime();
-
-            document.getElementById('canvas').width = captureWidth;
-            document.getElementById('canvas').height = captureHeight;
-            document.getElementById('canvas').style.width = captureWidth;
-            document.getElementById('canvas').style.height = captureHeight;
-            canvasx = getOffset(document.getElementById('canvas')).left;
-            canvasy = getOffset(document.getElementById('canvas')).top;
-
-            document.getElementById('imgcontainer').width = captureWidth;
-            document.getElementById('imgcontainer').height = captureHeight;
-            document.getElementById('imgcontainer').style.width = captureWidth;
-            document.getElementById('imgcontainer').style.height = captureHeight;
+            fitCaptureFrame();
         }
         function refreshCroppedImage() {
             const container = document.getElementById('croppedcontainer')
@@ -157,58 +318,60 @@
             img.addEventListener('load', () => {
                 container.appendChild(img)
             })
-            img.setAttribute('src', "{{ url_for('vision.cropped') }}" + "?top_left="+startPoint+"&bot_right="+endPoint+"&uid=" + new Date().getTime())
-
-            canvasx = getOffset(document.getElementById('canvas')).left;
-            canvasy = getOffset(document.getElementById('canvas')).top;
+            img.setAttribute('src', "{{ url_for('vision.cropped') }}" + "?top_left="+Math.round(startPoint[0])+","+Math.round(startPoint[1])+"&bot_right="+Math.round(endPoint[0])+","+Math.round(endPoint[1])+"&uid=" + new Date().getTime())
         }
         function saveCroppedImage() {
             $.get("{{ url_for('vision.save_template') }}"+"/"+template_filename.value+".jpg",function(data,status) {
             },'html');
             alert("Template is saved!");
         }
+        function saveRoi() {
+            var roi = pendingRoi || savedRoi;
+            fetch("{{ url_for('vision.roi') }}", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({
+                    top_left: [roi.x0, roi.y0],
+                    bot_right: [roi.x1, roi.y1]
+                })
+            })
+            .then(function(res) { return res.json().then(function(data) { return {ok: res.ok, data: data}; }); })
+            .then(function(result) {
+                if (!result.ok) {
+                    alert(result.data.error || "ROI save failed");
+                    return;
+                }
+                savedRoi = {
+                    x0: result.data.top_left[0],
+                    y0: result.data.top_left[1],
+                    x1: result.data.bot_right[0],
+                    y1: result.data.bot_right[1]
+                };
+                pendingRoi = null;
+                drawOverlay();
+                updateRoiStatus();
+                alert("ROI is saved!");
+            })
+            .catch(function() {
+                alert("ROI save failed");
+            });
+        }
 
         window.addEventListener("load", onLoadEvent);
+        window.addEventListener("resize", fitCaptureFrame);
         function onLoadEvent() {
             var w = document.getElementById("width");
             var h = document.getElementById("height");
             w.value = captureWidth;
             h.value = captureHeight;
-
-            document.getElementById('canvas').width = captureWidth;
-            document.getElementById('canvas').height = captureHeight;
-            document.getElementById('canvas').style.width = captureWidth;
-            document.getElementById('canvas').style.height = captureHeight;
-            canvasx = getOffset(document.getElementById('canvas')).left;
-            canvasy = getOffset(document.getElementById('canvas')).top;
+            fitCaptureFrame();
+            loadRoi();
+            setMode("template");
         }
 
-        document.getElementById("cameraimage").addEventListener("load", updateOffsets);
-        document.addEventListener("scroll", updateOffsets);
-        function updateOffsets(){
-            offsetLeft = getOffset(document.getElementById('cameraimage')).left;
-            offsetTop = getOffset(document.getElementById('cameraimage')).top;
-            offsetHeight = getOffset(document.getElementById('cameraimage')).height;
-            offsetWidth = getOffset(document.getElementById('cameraimage')).width;
-
-            canvasx = getOffset(document.getElementById('canvas')).left;
-            canvasy = getOffset(document.getElementById('canvas')).top;
-        }
-
-        function getOffset( el ) {
-            var _x = 0;  var _y = 0;
-            var _h = 0;  var _w = 0;
-            _h = el.height; _w = el.width
-            while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop )) {
-                _x += el.offsetLeft - el.scrollLeft;
-                _y += el.offsetTop - el.scrollTop;
-                el = el.offsetParent;
-            }
-            return { top: _y, left: _x, height: _h, width: _w};
-        }
-
-        function disableSelect(event) {
-            event.preventDefault();
-        }
+        document.getElementById("cameraimage").addEventListener("load", function() {
+            fitCaptureFrame();
+            drawOverlay();
+        });
     </script>
 {% endblock %}

@@ -22,7 +22,7 @@ This folder is ignored by git and should stay local-only.
 Example:
 
 ```powershell
-python Codesys\Scripts\RunCodesysScript.py --script Codesys\Scripts\ListDeviceTree.py --project Codesys\ArfBot.project --no-ui --text-prompts
+python Codesys\Scripts\RunCodesysScript.py --script Codesys\Scripts\PreparePlcCommit.py --project Codesys\ArfBot.project --no-ui --text-prompts
 ```
 
 ## Prepare a PLC commit (stamp + export)
@@ -35,18 +35,47 @@ That sets `GVL_Version.sPlcVersion` to `<tag-from-main>-<n>-g<sha>[-dirty]`, sav
 
 The tag is `git describe --tags --abbrev=0 main` (falls back to `origin/main`). The hash and commit count are from the branch you have checked out. `-dirty` is included when tracked files differ from `HEAD` (computed before the GVL write).
 
-Stamp-only: `StampPlcVersion.py`. Export-only: `PLCOpenExport.py`.
+Stamp-only: `StampPlcVersion.py`. Prepare and Cut already export XML.
+
+## Cut a PLC release (clean tag, no -N-gSHA)
+
+When this `dev` commit **is** the release, do not use `PreparePlcCommit.py` (that stamps `oldtag-N-gSHA[-dirty]`). Run `CutPlcRelease.py` instead:
+
+**Tools → Scripting → Execute Script File…** → `Codesys/Scripts/CutPlcRelease.py`
+
+A popup is prefilled with the next CalVer prefix (`v2.{year}.{iso-week}.{n}-`, from today's week and existing tags). Type a slug (`RoiEditor`) or edit the full tag, then confirm. That writes `sPlcVersion` to the clean tag, saves, and exports XML. It does **not** create the git tag. Commit first, then tag **that** commit from the XML stamp:
+
+```bat
+git add Codesys/ArfBot.project Codesys/ArfBot.xml
+git commit -m "Stamp PLC version v2.2026.38.0-RoiEditor"
+python Codesys\Scripts\TagPlcRelease.py
+```
+
+Then PR into `main` and create the GitHub Release from the existing tag (do not retag the merge commit).
+
+Headless (no popup):
+
+```powershell
+python Codesys\Scripts\RunCodesysScript.py --script Codesys\Scripts\CutPlcRelease.py --project Codesys\ArfBot.project --output Codesys\Scripts\CutPlcRelease.out.txt --no-ui --text-prompts -- RoiEditor
+```
+
+Preview the next prefix without CODESYS:
+
+```powershell
+python Codesys\Scripts\PlcReleaseTag.py RoiEditor
+```
 
 ## Included Scripts
 - `RunCodesysScript.py`: Python wrapper that detects the local CODESYS install and launches a script through the CODESYS command line.
-- `ListDeviceTree.py`: Opens the target project if needed and writes the CODESYS device tree to `Codesys/Scripts/ListDeviceTree.out.txt`.
-- `PatchTuningDeadTime.py`: Writes the deadtime-suggestion logic into `_00_Main` / `_M_Tuning` and relabels the Tuning DeadTime field. ST sources live in `Codesys/Scripts/st/`.
+- `PreparePlcCommit.py`: Daily helper — stamps `sPlcVersion` then exports `ArfBot.xml`. Run from **Tools → Scripting → Execute Script File**.
+- `CutPlcRelease.py`: Release helper — popup (or argv slug) for the next CalVer tag, stamps `sPlcVersion` to that clean tag, exports XML. Does not `git tag`.
+- `TagPlcRelease.py`: After the stamp commit, create an annotated git tag from `sPlcVersion` in `Codesys/ArfBot.xml` and push it to origin.
+- `PlcReleaseTag.py`: CalVer helpers (`v{major}.{year}.{iso-week}.{n}-{Slug}`). Runnable in CPython to preview the next tag.
+- `StampPlcVersion.py`: Stamp-only (`GVL_Version.sPlcVersion` from git).
 - `parse_retain.py`: Decodes `BackupRetain.ret` / `Application.ret` program data and regenerates `st/M_BuildTests_impl.st`.
 - `PatchBuildTests.py`: Writes `st/M_BuildTests_impl.st` into `_00_Main.M_BuildTests` and saves `ArfBot.project`. Does not re-export PLCopen XML (that export changes format).
-- `PatchLicenseStatus.py`: Creates/updates `FB_LicenseStatus`, wires `GVL.LicenseStatus` and `_00_Main`, adds Component Manager + CmpEventMgr, then builds.
-- `PreparePlcCommit.py`: Daily helper — stamps `sPlcVersion` then exports `ArfBot.xml`. Run from **Tools → Scripting → Execute Script File**.
-- `StampPlcVersion.py`: Stamp-only (`GVL_Version.sPlcVersion` from git).
-- `PLCOpenExport.py`: Export-only PLCopen XML next to the open `.project`.
+
+One-shot probes and already-applied patches live in `archive/`.
 
 ## Temp scripts
 One-shot probes, dumps, and experiments go in `Codesys/Scripts/temp/` (gitignored). Do not commit them.

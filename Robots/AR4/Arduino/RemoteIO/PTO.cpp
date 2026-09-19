@@ -1,66 +1,124 @@
-// PTO.cpp
 
 #include "PTO.h"
 
-PTO::PTO(int In_DirPin, int In_PulsePin, int In_EnablePin) {
-  dirPin = In_DirPin;
-  pulsePin = In_PulsePin;
-  enablePin = In_EnablePin;
-}
+PTO::PTO(int dirPin, int pulsePin, int enablePin){
 
-void PTO::run(int16_t Frequency){
-  if (Frequency != 0 && DriveEnabled) {
-
-    bOffOneshot = true;
-
-    float Period, PulseTime;
-    Period = 1 / float(abs(Frequency)); // seconds
-    PulseTime = (Period * 1000 * 1000) / 2; // microseconds divide by 2 for 50% duty cycle
-
-    _SysTime = ARM_DWT_CYCCNT;
-    if (_SysTime - _SysTime_Last > (F_CPU_ACTUAL / 1000000 * PulseTime)) {
-      _SysTime_Last = _SysTime;
-      digitalToggleFast(pulsePin);
-    }
-
-    Direction = (Frequency < 0 ? HIGH : LOW);
-    digitalWriteFast(dirPin, Direction);
-
-  } else {
-    if (bOffOneshot){
-      bOffOneshot = false;
-      digitalWriteFast(dirPin, false);
-      digitalWriteFast(pulsePin, false);
-    }
-  }
+  _dirPin = dirPin;
+  _pulsePin = pulsePin;
+  _enablePin = enablePin;
+  _direction = true;       // matches init() default DIR = HIGH
+  _sysTimeLast = 0;
+  _halfPeriodCycles = 0;
+  _frequencyLast = 0;
+  _offOneshot = false;
+  _pulseHigh = false;
+  enabled = false;
 }
 
 void PTO::init() {
-  pinModeFast(dirPin, OUTPUT);
-  pinModeFast(pulsePin, OUTPUT);
-  if (enablePin >= 0) {
-    pinModeFast(enablePin, OUTPUT);
+
+  pinModeFast(_dirPin, OUTPUT);
+  pinModeFast(_pulsePin, OUTPUT);
+  if (_enablePin >= 0) {
+    pinModeFast(_enablePin, OUTPUT);
   }
   
-  digitalWriteFast(dirPin, HIGH);
-  digitalWriteFast(pulsePin, HIGH);
-  if (enablePin >= 0) {
-    digitalWriteFast(enablePin, LOW);
+  digitalWriteFast(_dirPin, HIGH);
+  digitalWriteFast(_pulsePin, HIGH);
+  _direction = true;
+  _pulseHigh = true;
+  if (_enablePin >= 0) {
+    digitalWriteFast(_enablePin, LOW);
+  }
+
+  _sysTimeLast = ARM_DWT_CYCCNT;
+  _frequencyLast = 0;
+  _halfPeriodCycles = 0;
+}
+
+// Recompute timing and direction when the commanded frequency changes.
+void PTO::applyFrequency(int16_t frequency) {
+
+  bool newDirHigh = (frequency < 0);
+
+  if (newDirHigh != _direction) {
+    // Most stepper drivers need DIR stable before the next active edge.
+    // Force the step line idle (LOW) before flipping DIR.
+    if (_pulseHigh) {
+      digitalWriteFast(_pulsePin, LOW);
+      _pulseHigh = false;
+    }
+    _direction = newDirHigh;
+    digitalWriteFast(_dirPin, _direction ? HIGH : LOW);
+    // Re-base phase after a forced edge so we do not double-step immediately.
+    _sysTimeLast = ARM_DWT_CYCCNT;
+  } else if (_frequencyLast == 0) {
+    // Starting from stop: ensure DIR is driven and phase is fresh.
+    digitalWriteFast(_dirPin, _direction ? HIGH : LOW);
+    _sysTimeLast = ARM_DWT_CYCCNT;
+  }
+
+  // half-period in CPU cycles: F_cpu / (2 * |f|)
+  // Integer path avoids float rounding jitter on the compare threshold.
+  uint32_t absFreq = (uint32_t)abs(frequency);
+  uint32_t half = (uint32_t)((uint64_t)F_CPU_ACTUAL / (2ULL * (uint64_t)absFreq));
+  if (half == 0) {
+    half = 1; // clamp to maximum achievable software rate
+  }
+  _halfPeriodCycles = half;
+  _frequencyLast = frequency;
+}
+
+void PTO::run(int16_t frequency) {
+
+  if (frequency != 0 && enabled) {
+
+    _offOneshot = true;
+
+    if (frequency != _frequencyLast) {
+      applyFrequency(frequency);
+    }
+
+    // Phase-locked edge generation: advance the deadline by a fixed period
+    // instead of snapping to "now". This preserves pulse phase across variable
+    // main-loop latency (SPI, encoder IRQs, etc.).
+    uint8_t edges = 0;
+    uint32_t now = ARM_DWT_CYCCNT;
+    while ((int32_t)(now - _sysTimeLast) >= (int32_t)_halfPeriodCycles
+           && edges < PTO_MAX_EDGES_PER_CALL) {
+      _sysTimeLast += _halfPeriodCycles;
+      digitalToggleFast(_pulsePin);
+      _pulseHigh = !_pulseHigh;
+      edges++;
+      now = ARM_DWT_CYCCNT;
+    }
+
+  } else {
+    if (_offOneshot){
+      _offOneshot = false;
+      _frequencyLast = 0;
+      _halfPeriodCycles = 0;
+      _pulseHigh = false;
+      digitalWriteFast(_dirPin, false);
+      digitalWriteFast(_pulsePin, false);
+    }
   }
 }
 
-int PTO::turnON() {
-  DriveEnabled = true;
-  if (enablePin >= 0) {
-    digitalWriteFast(enablePin, HIGH);
+int PTO::enable() {
+
+  enabled = true;
+  if (_enablePin >= 0) {
+    digitalWriteFast(_enablePin, HIGH);
   }
-  return DriveEnabled;
+  return enabled;
 }
 
-int PTO::turnOFF() {
-  DriveEnabled = false;
-  if (enablePin >= 0) {
-    digitalWriteFast(enablePin, LOW);
+int PTO::disable() {
+
+  enabled = false;
+  if (_enablePin >= 0) {
+    digitalWriteFast(_enablePin, LOW);
   }
-  return DriveEnabled;
+  return enabled;
 }

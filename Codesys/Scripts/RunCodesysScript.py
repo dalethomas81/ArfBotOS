@@ -16,7 +16,7 @@ def default_project_path():
 
 def default_output_path():
     scripts_dir = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(scripts_dir, "ListDeviceTree.out.txt")
+    return os.path.join(scripts_dir, "PreparePlcCommit.out.txt")
 
 
 def detect_codesys_exe():
@@ -140,7 +140,7 @@ def main():
     )
     parser.add_argument(
         "--script",
-        default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "ListDeviceTree.py"),
+        default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "PreparePlcCommit.py"),
         help="Path to the CODESYS Python script to run",
     )
     parser.add_argument(

@@ -312,13 +312,27 @@ def _xy(pt):
     arr = numpy.asarray(pt, dtype=numpy.float64).reshape(-1)
     return float(arr[0]), float(arr[1])
 
-def crop_image(image, top_left, bot_right):
+def clamp_roi_to_image(image, top_left, bot_right):
+    ih, iw = image.shape[:2]
     x0, y0 = _xy(top_left)
     x1, y1 = _xy(bot_right)
-    x, y = int(x0), int(y0)
-    w, h = int(x1 - x0), int(y1 - y0)
-    cropped = image[y:y+h, x:x+w].copy()
-    return cropped
+    orig = (
+        int(round(min(x0, x1))),
+        int(round(min(y0, y1))),
+        int(round(max(x0, x1))),
+        int(round(max(y0, y1))),
+    )
+    left = max(0, min(orig[0], iw))
+    right = max(0, min(orig[2], iw))
+    top = max(0, min(orig[1], ih))
+    bottom = max(0, min(orig[3], ih))
+    return orig, (left, top, right, bottom)
+
+def crop_image(image, top_left, bot_right):
+    _, (left, top, right, bottom) = clamp_roi_to_image(image, top_left, bot_right)
+    if right <= left or bottom <= top:
+        return image[0:0, 0:0].copy()
+    return image[top:bottom, left:right].copy()
 
 def str_to_bool (val):
     """Convert a string representation of truth to true (1) or false (0).
@@ -894,7 +908,28 @@ def main(m_matSrc, m_matDst, savelocation, iMaxPos, dMaxOverlap, dScore, dTolera
     m_TemplData = learn_pattern(m_matDst)
     
     # make a copy of just the region of interest
-    m_matRoi = crop_image(m_matSrc, roi_top_left, roi_bot_right)
+    orig_roi, used_roi = clamp_roi_to_image(m_matSrc, roi_top_left, roi_bot_right)
+    left, top, right, bottom = used_roi
+    if right - left < 8 or bottom - top < 8:
+        ih, iw = m_matSrc.shape[:2]
+        sys.stderr.write(
+            "ROI %s,%s – %s,%s is outside %sx%s capture\n"
+            % (orig_roi[0], orig_roi[1], orig_roi[2], orig_roi[3], iw, ih)
+        )
+        fail = m_matSrc if len(m_matSrc.shape) == 3 else cv2.cvtColor(m_matSrc, cv2.COLOR_GRAY2BGR)
+        label = "ROI outside %sx%s capture" % (iw, ih)
+        scale = max(0.6, min(iw, ih) / 640.0)
+        cv2.putText(fail, label, (16, int(36 * scale) + 8), cv2.FONT_HERSHEY_SIMPLEX,
+                    0.7 * scale, (0, 0, 255), max(1, int(2 * scale)))
+        cv2.imwrite(savelocation, fail)
+        return False
+    if used_roi != orig_roi:
+        sys.stderr.write(
+            "ROI clipped from %s,%s – %s,%s to %s,%s – %s,%s\n"
+            % (orig_roi[0], orig_roi[1], orig_roi[2], orig_roi[3], left, top, right, bottom)
+        )
+    m_matRoi = m_matSrc[top:bottom, left:right].copy()
+    roi_top_left = (float(left), float(top))
 
     #cv2.imshow("m_matRoi", m_matRoi)
     #cv2.waitKey(0)

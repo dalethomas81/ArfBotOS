@@ -1,5 +1,6 @@
 import io
 import os
+import re
 
 import cv2
 from flask import (
@@ -8,6 +9,7 @@ from flask import (
     abort,
     current_app,
     flash,
+    jsonify,
     redirect,
     render_template,
     request,
@@ -37,6 +39,92 @@ def upload_folder():
 
 def visu_output_path():
     return current_app.config["VISU_OUTPUT"]
+
+
+DEFAULT_ROI_TL = [0.0, 0.0]
+DEFAULT_ROI_BR = [640.0, 400.0]
+_ROI_DATA_RE = re.compile(
+    r"data:\s*\[\s*([-+0-9.eE]+)\s*,\s*([-+0-9.eE]+)",
+)
+
+
+def roi_file_path():
+    configured = current_app.config.get("ROI_FILE")
+    if configured:
+        return configured
+    return os.path.join(os.path.dirname(upload_folder()), "roi.yaml")
+
+
+def _parse_roi_yaml(text):
+    def vec_after(key):
+        idx = text.find(key)
+        if idx < 0:
+            raise ValueError("missing %s" % key)
+        match = _ROI_DATA_RE.search(text[idx:idx + 400])
+        if not match:
+            raise ValueError("no data for %s" % key)
+        return [float(match.group(1)), float(match.group(2))]
+
+    return vec_after("top_left"), vec_after("bot_right")
+
+
+def read_roi(path=None):
+    path = path or roi_file_path()
+    if not os.path.isfile(path):
+        return list(DEFAULT_ROI_TL), list(DEFAULT_ROI_BR)
+    with open(path, "r") as handle:
+        return _parse_roi_yaml(handle.read())
+
+
+def write_roi(top_left, bot_right, path=None):
+    path = path or roi_file_path()
+    folder = os.path.dirname(path)
+    if folder and not os.path.exists(folder):
+        os.makedirs(folder)
+    body = (
+        "%YAML:1.0\n"
+        "---\n"
+        "top_left: !!opencv-matrix\n"
+        "   rows: 2\n"
+        "   cols: 1\n"
+        "   dt: f\n"
+        "   data: [ {0:.2f}, {1:.2f} ]\n"
+        "bot_right: !!opencv-matrix\n"
+        "   rows: 2\n"
+        "   cols: 1\n"
+        "   dt: f\n"
+        "   data: [ {2:.2f}, {3:.2f} ]\n"
+    ).format(top_left[0], top_left[1], bot_right[0], bot_right[1])
+    tmp = path + ".tmp"
+    with open(tmp, "w") as handle:
+        handle.write(body)
+    os.replace(tmp, path)
+
+
+def _as_xy(value, name):
+    if not isinstance(value, (list, tuple)) or len(value) != 2:
+        raise ValueError("%s must be [x, y]" % name)
+    return float(value[0]), float(value[1])
+
+
+def normalize_roi(top_left, bot_right, max_w=None, max_h=None):
+    x0, y0 = _as_xy(top_left, "top_left")
+    x1, y1 = _as_xy(bot_right, "bot_right")
+    left, right = sorted((x0, x1))
+    top, bottom = sorted((y0, y1))
+    if max_w is None or max_h is None:
+        global capArray
+        if capArray is not None:
+            max_h, max_w = capArray.shape[:2]
+        else:
+            max_w, max_h = 5000, 5000
+    left = max(0.0, min(left, max_w - 1))
+    top = max(0.0, min(top, max_h - 1))
+    right = max(left + 1.0, min(right, float(max_w)))
+    bottom = max(top + 1.0, min(bottom, float(max_h)))
+    if right - left < 8 or bottom - top < 8:
+        raise ValueError("ROI is too small")
+    return [left, top], [right, bottom]
 
 
 @bp.route("/upload", methods=["GET", "POST"])
@@ -162,6 +250,33 @@ def template():
 @bp.route("/template")
 def template_legacy():
     return redirect(url_for("vision.template"))
+
+
+@bp.route("/vision/roi", methods=["GET", "POST"])
+def roi():
+    if request.method == "GET":
+        top_left, bot_right = read_roi()
+        return jsonify({
+            "top_left": top_left,
+            "bot_right": bot_right,
+            "path": roi_file_path(),
+        })
+
+    payload = request.get_json(silent=True) or {}
+    try:
+        top_left, bot_right = normalize_roi(
+            payload.get("top_left"),
+            payload.get("bot_right"),
+        )
+        write_roi(top_left, bot_right)
+    except (TypeError, ValueError) as exc:
+        return jsonify({"status": "error", "error": str(exc)}), 400
+    return jsonify({
+        "status": "saved",
+        "top_left": top_left,
+        "bot_right": bot_right,
+        "path": roi_file_path(),
+    })
 
 
 @bp.route("/captured_image")

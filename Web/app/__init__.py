@@ -1,3 +1,5 @@
+import os
+
 from config import Config, env_flag
 
 
@@ -6,6 +8,8 @@ def create_app(config_class=Config):
 
     app = Flask(__name__)
     app.config.from_object(config_class)
+    if os.environ.get("ARFBOT_ROI_FILE"):
+        app.config["ROI_FILE"] = os.environ["ARFBOT_ROI_FILE"]
 
     enable_vision = env_flag("ARFBOT_ENABLE_VISION", True)
     enable_bluetooth = env_flag("ARFBOT_ENABLE_BLUETOOTH", True)

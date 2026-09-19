@@ -130,6 +130,11 @@ p {
 }
 
 .page.centered { text-align: center; }
+.page.vision-page {
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+}
 
 .flash-list {
     list-style: none;
@@ -234,6 +239,10 @@ p {
     margin-top: 16px;
     align-items: center;
     justify-content: center;
+}
+.controls[hidden],
+#croppedcontainer[hidden] {
+    display: none !important;
 }
 
 button,
@@ -453,18 +462,94 @@ pre.log {
 
 /* Vision capture */
 .vision-title { margin: 8px 0 16px; }
+.mode-toggle {
+    display: inline-flex;
+    border: 1px solid var(--frame);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 0 auto 12px;
+}
+.mode-toggle button {
+    border: none;
+    border-radius: 0;
+    margin: 0;
+    background: var(--control);
+    color: var(--muted);
+}
+.mode-toggle button.active {
+    background: var(--accent);
+    color: var(--text-on-accent);
+}
+#roi-status {
+    color: var(--accent);
+    font-weight: 650;
+    margin-top: 4px;
+}
+#roi-status.warn {
+    color: var(--danger);
+}
+.capture-notes {
+    max-width: 720px;
+    margin: 8px auto 0;
+    text-align: left;
+    background: var(--surface);
+    border: 1px solid var(--frame-soft);
+    border-radius: var(--radius);
+    padding: 8px 12px 10px;
+}
+.capture-notes summary {
+    cursor: pointer;
+    color: var(--muted);
+    font-weight: 650;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+}
+.capture-notes summary:hover { color: var(--accent); }
+.capture-notes p {
+    margin: 8px 0;
+    font-size: 12px;
+}
+.capture-notes table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+}
+.capture-notes th,
+.capture-notes td {
+    border-bottom: 1px solid var(--frame-soft);
+    padding: 6px 8px;
+    vertical-align: top;
+}
+.capture-notes th {
+    color: var(--muted);
+    font-weight: 650;
+    text-align: left;
+}
+.capture-notes td { color: var(--text); }
 #results {
     color: var(--muted);
     margin-bottom: 12px;
 }
-.img { position: absolute; z-index: 1; }
+.img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: top left;
+    z-index: 1;
+}
 #imgcontainer {
     display: inline-block;
     width: 640px;
     height: 400px;
+    max-width: 100%;
     margin: 16px auto;
     background: var(--canvas);
     position: relative;
+    overflow: hidden;
+    text-align: left;
     border: 2px solid var(--frame);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
@@ -479,13 +564,22 @@ pre.log {
     box-shadow: var(--shadow);
     min-width: 40px;
     min-height: 8px;
+    max-width: 100%;
+}
+#croppedcontainer img {
+    display: block;
+    max-width: min(100%, 640px);
+    height: auto;
 }
 #canvas {
     cursor: crosshair;
     border: 1px solid var(--frame-soft);
-    position: relative;
+    position: absolute;
+    left: 0;
+    top: 0;
     margin: 0 auto;
     z-index: 20;
+    user-select: none;
 }
 
 .file-grid {
