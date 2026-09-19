@@ -49,7 +49,6 @@ A popup is prefilled with the next CalVer prefix (`v2.{year}.{iso-week}.{n}-`, f
 git add Codesys/ArfBot.project Codesys/ArfBot.xml
 git commit -m "Stamp PLC version v2.2026.38.0-RoiEditor"
 python Codesys\Scripts\TagPlcRelease.py
-python Codesys\Scripts\TagPlcRelease.py --push
 ```
 
 Then PR into `main` and create the GitHub Release from the existing tag (do not retag the merge commit).
@@ -70,7 +69,7 @@ python Codesys\Scripts\PlcReleaseTag.py RoiEditor
 - `RunCodesysScript.py`: Python wrapper that detects the local CODESYS install and launches a script through the CODESYS command line.
 - `PreparePlcCommit.py`: Daily helper — stamps `sPlcVersion` then exports `ArfBot.xml`. Run from **Tools → Scripting → Execute Script File**.
 - `CutPlcRelease.py`: Release helper — popup (or argv slug) for the next CalVer tag, stamps `sPlcVersion` to that clean tag, exports XML. Does not `git tag`.
-- `TagPlcRelease.py`: After the stamp commit, create (and optionally `--push`) an annotated git tag from `sPlcVersion` in `Codesys/ArfBot.xml`.
+- `TagPlcRelease.py`: After the stamp commit, create an annotated git tag from `sPlcVersion` in `Codesys/ArfBot.xml` and push it to origin.
 - `PlcReleaseTag.py`: CalVer helpers (`v{major}.{year}.{iso-week}.{n}-{Slug}`). Runnable in CPython to preview the next tag.
 - `StampPlcVersion.py`: Stamp-only (`GVL_Version.sPlcVersion` from git).
 - `parse_retain.py`: Decodes `BackupRetain.ret` / `Application.ret` program data and regenerates `st/M_BuildTests_impl.st`.

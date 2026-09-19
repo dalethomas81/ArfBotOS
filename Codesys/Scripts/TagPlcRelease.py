@@ -1,13 +1,16 @@
 # Create an annotated git tag from GVL_Version.sPlcVersion in Codesys/ArfBot.xml.
 #
 # Run AFTER committing the CutPlcRelease stamp (the XML in HEAD is the source of truth):
+#   Tools -> Scripting -> Execute Script File -> TagPlcRelease.py
 #   python Codesys\Scripts\TagPlcRelease.py
 #   python Codesys\Scripts\TagPlcRelease.py --dry-run
-#   python Codesys\Scripts\TagPlcRelease.py --push
+#   python Codesys\Scripts\TagPlcRelease.py --no-push
+#
+# IronPython (CODESYS) must not use subprocess — that raises
+# DeprecationWarning: sys.exc_clear() not supported in 3.x as Script Messages errors.
 from __future__ import print_function
 import argparse
 import os
-import subprocess
 import sys
 
 _SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -20,7 +23,51 @@ PROJECT_REL = "Codesys/ArfBot.project"
 STAGED_PATHS = (XML_REL, PROJECT_REL)
 
 
-def git(args, cwd, check=True):
+def running_in_codesys():
+    host = sys.modules.get("__main__")
+    return host is not None and hasattr(host, "projects")
+
+
+def quote_arg(arg):
+    arg = str(arg)
+    if not arg or any(ch in arg for ch in ' \t"'):
+        return '"' + arg.replace('"', '\\"') + '"'
+    return arg
+
+
+def git_via_process(args, cwd, check=True):
+    from System.Diagnostics import Process, ProcessStartInfo
+
+    psi = ProcessStartInfo()
+    psi.FileName = "git.exe"
+    psi.Arguments = " ".join([quote_arg(a) for a in args])
+    psi.WorkingDirectory = cwd
+    psi.RedirectStandardOutput = True
+    psi.RedirectStandardError = True
+    psi.UseShellExecute = False
+    psi.CreateNoWindow = True
+
+    proc = Process()
+    proc.StartInfo = psi
+    if not proc.Start():
+        raise RuntimeError("Could not start git.exe")
+    out = proc.StandardOutput.ReadToEnd().strip()
+    err = proc.StandardError.ReadToEnd().strip()
+    proc.WaitForExit()
+    code = proc.ExitCode
+    proc.Close()
+    if check and code != 0:
+        raise RuntimeError(
+            "git {0} failed (exit {1}): {2}".format(
+                " ".join(args), code, err or out or "no output"
+            )
+        )
+    return out, code
+
+
+def git_via_subprocess(args, cwd, check=True):
+    import subprocess
+
     process = subprocess.Popen(
         ["git"] + list(args),
         cwd=cwd,
@@ -37,6 +84,13 @@ def git(args, cwd, check=True):
             )
         )
     return out, process.returncode
+
+
+def git(args, cwd, check=True):
+    try:
+        return git_via_process(args, cwd, check)
+    except ImportError:
+        return git_via_subprocess(args, cwd, check)
 
 
 def porcelain_for(git_root, paths):
@@ -108,6 +162,23 @@ def push_tag(git_root, tag):
     git(["push", "origin", "refs/tags/{0}".format(tag)], git_root)
 
 
+def cli_argv(argv):
+    if argv is None:
+        argv = sys.argv[1:]
+    filtered = []
+    for raw in argv:
+        value = raw.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in ("'", '"'):
+            value = value[1:-1]
+        lower = value.lower()
+        if not value or value == "--":
+            continue
+        if lower.endswith(".project") or lower.endswith(".txt"):
+            continue
+        filtered.append(value)
+    return filtered
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(
         description="Tag HEAD with sPlcVersion from the committed Codesys/ArfBot.xml."
@@ -118,11 +189,12 @@ def main(argv=None):
         help="Print the tag and checks; do not create or push it",
     )
     parser.add_argument(
-        "--push",
+        "--no-push",
         action="store_true",
-        help="Push the tag to origin after creating it",
+        help="Create the local tag only; do not push to origin",
     )
-    args = parser.parse_args(argv)
+    args = parser.parse_args(cli_argv(argv))
+    do_push = not args.dry_run and not args.no_push
 
     git_root = reltag.find_git_root(_SCRIPT_DIR)
     require_committed_stamp(git_root)
@@ -131,17 +203,7 @@ def main(argv=None):
     print("HEAD:  {0} ({1})".format(short_sha(git_root), head[:12]))
     print("Stamp: {0}".format(tag))
 
-    if pointed == head:
-        print("Tag {0} already points at HEAD.".format(tag))
-        if args.push and not args.dry_run:
-            print("Pushing {0} to origin...".format(tag))
-            push_tag(git_root, tag)
-            print("Pushed origin {0}".format(tag))
-        elif args.push:
-            print("Dry run: would push origin {0}".format(tag))
-        return 0
-
-    if pointed is not None:
+    if pointed is not None and pointed != head:
         raise RuntimeError(
             "Tag {0} already exists on {1}, not HEAD ({2})".format(
                 tag, pointed[:12], head[:12]
@@ -149,27 +211,34 @@ def main(argv=None):
         )
 
     if args.dry_run:
-        print("Dry run: would create annotated tag {0} on HEAD".format(tag))
-        if args.push:
-            print("Dry run: would push origin {0}".format(tag))
+        if pointed == head:
+            print("Tag {0} already points at HEAD.".format(tag))
+        else:
+            print("Dry run: would create annotated tag {0} on HEAD".format(tag))
+        print("Dry run: would push origin {0}".format(tag))
         return 0
 
-    create_tag(git_root, tag)
-    print("Created annotated tag {0}".format(tag))
-    if args.push:
+    if pointed == head:
+        print("Tag {0} already points at HEAD.".format(tag))
+    else:
+        create_tag(git_root, tag)
+        print("Created annotated tag {0}".format(tag))
+
+    if do_push:
         print("Pushing {0} to origin...".format(tag))
         push_tag(git_root, tag)
         print("Pushed origin {0}".format(tag))
     else:
-        print("Next: git push origin HEAD")
-        print("      git push origin {0}".format(tag))
-        print("Or:   python Codesys\\Scripts\\TagPlcRelease.py --push")
+        print("Local tag only. Push later with: git push origin {0}".format(tag))
     return 0
 
 
 if __name__ == "__main__":
+    code = 0
     try:
-        sys.exit(main())
+        code = main()
     except Exception as exc:
-        sys.stderr.write("ERROR: {0}\n".format(exc))
-        sys.exit(1)
+        print("ERROR: {0}".format(exc))
+        code = 1
+    if not running_in_codesys():
+        sys.exit(code)

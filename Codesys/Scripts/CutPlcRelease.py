@@ -118,7 +118,6 @@ def follow_up_commands(tag):
     stamp.emit("  git add Codesys/ArfBot.project Codesys/ArfBot.xml")
     stamp.emit("  git commit -m \"Stamp PLC version {0}\"".format(tag))
     stamp.emit("  python Codesys\\Scripts\\TagPlcRelease.py")
-    stamp.emit("  python Codesys\\Scripts\\TagPlcRelease.py --push")
     stamp.emit("Then open the PR into main and create the GitHub Release from that existing tag.")
 
 
