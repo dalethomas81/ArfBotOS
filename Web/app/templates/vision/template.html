@@ -26,7 +26,7 @@
 
     <details class="capture-notes">
         <summary>Capture size vs field of view (IMX477)</summary>
-        <p>libcamera picks a sensor mode from width×height, then center-crops to that aspect. Different sizes do not see the same scene. Use the same size for cal, ROI, templates, and Locate.</p>
+        <p>libcamera picks a sensor mode from width×height, then center-crops to that aspect. Different sizes do not see the same scene. Use the same size for cal, ROI, templates, and Locate. Saved templates are named <code>name_WIDTHxHEIGHT.jpg</code> so a 2000×2000 snip is not used on a 640×400 search.</p>
         <table>
             <thead>
                 <tr><th>Requested</th><th>Sensor mode</th><th>Field of view</th></tr>
@@ -42,16 +42,17 @@
     </details>
 
     <div id="imgcontainer">
-        <img class="img" id="cameraimage" src="{{ url_for('vision.captured_image') }}" alt="" />
+        <img class="img" id="cameraimage" alt="Capture an image to begin" />
         <canvas id="canvas" width="640" height="400"></canvas>
     </div>
 
     <div class="controls" id="template-controls">
         <form>
             <label for="template_filename">Template Name:</label>
-            <input type="text" id="template_filename" name="template_filename" />
+            <input type="text" id="template_filename" name="template_filename" autocomplete="off" spellcheck="false" title="No spaces. Capture size is appended automatically." />
             <a href="#" id="save"><button type="button" class="primary">Save Template</button></a>
         </form>
+        <p id="template-preview">Saved as: _640x400.jpg</p>
     </div>
 
     <div class="controls" id="roi-controls" hidden>
@@ -111,6 +112,7 @@
             canvas.style.height = dispH + "px";
             drawOverlay();
             updateRoiStatus();
+            updateTemplatePreview();
         }
 
         function roiFromPoints(a, b) {
@@ -271,17 +273,8 @@
 
         $(function() {
             $('a#capture').on('click', function(e) {
-                e.preventDefault()
-                $.getJSON('/captured_image',
-                    function(data) {
-                })
-                .done(function() {
-                })
-                .fail(function() {
-                })
-                .always(function() {
-                    refreshCameraImage();
-                });
+                e.preventDefault();
+                refreshCameraImage();
                 return false;
             });
         });
@@ -320,10 +313,51 @@
             })
             img.setAttribute('src', "{{ url_for('vision.cropped') }}" + "?top_left="+Math.round(startPoint[0])+","+Math.round(startPoint[1])+"&bot_right="+Math.round(endPoint[0])+","+Math.round(endPoint[1])+"&uid=" + new Date().getTime())
         }
+        function templateBaseName() {
+            return (document.getElementById("template_filename").value || "").replace(/\s+/g, "");
+        }
+
+        function templateFileName() {
+            var base = templateBaseName().replace(/\.(jpg|jpeg|png)$/i, "");
+            base = base.replace(/_\d+x\d+$/i, "");
+            return base + "_" + captureWidth + "x" + captureHeight + ".jpg";
+        }
+
+        function updateTemplatePreview() {
+            var el = document.getElementById("template-preview");
+            var base = templateBaseName();
+            if (!base) {
+                el.textContent = "Saved as: name_" + captureWidth + "x" + captureHeight + ".jpg (no spaces)";
+                return;
+            }
+            el.textContent = "Saved as: " + templateFileName();
+        }
+
         function saveCroppedImage() {
-            $.get("{{ url_for('vision.save_template') }}"+"/"+template_filename.value+".jpg",function(data,status) {
-            },'html');
-            alert("Template is saved!");
+            var base = templateBaseName();
+            document.getElementById("template_filename").value = base;
+            if (!base) {
+                alert("Enter a template name with no spaces.");
+                return;
+            }
+            if (/\s/.test(base)) {
+                alert("Template name cannot contain spaces.");
+                return;
+            }
+            var filename = templateFileName();
+            fetch("{{ url_for('vision.save_template') }}/" + encodeURIComponent(filename) +
+                "?width=" + captureWidth + "&height=" + captureHeight)
+            .then(function(res) { return res.json().then(function(data) { return {ok: res.ok, data: data}; }); })
+            .then(function(result) {
+                if (!result.ok) {
+                    alert(result.data.error || "Template save failed");
+                    return;
+                }
+                alert("Template is saved as " + result.data.filename);
+            })
+            .catch(function() {
+                alert("Template save failed");
+            });
         }
         function saveRoi() {
             var roi = pendingRoi || savedRoi;
@@ -367,6 +401,15 @@
             fitCaptureFrame();
             loadRoi();
             setMode("template");
+            var nameInput = document.getElementById("template_filename");
+            nameInput.addEventListener("input", function() {
+                var cleaned = nameInput.value.replace(/\s+/g, "");
+                if (cleaned !== nameInput.value) {
+                    nameInput.value = cleaned;
+                }
+                updateTemplatePreview();
+            });
+            updateTemplatePreview();
         }
 
         document.getElementById("cameraimage").addEventListener("load", function() {

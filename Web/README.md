@@ -12,7 +12,7 @@ One Flask app on port 5000 that hosts the operator pages:
 
 `/` redirects to `/vision` when vision is enabled, `/bluetooth` on a `--plc-only` install, or `/animator` if that is the only enabled page. Old `/template`, `/files/`, and `/output_sized` URLs redirect to the new paths.
 
-The CODESYS HMI loads `/vision/output_sized`. Template files still go to `/var/opt/codesys/PlcLogic/Application/Vision/Templates`. Locate search ROI is `.../Vision/roi.yaml`, set from the Vision page ROI tab (`GET`/`POST /vision/roi`). The latest processed image is still `/var/opt/codesys/PlcLogic/visu/outputimage.jpg`.
+The CODESYS HMI loads `/vision/output_sized`. Template files still go to `/var/opt/codesys/PlcLogic/Application/Vision/Templates`. Names cannot contain spaces; the capture size is appended (`screwdriver_640x400.jpg`) so a 2000×2000 snip is not used on a 640×400 Locate. Locate search ROI is `.../Vision/roi.yaml`, set from the Vision page ROI tab (`GET`/`POST /vision/roi`). The latest processed image is still `/var/opt/codesys/PlcLogic/visu/outputimage.jpg`.
 
 ## Capture size and HQ camera FOV
 

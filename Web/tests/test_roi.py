@@ -99,7 +99,34 @@ class RoiApiTests(unittest.TestCase):
         self.assertIn("/vision/roi", html)
         self.assertIn("Capture size vs field of view", html)
         self.assertIn("1332", html)
+        self.assertIn("template-preview", html)
+
+
+class TemplateNameTests(unittest.TestCase):
+    def setUp(self):
+        _stub_cv2()
+        from app.vision import template_save_name
+
+        self.fn = template_save_name
+
+    def test_appends_resolution(self):
+        self.assertEqual(self.fn("screwdriver", 640, 400), "screwdriver_640x400.jpg")
+
+    def test_rejects_spaces(self):
+        with self.assertRaises(ValueError):
+            self.fn("screw driver", 640, 400)
+
+    def test_rejects_empty(self):
+        with self.assertRaises(ValueError):
+            self.fn("   ", 640, 400)
+
+    def test_replaces_existing_suffix_with_capture_size(self):
+        self.assertEqual(self.fn("part_2000x2000", 640, 400), "part_640x400.jpg")
+
+    def test_strips_extension(self):
+        self.assertEqual(self.fn("part.jpg", 2000, 2000), "part_2000x2000.jpg")
 
 
 if __name__ == "__main__":
     unittest.main()
+
