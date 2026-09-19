@@ -14,6 +14,9 @@ What it does:
   - Strips noise TAG ATTRIBUTES that change every export (timestamps, GUIDs)
   - Strips noise CHILD ELEMENTS: <Attribute Name="checksumnoinit_override">
     and similar volatile CodeSys metadata elements inside <Attributes> blocks
+  - When InterfaceAsPlainText is present, drops the duplicate structured
+    declaration (variable / inputVars / baseType / ...) and extra plaintext
+    copies so git diff shows the ST once
   - Prunes empty container elements left behind after stripping (addData, data, Attributes)
   - Sorts <Attribute> children within <Attributes> containers for stable order
   - Normalizes whitespace in text content
@@ -72,6 +75,25 @@ NOISE_ELEMENT_NAMES = {
 # as spurious diff lines.
 # ---------------------------------------------------------------------------
 PRUNABLE_CONTAINERS = {"Attributes", "data", "addData"}
+
+# Objects that own their own declaration (do not treat nested IPT as this node's)
+NESTED_OBJECTS = {"pou", "Method", "dataType", "action", "transition", "Function"}
+
+# Nodes whose structured children duplicate InterfaceAsPlainText
+PLAINTEXT_CONTAINERS = {"globalVars", "interface", "dataType"}
+
+# Structured declaration nodes that duplicate the ST in InterfaceAsPlainText
+STRUCTURED_DUP_TAGS = {
+    "variable",
+    "inputVars",
+    "outputVars",
+    "inOutVars",
+    "localVars",
+    "externalVars",
+    "tempVars",
+    "returnType",
+    "baseType",
+}
 
 # Namespace URI → preferred prefix mapping (keeps output readable)
 KNOWN_NAMESPACES = {
@@ -176,6 +198,57 @@ def _normalize_element(elem: ET.Element) -> None:
         _normalize_element(child)
 
 
+def _strip_variable_children(elem: ET.Element) -> None:
+    for child in list(elem):
+        if _local_name(child.tag) == "variable":
+            elem.remove(child)
+
+
+def _element_has_plaintext(elem: ET.Element) -> bool:
+    for node in elem.iter():
+        if _local_name(node.tag) == "InterfaceAsPlainText":
+            return True
+    return False
+
+
+def _strip_structured_duplicates(elem: ET.Element) -> bool:
+    """
+    Drop structured declaration XML when InterfaceAsPlainText is present.
+
+    CODESYS writes both the PLCOpen <variable>/<inputVars>/<baseType> tree and
+    the ST in InterfaceAsPlainText. GitHub Desktop then shows every edit twice.
+    Keep the first plaintext copy; remove extra IPT copies that appear in later
+    var sections of the same interface.
+
+    Returns True if this subtree (excluding nested POU/method/datatype objects)
+    contains InterfaceAsPlainText.
+    """
+    name = _local_name(elem.tag)
+    has_here = name == "InterfaceAsPlainText"
+    for child in list(elem):
+        child_has = _strip_structured_duplicates(child)
+        if _local_name(child.tag) in NESTED_OBJECTS:
+            continue
+        has_here = has_here or child_has
+
+    if name in PLAINTEXT_CONTAINERS and has_here:
+        kept_plaintext = False
+        for child in list(elem):
+            child_name = _local_name(child.tag)
+            child_has = _element_has_plaintext(child)
+            if child_name in STRUCTURED_DUP_TAGS:
+                if child_has and not kept_plaintext:
+                    kept_plaintext = True
+                    _strip_variable_children(child)
+                    continue
+                elem.remove(child)
+                continue
+            if child_has and not kept_plaintext:
+                kept_plaintext = True
+
+    return has_here if name not in NESTED_OBJECTS else False
+
+
 def _prune_empty_containers(elem: ET.Element) -> None:
     """
     Bottom-up pass: remove child elements that belong to PRUNABLE_CONTAINERS
@@ -255,6 +328,9 @@ def normalize_file(filepath: str) -> None:
 
     # --- Normalize ---
     _normalize_element(root)
+
+    # --- One ST declaration per object (drop structured XML + extra IPT) ---
+    _strip_structured_duplicates(root)
 
     # --- Prune empty containers left behind by noise stripping ---
     _prune_empty_containers(root)
