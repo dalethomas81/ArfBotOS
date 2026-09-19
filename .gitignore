@@ -415,4 +415,5 @@ Codesys/Scripts/*.out.txt
 Codesys/Scripts/temp/
 .DS_Store
 /Codesys/Scripts/st
+Codesys/Scripts/archive/st/FB_LicenseStatus*
 OpenCV/FastTemplateMatching/_bench_out/
