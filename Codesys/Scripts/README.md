@@ -35,7 +35,7 @@ That sets `GVL_Version.sPlcVersion` to `<tag-from-main>-<n>-g<sha>[-dirty]`, sav
 
 The tag is `git describe --tags --abbrev=0 main` (falls back to `origin/main`). The hash and commit count are from the branch you have checked out. `-dirty` is included when tracked files differ from `HEAD` (computed before the GVL write).
 
-Stamp-only: `StampPlcVersion.py`. Export-only: `PLCOpenExport.py`.
+Stamp-only: `StampPlcVersion.py`. Prepare and Cut already export XML.
 
 ## Cut a PLC release (clean tag, no -N-gSHA)
 
@@ -73,7 +73,6 @@ python Codesys\Scripts\PlcReleaseTag.py RoiEditor
 - `TagPlcRelease.py`: After the stamp commit, create (and optionally `--push`) an annotated git tag from `sPlcVersion` in `Codesys/ArfBot.xml`.
 - `PlcReleaseTag.py`: CalVer helpers (`v{major}.{year}.{iso-week}.{n}-{Slug}`). Runnable in CPython to preview the next tag.
 - `StampPlcVersion.py`: Stamp-only (`GVL_Version.sPlcVersion` from git).
-- `PLCOpenExport.py`: Export-only PLCopen XML next to the open `.project`.
 - `parse_retain.py`: Decodes `BackupRetain.ret` / `Application.ret` program data and regenerates `st/M_BuildTests_impl.st`.
 - `PatchBuildTests.py`: Writes `st/M_BuildTests_impl.st` into `_00_Main.M_BuildTests` and saves `ArfBot.project`. Does not re-export PLCopen XML (that export changes format).
 
