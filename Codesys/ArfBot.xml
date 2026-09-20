@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-19T18:53:47.7480021" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-19T18:53:47.5561919" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-20T09:56:39.4663564" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-20T09:56:39.2897335" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -1733,7 +1733,7 @@ END_VAR</xhtml>
                 <string length="80" />
               </type>
               <initialValue>
-                <simpleValue value="'v2.2026.38.1-Cnc'" />
+                <simpleValue value="'v2.2026.38.1-Cnc-dirty'" />
               </initialValue>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> git describe --tags --always --dirty (does not get the latest tag from main)
@@ -1762,7 +1762,7 @@ END_VAR</xhtml>
 VAR_GLOBAL
     // git describe --tags --always --dirty (does not get the latest tag from main)
     // git describe --tags --always main (gets the latest tag from main but the commit is wrong because its from the branch we work from - dev)
-    sPlcVersion : STRING(80) := 'v2.2026.38.1-Cnc';
+    sPlcVersion : STRING(80) := 'v2.2026.38.1-Cnc-dirty';
     sRelease : STRING(80);
     sVersionLine : STRING(160);
 END_VAR</xhtml>
@@ -23391,7 +23391,7 @@ _SMC_Trafo_ArticulatedRobot_6DOF(
 	dQ0_old:= J1.fActPosition, 
 	dQ1_old:= J2.fActPosition, 
 	dQ2_old:= J3.fActPosition, 
-	dQ3_old:= J4.fActPosition, 
+	dQ3_old:= -J4.fActPosition, 
 	dQ4_old:= J5.fActPosition, 
 	dQ5_old:= -J6.fActPosition, 
 	armState:= _TrackPosition.Arm, 
@@ -23459,7 +23459,7 @@ _SMC_ControlAxisByPos_J4(
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
-	fSetPosition:= _SMC_Trafo_ArticulatedRobot_6DOF.dQ3,
+	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ3,
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
