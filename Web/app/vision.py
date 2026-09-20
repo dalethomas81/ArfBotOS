@@ -46,6 +46,7 @@ DEFAULT_ROI_BR = [640.0, 400.0]
 _ROI_DATA_RE = re.compile(
     r"data:\s*\[\s*([-+0-9.eE]+)\s*,\s*([-+0-9.eE]+)",
 )
+_RES_SUFFIX_RE = re.compile(r"_(\d+)x(\d+)$", re.IGNORECASE)
 
 
 def roi_file_path():
@@ -99,6 +100,35 @@ def write_roi(top_left, bot_right, path=None):
     with open(tmp, "w") as handle:
         handle.write(body)
     os.replace(tmp, path)
+
+
+def capture_size():
+    global capArray
+    if capArray is not None:
+        height, width = capArray.shape[:2]
+        return int(width), int(height)
+    return None
+
+
+def template_save_name(raw, width, height):
+    name = (raw or "").strip()
+    lower = name.lower()
+    for ext in (".jpg", ".jpeg", ".png"):
+        if lower.endswith(ext):
+            name = name[: -len(ext)]
+            break
+    if not name or any(ch.isspace() for ch in name):
+        raise ValueError("template name cannot be empty or contain spaces")
+    if "/" in name or "\\" in name or ".." in name:
+        raise ValueError("invalid template name")
+    width = int(width)
+    height = int(height)
+    if width < 1 or height < 1:
+        raise ValueError("capture size is missing")
+    stem = _RES_SUFFIX_RE.sub("", name)
+    if not stem:
+        raise ValueError("template name cannot be empty or contain spaces")
+    return "%s_%sx%s.jpg" % (stem, width, height)
 
 
 def _as_xy(value, name):
@@ -164,12 +194,27 @@ def download_file(name):
 @bp.route("/save_template/<filename>")
 def save_template(filename=None):
     global croppedImage
+    if croppedImage is None:
+        return jsonify({"status": "error", "error": "no crop to save"}), 400
+    size = capture_size()
+    width = request.args.get("width", type=int)
+    height = request.args.get("height", type=int)
+    if size is not None:
+        width, height = size
+    if not width or not height:
+        return jsonify({"status": "error", "error": "capture size is missing"}), 400
+    try:
+        filename = template_save_name(filename, width, height)
+    except ValueError as exc:
+        return jsonify({"status": "error", "error": str(exc)}), 400
+    filename = secure_filename(filename)
+    if not filename:
+        return jsonify({"status": "error", "error": "invalid template name"}), 400
     folder = upload_folder()
     if not os.path.exists(folder):
         os.makedirs(folder)
     cv2.imwrite(os.path.join(folder, filename), croppedImage)
-    data = {"status": "saved"}
-    return data, 200
+    return jsonify({"status": "saved", "filename": filename}), 200
 
 
 @bp.route("/delete_template")
@@ -182,14 +227,20 @@ def delete_template(filename=None):
     return data, 200
 
 
-@bp.route("/vision/files")
-@bp.route("/vision/files/")
-def files():
+@bp.route("/vision/templates")
+@bp.route("/vision/templates/")
+def templates():
     folder = upload_folder()
     if not os.path.exists(folder):
         os.makedirs(folder)
     filenames = os.listdir(folder)
     return render_template("vision/saved_templates.html", title="Templates", files=filenames)
+
+
+@bp.route("/vision/files")
+@bp.route("/vision/files/")
+def files():
+    return redirect(url_for("vision.templates"))
 
 
 @bp.route("/vision/files/<path:filename>")

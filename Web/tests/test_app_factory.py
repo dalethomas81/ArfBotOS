@@ -84,6 +84,7 @@ class FactoryTests(unittest.TestCase):
         self.assertIn("/", rules)
         self.assertIn("/vision", rules)
         self.assertIn("/vision/files", rules)
+        self.assertIn("/vision/templates", rules)
         self.assertIn("/vision/roi", rules)
         self.assertIn("/vision/output_sized", rules)
         self.assertIn("/output_sized", rules)

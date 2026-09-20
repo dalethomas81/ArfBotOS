@@ -1,0 +1,12 @@
+{% set vision_tab = vision_tab|default('capture') %}
+<div class="mode-toggle vision-tabs" role="tablist">
+    {% if vision_tab == 'templates' %}
+    <a href="{{ url_for('vision.template') }}">Capture</a>
+    <a href="{{ url_for('vision.template', tab='roi') }}">ROI</a>
+    <a href="{{ url_for('vision.templates') }}" class="active">Templates</a>
+    {% else %}
+    <button type="button" id="mode-capture" class="{% if vision_tab == 'capture' %}active{% endif %}">Capture</button>
+    <button type="button" id="mode-roi" class="{% if vision_tab == 'roi' %}active{% endif %}">ROI</button>
+    <a href="{{ url_for('vision.templates') }}">Templates</a>
+    {% endif %}
+</div>

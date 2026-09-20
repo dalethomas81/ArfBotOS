@@ -469,16 +469,29 @@ pre.log {
     overflow: hidden;
     margin: 0 auto 12px;
 }
-.mode-toggle button {
+.mode-toggle button,
+.mode-toggle a {
     border: none;
     border-radius: 0;
     margin: 0;
     background: var(--control);
     color: var(--muted);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    font: inherit;
+    font-weight: 650;
 }
-.mode-toggle button.active {
+.mode-toggle button.active,
+.mode-toggle a.active {
     background: var(--accent);
     color: var(--text-on-accent);
+}
+.muted {
+    color: var(--muted);
+    font-size: 13px;
 }
 #roi-status {
     color: var(--accent);
@@ -570,6 +583,13 @@ pre.log {
     display: block;
     max-width: min(100%, 640px);
     height: auto;
+}
+#template-preview {
+    width: 100%;
+    margin: 0;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 650;
 }
 #canvas {
     cursor: crosshair;

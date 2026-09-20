@@ -89,8 +89,11 @@ The normalizer (`codesys_xml_normalize.py`) does the following:
 - **Sorts attributes** — XML has no defined attribute order; sorting gives a
   stable serialization.
 - **Consistent indentation** — 2-space indent, one element per line.
-- **Preserves all content** — variable declarations, ST/FBD/LD code,
-  task configurations, data types — nothing semantic is removed.
+- **One ST declaration** — if `InterfaceAsPlainText` is present, the
+  structured `<variable>` / `<inputVars>` / `<baseType>` copy is dropped so
+  GitHub Desktop does not show the same edit twice. Extra plaintext copies
+  in later var sections are dropped too.
+- **Preserves implementation ST, tasks, and remaining semantics.**
 - **Encoding tolerant** — handles UTF-8 BOM, UTF-8, and Latin-1 exports.
 
 ---

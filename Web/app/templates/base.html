@@ -8,7 +8,7 @@
         {% else %}
         <title>ArfBot</title>
         {% endif %}
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/arfbot-night.css') }}?v=fov-notes">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/arfbot-night.css') }}?v=vision-tabs">
         {% block head %}{% endblock %}
     </head>
     <body class="{% block body_class %}{% endblock %}">
@@ -36,8 +36,7 @@
             {% endif %}
             <nav class="nav">
                 {% if enable_vision %}
-                <a href="{{ url_for('vision.template') }}" {% if request.endpoint in ['vision.template'] %}class="active"{% endif %}>Vision</a>
-                <a href="{{ url_for('vision.files') }}" {% if request.endpoint in ['vision.files'] %}class="active"{% endif %}>Files</a>
+                <a href="{{ url_for('vision.template') }}" {% if request.endpoint in ['vision.template', 'vision.templates', 'vision.files'] %}class="active"{% endif %}>Vision</a>
                 {% endif %}
                 {% if enable_animator %}
                 <a href="{{ url_for('animator.index') }}" {% if request.endpoint and request.endpoint.startswith('animator.') %}class="active"{% endif %}>Animator</a>
