@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-18T21:38:01.8745165" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-18T21:38:01.7004818" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-19T18:47:00.5608928" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-19T18:47:00.3720777" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -1733,7 +1733,7 @@ END_VAR</xhtml>
                 <string length="80" />
               </type>
               <initialValue>
-                <simpleValue value="'v2.2026.38.0-RoiEditor'" />
+                <simpleValue value="'v2.2026.38.0-RoiEditor-6-g2485b6d-dirty'" />
               </initialValue>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> git describe --tags --always --dirty (does not get the latest tag from main)
@@ -1762,7 +1762,7 @@ END_VAR</xhtml>
 VAR_GLOBAL
     // git describe --tags --always --dirty (does not get the latest tag from main)
     // git describe --tags --always main (gets the latest tag from main but the commit is wrong because its from the branch we work from - dev)
-    sPlcVersion : STRING(80) := 'v2.2026.38.0-RoiEditor';
+    sPlcVersion : STRING(80) := 'v2.2026.38.0-RoiEditor-6-g2485b6d-dirty';
     sRelease : STRING(80);
     sVersionLine : STRING(160);
 END_VAR</xhtml>
@@ -12889,10 +12889,12 @@ VAR_OUTPUT
 END_VAR
 VAR
 	_Filename: STRING := '_cnc/CNC_FromFile.cnc';
-	_SMC_NCInterpreter: SMC_NCInterpreter;
 	_SMC_ReadNCFile2: SMC_ReadNCFile2;
+	_SMC_NCInterpreter: SMC_NCInterpreter;
+    _SMC_SmoothPath: SMC_SmoothPath;
 	_SMC_CheckVelocities: SMC_CheckVelocities;
-	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
+	_SMC_GEOINFO_Ipo: ARRAY[0..50] OF SMC_GEOINFO;
+	_SMC_GEOINFO_Smooth: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
 	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYZ;
 	_ExecuteRtrig: R_TRIG;
@@ -12958,10 +12960,12 @@ VAR_OUTPUT
 END_VAR
 VAR
 	_Filename: STRING := '_cnc/CNC_FromFile.cnc';
-	_SMC_NCInterpreter: SMC_NCInterpreter;
 	_SMC_ReadNCFile2: SMC_ReadNCFile2;
+	_SMC_NCInterpreter: SMC_NCInterpreter;
+    _SMC_SmoothPath: SMC_SmoothPath;
 	_SMC_CheckVelocities: SMC_CheckVelocities;
-	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
+	_SMC_GEOINFO_Ipo: ARRAY[0..50] OF SMC_GEOINFO;
+	_SMC_GEOINFO_Smooth: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
 	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYZ;
 	_ExecuteRtrig: R_TRIG;
@@ -12988,14 +12992,19 @@ END_VAR
                         <simpleValue value="'_cnc/CNC_FromFile.cnc'" />
                       </initialValue>
                     </variable>
+                    <variable name="_SMC_ReadNCFile2">
+                      <type>
+                        <derived name="SMC_ReadNCFile2" />
+                      </type>
+                    </variable>
                     <variable name="_SMC_NCInterpreter">
                       <type>
                         <derived name="SMC_NCInterpreter" />
                       </type>
                     </variable>
-                    <variable name="_SMC_ReadNCFile2">
+                    <variable name="_SMC_SmoothPath">
                       <type>
-                        <derived name="SMC_ReadNCFile2" />
+                        <derived name="SMC_SmoothPath" />
                       </type>
                     </variable>
                     <variable name="_SMC_CheckVelocities">
@@ -13003,7 +13012,17 @@ END_VAR
                         <derived name="SMC_CheckVelocities" />
                       </type>
                     </variable>
-                    <variable name="_SMC_GEOINFO">
+                    <variable name="_SMC_GEOINFO_Ipo">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="50" />
+                          <baseType>
+                            <derived name="SMC_GEOINFO" />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <variable name="_SMC_GEOINFO_Smooth">
                       <type>
                         <array>
                           <dimension lower="0" upper="50" />
@@ -13077,10 +13096,12 @@ VAR_OUTPUT
 END_VAR
 VAR
 	_Filename: STRING := '_cnc/CNC_FromFile.cnc';
-	_SMC_NCInterpreter: SMC_NCInterpreter;
 	_SMC_ReadNCFile2: SMC_ReadNCFile2;
+	_SMC_NCInterpreter: SMC_NCInterpreter;
+    _SMC_SmoothPath: SMC_SmoothPath;
 	_SMC_CheckVelocities: SMC_CheckVelocities;
-	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
+	_SMC_GEOINFO_Ipo: ARRAY[0..50] OF SMC_GEOINFO;
+	_SMC_GEOINFO_Smooth: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
 	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYZ;
 	_ExecuteRtrig: R_TRIG;
@@ -13128,10 +13149,12 @@ VAR_OUTPUT
 END_VAR
 VAR
 	_Filename: STRING := '_cnc/CNC_FromFile.cnc';
-	_SMC_NCInterpreter: SMC_NCInterpreter;
 	_SMC_ReadNCFile2: SMC_ReadNCFile2;
+	_SMC_NCInterpreter: SMC_NCInterpreter;
+    _SMC_SmoothPath: SMC_SmoothPath;
 	_SMC_CheckVelocities: SMC_CheckVelocities;
-	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
+	_SMC_GEOINFO_Ipo: ARRAY[0..50] OF SMC_GEOINFO;
+	_SMC_GEOINFO_Smooth: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
 	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYZ;
 	_ExecuteRtrig: R_TRIG;
@@ -13217,10 +13240,13 @@ _SMC_NCInterpreter(
 	bAppend:= , 
 	piStartPosition:= _StartPos, 
 	vStartToolLength:= , 
-	nSizeOutQueue:= SIZEOF(_SMC_GEOINFO), 
-	pbyBufferOutQueue:= ADR(_SMC_GEOINFO), 
+	nSizeOutQueue:= SIZEOF(_SMC_GEOINFO_Ipo), 
+	pbyBufferOutQueue:= ADR(_SMC_GEOINFO_Ipo), 
 	bEnableSyntaxChecks:= , 
-	eOriConv:= _OriConvention,
+	eOriConv:= _OriConvention,    
+    // A/B/C as independent axes so G91 A-45 is signed and can pass ±180.
+    // Tracker/trafo stay ZYX; do not set _OriConvention to ADDAXES (that feeds J4/J5/J6 as Euler and faults the group).
+    //eOriConv:= SMC_ORI_CONVENTION.ADDAXES,
 	dCircleTolerance:= , 
 	pInterpreterStack:= , 
 	nInterpreterStackSizeBytes:= , 
@@ -13235,11 +13261,36 @@ _SMC_NCInterpreter(
 	GCodeText=&gt; , 
 	CallstackInfo=&gt; , 
 	aActivePrograms=&gt; );
+    
+_SMC_SmoothPath(
+	bExecute:= _SMC_ReadNCFile2.bExecute, 
+	bAbort:= _Sequence = 999, 
+	bAppend:= , 
+	poqDataIn:= _SMC_NCInterpreter.poqDataOut, 
+	dEdgeDistance:= , 
+	dAngleTol:= , 
+	nSizeOutQueue:= SIZEOF(_SMC_GEOINFO_Smooth), 
+	pbyBufferOutQueue:= ADR(_SMC_GEOINFO_Smooth), 
+	eMode:= , 
+	bSymmetricalDistances:= , 
+	bImprovedSymmetricCuts:= , 
+	eAddAxMode:= , 
+	dMinimumCurvatureRadius:= , 
+	bCheckCurvature:= , 
+	dRelativeCurvatureTol:= , 
+	bCheckAddAxVelJump:= , 
+	dMaxAddAxVelDifference:= , 
+	bDone=&gt; , 
+	bBusy=&gt; , 
+	bError=&gt; , 
+	wErrorID=&gt; , 
+	poqDataOut=&gt; , 
+	udiStopsDueToCurvatureRadius=&gt; );
 
 _SMC_CheckVelocities(
 	bExecute:= _SMC_NCInterpreter.bExecute, 
 	bAbort:= _Sequence = 999, 
-	poqDataIn:= _SMC_NCInterpreter.poqDataOut, 
+	poqDataIn:= _SMC_SmoothPath.poqDataOut, 
 	dAngleTol:= , 
 	bCheckAddAxVelJump:= , 
 	dMaxAddAxVelDifference:= , 
@@ -13251,6 +13302,7 @@ _SMC_CheckVelocities(
 _ErrorRtrig();
 _ErrorRtrig.CLK:= _SMC_ReadNCFile2.bError
 				OR _SMC_NCInterpreter.bError
+				OR _SMC_SmoothPath.bError
 				OR _SMC_CheckVelocities.bError;
 IF _ErrorRtrig.Q THEN
 	Error := TRUE;
@@ -13264,6 +13316,12 @@ IF _ErrorRtrig.Q THEN
 		ErrorDescription := CONCAT(' NCInterpreter Error: ',
                                 CONCAT(TO_STRING(_SMC_NCInterpreter.wErrorID),
                                 CONCAT(' ', SMC_ErrorString(_SMC_NCInterpreter.wErrorID,
+                                            SMC_Language_Type.english)))) ;
+	END_IF
+	IF _SMC_SmoothPath.bError THEN
+		ErrorDescription := CONCAT(' SmoothPath Error: ',
+                                CONCAT(TO_STRING(_SMC_SmoothPath.wErrorID),
+                                CONCAT(' ', SMC_ErrorString(_SMC_SmoothPath.wErrorID,
                                             SMC_Language_Type.english)))) ;
 	END_IF
 	IF _SMC_CheckVelocities.bError THEN
@@ -13445,10 +13503,12 @@ VAR_OUTPUT
 END_VAR
 VAR
 	_Filename: STRING := '_cnc/CNC_FromFile.cnc';
-	_SMC_NCInterpreter: SMC_NCInterpreter;
 	_SMC_ReadNCFile2: SMC_ReadNCFile2;
+	_SMC_NCInterpreter: SMC_NCInterpreter;
+    _SMC_SmoothPath: SMC_SmoothPath;
 	_SMC_CheckVelocities: SMC_CheckVelocities;
-	_SMC_GEOINFO: ARRAY[0..50] OF SMC_GEOINFO;
+	_SMC_GEOINFO_Ipo: ARRAY[0..50] OF SMC_GEOINFO;
+	_SMC_GEOINFO_Smooth: ARRAY[0..50] OF SMC_GEOINFO;
 	_StartPos: SMC_PosInfo;
 	_OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYZ;
 	_ExecuteRtrig: R_TRIG;
@@ -22363,7 +22423,7 @@ END_VAR
                         <LREAL />
                       </type>
                       <initialValue>
-                        <simpleValue value="500.0" />
+                        <simpleValue value="50.0" />
                       </initialValue>
                     </variable>
                     <variable name="AvoidGaps">
@@ -22371,7 +22431,7 @@ END_VAR
                         <BOOL />
                       </type>
                       <initialValue>
-                        <simpleValue value="TRUE" />
+                        <simpleValue value="FALSE" />
                       </initialValue>
                     </variable>
                     <variable name="GapAccel">
@@ -22379,7 +22439,7 @@ END_VAR
                         <LREAL />
                       </type>
                       <initialValue>
-                        <simpleValue value="10000.0" />
+                        <simpleValue value="100.0" />
                       </initialValue>
                     </variable>
                     <variable name="GapJerk">
@@ -22387,7 +22447,7 @@ END_VAR
                         <LREAL />
                       </type>
                       <initialValue>
-                        <simpleValue value="1E+16" />
+                        <simpleValue value="1000.0" />
                       </initialValue>
                     </variable>
                     <variable name="Command">
@@ -22403,10 +22463,10 @@ END_VAR
                         <InterfaceAsPlainText>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK FB_CncCmdProcessor EXTENDS FB_Module
 VAR_INPUT
-	GapVelocity: LREAL := 500.0;
-	AvoidGaps: BOOL := TRUE;
-	GapAccel: LREAL := 10000.0;
-    GapJerk: LREAL := 10000000000000000.0;
+	GapVelocity: LREAL := 50.0;
+	AvoidGaps: BOOL := FALSE;
+	GapAccel: LREAL := 100.0;
+    GapJerk: LREAL := 1000.0;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -22446,6 +22506,9 @@ VAR CONSTANT
     MCODE_OUTPUT_CLR: INT:=400;
     MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
     MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
+    MCODE_FLAG_WAIT: INT:=500;
+    MCODE_FLAG_WAIT_START: INT:=MCODE_FLAG_WAIT+GVL.FLG_ARR_BEG;
+    MCODE_FLAG_WAIT_END: INT:=MCODE_FLAG_WAIT+GVL.FLG_ARR_END;
 END_VAR
 VAR CONSTANT
 	_STEP_DONE: 		INT := 1000;
@@ -22517,10 +22580,10 @@ END_VAR
                         <InterfaceAsPlainText>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK FB_CncCmdProcessor EXTENDS FB_Module
 VAR_INPUT
-	GapVelocity: LREAL := 500.0;
-	AvoidGaps: BOOL := TRUE;
-	GapAccel: LREAL := 10000.0;
-    GapJerk: LREAL := 10000000000000000.0;
+	GapVelocity: LREAL := 50.0;
+	AvoidGaps: BOOL := FALSE;
+	GapAccel: LREAL := 100.0;
+    GapJerk: LREAL := 1000.0;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -22560,6 +22623,9 @@ VAR CONSTANT
     MCODE_OUTPUT_CLR: INT:=400;
     MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
     MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
+    MCODE_FLAG_WAIT: INT:=500;
+    MCODE_FLAG_WAIT_START: INT:=MCODE_FLAG_WAIT+GVL.FLG_ARR_BEG;
+    MCODE_FLAG_WAIT_END: INT:=MCODE_FLAG_WAIT+GVL.FLG_ARR_END;
 END_VAR
 VAR CONSTANT
 	_STEP_DONE: 		INT := 1000;
@@ -22706,10 +22772,10 @@ END_VAR
                         <InterfaceAsPlainText>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK FB_CncCmdProcessor EXTENDS FB_Module
 VAR_INPUT
-	GapVelocity: LREAL := 500.0;
-	AvoidGaps: BOOL := TRUE;
-	GapAccel: LREAL := 10000.0;
-    GapJerk: LREAL := 10000000000000000.0;
+	GapVelocity: LREAL := 50.0;
+	AvoidGaps: BOOL := FALSE;
+	GapAccel: LREAL := 100.0;
+    GapJerk: LREAL := 1000.0;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -22749,6 +22815,9 @@ VAR CONSTANT
     MCODE_OUTPUT_CLR: INT:=400;
     MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
     MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
+    MCODE_FLAG_WAIT: INT:=500;
+    MCODE_FLAG_WAIT_START: INT:=MCODE_FLAG_WAIT+GVL.FLG_ARR_BEG;
+    MCODE_FLAG_WAIT_END: INT:=MCODE_FLAG_WAIT+GVL.FLG_ARR_END;
 END_VAR
 VAR CONSTANT
 	_STEP_DONE: 		INT := 1000;
@@ -22855,6 +22924,30 @@ END_VAR
                         <simpleValue value="(MCODE_OUTPUT_CLR + GVL.DIG_OUT_ARR_END)" />
                       </initialValue>
                     </variable>
+                    <variable name="MCODE_FLAG_WAIT">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="500" />
+                      </initialValue>
+                    </variable>
+                    <variable name="MCODE_FLAG_WAIT_START">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="(MCODE_FLAG_WAIT + GVL.FLG_ARR_BEG)" />
+                      </initialValue>
+                    </variable>
+                    <variable name="MCODE_FLAG_WAIT_END">
+                      <type>
+                        <INT />
+                      </type>
+                      <initialValue>
+                        <simpleValue value="(MCODE_FLAG_WAIT + GVL.FLG_ARR_END)" />
+                      </initialValue>
+                    </variable>
                     <variable name="_STEP_DONE">
                       <type>
                         <INT />
@@ -22900,10 +22993,10 @@ END_VAR
                         <InterfaceAsPlainText>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK FB_CncCmdProcessor EXTENDS FB_Module
 VAR_INPUT
-	GapVelocity: LREAL := 500.0;
-	AvoidGaps: BOOL := TRUE;
-	GapAccel: LREAL := 10000.0;
-    GapJerk: LREAL := 10000000000000000.0;
+	GapVelocity: LREAL := 50.0;
+	AvoidGaps: BOOL := FALSE;
+	GapAccel: LREAL := 100.0;
+    GapJerk: LREAL := 1000.0;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -22943,6 +23036,9 @@ VAR CONSTANT
     MCODE_OUTPUT_CLR: INT:=400;
     MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
     MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
+    MCODE_FLAG_WAIT: INT:=500;
+    MCODE_FLAG_WAIT_START: INT:=MCODE_FLAG_WAIT+GVL.FLG_ARR_BEG;
+    MCODE_FLAG_WAIT_END: INT:=MCODE_FLAG_WAIT+GVL.FLG_ARR_END;
 END_VAR
 VAR CONSTANT
 	_STEP_DONE: 		INT := 1000;
@@ -23034,10 +23130,10 @@ END_VAR
                         <InterfaceAsPlainText>
                           <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK FB_CncCmdProcessor EXTENDS FB_Module
 VAR_INPUT
-	GapVelocity: LREAL := 500.0;
-	AvoidGaps: BOOL := TRUE;
-	GapAccel: LREAL := 10000.0;
-    GapJerk: LREAL := 10000000000000000.0;
+	GapVelocity: LREAL := 50.0;
+	AvoidGaps: BOOL := FALSE;
+	GapAccel: LREAL := 100.0;
+    GapJerk: LREAL := 1000.0;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -23077,6 +23173,9 @@ VAR CONSTANT
     MCODE_OUTPUT_CLR: INT:=400;
     MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
     MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
+    MCODE_FLAG_WAIT: INT:=500;
+    MCODE_FLAG_WAIT_START: INT:=MCODE_FLAG_WAIT+GVL.FLG_ARR_BEG;
+    MCODE_FLAG_WAIT_END: INT:=MCODE_FLAG_WAIT+GVL.FLG_ARR_END;
 END_VAR
 VAR CONSTANT
 	_STEP_DONE: 		INT := 1000;
@@ -23253,7 +23352,6 @@ CASE WORD_TO_INT(_SMC_Interpolator.wM) OF
     
     // M200 - M215 wait on inputs 0 - 15    
 	MCODE_INPUT_WAIT_START..MCODE_INPUT_WAIT_END:
-        // TODO should we put a timeout or bypass here?
         IF CmdIo.Input[WORD_TO_INT(_SMC_Interpolator.wM) - MCODE_INPUT_WAIT] THEN
             _SMC_Interpolator.bAcknM := TRUE;
         END_IF
@@ -23267,6 +23365,13 @@ CASE WORD_TO_INT(_SMC_Interpolator.wM) OF
 	MCODE_OUTPUT_CLR_START..MCODE_OUTPUT_CLR_END:
         CmdIo.Output[WORD_TO_INT(_SMC_Interpolator.wM) - MCODE_OUTPUT_CLR] := FALSE;
         _SMC_Interpolator.bAcknM := TRUE;
+    
+    // M500 - M515 wait on flags 0 - 49    
+	MCODE_FLAG_WAIT_START..MCODE_FLAG_WAIT_END:
+        IF SUPER^.Flags[WORD_TO_INT(_SMC_Interpolator.wM) - MCODE_FLAG_WAIT].Value THEN
+            SUPER^.Flags[WORD_TO_INT(_SMC_Interpolator.wM) - MCODE_FLAG_WAIT].Value := FALSE;
+            _SMC_Interpolator.bAcknM := TRUE;
+        END_IF
         
 END_CASE
 
@@ -23288,7 +23393,7 @@ _SMC_Trafo_ArticulatedRobot_6DOF(
 	dQ2_old:= J3.fActPosition, 
 	dQ3_old:= J4.fActPosition, 
 	dQ4_old:= J5.fActPosition, 
-	dQ5_old:= J6.fActPosition, 
+	dQ5_old:= -J6.fActPosition, 
 	armState:= _TrackPosition.Arm, 
 	elbowState:= _TrackPosition.Elbow, 
 	handState:= _TrackPosition.Hand, 
@@ -23386,7 +23491,7 @@ _SMC_ControlAxisByPos_J6(
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
-	fSetPosition:= _SMC_Trafo_ArticulatedRobot_6DOF.dQ5,
+	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ5,
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
@@ -23699,10 +23804,10 @@ _SMC_Interpolator.bExecute := FALSE;</xhtml>
                     <InterfaceAsPlainText>
                       <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK FB_CncCmdProcessor EXTENDS FB_Module
 VAR_INPUT
-	GapVelocity: LREAL := 500.0;
-	AvoidGaps: BOOL := TRUE;
-	GapAccel: LREAL := 10000.0;
-    GapJerk: LREAL := 10000000000000000.0;
+	GapVelocity: LREAL := 50.0;
+	AvoidGaps: BOOL := FALSE;
+	GapAccel: LREAL := 100.0;
+    GapJerk: LREAL := 1000.0;
 	Command: STRING(GVL.COMMAND_LEN):='';
 END_VAR
 VAR_IN_OUT
@@ -23742,6 +23847,9 @@ VAR CONSTANT
     MCODE_OUTPUT_CLR: INT:=400;
     MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
     MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
+    MCODE_FLAG_WAIT: INT:=500;
+    MCODE_FLAG_WAIT_START: INT:=MCODE_FLAG_WAIT+GVL.FLG_ARR_BEG;
+    MCODE_FLAG_WAIT_END: INT:=MCODE_FLAG_WAIT+GVL.FLG_ARR_END;
 END_VAR
 VAR CONSTANT
 	_STEP_DONE: 		INT := 1000;
