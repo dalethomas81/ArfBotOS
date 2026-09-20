@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-20T09:56:39.4663564" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-20T09:56:39.2897335" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-20T10:48:27.263823" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-20T10:48:26.9809356" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -1733,7 +1733,7 @@ END_VAR</xhtml>
                 <string length="80" />
               </type>
               <initialValue>
-                <simpleValue value="'v2.2026.38.1-Cnc-dirty'" />
+                <simpleValue value="'v2.2026.38.1-Cnc-1-g7ea79c5-dirty'" />
               </initialValue>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> git describe --tags --always --dirty (does not get the latest tag from main)
@@ -1762,7 +1762,7 @@ END_VAR</xhtml>
 VAR_GLOBAL
     // git describe --tags --always --dirty (does not get the latest tag from main)
     // git describe --tags --always main (gets the latest tag from main but the commit is wrong because its from the branch we work from - dev)
-    sPlcVersion : STRING(80) := 'v2.2026.38.1-Cnc-dirty';
+    sPlcVersion : STRING(80) := 'v2.2026.38.1-Cnc-1-g7ea79c5-dirty';
     sRelease : STRING(80);
     sVersionLine : STRING(160);
 END_VAR</xhtml>
@@ -5003,9 +5003,8 @@ TrackPosition(
 	J6:=IoConfig_Globals.J6,
     OriConvention:= GVL.OriConvention,
 	VisuStruct3DTrack=&gt;,
-	Arm=&gt;,
-	Elbow=&gt;,
-	Hand=&gt;);</xhtml>
+	Position=&gt;,
+	Config=&gt;);</xhtml>
                         </ST>
                       </body>
                       <InterfaceAsPlainText>
@@ -13856,20 +13855,19 @@ END_VAR
 VAR_OUTPUT
 	VisuStruct3DTrack: VisuStruct3DTrack;
     Position: SMC_PosInfo;
-	Arm: SMC_ArticulatedRobot_6DOF_J0_State;
-	Elbow: SMC_ArticulatedRobot_6DOF_J1_State;
-	Hand: SMC_ArticulatedRobot_6DOF_J4_State;
+	Config: TRAFO.ConfigData;
 END_VAR
 VAR
-	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
+	_Kin: TRAFO.Kin_ArticulatedRobot_6DOF;
+	_TrafoF: SMC_TrafoF_Wrapper;
+	_AxisSettingsFromAxes: SMC_AxisSettingsFromAxes;
+	_AxesAct: TRAFO.AXISPOS_REF;
 	_VisuStruct3DPathPoint: ARRAY [0..5000] OF VisuStruct3DPathPoint;
 	_SMC_PositionTracker: SMC_PositionTracker;
 	_PositionTrackerClearR_Trig: R_Trig;
 	_Clear: BOOL:=FALSE;
-END_VAR
-</xhtml>
+	_bKinInit: BOOL;
+END_VAR</xhtml>
                         </InterfaceAsPlainText>
                       </data>
                     </addData>
@@ -13902,20 +13900,19 @@ END_VAR
 VAR_OUTPUT
 	VisuStruct3DTrack: VisuStruct3DTrack;
     Position: SMC_PosInfo;
-	Arm: SMC_ArticulatedRobot_6DOF_J0_State;
-	Elbow: SMC_ArticulatedRobot_6DOF_J1_State;
-	Hand: SMC_ArticulatedRobot_6DOF_J4_State;
+	Config: TRAFO.ConfigData;
 END_VAR
 VAR
-	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
+	_Kin: TRAFO.Kin_ArticulatedRobot_6DOF;
+	_TrafoF: SMC_TrafoF_Wrapper;
+	_AxisSettingsFromAxes: SMC_AxisSettingsFromAxes;
+	_AxesAct: TRAFO.AXISPOS_REF;
 	_VisuStruct3DPathPoint: ARRAY [0..5000] OF VisuStruct3DPathPoint;
 	_SMC_PositionTracker: SMC_PositionTracker;
 	_PositionTrackerClearR_Trig: R_Trig;
 	_Clear: BOOL:=FALSE;
-END_VAR
-</xhtml>
+	_bKinInit: BOOL;
+END_VAR</xhtml>
                         </InterfaceAsPlainText>
                       </data>
                     </addData>
@@ -13931,19 +13928,9 @@ END_VAR
                         <derived name="SMC_PosInfo" />
                       </type>
                     </variable>
-                    <variable name="Arm">
+                    <variable name="Config">
                       <type>
-                        <derived name="SMC_ArticulatedRobot_6DOF_J0_State" />
-                      </type>
-                    </variable>
-                    <variable name="Elbow">
-                      <type>
-                        <derived name="SMC_ArticulatedRobot_6DOF_J1_State" />
-                      </type>
-                    </variable>
-                    <variable name="Hand">
-                      <type>
-                        <derived name="SMC_ArticulatedRobot_6DOF_J4_State" />
+                        <derived name="TRAFO.ConfigData" />
                       </type>
                     </variable>
                     <addData>
@@ -13965,38 +13952,42 @@ END_VAR
 VAR_OUTPUT
 	VisuStruct3DTrack: VisuStruct3DTrack;
     Position: SMC_PosInfo;
-	Arm: SMC_ArticulatedRobot_6DOF_J0_State;
-	Elbow: SMC_ArticulatedRobot_6DOF_J1_State;
-	Hand: SMC_ArticulatedRobot_6DOF_J4_State;
+	Config: TRAFO.ConfigData;
 END_VAR
 VAR
-	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
+	_Kin: TRAFO.Kin_ArticulatedRobot_6DOF;
+	_TrafoF: SMC_TrafoF_Wrapper;
+	_AxisSettingsFromAxes: SMC_AxisSettingsFromAxes;
+	_AxesAct: TRAFO.AXISPOS_REF;
 	_VisuStruct3DPathPoint: ARRAY [0..5000] OF VisuStruct3DPathPoint;
 	_SMC_PositionTracker: SMC_PositionTracker;
 	_PositionTrackerClearR_Trig: R_Trig;
 	_Clear: BOOL:=FALSE;
-END_VAR
-</xhtml>
+	_bKinInit: BOOL;
+END_VAR</xhtml>
                         </InterfaceAsPlainText>
                       </data>
                     </addData>
                   </outputVars>
                   <localVars>
-                    <variable name="_SMC_TrafoConfig_ArticulatedRobot_6DOF">
+                    <variable name="_Kin">
                       <type>
-                        <derived name="SMC_TrafoConfig_ArticulatedRobot_6DOF" />
+                        <derived name="TRAFO.Kin_ArticulatedRobot_6DOF" />
                       </type>
                     </variable>
-                    <variable name="_SMC_Trafo_ArticulatedRobot_6DOF">
+                    <variable name="_TrafoF">
                       <type>
-                        <derived name="SMC_Trafo_ArticulatedRobot_6DOF" />
+                        <derived name="SMC_TrafoF_Wrapper" />
                       </type>
                     </variable>
-                    <variable name="_SMC_Trafof_ArticulatedRobot_6DOF">
+                    <variable name="_AxisSettingsFromAxes">
                       <type>
-                        <derived name="SMC_Trafof_ArticulatedRobot_6DOF" />
+                        <derived name="SMC_AxisSettingsFromAxes" />
+                      </type>
+                    </variable>
+                    <variable name="_AxesAct">
+                      <type>
+                        <derived name="TRAFO.AXISPOS_REF" />
                       </type>
                     </variable>
                     <variable name="_VisuStruct3DPathPoint">
@@ -14027,6 +14018,11 @@ END_VAR
                         <simpleValue value="FALSE" />
                       </initialValue>
                     </variable>
+                    <variable name="_bKinInit">
+                      <type>
+                        <BOOL />
+                      </type>
+                    </variable>
                     <addData>
                       <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
                         <InterfaceAsPlainText>
@@ -14046,20 +14042,19 @@ END_VAR
 VAR_OUTPUT
 	VisuStruct3DTrack: VisuStruct3DTrack;
     Position: SMC_PosInfo;
-	Arm: SMC_ArticulatedRobot_6DOF_J0_State;
-	Elbow: SMC_ArticulatedRobot_6DOF_J1_State;
-	Hand: SMC_ArticulatedRobot_6DOF_J4_State;
+	Config: TRAFO.ConfigData;
 END_VAR
 VAR
-	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
+	_Kin: TRAFO.Kin_ArticulatedRobot_6DOF;
+	_TrafoF: SMC_TrafoF_Wrapper;
+	_AxisSettingsFromAxes: SMC_AxisSettingsFromAxes;
+	_AxesAct: TRAFO.AXISPOS_REF;
 	_VisuStruct3DPathPoint: ARRAY [0..5000] OF VisuStruct3DPathPoint;
 	_SMC_PositionTracker: SMC_PositionTracker;
 	_PositionTrackerClearR_Trig: R_Trig;
 	_Clear: BOOL:=FALSE;
-END_VAR
-</xhtml>
+	_bKinInit: BOOL;
+END_VAR</xhtml>
                         </InterfaceAsPlainText>
                       </data>
                     </addData>
@@ -14067,87 +14062,60 @@ END_VAR
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">
-// NOTE currently the settings for J6 invert direction under scaling/mapping contradict using motion control 
-// libraries and CNC. For CNC to work properly, the setting is required to be enabled (inverted). Additionally
-// the homing direction and position will need to be negated. This all requires a full download. Will be leaving 
-// setting disabled for now so that we can continue to use motion control. 
-//
-// to recap, take these steps if you would like to try out CNC:
-// 1. open the axis pool settings and under the scaling/mapping section enable 'invert direction'
-// 2. in the A_Homing POU, change the homing direction to positive.
-// 3. in _00_MAIN POU, under FirstScan set the initial home offset to a positive value (keep the value and just change the sign).
-// 4. do a full download.
-// 5. go online and set the persistent value (if previously initialized in FirstScan) to a positive value.
-//
-// UPDATE: Figured out a work around for this issue. In the A_Interpolater POU, I negated the set position in the ControlAxisByPos
-// function block for J6 such that it drives the opposite way. This appears to have resolved the issue. Why this is needed, I do not
-// know. I am sure it is some minor overlooked detail somewhere in the code...
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// Forward kinematics for the HMI path and CNC start pose.
+// Uses Kin_ArticulatedRobot_6DOF (same DH as ArfBotAxisGroup: d1 &gt;= 0, joint-0
+// twist +90, MCS Z up) through SMC_TrafoF_Wrapper so Cartesian XYZABC match
+// jogging / the Move processor. Do not use the CNC-native 6DOF trafo here:
+// that DH is Z down / twist -90 and does not match the axis group.
+// https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_wrapper_kinematic_fbs.html
+// https://content.helpme-codesys.com/en/libs/SM3_Transformation/Current/SM3_Transformation/Function-Blocks/Standalone-Kinematics/Articulated-Robots/6AxisArticulated/Kin_ArticulatedRobot_6DOF.html
+// https://forge.codesys.com/forge/talk/Motion/thread/1aa1a0f185/
 
+_Kin.d1 := ArfBotAxisGroup.Trafo.d1;
+_Kin.a1 := ArfBotAxisGroup.Trafo.a1;
+_Kin.a2 := ArfBotAxisGroup.Trafo.a2;
+_Kin.a3 := ArfBotAxisGroup.Trafo.a3;
+_Kin.d3 := ArfBotAxisGroup.Trafo.d3;
+_Kin.d4 := ArfBotAxisGroup.Trafo.d4;
+_Kin.d6 := ArfBotAxisGroup.Trafo.d6;
+IF NOT _bKinInit THEN
+	_Kin.Initialize();
+	_bKinInit := _Kin.IsInitialized();
+END_IF
 
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.a1:=ArfBotAxisGroup.Trafo.a1;//AxisGroup.Trafo.a1;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.a2:=ArfBotAxisGroup.Trafo.a2;//AxisGroup.Trafo.a2;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.a3:=ArfBotAxisGroup.Trafo.a3;//AxisGroup.Trafo.a3;
-// conflicting documentation on if d1 needs to be pos or neg. only works as negative otherwise trafo reports invalid configuration
-// https://product-help.schneider-electric.com/Machine%20Expert/V2.0/zh/codesys_softmotion/codesys_softmotion/modules/_sm_trafo_pou_six_dof_robot.html
-// https://forge.codesys.com/forge/talk/Motion/thread/16e1f0327f/
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.d1:=-ArfBotAxisGroup.Trafo.d1;//-AxisGroup.Trafo.d1;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.d3:=ArfBotAxisGroup.Trafo.d3;//AxisGroup.Trafo.d3;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.d4:=ArfBotAxisGroup.Trafo.d4;//AxisGroup.Trafo.d4;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.d6:=ArfBotAxisGroup.Trafo.d6;//AxisGroup.Trafo.d6;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.q3_max_deg:=160; // TODO put magic numbers somewhere appropriate
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.q3_min_deg:=-160; // TODO put magic numbers somewhere appropriate
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_max_deg:=160; // TODO put magic numbers somewhere appropriate
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_min_deg:=-160; // TODO put magic numbers somewhere appropriate
+_AxisSettingsFromAxes(
+	Axis0 := J1,
+	Axis1 := J2,
+	Axis2 := J3,
+	Axis3 := J4,
+	Axis4 := J5,
+	Axis5 := J6);
 
-// track position
-_SMC_Trafof_ArticulatedRobot_6DOF(config:=_SMC_TrafoConfig_ArticulatedRobot_6DOF,
-							Drive0:=J1,
-							Drive1:=J2,
-							Drive2:=J3,
-							Drive3:=J4,
-							Drive4:=J5,
-							Drive5:=J6,
-							vToolPos=&gt;,
-							mToolOrientation=&gt;,
-							armState=&gt;Arm,
-							elbowState=&gt;Elbow,
-							handState=&gt;Hand);
-Position.dX := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dX;
-Position.dY := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dY;
-Position.dZ := _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dZ;
+_AxesAct.a0 := J1.fActPosition;
+_AxesAct.a1 := J2.fActPosition;
+_AxesAct.a2 := J3.fActPosition;
+_AxesAct.a3 := J4.fActPosition;
+_AxesAct.a4 := J5.fActPosition;
+_AxesAct.a5 := J6.fActPosition;
 
-// https://content.helpme-codesys.com/en/libs/SM3_Math/4.12.0.0/Matrix3/fld-Matrix3.html
-// ATTENTION: ZYZ is the only orientation convention that was reliable during testing.
-CASE OriConvention OF
-    SMC_ORI_CONVENTION.ADDAXES:
-        Position.dA := J4.fActPosition;
-        Position.dB := J5.fActPosition;
-        Position.dC := J6.fActPosition;
-    SMC_ORI_CONVENTION.XYZ:
-        SMC_Matrix3_ToRollPitchYaw_deg( mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
-                                        dRoll=&gt; Position.dA, dPitch=&gt; Position.dB, dYaw=&gt; Position.dC);
-    SMC_ORI_CONVENTION.ZYX:
-        // yaw(Z), pitch(Y) and roll(X)
-        SMC_Matrix3_ToYawPitchRoll( mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
-                                    dYaw_rad=&gt; Position.dA, dPitch_rad=&gt; Position.dB, dRoll_rad=&gt; Position.dC);
-                                    Position.dA := F_RadToDeg(Position.dA);
-                                    Position.dB := F_RadToDeg(Position.dB);
-                                    Position.dC := F_RadToDeg(Position.dC);
-    SMC_ORI_CONVENTION.ZYZ:
-        SMC_Matrix3_ToZYZ_deg(  mR:=_SMC_Trafof_ArticulatedRobot_6DOF.mToolOrientation, 
-                                dA_deg=&gt; Position.dA, dB_deg=&gt; Position.dB, dC_deg=&gt; Position.dC);
-END_CASE
+_TrafoF(
+	Enable := TRUE,
+	Kin := _Kin,
+	OriConv := OriConvention,
+	AxisSettings := _AxisSettingsFromAxes.AxisSettings,
+	Axes := _AxesAct,
+	cd =&gt; Config,
+	pi =&gt; Position);
 
 _PositionTrackerClearR_Trig(Clk:=_Clear);
 _SMC_PositionTracker(
-	bEnable:= TRUE, 
-	bClear:= _PositionTrackerClearR_Trig.Q, 
-	dX:= _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dX, 
-	dY:= _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dY, 
-	dZ:= _SMC_Trafof_ArticulatedRobot_6DOF.vToolPos.dZ, 
-	udiNumberOfPointsInArray:= SIZEOF(_VisuStruct3DPathPoint) / SIZEOF(VisuStruct3DPathPoint), 
-	pBuffer:= ADR(_VisuStruct3DPathPoint), 
+	bEnable:= TRUE,
+	bClear:= _PositionTrackerClearR_Trig.Q,
+	dX:= Position.dX,
+	dY:= Position.dY,
+	dZ:= Position.dZ,
+	udiNumberOfPointsInArray:= SIZEOF(_VisuStruct3DPathPoint) / SIZEOF(VisuStruct3DPathPoint),
+	pBuffer:= ADR(_VisuStruct3DPathPoint),
 	vs3dt=&gt; VisuStruct3DTrack);
 _Clear := FALSE;</xhtml>
                   </ST>
@@ -14188,20 +14156,19 @@ END_VAR
 VAR_OUTPUT
 	VisuStruct3DTrack: VisuStruct3DTrack;
     Position: SMC_PosInfo;
-	Arm: SMC_ArticulatedRobot_6DOF_J0_State;
-	Elbow: SMC_ArticulatedRobot_6DOF_J1_State;
-	Hand: SMC_ArticulatedRobot_6DOF_J4_State;
+	Config: TRAFO.ConfigData;
 END_VAR
 VAR
-	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
-	_SMC_Trafof_ArticulatedRobot_6DOF: SMC_Trafof_ArticulatedRobot_6DOF;
+	_Kin: TRAFO.Kin_ArticulatedRobot_6DOF;
+	_TrafoF: SMC_TrafoF_Wrapper;
+	_AxisSettingsFromAxes: SMC_AxisSettingsFromAxes;
+	_AxesAct: TRAFO.AXISPOS_REF;
 	_VisuStruct3DPathPoint: ARRAY [0..5000] OF VisuStruct3DPathPoint;
 	_SMC_PositionTracker: SMC_PositionTracker;
 	_PositionTrackerClearR_Trig: R_Trig;
 	_Clear: BOOL:=FALSE;
-END_VAR
-</xhtml>
+	_bKinInit: BOOL;
+END_VAR</xhtml>
                     </InterfaceAsPlainText>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
@@ -22477,9 +22444,14 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
-	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // interpolator ABC = yaw/pitch/roll; wrapper OriConv matches
+	_Kin: TRAFO.Kin_ArticulatedRobot_6DOF;
+	_Trafo: SMC_Trafo_Wrapper;
+	_AxisSettingsFromAxes: SMC_AxisSettingsFromAxes;
+	_AxesPrev: TRAFO.AXISPOS_REF;
+	_AxesCmd: TRAFO.AXISPOS_REF;
+	_bWristFlipped: BOOL;
+	_bKinInit: BOOL;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
@@ -22528,8 +22500,7 @@ VAR
 			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
 			
 	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
-END_VAR
-</xhtml>
+END_VAR</xhtml>
                         </InterfaceAsPlainText>
                       </data>
                     </addData>
@@ -22594,9 +22565,14 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
-	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // interpolator ABC = yaw/pitch/roll; wrapper OriConv matches
+	_Kin: TRAFO.Kin_ArticulatedRobot_6DOF;
+	_Trafo: SMC_Trafo_Wrapper;
+	_AxisSettingsFromAxes: SMC_AxisSettingsFromAxes;
+	_AxesPrev: TRAFO.AXISPOS_REF;
+	_AxesCmd: TRAFO.AXISPOS_REF;
+	_bWristFlipped: BOOL;
+	_bKinInit: BOOL;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
@@ -22645,8 +22621,7 @@ VAR
 			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
 			
 	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
-END_VAR
-</xhtml>
+END_VAR</xhtml>
                         </InterfaceAsPlainText>
                       </data>
                     </addData>
@@ -22660,17 +22635,32 @@ END_VAR
                         <simpleValue value="SMC_ORI_CONVENTION.ZYX" />
                       </initialValue>
                       <documentation>
-                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html</xhtml>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> interpolator ABC = yaw/pitch/roll; wrapper OriConv matches</xhtml>
                       </documentation>
                     </variable>
-                    <variable name="_SMC_TrafoConfig_ArticulatedRobot_6DOF">
+                    <variable name="_Kin">
                       <type>
-                        <derived name="SMC_TrafoConfig_ArticulatedRobot_6DOF" />
+                        <derived name="TRAFO.Kin_ArticulatedRobot_6DOF" />
                       </type>
                     </variable>
-                    <variable name="_SMC_Trafo_ArticulatedRobot_6DOF">
+                    <variable name="_Trafo">
                       <type>
-                        <derived name="SMC_Trafo_ArticulatedRobot_6DOF" />
+                        <derived name="SMC_Trafo_Wrapper" />
+                      </type>
+                    </variable>
+                    <variable name="_AxisSettingsFromAxes">
+                      <type>
+                        <derived name="SMC_AxisSettingsFromAxes" />
+                      </type>
+                    </variable>
+                    <variable name="_AxesPrev">
+                      <type>
+                        <derived name="TRAFO.AXISPOS_REF" />
+                      </type>
+                    </variable>
+                    <variable name="_bKinInit">
+                      <type>
+                        <BOOL />
                       </type>
                     </variable>
                     <variable name="_SMC_ControlAxisByPos_J1">
@@ -22786,9 +22776,14 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
-	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // interpolator ABC = yaw/pitch/roll; wrapper OriConv matches
+	_Kin: TRAFO.Kin_ArticulatedRobot_6DOF;
+	_Trafo: SMC_Trafo_Wrapper;
+	_AxisSettingsFromAxes: SMC_AxisSettingsFromAxes;
+	_AxesPrev: TRAFO.AXISPOS_REF;
+	_AxesCmd: TRAFO.AXISPOS_REF;
+	_bWristFlipped: BOOL;
+	_bKinInit: BOOL;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
@@ -22837,8 +22832,7 @@ VAR
 			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
 			
 	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
-END_VAR
-</xhtml>
+END_VAR</xhtml>
                         </InterfaceAsPlainText>
                       </data>
                     </addData>
@@ -23007,9 +23001,14 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
-	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // interpolator ABC = yaw/pitch/roll; wrapper OriConv matches
+	_Kin: TRAFO.Kin_ArticulatedRobot_6DOF;
+	_Trafo: SMC_Trafo_Wrapper;
+	_AxisSettingsFromAxes: SMC_AxisSettingsFromAxes;
+	_AxesPrev: TRAFO.AXISPOS_REF;
+	_AxesCmd: TRAFO.AXISPOS_REF;
+	_bWristFlipped: BOOL;
+	_bKinInit: BOOL;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
@@ -23058,8 +23057,7 @@ VAR
 			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
 			
 	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
-END_VAR
-</xhtml>
+END_VAR</xhtml>
                         </InterfaceAsPlainText>
                       </data>
                     </addData>
@@ -23144,9 +23142,14 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
-	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // interpolator ABC = yaw/pitch/roll; wrapper OriConv matches
+	_Kin: TRAFO.Kin_ArticulatedRobot_6DOF;
+	_Trafo: SMC_Trafo_Wrapper;
+	_AxisSettingsFromAxes: SMC_AxisSettingsFromAxes;
+	_AxesPrev: TRAFO.AXISPOS_REF;
+	_AxesCmd: TRAFO.AXISPOS_REF;
+	_bWristFlipped: BOOL;
+	_bKinInit: BOOL;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
@@ -23195,8 +23198,7 @@ VAR
 			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
 			
 	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
-END_VAR
-</xhtml>
+END_VAR</xhtml>
                         </InterfaceAsPlainText>
                       </data>
                     </addData>
@@ -23211,21 +23213,13 @@ END_VAR
                 </interface>
                 <body>
                   <ST>
-                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// NOTE currently the settings for J6 invert direction under scaling/mapping contradict using motion control 
-// libraries and CNC. For CNC to work properly, the setting is required to be enabled (inverted). Additionally
-// the homing direction and position will need to be negated. This all requires a full download. Will be leaving 
-// setting disabled for now so that we can continue to use motion control. 
-//
-// to recap, take these steps if you would like to try out CNC:
-// 1. open the axis pool settings and under the scaling/mapping section enable 'invert direction'
-// 2. in the A_Homing POU, change the homing direction to positive.
-// 3. in _00_MAIN POU, under FirstScan set the initial home offset to a positive value (keep the value and just change the sign).
-// 4. do a full download.
-// 5. go online and set the persistent value (if previously initialized in FirstScan) to a positive value.
-//
-// UPDATE: Figured out a work around for this issue. In the A_Interpolater POU, I negated the set position in the ControlAxisByPos
-// function block for J6 such that it drives the opposite way. This appears to have resolved the issue. Why this is needed, I do not
-// know. I am sure it is some minor overlooked detail somewhere in the code...
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">// CNC IK uses Kin_ArticulatedRobot_6DOF (same DH as ArfBotAxisGroup: d1 &gt;= 0,
+// joint-0 twist +90, MCS Z up) wrapped by SMC_Trafo_Wrapper. Do not use
+// SMC_Trafo_ArticulatedRobot_6DOF here - that block is Z-down / twist -90, so
+// J1 sense is opposite the physical robot and J4/J6 compensation runs the wrong
+// way while holding orientation (G02/G03).
+// https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_wrapper_kinematic_fbs.html
+// https://forge.codesys.com/forge/talk/Motion/thread/1aa1a0f185/
 
 // Fusion 360 Post Processor Guide: https://cam.autodesk.com/posts/posts/guides/Post%20Processor%20Training%20Guide.pdf
 
@@ -23274,22 +23268,26 @@ CASE SUPER^._SeqMain OF
 
 END_CASE
 
-// TODO these should reference INOUT AxisGroup but somehow wont compile like that. 
-// using global scoped vars for now
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.a1:=ArfBotAxisGroup.Trafo.a1;//AxisGroup.Trafo.a1;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.a2:=ArfBotAxisGroup.Trafo.a2;//AxisGroup.Trafo.a2;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.a3:=ArfBotAxisGroup.Trafo.a3;//AxisGroup.Trafo.a3;
-// conflicting documentation on if d1 needs to be pos or neg. only works as negative otherwise trafo reports invalid configuration
-// https://product-help.schneider-electric.com/Machine%20Expert/V2.0/zh/codesys_softmotion/codesys_softmotion/modules/_sm_trafo_pou_six_dof_robot.html
-// https://forge.codesys.com/forge/talk/Motion/thread/16e1f0327f/
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.d1:=-ArfBotAxisGroup.Trafo.d1;//-AxisGroup.Trafo.d1;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.d3:=ArfBotAxisGroup.Trafo.d3;//AxisGroup.Trafo.d3;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.d4:=ArfBotAxisGroup.Trafo.d4;//AxisGroup.Trafo.d4;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.d6:=ArfBotAxisGroup.Trafo.d6;//AxisGroup.Trafo.d6;
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.q3_max_deg:=160; // J4 // TODO put magic numbers somewhere appropriate
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.q3_min_deg:=-160; // J4 // TODO put magic numbers somewhere appropriate
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_max_deg:=160; // J6 // TODO put magic numbers somewhere appropriate
-_SMC_TrafoConfig_ArticulatedRobot_6DOF.q5_min_deg:=-160; // J6 // TODO put magic numbers somewhere appropriate
+// DH comes from the axis-group kinematics (positive d1). A local Kin instance
+// is initialized once so the wrapper is independent of group enable state.
+_Kin.d1 := ArfBotAxisGroup.Trafo.d1;
+_Kin.a1 := ArfBotAxisGroup.Trafo.a1;
+_Kin.a2 := ArfBotAxisGroup.Trafo.a2;
+_Kin.a3 := ArfBotAxisGroup.Trafo.a3;
+_Kin.d3 := ArfBotAxisGroup.Trafo.d3;
+_Kin.d4 := ArfBotAxisGroup.Trafo.d4;
+_Kin.d6 := ArfBotAxisGroup.Trafo.d6;
+IF NOT _bKinInit THEN
+	_Kin.Initialize();
+	_bKinInit := _Kin.IsInitialized();
+END_IF
+_AxisSettingsFromAxes(
+	Axis0 := J1,
+	Axis1 := J2,
+	Axis2 := J3,
+	Axis3 := J4,
+	Axis4 := J5,
+	Axis5 := J6);
 
 // TODO figure out how this var list can be used. for now its just hello world
 // this gets commented out because it has to be called in a separate task with a lower priority.
@@ -23381,37 +23379,35 @@ _TrackPosition(
 	J1:=J1, J2:=J2, J3:=J3,
 	J4:=J4, J5:=J5, J6:=J6,
 	VisuStruct3DTrack=&gt;,
-	Arm=&gt;,
-	Elbow=&gt;,
-	Hand=&gt;);
-    
-_SMC_Trafo_ArticulatedRobot_6DOF(
-	config:= _SMC_TrafoConfig_ArticulatedRobot_6DOF, 
-	pi:= _SMC_Interpolator.piSetPosition, 
-	dQ0_old:= J1.fActPosition, 
-	dQ1_old:= J2.fActPosition, 
-	dQ2_old:= J3.fActPosition, 
-	dQ3_old:= -J4.fActPosition, 
-	dQ4_old:= J5.fActPosition, 
-	dQ5_old:= -J6.fActPosition, 
-	armState:= _TrackPosition.Arm, 
-	elbowState:= _TrackPosition.Elbow, 
-	handState:= _TrackPosition.Hand, 
-	dQ0=&gt; , 
-	dQ1=&gt; , 
-	dQ2=&gt; , 
-	dQ3=&gt; , 
-	dQ4=&gt; , 
-	dQ5=&gt; , 
-	bError=&gt; , 
-	result=&gt; );
+	Config=&gt;);
+
+_AxesPrev.a0 := J1.fActPosition;
+_AxesPrev.a1 := J2.fActPosition;
+_AxesPrev.a2 := J3.fActPosition;
+_AxesPrev.a3 := J4.fActPosition;
+_AxesPrev.a4 := J5.fActPosition;
+_AxesPrev.a5 := J6.fActPosition;
+
+_Trafo(
+	Enable := TRUE,
+	Kin := _Kin,
+	OriConv := _OriConvention,
+	AxisSettings := _AxisSettingsFromAxes.AxisSettings,
+	config := F_Kin6DofConfigFromJoints(
+		dQ0:=J1.fActPosition, dQ1:=J2.fActPosition, dQ2:=J3.fActPosition,
+		dQ3:=J4.fActPosition, dQ4:=J5.fActPosition, dQ5:=J6.fActPosition),
+	axesPrev := _AxesPrev,
+	pi := _SMC_Interpolator.piSetPosition);
+
+_AxesCmd := _Trafo.Axes;
+_bWristFlipped := F_SnapWristToPrev(Axes:=_AxesCmd, Prev:=_AxesPrev);
 	
 _SMC_ControlAxisByPos_J1(
 	Axis:= J1, 
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
-	fSetPosition:= _SMC_Trafo_ArticulatedRobot_6DOF.dQ0, 
+	fSetPosition:= _AxesCmd.a0, 
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
@@ -23427,7 +23423,7 @@ _SMC_ControlAxisByPos_J2(
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
-	fSetPosition:= _SMC_Trafo_ArticulatedRobot_6DOF.dQ1, 
+	fSetPosition:= _AxesCmd.a1, 
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
@@ -23443,7 +23439,7 @@ _SMC_ControlAxisByPos_J3(
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
-	fSetPosition:= _SMC_Trafo_ArticulatedRobot_6DOF.dQ2, 
+	fSetPosition:= _AxesCmd.a2, 
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
@@ -23459,7 +23455,7 @@ _SMC_ControlAxisByPos_J4(
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
-	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ3,
+	fSetPosition:= _AxesCmd.a3,
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
@@ -23475,7 +23471,7 @@ _SMC_ControlAxisByPos_J5(
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
-	fSetPosition:= _SMC_Trafo_ArticulatedRobot_6DOF.dQ4, 
+	fSetPosition:= _AxesCmd.a4, 
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
@@ -23491,7 +23487,7 @@ _SMC_ControlAxisByPos_J6(
 	iStatus:= _SMC_Interpolator.iStatus, 
 	bEnable:= _SMC_Interpolator.bWorking, 
 	bAvoidGaps:= AvoidGaps, 
-	fSetPosition:= -_SMC_Trafo_ArticulatedRobot_6DOF.dQ5,
+	fSetPosition:= _AxesCmd.a5,
 	fGapVelocity:= GapVelocity, 
 	fGapAcceleration:= GapAccel, 
 	fGapDeceleration:= GapAccel, 
@@ -23505,7 +23501,7 @@ _SMC_ControlAxisByPos_J6(
 _ErrorRtrig();
 _ErrorRtrig.CLK := _PlanPath.Error
 					OR _SMC_Interpolator.bError
-					OR _SMC_Trafo_ArticulatedRobot_6DOF.bError
+					OR _Trafo.Error
 					OR _SMC_ControlAxisByPos_J1.bError
 					OR _SMC_ControlAxisByPos_J2.bError
 					OR _SMC_ControlAxisByPos_J3.bError
@@ -23522,44 +23518,18 @@ IF _ErrorRtrig.Q THEN
                                 CONCAT(' ', SMC_ErrorString(_SMC_Interpolator.wErrorID,
                                             SMC_Language_Type.english)))));
 	END_IF
-	IF _SMC_Trafo_ArticulatedRobot_6DOF.bError THEN
-		SUPER^.M_Error(Description := CONCAT(' Trafo Error: ', 'unknown'));
-	END_IF
-	IF _SMC_ControlAxisByPos_J1.bError THEN
-		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J1 Error: ',
-                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J1.iErrorID),
-                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J1.iErrorID,
+	IF _Trafo.Error THEN
+		SUPER^.M_Error(Description := CONCAT(' Trafo Error: ',
+                                CONCAT(TO_STRING(_Trafo.ErrorID),
+                                CONCAT(' ', SMC_ErrorString(_Trafo.ErrorID,
                                             SMC_Language_Type.english)))));
 	END_IF
-	IF _SMC_ControlAxisByPos_J2.bError THEN
-		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J2 Error: ',
-                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J2.iErrorID),
-                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J2.iErrorID,
-                                            SMC_Language_Type.english)))));
-	END_IF
-	IF _SMC_ControlAxisByPos_J3.bError THEN
-		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J3 Error: ',
-                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J3.iErrorID),
-                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J3.iErrorID,
-                                            SMC_Language_Type.english)))));
-	END_IF
-	IF _SMC_ControlAxisByPos_J4.bError THEN
-		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J4 Error: ',
-                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J4.iErrorID),
-                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J4.iErrorID,
-                                            SMC_Language_Type.english)))));
-	END_IF
-	IF _SMC_ControlAxisByPos_J5.bError THEN
-		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J5 Error: ',
-                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J5.iErrorID),
-                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J5.iErrorID,
-                                            SMC_Language_Type.english)))));
-	END_IF
-	IF _SMC_ControlAxisByPos_J6.bError THEN
-		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J6 Error: ',
-                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J6.iErrorID),
-                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J6.iErrorID,
-                                            SMC_Language_Type.english)))));
+	IF _SMC_ControlAxisByPos_J1.bError OR _SMC_ControlAxisByPos_J2.bError
+			OR _SMC_ControlAxisByPos_J3.bError OR _SMC_ControlAxisByPos_J4.bError
+			OR _SMC_ControlAxisByPos_J5.bError OR _SMC_ControlAxisByPos_J6.bError THEN
+		(* Axis fbeFBError first: CAP 183 is only "already in errorstop". *)
+		SUPER^.M_Error(Description := F_AxesErrorDetail(
+			J1:=J1, J2:=J2, J3:=J3, J4:=J4, J5:=J5, J6:=J6));
 	END_IF
 END_IF</xhtml>
                   </ST>
@@ -23818,9 +23788,14 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
-	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
-	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // interpolator ABC = yaw/pitch/roll; wrapper OriConv matches
+	_Kin: TRAFO.Kin_ArticulatedRobot_6DOF;
+	_Trafo: SMC_Trafo_Wrapper;
+	_AxisSettingsFromAxes: SMC_AxisSettingsFromAxes;
+	_AxesPrev: TRAFO.AXISPOS_REF;
+	_AxesCmd: TRAFO.AXISPOS_REF;
+	_bWristFlipped: BOOL;
+	_bKinInit: BOOL;
 	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
@@ -23869,8 +23844,7 @@ VAR
 			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
 			
 	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
-END_VAR
-</xhtml>
+END_VAR</xhtml>
                     </InterfaceAsPlainText>
                   </data>
                   <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
@@ -35082,7 +35056,726 @@ END_VAR
                 </addData>
               </pou>
             </data>
+                        <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+<pou name="F_AxisErrorDetail" pouType="function">
+        <interface>
+          <returnType>
+            <string length="255" />
+          </returnType>
+          <inOutVars>
+            <variable name="Axis">
+              <type>
+                <derived name="AXIS_REF_SM3" />
+              </type>
+            </variable>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                <InterfaceAsPlainText>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_AxisErrorDetail : STRING(255)
+VAR_IN_OUT
+	Axis: AXIS_REF_SM3;
+END_VAR
+VAR_INPUT
+	AxisName: STRING(8);
+END_VAR
+VAR
+	_i: INT;
+	_id: SMC_ERROR;
+	_s: STRING(255);
+	_root: STRING(180);
+	_stop: STRING(180);
+	_inst: STRING(80);
+END_VAR</xhtml>
+                </InterfaceAsPlainText>
+              </data>
+            </addData>
+          </inOutVars>
+          <inputVars>
+            <variable name="AxisName">
+              <type>
+                <string length="8" />
+              </type>
+            </variable>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                <InterfaceAsPlainText>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_AxisErrorDetail : STRING(255)
+VAR_IN_OUT
+	Axis: AXIS_REF_SM3;
+END_VAR
+VAR_INPUT
+	AxisName: STRING(8);
+END_VAR
+VAR
+	_i: INT;
+	_id: SMC_ERROR;
+	_s: STRING(255);
+	_root: STRING(180);
+	_stop: STRING(180);
+	_inst: STRING(80);
+END_VAR</xhtml>
+                </InterfaceAsPlainText>
+              </data>
+            </addData>
+          </inputVars>
+          <localVars>
+            <variable name="_i">
+              <type>
+                <INT />
+              </type>
+            </variable>
+            <variable name="_id">
+              <type>
+                <derived name="SMC_ERROR" />
+              </type>
+            </variable>
+            <variable name="_s">
+              <type>
+                <string length="255" />
+              </type>
+            </variable>
+            <variable name="_root">
+              <type>
+                <string length="180" />
+              </type>
+            </variable>
+            <variable name="_stop">
+              <type>
+                <string length="180" />
+              </type>
+            </variable>
+            <variable name="_inst">
+              <type>
+                <string length="80" />
+              </type>
+            </variable>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                <InterfaceAsPlainText>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_AxisErrorDetail : STRING(255)
+VAR_IN_OUT
+	Axis: AXIS_REF_SM3;
+END_VAR
+VAR_INPUT
+	AxisName: STRING(8);
+END_VAR
+VAR
+	_i: INT;
+	_id: SMC_ERROR;
+	_s: STRING(255);
+	_root: STRING(180);
+	_stop: STRING(180);
+	_inst: STRING(80);
+END_VAR</xhtml>
+                </InterfaceAsPlainText>
+              </data>
+            </addData>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">(* Decode the SoftMotion FB that actually put this axis in errorstop.
+   AXIS_REF.fbeFBError[].wID is the real SMC_ERROR (following error, SW limit, ...).
+   Code 183 (SMC_MS_AXIS_IN_ERRORSTOP) is only "Stop cannot be executed" after
+   the axis is already faulted -- skip it when a root cause is present. *)
+F_AxisErrorDetail := '';
+IF (NOT Axis.bError) AND (Axis.nAxisState &lt;&gt; SMC_AXIS_STATE.errorstop) THEN
+	RETURN;
+END_IF
+
+_s := AxisName;
+_root := '';
+_stop := '';
+
+FOR _i := 0 TO g_SMC_NUMBER_FB_ERRORS DO
+	_id := Axis.fbeFBError[_i].wID;
+	IF _id &lt;&gt; SMC_NO_ERROR THEN
+		_inst := Axis.fbeFBError[_i].strErrorInstance;
+		IF (_id = SMC_MS_AXIS_IN_ERRORSTOP) OR (_id = SMC_H_AXIS_IN_ERRORSTOP) THEN
+			IF _stop = '' THEN
+				_stop := CONCAT(TO_STRING(_id), CONCAT(' ', SMC_ErrorString(_id, SMC_Language_Type.english)));
+			END_IF
+		ELSIF _root = '' THEN
+			_root := CONCAT(TO_STRING(_id), CONCAT(' ', SMC_ErrorString(_id, SMC_Language_Type.english)));
+			IF _inst &lt;&gt; '' THEN
+				_root := CONCAT(_root, CONCAT(' [', CONCAT(_inst, ']')));
+			END_IF
+		END_IF
+	END_IF
+END_FOR
+
+IF _root &lt;&gt; '' THEN
+	_s := CONCAT(_s, CONCAT(' ', _root));
+ELSIF _stop &lt;&gt; '' THEN
+	_s := CONCAT(_s, CONCAT(' ', _stop));
+ELSE
+	_s := CONCAT(_s, ' errorstop');
+END_IF
+
+IF Axis.dwErrorID &lt;&gt; 0 THEN
+	_s := CONCAT(_s, CONCAT(' drive ', DWORD_TO_STRING(Axis.dwErrorID)));
+END_IF
+
+F_AxisErrorDetail := _s;</xhtml>
+          </ST>
+        </body>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+            <InterfaceAsPlainText>
+              <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_AxisErrorDetail : STRING(255)
+VAR_IN_OUT
+	Axis: AXIS_REF_SM3;
+END_VAR
+VAR_INPUT
+	AxisName: STRING(8);
+END_VAR
+VAR
+	_i: INT;
+	_id: SMC_ERROR;
+	_s: STRING(255);
+	_root: STRING(180);
+	_stop: STRING(180);
+	_inst: STRING(80);
+END_VAR</xhtml>
+            </InterfaceAsPlainText>
+          </data>
+        </addData>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>db85468a-bf64-4227-9068-720f6c8cc585</ObjectId>
+          </data>
+        </addData>
+      </pou>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+<pou name="F_AxesErrorDetail" pouType="function">
+        <interface>
+          <returnType>
+            <string length="255" />
+          </returnType>
+          <inOutVars>
+            <variable name="J1">
+              <type>
+                <derived name="AXIS_REF_SM3" />
+              </type>
+            </variable>
+            <variable name="J2">
+              <type>
+                <derived name="AXIS_REF_SM3" />
+              </type>
+            </variable>
+            <variable name="J3">
+              <type>
+                <derived name="AXIS_REF_SM3" />
+              </type>
+            </variable>
+            <variable name="J4">
+              <type>
+                <derived name="AXIS_REF_SM3" />
+              </type>
+            </variable>
+            <variable name="J5">
+              <type>
+                <derived name="AXIS_REF_SM3" />
+              </type>
+            </variable>
+            <variable name="J6">
+              <type>
+                <derived name="AXIS_REF_SM3" />
+              </type>
+            </variable>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                <InterfaceAsPlainText>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_AxesErrorDetail : STRING(255)
+VAR_IN_OUT
+	J1: AXIS_REF_SM3;
+	J2: AXIS_REF_SM3;
+	J3: AXIS_REF_SM3;
+	J4: AXIS_REF_SM3;
+	J5: AXIS_REF_SM3;
+	J6: AXIS_REF_SM3;
+END_VAR
+VAR
+	_p: STRING(200);
+END_VAR
+</xhtml>
+                </InterfaceAsPlainText>
+              </data>
+            </addData>
+          </inOutVars>
+          <localVars>
+            <variable name="_p">
+              <type>
+                <string length="200" />
+              </type>
+            </variable>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                <InterfaceAsPlainText>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_AxesErrorDetail : STRING(255)
+VAR_IN_OUT
+	J1: AXIS_REF_SM3;
+	J2: AXIS_REF_SM3;
+	J3: AXIS_REF_SM3;
+	J4: AXIS_REF_SM3;
+	J5: AXIS_REF_SM3;
+	J6: AXIS_REF_SM3;
+END_VAR
+VAR
+	_p: STRING(200);
+END_VAR
+</xhtml>
+                </InterfaceAsPlainText>
+              </data>
+            </addData>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">(* Concatenate J1..J6 SoftMotion FB errors for any axis in errorstop. *)
+F_AxesErrorDetail := '';
+
+_p := F_AxisErrorDetail(Axis:=J1, AxisName:='J1');
+IF _p &lt;&gt; '' THEN F_AxesErrorDetail := _p; END_IF
+
+_p := F_AxisErrorDetail(Axis:=J2, AxisName:='J2');
+IF _p &lt;&gt; '' THEN
+	IF F_AxesErrorDetail &lt;&gt; '' THEN F_AxesErrorDetail := CONCAT(F_AxesErrorDetail, ' | '); END_IF
+	F_AxesErrorDetail := CONCAT(F_AxesErrorDetail, _p);
+END_IF
+
+_p := F_AxisErrorDetail(Axis:=J3, AxisName:='J3');
+IF _p &lt;&gt; '' THEN
+	IF F_AxesErrorDetail &lt;&gt; '' THEN F_AxesErrorDetail := CONCAT(F_AxesErrorDetail, ' | '); END_IF
+	F_AxesErrorDetail := CONCAT(F_AxesErrorDetail, _p);
+END_IF
+
+_p := F_AxisErrorDetail(Axis:=J4, AxisName:='J4');
+IF _p &lt;&gt; '' THEN
+	IF F_AxesErrorDetail &lt;&gt; '' THEN F_AxesErrorDetail := CONCAT(F_AxesErrorDetail, ' | '); END_IF
+	F_AxesErrorDetail := CONCAT(F_AxesErrorDetail, _p);
+END_IF
+
+_p := F_AxisErrorDetail(Axis:=J5, AxisName:='J5');
+IF _p &lt;&gt; '' THEN
+	IF F_AxesErrorDetail &lt;&gt; '' THEN F_AxesErrorDetail := CONCAT(F_AxesErrorDetail, ' | '); END_IF
+	F_AxesErrorDetail := CONCAT(F_AxesErrorDetail, _p);
+END_IF
+
+_p := F_AxisErrorDetail(Axis:=J6, AxisName:='J6');
+IF _p &lt;&gt; '' THEN
+	IF F_AxesErrorDetail &lt;&gt; '' THEN F_AxesErrorDetail := CONCAT(F_AxesErrorDetail, ' | '); END_IF
+	F_AxesErrorDetail := CONCAT(F_AxesErrorDetail, _p);
+END_IF</xhtml>
+          </ST>
+        </body>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+            <InterfaceAsPlainText>
+              <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_AxesErrorDetail : STRING(255)
+VAR_IN_OUT
+	J1: AXIS_REF_SM3;
+	J2: AXIS_REF_SM3;
+	J3: AXIS_REF_SM3;
+	J4: AXIS_REF_SM3;
+	J5: AXIS_REF_SM3;
+	J6: AXIS_REF_SM3;
+END_VAR
+VAR
+	_p: STRING(200);
+END_VAR
+</xhtml>
+            </InterfaceAsPlainText>
+          </data>
+        </addData>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>bc2b6b85-41c3-4c2f-ab7e-d043be5825d7</ObjectId>
+          </data>
+        </addData>
+      </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+<pou name="F_Kin6DofConfigFromJoints" pouType="function">
+        <interface>
+          <returnType>
+            <derived name="TRAFO.ConfigData" />
+          </returnType>
+          <inputVars>
+            <variable name="dQ0">
+              <type>
+                <LREAL />
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> J1 / joint 0, arm </xhtml>
+              </documentation>
+            </variable>
+            <variable name="dQ1">
+              <type>
+                <LREAL />
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> J2 </xhtml>
+              </documentation>
+            </variable>
+            <variable name="dQ2">
+              <type>
+                <LREAL />
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> J3 / elbow </xhtml>
+              </documentation>
+            </variable>
+            <variable name="dQ3">
+              <type>
+                <LREAL />
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> J4 </xhtml>
+              </documentation>
+            </variable>
+            <variable name="dQ4">
+              <type>
+                <LREAL />
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> J5 / joint 4, hand </xhtml>
+              </documentation>
+            </variable>
+            <variable name="dQ5">
+              <type>
+                <LREAL />
+              </type>
+              <documentation>
+                <xhtml xmlns="http://www.w3.org/1999/xhtml"> J6 </xhtml>
+              </documentation>
+            </variable>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                <InterfaceAsPlainText>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_Kin6DofConfigFromJoints : TRAFO.ConfigData
+VAR_INPUT
+	dQ0: LREAL; (* J1 / joint 0, arm *)
+	dQ1: LREAL; (* J2 *)
+	dQ2: LREAL; (* J3 / elbow *)
+	dQ3: LREAL; (* J4 *)
+	dQ4: LREAL; (* J5 / joint 4, hand *)
+	dQ5: LREAL; (* J6 *)
+END_VAR
+VAR
+	_pack: TRAFO.Kin_ArticulatedRobot_6DOF_Config;
+	_arm: TRAFO.Kin_6DOF_J0_State;
+	_elbow: TRAFO.Kin_6DOF_J2_State;
+	_hand: TRAFO.Kin_6DOF_J4_State;
+END_VAR
+VAR CONSTANT
+	c_StraightDeg: LREAL := 2.0;
+END_VAR</xhtml>
+                </InterfaceAsPlainText>
+              </data>
+            </addData>
+          </inputVars>
+          <localVars>
+            <variable name="_pack">
+              <type>
+                <derived name="TRAFO.Kin_ArticulatedRobot_6DOF_Config" />
+              </type>
+            </variable>
+            <variable name="_arm">
+              <type>
+                <derived name="TRAFO.Kin_6DOF_J0_State" />
+              </type>
+            </variable>
+            <variable name="_elbow">
+              <type>
+                <derived name="TRAFO.Kin_6DOF_J2_State" />
+              </type>
+            </variable>
+            <variable name="_hand">
+              <type>
+                <derived name="TRAFO.Kin_6DOF_J4_State" />
+              </type>
+            </variable>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                <InterfaceAsPlainText>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_Kin6DofConfigFromJoints : TRAFO.ConfigData
+VAR_INPUT
+	dQ0: LREAL; (* J1 / joint 0, arm *)
+	dQ1: LREAL; (* J2 *)
+	dQ2: LREAL; (* J3 / elbow *)
+	dQ3: LREAL; (* J4 *)
+	dQ4: LREAL; (* J5 / joint 4, hand *)
+	dQ5: LREAL; (* J6 *)
+END_VAR
+VAR
+	_pack: TRAFO.Kin_ArticulatedRobot_6DOF_Config;
+	_arm: TRAFO.Kin_6DOF_J0_State;
+	_elbow: TRAFO.Kin_6DOF_J2_State;
+	_hand: TRAFO.Kin_6DOF_J4_State;
+END_VAR
+VAR CONSTANT
+	c_StraightDeg: LREAL := 2.0;
+END_VAR</xhtml>
+                </InterfaceAsPlainText>
+              </data>
+            </addData>
+          </localVars>
+          <localVars constant="true">
+            <variable name="c_StraightDeg">
+              <type>
+                <LREAL />
+              </type>
+              <initialValue>
+                <simpleValue value="2.0" />
+              </initialValue>
+            </variable>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                <InterfaceAsPlainText>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_Kin6DofConfigFromJoints : TRAFO.ConfigData
+VAR_INPUT
+	dQ0: LREAL; (* J1 / joint 0, arm *)
+	dQ1: LREAL; (* J2 *)
+	dQ2: LREAL; (* J3 / elbow *)
+	dQ3: LREAL; (* J4 *)
+	dQ4: LREAL; (* J5 / joint 4, hand *)
+	dQ5: LREAL; (* J6 *)
+END_VAR
+VAR
+	_pack: TRAFO.Kin_ArticulatedRobot_6DOF_Config;
+	_arm: TRAFO.Kin_6DOF_J0_State;
+	_elbow: TRAFO.Kin_6DOF_J2_State;
+	_hand: TRAFO.Kin_6DOF_J4_State;
+END_VAR
+VAR CONSTANT
+	c_StraightDeg: LREAL := 2.0;
+END_VAR</xhtml>
+                </InterfaceAsPlainText>
+              </data>
+            </addData>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">(* Pack Kin_ArticulatedRobot_6DOF ConfigData from current joints.
+   TrafoF_Wrapper.cd stays empty for this Kin; IK then picks the 180 deg wrist.
+   Hand uses joint 4 (J5 / dQ4) per Kin_6DOF_J4_State: q4&gt;0 HANDDOWN, q4&lt;0 HANDUP.
+   Elbow uses J3 (dQ2): negative = ELBOWUP on the AR4.
+   Arm is ARMFORWARD in the normal envelope (wrist in front of J1). *)
+IF ABS(dQ4) &lt; c_StraightDeg THEN
+	_hand := TRAFO.Kin_6DOF_J4_State.HANDSTRAIGHT;
+ELSIF dQ4 &gt; 0.0 THEN
+	_hand := TRAFO.Kin_6DOF_J4_State.HANDDOWN;
+ELSE
+	_hand := TRAFO.Kin_6DOF_J4_State.HANDUP;
+END_IF
+
+IF ABS(dQ2) &lt; c_StraightDeg THEN
+	_elbow := TRAFO.Kin_6DOF_J2_State.ELBOWSTRAIGHT;
+ELSIF dQ2 &gt; 0.0 THEN
+	_elbow := TRAFO.Kin_6DOF_J2_State.ELBOWDOWN;
+ELSE
+	_elbow := TRAFO.Kin_6DOF_J2_State.ELBOWUP;
+END_IF
+
+_arm := TRAFO.Kin_6DOF_J0_State.ARMFORWARD;
+
+_pack(ArmState:=_arm, ElbowState:=_elbow, HandState:=_hand);
+F_Kin6DofConfigFromJoints := _pack.Config;</xhtml>
+          </ST>
+        </body>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+            <InterfaceAsPlainText>
+              <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_Kin6DofConfigFromJoints : TRAFO.ConfigData
+VAR_INPUT
+	dQ0: LREAL; (* J1 / joint 0, arm *)
+	dQ1: LREAL; (* J2 *)
+	dQ2: LREAL; (* J3 / elbow *)
+	dQ3: LREAL; (* J4 *)
+	dQ4: LREAL; (* J5 / joint 4, hand *)
+	dQ5: LREAL; (* J6 *)
+END_VAR
+VAR
+	_pack: TRAFO.Kin_ArticulatedRobot_6DOF_Config;
+	_arm: TRAFO.Kin_6DOF_J0_State;
+	_elbow: TRAFO.Kin_6DOF_J2_State;
+	_hand: TRAFO.Kin_6DOF_J4_State;
+END_VAR
+VAR CONSTANT
+	c_StraightDeg: LREAL := 2.0;
+END_VAR</xhtml>
+            </InterfaceAsPlainText>
+          </data>
+        </addData>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>b7fe4d5b-554e-4a59-a23c-093cb8087cb6</ObjectId>
+          </data>
+        </addData>
+      </pou>
+            </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+<pou name="F_SnapWristToPrev" pouType="function">
+        <interface>
+          <returnType>
+            <BOOL />
+          </returnType>
+          <inOutVars>
+            <variable name="Axes">
+              <type>
+                <derived name="TRAFO.AXISPOS_REF" />
+              </type>
+            </variable>
+            <variable name="Prev">
+              <type>
+                <derived name="TRAFO.AXISPOS_REF" />
+              </type>
+            </variable>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                <InterfaceAsPlainText>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_SnapWristToPrev : BOOL
+VAR_IN_OUT
+	Axes: TRAFO.AXISPOS_REF;
+	Prev: TRAFO.AXISPOS_REF;
+END_VAR
+VAR
+	dOrig: LREAL;
+	dFlip: LREAL;
+	f3: LREAL;
+	f4: LREAL;
+	f5: LREAL;
+END_VAR</xhtml>
+                </InterfaceAsPlainText>
+              </data>
+            </addData>
+          </inOutVars>
+          <localVars>
+            <variable name="dOrig">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="dFlip">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="f3">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="f4">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <variable name="f5">
+              <type>
+                <LREAL />
+              </type>
+            </variable>
+            <addData>
+              <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                <InterfaceAsPlainText>
+                  <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_SnapWristToPrev : BOOL
+VAR_IN_OUT
+	Axes: TRAFO.AXISPOS_REF;
+	Prev: TRAFO.AXISPOS_REF;
+END_VAR
+VAR
+	dOrig: LREAL;
+	dFlip: LREAL;
+	f3: LREAL;
+	f4: LREAL;
+	f5: LREAL;
+END_VAR</xhtml>
+                </InterfaceAsPlainText>
+              </data>
+            </addData>
+          </localVars>
+        </interface>
+        <body>
+          <ST>
+            <xhtml xmlns="http://www.w3.org/1999/xhtml">(* Pick the spherical-wrist branch nearest Prev.
+   Unwrap J4/J6 by 360 deg, then compare the IK solution to the equivalent
+   (a3 +/- 180, -a4, a5 +/- 180). TRUE if the flipped branch was taken. *)
+WHILE (Axes.a3 - Prev.a3) &gt; 180.0 DO
+	Axes.a3 := Axes.a3 - 360.0;
+END_WHILE
+WHILE (Axes.a3 - Prev.a3) &lt; -180.0 DO
+	Axes.a3 := Axes.a3 + 360.0;
+END_WHILE
+WHILE (Axes.a5 - Prev.a5) &gt; 180.0 DO
+	Axes.a5 := Axes.a5 - 360.0;
+END_WHILE
+WHILE (Axes.a5 - Prev.a5) &lt; -180.0 DO
+	Axes.a5 := Axes.a5 + 360.0;
+END_WHILE
+
+f3 := Axes.a3 - 180.0;
+f4 := -Axes.a4;
+f5 := Axes.a5 - 180.0;
+WHILE (f3 - Prev.a3) &gt; 180.0 DO
+	f3 := f3 - 360.0;
+END_WHILE
+WHILE (f3 - Prev.a3) &lt; -180.0 DO
+	f3 := f3 + 360.0;
+END_WHILE
+WHILE (f5 - Prev.a5) &gt; 180.0 DO
+	f5 := f5 - 360.0;
+END_WHILE
+WHILE (f5 - Prev.a5) &lt; -180.0 DO
+	f5 := f5 + 360.0;
+END_WHILE
+
+dOrig := (Axes.a3 - Prev.a3) * (Axes.a3 - Prev.a3)
+	+ (Axes.a4 - Prev.a4) * (Axes.a4 - Prev.a4)
+	+ (Axes.a5 - Prev.a5) * (Axes.a5 - Prev.a5);
+dFlip := (f3 - Prev.a3) * (f3 - Prev.a3)
+	+ (f4 - Prev.a4) * (f4 - Prev.a4)
+	+ (f5 - Prev.a5) * (f5 - Prev.a5);
+
+IF dFlip &lt; dOrig THEN
+	Axes.a3 := f3;
+	Axes.a4 := f4;
+	Axes.a5 := f5;
+	F_SnapWristToPrev := TRUE;
+ELSE
+	F_SnapWristToPrev := FALSE;
+END_IF</xhtml>
+          </ST>
+        </body>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+            <InterfaceAsPlainText>
+              <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_SnapWristToPrev : BOOL
+VAR_IN_OUT
+	Axes: TRAFO.AXISPOS_REF;
+	Prev: TRAFO.AXISPOS_REF;
+END_VAR
+VAR
+	dOrig: LREAL;
+	dFlip: LREAL;
+	f3: LREAL;
+	f4: LREAL;
+	f5: LREAL;
+END_VAR</xhtml>
+            </InterfaceAsPlainText>
+          </data>
+        </addData>
+        <addData>
+          <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+            <ObjectId>e7b50738-06bf-4a42-870b-0921e7802c1b</ObjectId>
+          </data>
+        </addData>
+      </pou>
+            </data>
+<data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
               <pou name="F_RadToDeg" pouType="function">
                 <interface>
                   <returnType>
@@ -47723,6 +48416,10 @@ END_TYPE
                   <Object Name="P_StateOn" ObjectId="15ab277e-c978-4e7b-9e52-7a854e0469dd" />
                 </Object>
               </Folder>
+              <Object Name="F_AxisErrorDetail" ObjectId="db85468a-bf64-4227-9068-720f6c8cc585" />
+              <Object Name="F_AxesErrorDetail" ObjectId="bc2b6b85-41c3-4c2f-ab7e-d043be5825d7" />
+              <Object Name="F_Kin6DofConfigFromJoints" ObjectId="b7fe4d5b-554e-4a59-a23c-093cb8087cb6" />
+              <Object Name="F_SnapWristToPrev" ObjectId="e7b50738-06bf-4a42-870b-0921e7802c1b" />
               <Object Name="F_RadToDeg" ObjectId="5fcdbd79-7ee6-4602-a394-dd4cc360d2d1" />
               <Object Name="F_RoundToInt" ObjectId="2f55f1a8-e8da-4116-8c0b-e7482fa81b53" />
               <Object Name="FB_LicenseStatus" ObjectId="69b35fe4-a73f-4a9b-a365-a8c97a3b2665">

@@ -3,7 +3,7 @@
 ( G91 incremental | G99 IJK relative to current TCP ) 
 ( G55 rel DCS | G56 current pose = DCS origin | G53 reset DCS ) 
 ( G51 start angle smoothing | G50 end ) 
-( A yaw, B pitch, C roll. Trafo is yaw/pitch/roll. ) 
+( A yaw, B pitch, C roll. Interpolator OriConv is ZYX. MCS Z up. ) 
 ( Jog TCP onto the apex, tool Z along the cone axis, then run. ) 
 
 N000 G91 ( incremental, like CNC_FromFile ) 
