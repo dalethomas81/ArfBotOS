@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-20T09:56:39.4663564" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-20T09:56:39.2897335" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-20T13:34:12.0012322" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-20T13:34:11.7320087" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -1733,7 +1733,7 @@ END_VAR</xhtml>
                 <string length="80" />
               </type>
               <initialValue>
-                <simpleValue value="'v2.2026.38.1-Cnc-dirty'" />
+                <simpleValue value="'v2.2026.38.1-Cnc-1-g7ea79c5-dirty'" />
               </initialValue>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> git describe --tags --always --dirty (does not get the latest tag from main)
@@ -1762,7 +1762,7 @@ END_VAR</xhtml>
 VAR_GLOBAL
     // git describe --tags --always --dirty (does not get the latest tag from main)
     // git describe --tags --always main (gets the latest tag from main but the commit is wrong because its from the branch we work from - dev)
-    sPlcVersion : STRING(80) := 'v2.2026.38.1-Cnc-dirty';
+    sPlcVersion : STRING(80) := 'v2.2026.38.1-Cnc-1-g7ea79c5-dirty';
     sRelease : STRING(80);
     sVersionLine : STRING(160);
 END_VAR</xhtml>
@@ -21591,8 +21591,8 @@ END_VAR
                       <addData>
                         <data name="http://www.3s-software.com/plcopenxml/attributes" handleUnknown="implementation">
                           <Attributes>
-                            <Attribute Name="noinit" />
                             <Attribute Name="instance-path" Value="" />
+                            <Attribute Name="noinit" />
                           </Attributes>
                         </data>
                       </addData>
@@ -23391,7 +23391,7 @@ _SMC_Trafo_ArticulatedRobot_6DOF(
 	dQ0_old:= J1.fActPosition, 
 	dQ1_old:= J2.fActPosition, 
 	dQ2_old:= J3.fActPosition, 
-	dQ3_old:= -J4.fActPosition, 
+	dQ3_old:= -J4.fActPosition,
 	dQ4_old:= J5.fActPosition, 
 	dQ5_old:= -J6.fActPosition, 
 	armState:= _TrackPosition.Arm, 
@@ -23526,40 +23526,64 @@ IF _ErrorRtrig.Q THEN
 		SUPER^.M_Error(Description := CONCAT(' Trafo Error: ', 'unknown'));
 	END_IF
 	IF _SMC_ControlAxisByPos_J1.bError THEN
-		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J1 Error: ',
-                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J1.iErrorID),
-                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J1.iErrorID,
-                                            SMC_Language_Type.english)))));
+        IF _SMC_ControlAxisByPos_J1.iErrorID = 183 THEN
+            SUPER^.M_Error(Description := F_AxisErrorDetail(Axis := J1, AxisName := 'J1'));
+        ELSE
+            SUPER^.M_Error(Description :=   CONCAT(' ControlAxisByPos_J1 Error: ',
+                                            CONCAT(TO_STRING(_SMC_ControlAxisByPos_J1.iErrorID),
+                                            CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J1.iErrorID,
+                                                    SMC_Language_Type.english)))));
+        END_IF
 	END_IF
 	IF _SMC_ControlAxisByPos_J2.bError THEN
-		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J2 Error: ',
-                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J2.iErrorID),
-                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J2.iErrorID,
-                                            SMC_Language_Type.english)))));
+        IF _SMC_ControlAxisByPos_J2.iErrorID = 183 THEN
+            SUPER^.M_Error(Description := F_AxisErrorDetail(Axis := J2, AxisName := 'J2'));
+        ELSE
+            SUPER^.M_Error(Description :=   CONCAT(' ControlAxisByPos_J2 Error: ',
+                                            CONCAT(TO_STRING(_SMC_ControlAxisByPos_J2.iErrorID),
+                                            CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J2.iErrorID,
+                                                    SMC_Language_Type.english)))));
+        END_IF
 	END_IF
 	IF _SMC_ControlAxisByPos_J3.bError THEN
-		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J3 Error: ',
-                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J3.iErrorID),
-                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J3.iErrorID,
-                                            SMC_Language_Type.english)))));
+        IF _SMC_ControlAxisByPos_J3.iErrorID = 183 THEN
+            SUPER^.M_Error(Description := F_AxisErrorDetail(Axis := J3, AxisName := 'J3'));
+        ELSE
+            SUPER^.M_Error(Description :=   CONCAT(' ControlAxisByPos_J3 Error: ',
+                                            CONCAT(TO_STRING(_SMC_ControlAxisByPos_J3.iErrorID),
+                                            CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J3.iErrorID,
+                                                    SMC_Language_Type.english)))));
+        END_IF
 	END_IF
 	IF _SMC_ControlAxisByPos_J4.bError THEN
-		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J4 Error: ',
-                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J4.iErrorID),
-                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J4.iErrorID,
-                                            SMC_Language_Type.english)))));
+        IF _SMC_ControlAxisByPos_J4.iErrorID = 183 THEN
+            SUPER^.M_Error(Description := F_AxisErrorDetail(Axis := J4, AxisName := 'J4'));
+        ELSE
+            SUPER^.M_Error(Description :=   CONCAT(' ControlAxisByPos_J4 Error: ',
+                                            CONCAT(TO_STRING(_SMC_ControlAxisByPos_J4.iErrorID),
+                                            CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J4.iErrorID,
+                                                    SMC_Language_Type.english)))));
+        END_IF
 	END_IF
 	IF _SMC_ControlAxisByPos_J5.bError THEN
-		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J5 Error: ',
-                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J5.iErrorID),
-                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J5.iErrorID,
-                                            SMC_Language_Type.english)))));
+        IF _SMC_ControlAxisByPos_J5.iErrorID = 183 THEN
+            SUPER^.M_Error(Description := F_AxisErrorDetail(Axis := J5, AxisName := 'J5'));
+        ELSE
+            SUPER^.M_Error(Description :=   CONCAT(' ControlAxisByPos_J5 Error: ',
+                                            CONCAT(TO_STRING(_SMC_ControlAxisByPos_J5.iErrorID),
+                                            CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J5.iErrorID,
+                                                    SMC_Language_Type.english)))));
+        END_IF
 	END_IF
 	IF _SMC_ControlAxisByPos_J6.bError THEN
-		SUPER^.M_Error(Description := CONCAT(' ControlAxisByPos_J6 Error: ',
-                                CONCAT(TO_STRING(_SMC_ControlAxisByPos_J6.iErrorID),
-                                CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J6.iErrorID,
-                                            SMC_Language_Type.english)))));
+        IF _SMC_ControlAxisByPos_J6.iErrorID = 183 THEN
+            SUPER^.M_Error(Description := F_AxisErrorDetail(Axis := J6, AxisName := 'J6'));
+        ELSE
+            SUPER^.M_Error(Description :=   CONCAT(' ControlAxisByPos_J6 Error: ',
+                                            CONCAT(TO_STRING(_SMC_ControlAxisByPos_J6.iErrorID),
+                                            CONCAT(' ', SMC_ErrorString(_SMC_ControlAxisByPos_J6.iErrorID,
+                                                    SMC_Language_Type.english)))));
+        END_IF
 	END_IF
 END_IF</xhtml>
                   </ST>
@@ -36003,6 +36027,195 @@ END_VAR</xhtml>
                 </addData>
               </pou>
             </data>
+            <data name="http://www.3s-software.com/plcopenxml/pou" handleUnknown="implementation">
+              <pou name="F_AxisErrorDetail" pouType="function">
+                <interface>
+                  <returnType>
+                    <string length="255" />
+                  </returnType>
+                  <inOutVars>
+                    <variable name="Axis">
+                      <type>
+                        <derived name="AXIS_REF_SM3" />
+                      </type>
+                    </variable>
+                    <addData>
+                      <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                        <InterfaceAsPlainText>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_AxisErrorDetail : STRING(255)
+VAR_IN_OUT
+	Axis: AXIS_REF_SM3;
+END_VAR
+VAR_INPUT
+	AxisName: STRING(8);
+END_VAR
+VAR
+	_i: INT;
+	_id: SMC_ERROR;
+	_s: STRING(255);
+	_root: STRING(180);
+	_stop: STRING(180);
+	_inst: STRING(80);
+END_VAR</xhtml>
+                        </InterfaceAsPlainText>
+                      </data>
+                    </addData>
+                  </inOutVars>
+                  <inputVars>
+                    <variable name="AxisName">
+                      <type>
+                        <string length="8" />
+                      </type>
+                    </variable>
+                    <addData>
+                      <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                        <InterfaceAsPlainText>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_AxisErrorDetail : STRING(255)
+VAR_IN_OUT
+	Axis: AXIS_REF_SM3;
+END_VAR
+VAR_INPUT
+	AxisName: STRING(8);
+END_VAR
+VAR
+	_i: INT;
+	_id: SMC_ERROR;
+	_s: STRING(255);
+	_root: STRING(180);
+	_stop: STRING(180);
+	_inst: STRING(80);
+END_VAR</xhtml>
+                        </InterfaceAsPlainText>
+                      </data>
+                    </addData>
+                  </inputVars>
+                  <localVars>
+                    <variable name="_i">
+                      <type>
+                        <INT />
+                      </type>
+                    </variable>
+                    <variable name="_id">
+                      <type>
+                        <derived name="SMC_ERROR" />
+                      </type>
+                    </variable>
+                    <variable name="_s">
+                      <type>
+                        <string length="255" />
+                      </type>
+                    </variable>
+                    <variable name="_root">
+                      <type>
+                        <string length="180" />
+                      </type>
+                    </variable>
+                    <variable name="_stop">
+                      <type>
+                        <string length="180" />
+                      </type>
+                    </variable>
+                    <variable name="_inst">
+                      <type>
+                        <string length="80" />
+                      </type>
+                    </variable>
+                    <addData>
+                      <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                        <InterfaceAsPlainText>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_AxisErrorDetail : STRING(255)
+VAR_IN_OUT
+	Axis: AXIS_REF_SM3;
+END_VAR
+VAR_INPUT
+	AxisName: STRING(8);
+END_VAR
+VAR
+	_i: INT;
+	_id: SMC_ERROR;
+	_s: STRING(255);
+	_root: STRING(180);
+	_stop: STRING(180);
+	_inst: STRING(80);
+END_VAR</xhtml>
+                        </InterfaceAsPlainText>
+                      </data>
+                    </addData>
+                  </localVars>
+                </interface>
+                <body>
+                  <ST>
+                    <xhtml xmlns="http://www.w3.org/1999/xhtml">(* Decode the SoftMotion FB that actually put this axis in errorstop.
+   AXIS_REF.fbeFBError[].wID is the real SMC_ERROR (following error, SW limit, ...).
+   Code 183 (SMC_MS_AXIS_IN_ERRORSTOP) is only "Stop cannot be executed" after
+   the axis is already faulted -- skip it when a root cause is present. *)
+F_AxisErrorDetail := '';
+IF (NOT Axis.bError) AND (Axis.nAxisState &lt;&gt; SMC_AXIS_STATE.errorstop) THEN
+	RETURN;
+END_IF
+
+_s := AxisName;
+_root := '';
+_stop := '';
+
+FOR _i := 0 TO g_SMC_NUMBER_FB_ERRORS DO
+	_id := Axis.fbeFBError[_i].wID;
+	IF _id &lt;&gt; SMC_NO_ERROR THEN
+		_inst := Axis.fbeFBError[_i].strErrorInstance;
+		IF (_id = SMC_MS_AXIS_IN_ERRORSTOP) OR (_id = SMC_H_AXIS_IN_ERRORSTOP) THEN
+			IF _stop = '' THEN
+				_stop := CONCAT(TO_STRING(_id), CONCAT(' ', SMC_ErrorString(_id, SMC_Language_Type.english)));
+			END_IF
+		ELSIF _root = '' THEN
+			_root := CONCAT(TO_STRING(_id), CONCAT(' ', SMC_ErrorString(_id, SMC_Language_Type.english)));
+			IF _inst &lt;&gt; '' THEN
+				_root := CONCAT(_root, CONCAT(' [', CONCAT(_inst, ']')));
+			END_IF
+		END_IF
+	END_IF
+END_FOR
+
+IF _root &lt;&gt; '' THEN
+	_s := CONCAT(_s, CONCAT(' ', _root));
+ELSIF _stop &lt;&gt; '' THEN
+	_s := CONCAT(_s, CONCAT(' ', _stop));
+ELSE
+	_s := CONCAT(_s, ' errorstop');
+END_IF
+
+IF Axis.dwErrorID &lt;&gt; 0 THEN
+	_s := CONCAT(_s, CONCAT(' drive ', DWORD_TO_STRING(Axis.dwErrorID)));
+END_IF
+
+F_AxisErrorDetail := _s;</xhtml>
+                  </ST>
+                </body>
+                <addData>
+                  <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                    <InterfaceAsPlainText>
+                      <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION F_AxisErrorDetail : STRING(255)
+VAR_IN_OUT
+	Axis: AXIS_REF_SM3;
+END_VAR
+VAR_INPUT
+	AxisName: STRING(8);
+END_VAR
+VAR
+	_i: INT;
+	_id: SMC_ERROR;
+	_s: STRING(255);
+	_root: STRING(180);
+	_stop: STRING(180);
+	_inst: STRING(80);
+END_VAR</xhtml>
+                    </InterfaceAsPlainText>
+                  </data>
+                  <data name="http://www.3s-software.com/plcopenxml/objectid" handleUnknown="discard">
+                    <ObjectId>2848fd25-85c0-4daa-b1fc-7b219ddd126c</ObjectId>
+                  </data>
+                </addData>
+              </pou>
+            </data>
             <data name="http://www.3s-software.com/plcopenxml/union" handleUnknown="implementation">
               <union name="StringByteArray">
                 <variable name="bArray">
@@ -47734,6 +47947,7 @@ END_TYPE
                 <Object Name="M_UpdateRemaining" ObjectId="22c45294-0830-4008-b1be-3c6d5bea1b80" />
                 <Object Name="M_BuildBanner" ObjectId="d037a93c-8df8-4d4d-8ae8-9085dfb4e73a" />
               </Object>
+              <Object Name="F_AxisErrorDetail" ObjectId="2848fd25-85c0-4daa-b1fc-7b219ddd126c" />
             </Folder>
             <Folder Name="GVL">
               <Object Name="GVL" ObjectId="1430d1bd-aa92-442c-bf72-190d0e907494" />
