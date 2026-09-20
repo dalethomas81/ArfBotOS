@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-19T18:47:00.5608928" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-19T18:47:00.3720777" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-19T18:53:47.7480021" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-19T18:53:47.5561919" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -1733,7 +1733,7 @@ END_VAR</xhtml>
                 <string length="80" />
               </type>
               <initialValue>
-                <simpleValue value="'v2.2026.38.0-RoiEditor-6-g2485b6d-dirty'" />
+                <simpleValue value="'v2.2026.38.1-Cnc'" />
               </initialValue>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> git describe --tags --always --dirty (does not get the latest tag from main)
@@ -1762,7 +1762,7 @@ END_VAR</xhtml>
 VAR_GLOBAL
     // git describe --tags --always --dirty (does not get the latest tag from main)
     // git describe --tags --always main (gets the latest tag from main but the commit is wrong because its from the branch we work from - dev)
-    sPlcVersion : STRING(80) := 'v2.2026.38.0-RoiEditor-6-g2485b6d-dirty';
+    sPlcVersion : STRING(80) := 'v2.2026.38.1-Cnc';
     sRelease : STRING(80);
     sVersionLine : STRING(160);
 END_VAR</xhtml>
