@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project xmlns="http://www.plcopen.org/xml/tc6_0200">
-  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-09-20T13:34:12.0012322" />
-  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-09-20T13:34:11.7320087" organization="Thomas Labs" author="Dale Thomas">
+  <fileHeader companyName="" productName="CODESYS" productVersion="CODESYS V3.5 SP22 Patch 3" creationDateTime="2026-10-03T14:07:57.8103968" />
+  <contentHeader name="ArfBotOS" version="1.0.0" modificationDateTime="2026-10-03T14:07:57.6510211" organization="Thomas Labs" author="Dale Thomas">
     <Comment>https://github.com/dalethomas81/ArfBotOS</Comment>
     <coordinateInfo>
       <fbd>
@@ -1733,7 +1733,7 @@ END_VAR</xhtml>
                 <string length="80" />
               </type>
               <initialValue>
-                <simpleValue value="'v2.2026.38.1-Cnc-1-g7ea79c5-dirty'" />
+                <simpleValue value="'v2.2026.38.1-Cnc-2-gfd2cca9-dirty'" />
               </initialValue>
               <documentation>
                 <xhtml xmlns="http://www.w3.org/1999/xhtml"> git describe --tags --always --dirty (does not get the latest tag from main)
@@ -1762,7 +1762,7 @@ END_VAR</xhtml>
 VAR_GLOBAL
     // git describe --tags --always --dirty (does not get the latest tag from main)
     // git describe --tags --always main (gets the latest tag from main but the commit is wrong because its from the branch we work from - dev)
-    sPlcVersion : STRING(80) := 'v2.2026.38.1-Cnc-1-g7ea79c5-dirty';
+    sPlcVersion : STRING(80) := 'v2.2026.38.1-Cnc-2-gfd2cca9-dirty';
     sRelease : STRING(80);
     sVersionLine : STRING(160);
 END_VAR</xhtml>
@@ -4943,18 +4943,22 @@ IF ProcessPrograms.PropBusy THEN
     // for displaying on the HMI
     // PGM: &lt;number&gt; CMD: &lt;number&gt; Type: &lt;type&gt; Command: &lt;command&gt; Comment: &lt;comment&gt;
     ActiveCommandDetails := CONCAT('PGM: ', UINT_TO_STRING(ProcessPrograms.P_CurrentProgram));
-    ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' CMD: ');
+    ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' | CMD: ');
     ActiveCommandDetails := CONCAT(ActiveCommandDetails,
                                     // TODO: the "current" index in this case is actually next
-                                    // use a SEL here because I dont want to allways do "index minus 1" because this would show a -1 on the HMI when Idle and thats gross
+                                    // use a SEL here because I dont want to always do "index minus 1" because this would show a -1 on the HMI when Idle and thats gross
                                     UINT_TO_STRING(SEL(ProcessPrograms.P_CurrentCommandIndex &lt;= 0,
                                                         ProcessPrograms.P_CurrentCommandIndex - 1, // FALSE
                                                         0))); // TRUE
-    ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' ');
+    ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' | ');
     ActiveCommandDetails := CONCAT(ActiveCommandDetails, TO_STRING(ProcessPrograms.P_CurrentCommand.CommandType));
     ActiveCommandDetails := CONCAT(ActiveCommandDetails, ': ');
     ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandString);
-    ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' Comment: ');
+    IF ProcessPrograms.P_CurrentCommand.CommandType = DUT_CommandType.CncCommand THEN
+        ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' | G-Code: ');
+        ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.GCodeLines[0]);
+    END_IF
+    ActiveCommandDetails := CONCAT(ActiveCommandDetails, ' | Comment: ');
     ActiveCommandDetails := CONCAT(ActiveCommandDetails, ProcessPrograms.P_CurrentCommand.CommandComment);
 END_IF
 
@@ -9262,9 +9266,10 @@ VAR_INPUT
 	Enable: BOOL;
 END_VAR
 VAR_OUTPUT
-	ItfActiveProcessorUnitMode	: PACK_ML.IUnitMode;
+	ItfActiveProcessorUnitMode: PACK_ML.IUnitMode;
 	ItfActiveModule: ItfModule;
 	StatusText: STRING(255);
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
 	_Commands: ARRAY [GVL.PROG_CMDS_ARR_BEG..GVL.PROG_CMDS_ARR_END] OF DUT_Command;
@@ -9317,9 +9322,10 @@ VAR_INPUT
 	Enable: BOOL;
 END_VAR
 VAR_OUTPUT
-	ItfActiveProcessorUnitMode	: PACK_ML.IUnitMode;
+	ItfActiveProcessorUnitMode: PACK_ML.IUnitMode;
 	ItfActiveModule: ItfModule;
 	StatusText: STRING(255);
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
 	_Commands: ARRAY [GVL.PROG_CMDS_ARR_BEG..GVL.PROG_CMDS_ARR_END] OF DUT_Command;
@@ -9367,6 +9373,16 @@ END_VAR</xhtml>
                         <string length="255" />
                       </type>
                     </variable>
+                    <variable name="GCodeLines">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="SMC_GCodeViewer.c_uiLines" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
                     <addData>
                       <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
                         <InterfaceAsPlainText>
@@ -9382,9 +9398,10 @@ VAR_INPUT
 	Enable: BOOL;
 END_VAR
 VAR_OUTPUT
-	ItfActiveProcessorUnitMode	: PACK_ML.IUnitMode;
+	ItfActiveProcessorUnitMode: PACK_ML.IUnitMode;
 	ItfActiveModule: ItfModule;
 	StatusText: STRING(255);
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
 	_Commands: ARRAY [GVL.PROG_CMDS_ARR_BEG..GVL.PROG_CMDS_ARR_END] OF DUT_Command;
@@ -9526,9 +9543,10 @@ VAR_INPUT
 	Enable: BOOL;
 END_VAR
 VAR_OUTPUT
-	ItfActiveProcessorUnitMode	: PACK_ML.IUnitMode;
+	ItfActiveProcessorUnitMode: PACK_ML.IUnitMode;
 	ItfActiveModule: ItfModule;
 	StatusText: STRING(255);
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
 	_Commands: ARRAY [GVL.PROG_CMDS_ARR_BEG..GVL.PROG_CMDS_ARR_END] OF DUT_Command;
@@ -9616,9 +9634,10 @@ VAR_INPUT
 	Enable: BOOL;
 END_VAR
 VAR_OUTPUT
-	ItfActiveProcessorUnitMode	: PACK_ML.IUnitMode;
+	ItfActiveProcessorUnitMode: PACK_ML.IUnitMode;
 	ItfActiveModule: ItfModule;
 	StatusText: STRING(255);
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
 	_Commands: ARRAY [GVL.PROG_CMDS_ARR_BEG..GVL.PROG_CMDS_ARR_END] OF DUT_Command;
@@ -9798,6 +9817,7 @@ _ProcessCncCommand(
 	J1:=J1, J2:=J2, J3:=J3, J4:=J4, J5:=J5, J6:=J6,
 	AxisGroup:= AxisGroup, 
     CmdIO:= CmdIO,
+    GCodeLines =&gt; GCodeLines,
 	GapJerk:= , 
 	GapVelocity:= , 
 	AvoidGaps:= , 
@@ -10748,9 +10768,10 @@ VAR_INPUT
 	Enable: BOOL;
 END_VAR
 VAR_OUTPUT
-	ItfActiveProcessorUnitMode	: PACK_ML.IUnitMode;
+	ItfActiveProcessorUnitMode: PACK_ML.IUnitMode;
 	ItfActiveModule: ItfModule;
 	StatusText: STRING(255);
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
 	_Commands: ARRAY [GVL.PROG_CMDS_ARR_BEG..GVL.PROG_CMDS_ARR_END] OF DUT_Command;
@@ -12886,6 +12907,7 @@ VAR_OUTPUT
 	Done: BOOL;
 	Error: BOOL;
 	ErrorDescription: STRING;
+    GcodeText: SMC_GCODE_TEXT;
 END_VAR
 VAR
 	_Filename: STRING := '_cnc/CNC_FromFile.cnc';
@@ -12942,6 +12964,11 @@ END_VAR
                         <string />
                       </type>
                     </variable>
+                    <variable name="GcodeText">
+                      <type>
+                        <derived name="SMC_GCODE_TEXT" />
+                      </type>
+                    </variable>
                     <addData>
                       <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
                         <InterfaceAsPlainText>
@@ -12957,6 +12984,7 @@ VAR_OUTPUT
 	Done: BOOL;
 	Error: BOOL;
 	ErrorDescription: STRING;
+    GcodeText: SMC_GCODE_TEXT;
 END_VAR
 VAR
 	_Filename: STRING := '_cnc/CNC_FromFile.cnc';
@@ -13093,6 +13121,7 @@ VAR_OUTPUT
 	Done: BOOL;
 	Error: BOOL;
 	ErrorDescription: STRING;
+    GcodeText: SMC_GCODE_TEXT;
 END_VAR
 VAR
 	_Filename: STRING := '_cnc/CNC_FromFile.cnc';
@@ -13146,6 +13175,7 @@ VAR_OUTPUT
 	Done: BOOL;
 	Error: BOOL;
 	ErrorDescription: STRING;
+    GcodeText: SMC_GCODE_TEXT;
 END_VAR
 VAR
 	_Filename: STRING := '_cnc/CNC_FromFile.cnc';
@@ -13258,7 +13288,7 @@ _SMC_NCInterpreter(
 	poqDataOut=&gt; , 
 	iStatus=&gt; , 
 	iLineNumberDecoded=&gt; , 
-	GCodeText=&gt; , 
+	GCodeText=&gt; GcodeText, 
 	CallstackInfo=&gt; , 
 	aActivePrograms=&gt; );
     
@@ -13500,6 +13530,7 @@ VAR_OUTPUT
 	Done: BOOL;
 	Error: BOOL;
 	ErrorDescription: STRING;
+    GcodeText: SMC_GCODE_TEXT;
 END_VAR
 VAR
 	_Filename: STRING := '_cnc/CNC_FromFile.cnc';
@@ -22475,6 +22506,7 @@ VAR_IN_OUT
 	CmdIO: ST_LogicCmdIO;
 END_VAR
 VAR_OUTPUT
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
     _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
@@ -22487,6 +22519,8 @@ VAR
 	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
 	_SMC_Interpolator: SMC_Interpolator;
+    _SMC_GCodeViewer: SMC_GCodeViewer;
+    _SMC_GCODEVIEWER_DATA:  ARRAY[0..110] OF SMC_GCODEVIEWER_DATA; // must be at least interpreter queue + preprocessors
 	_TrackPosition: FB_PositionTracker;
 	_PlanPath: FB_CncPathPlanner;
 	//_PlanPath: REFERENCE TO CncPathPlanner;
@@ -22592,6 +22626,7 @@ VAR_IN_OUT
 	CmdIO: ST_LogicCmdIO;
 END_VAR
 VAR_OUTPUT
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
     _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
@@ -22604,6 +22639,8 @@ VAR
 	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
 	_SMC_Interpolator: SMC_Interpolator;
+    _SMC_GCodeViewer: SMC_GCodeViewer;
+    _SMC_GCODEVIEWER_DATA:  ARRAY[0..110] OF SMC_GCODEVIEWER_DATA; // must be at least interpreter queue + preprocessors
 	_TrackPosition: FB_PositionTracker;
 	_PlanPath: FB_CncPathPlanner;
 	//_PlanPath: REFERENCE TO CncPathPlanner;
@@ -22651,6 +22688,96 @@ END_VAR
                       </data>
                     </addData>
                   </inOutVars>
+                  <outputVars>
+                    <variable name="GCodeLines">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="SMC_GCodeViewer.c_uiLines" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
+                    <addData>
+                      <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
+                        <InterfaceAsPlainText>
+                          <xhtml xmlns="http://www.w3.org/1999/xhtml">FUNCTION_BLOCK FB_CncCmdProcessor EXTENDS FB_Module
+VAR_INPUT
+	GapVelocity: LREAL := 50.0;
+	AvoidGaps: BOOL := FALSE;
+	GapAccel: LREAL := 100.0;
+    GapJerk: LREAL := 1000.0;
+	Command: STRING(GVL.COMMAND_LEN):='';
+END_VAR
+VAR_IN_OUT
+	J1, J2, J3, J4, J5, J6: AXIS_REF_SM3;
+	AxisGroup: AXIS_GROUP_REF_SM3;
+	CmdIO: ST_LogicCmdIO;
+END_VAR
+VAR_OUTPUT
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
+END_VAR
+VAR
+    _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
+	_SMC_TrafoConfig_ArticulatedRobot_6DOF: SMC_TrafoConfig_ArticulatedRobot_6DOF;
+	_SMC_Trafo_ArticulatedRobot_6DOF: SMC_Trafo_ArticulatedRobot_6DOF;
+	_SMC_ControlAxisByPos_J1: SMC_ControlAxisByPos;
+	_SMC_ControlAxisByPos_J2: SMC_ControlAxisByPos;
+	_SMC_ControlAxisByPos_J3: SMC_ControlAxisByPos;
+	_SMC_ControlAxisByPos_J4: SMC_ControlAxisByPos;
+	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
+	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
+	_SMC_Interpolator: SMC_Interpolator;
+    _SMC_GCodeViewer: SMC_GCodeViewer;
+    _SMC_GCODEVIEWER_DATA:  ARRAY[0..110] OF SMC_GCODEVIEWER_DATA; // must be at least interpreter queue + preprocessors
+	_TrackPosition: FB_PositionTracker;
+	_PlanPath: FB_CncPathPlanner;
+	//_PlanPath: REFERENCE TO CncPathPlanner;
+	_SysLTime, _SysLTimeLast, _CycleTime: LTIME;
+    _dwCycleTime: DWORD;
+	_ErrorRtrig: R_TRIG;
+    _i, _j, _k: INT;
+END_VAR
+VAR CONSTANT
+	wVarCount : WORD := 1;
+    MCODE_INPUT_WAIT: INT:=200;
+    MCODE_INPUT_WAIT_START: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_BEG;
+    MCODE_INPUT_WAIT_END: INT:=MCODE_INPUT_WAIT+GVL.DIG_IN_ARR_END;
+    MCODE_OUTPUT_SET: INT:=300;
+    MCODE_OUTPUT_SET_START: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_SET_END: INT:=MCODE_OUTPUT_SET+GVL.DIG_OUT_ARR_END;
+    MCODE_OUTPUT_CLR: INT:=400;
+    MCODE_OUTPUT_CLR_START: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_BEG;
+    MCODE_OUTPUT_CLR_END: INT:=MCODE_OUTPUT_CLR+GVL.DIG_OUT_ARR_END;
+    MCODE_FLAG_WAIT: INT:=500;
+    MCODE_FLAG_WAIT_START: INT:=MCODE_FLAG_WAIT+GVL.FLG_ARR_BEG;
+    MCODE_FLAG_WAIT_END: INT:=MCODE_FLAG_WAIT+GVL.FLG_ARR_END;
+END_VAR
+VAR CONSTANT
+	_STEP_DONE: 		INT := 1000;
+	_STEP_IDLE: 		INT := 0000;
+	_STEP_COMMAND: 		INT := 0010;
+	_STEP_ONE: 			INT := 0020;
+    _STEP_ERROR:        INT := 9999;
+END_VAR
+VAR
+	_UnitModeCurrentState: PACK_ML.State;
+	_CncCmdParser: FB_ParseCncCmd;
+END_VAR
+VAR
+	lrR1 : LREAL:=30;
+	
+	astVar : ARRAY [0..wVarCount] OF SMC_SingleVar :=
+			[(strVarName:='R1', pAdr := ADR(lrR1), eVarType := SMC_VarType.SMC_TYPE_LREAL)];
+			
+	stVarList : SMC_VarList := (wNumberVars := wVarCount, psvVarlist := ADR(astVar));
+END_VAR
+</xhtml>
+                        </InterfaceAsPlainText>
+                      </data>
+                    </addData>
+                  </outputVars>
                   <localVars>
                     <variable name="_OriConvention">
                       <type>
@@ -22707,6 +22834,24 @@ END_VAR
                       <type>
                         <derived name="SMC_Interpolator" />
                       </type>
+                    </variable>
+                    <variable name="_SMC_GCodeViewer">
+                      <type>
+                        <derived name="SMC_GCodeViewer" />
+                      </type>
+                    </variable>
+                    <variable name="_SMC_GCODEVIEWER_DATA">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="110" />
+                          <baseType>
+                            <derived name="SMC_GCODEVIEWER_DATA" />
+                          </baseType>
+                        </array>
+                      </type>
+                      <documentation>
+                        <xhtml xmlns="http://www.w3.org/1999/xhtml"> must be at least interpreter queue + preprocessors</xhtml>
+                      </documentation>
                     </variable>
                     <variable name="_TrackPosition">
                       <type>
@@ -22784,6 +22929,7 @@ VAR_IN_OUT
 	CmdIO: ST_LogicCmdIO;
 END_VAR
 VAR_OUTPUT
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
     _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
@@ -22796,6 +22942,8 @@ VAR
 	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
 	_SMC_Interpolator: SMC_Interpolator;
+    _SMC_GCodeViewer: SMC_GCodeViewer;
+    _SMC_GCODEVIEWER_DATA:  ARRAY[0..110] OF SMC_GCODEVIEWER_DATA; // must be at least interpreter queue + preprocessors
 	_TrackPosition: FB_PositionTracker;
 	_PlanPath: FB_CncPathPlanner;
 	//_PlanPath: REFERENCE TO CncPathPlanner;
@@ -23005,6 +23153,7 @@ VAR_IN_OUT
 	CmdIO: ST_LogicCmdIO;
 END_VAR
 VAR_OUTPUT
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
     _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
@@ -23017,6 +23166,8 @@ VAR
 	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
 	_SMC_Interpolator: SMC_Interpolator;
+    _SMC_GCodeViewer: SMC_GCodeViewer;
+    _SMC_GCODEVIEWER_DATA:  ARRAY[0..110] OF SMC_GCODEVIEWER_DATA; // must be at least interpreter queue + preprocessors
 	_TrackPosition: FB_PositionTracker;
 	_PlanPath: FB_CncPathPlanner;
 	//_PlanPath: REFERENCE TO CncPathPlanner;
@@ -23142,6 +23293,7 @@ VAR_IN_OUT
 	CmdIO: ST_LogicCmdIO;
 END_VAR
 VAR_OUTPUT
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
     _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
@@ -23154,6 +23306,8 @@ VAR
 	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
 	_SMC_Interpolator: SMC_Interpolator;
+    _SMC_GCodeViewer: SMC_GCodeViewer;
+    _SMC_GCODEVIEWER_DATA:  ARRAY[0..110] OF SMC_GCODEVIEWER_DATA; // must be at least interpreter queue + preprocessors
 	_TrackPosition: FB_PositionTracker;
 	_PlanPath: FB_CncPathPlanner;
 	//_PlanPath: REFERENCE TO CncPathPlanner;
@@ -23374,6 +23528,17 @@ CASE WORD_TO_INT(_SMC_Interpolator.wM) OF
         END_IF
         
 END_CASE
+ 
+_SMC_GCodeViewer(
+	GCodeText:= _PlanPath.GcodeText, 
+	bEnable:= _SMC_Interpolator.bBusy, 
+	interpolatedObjectId:= _SMC_Interpolator.actObjectId, 
+	uiNumberOfBufferEntries:=  SIZEOF(_SMC_GCODEVIEWER_DATA) / SIZEOF(SMC_GCODEVIEWER_DATA), 
+	pBuffer:= ADR(_SMC_GCODEVIEWER_DATA), 
+	bError=&gt; , 
+	bBusy=&gt; , 
+	wErrorID=&gt; , 
+	asGCode=&gt; GCodeLines);
 
 _TrackPosition(
     OriConvention:=_OriConvention,
@@ -23840,6 +24005,7 @@ VAR_IN_OUT
 	CmdIO: ST_LogicCmdIO;
 END_VAR
 VAR_OUTPUT
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
     _OriConvention: SMC_ORI_CONVENTION := SMC_ORI_CONVENTION.ZYX; // _SMC_Trafo_ArticulatedRobot_6DOF is always ZYX (yaw pitch roll) according to https://content.helpme-codesys.com/en/CODESYS%20SoftMotion/_sm_trafo_pou_six_dof_robot.html
@@ -23852,6 +24018,8 @@ VAR
 	_SMC_ControlAxisByPos_J5: SMC_ControlAxisByPos;
 	_SMC_ControlAxisByPos_J6: SMC_ControlAxisByPos;
 	_SMC_Interpolator: SMC_Interpolator;
+    _SMC_GCodeViewer: SMC_GCodeViewer;
+    _SMC_GCODEVIEWER_DATA:  ARRAY[0..110] OF SMC_GCODEVIEWER_DATA; // must be at least interpreter queue + preprocessors
 	_TrackPosition: FB_PositionTracker;
 	_PlanPath: FB_CncPathPlanner;
 	//_PlanPath: REFERENCE TO CncPathPlanner;
@@ -26939,6 +27107,7 @@ VAR_OUTPUT
 	ItfActiveProcessorUnitMode	: PACK_ML.IUnitMode;
 	ItfActiveModule: ItfModule;
 	StatusText: STRING(255);
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
 	_DummyUnitMode: PACK_ML.UnitMode;
@@ -26990,6 +27159,7 @@ VAR_OUTPUT
 	ItfActiveProcessorUnitMode	: PACK_ML.IUnitMode;
 	ItfActiveModule: ItfModule;
 	StatusText: STRING(255);
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
 	_DummyUnitMode: PACK_ML.UnitMode;
@@ -27033,6 +27203,16 @@ END_VAR</xhtml>
                         <string length="255" />
                       </type>
                     </variable>
+                    <variable name="GCodeLines">
+                      <type>
+                        <array>
+                          <dimension lower="0" upper="SMC_GCodeViewer.c_uiLines" />
+                          <baseType>
+                            <string />
+                          </baseType>
+                        </array>
+                      </type>
+                    </variable>
                     <addData>
                       <data name="http://www.3s-software.com/plcopenxml/interfaceasplaintext" handleUnknown="implementation">
                         <InterfaceAsPlainText>
@@ -27051,6 +27231,7 @@ VAR_OUTPUT
 	ItfActiveProcessorUnitMode	: PACK_ML.IUnitMode;
 	ItfActiveModule: ItfModule;
 	StatusText: STRING(255);
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
 	_DummyUnitMode: PACK_ML.UnitMode;
@@ -27188,6 +27369,7 @@ VAR_OUTPUT
 	ItfActiveProcessorUnitMode	: PACK_ML.IUnitMode;
 	ItfActiveModule: ItfModule;
 	StatusText: STRING(255);
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
 	_DummyUnitMode: PACK_ML.UnitMode;
@@ -27282,6 +27464,7 @@ VAR_OUTPUT
 	ItfActiveProcessorUnitMode	: PACK_ML.IUnitMode;
 	ItfActiveModule: ItfModule;
 	StatusText: STRING(255);
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
 	_DummyUnitMode: PACK_ML.UnitMode;
@@ -27376,6 +27559,7 @@ _ProcessCommands(
 	GroupHandler:= GroupHandler,
 	CmdIO:=CmdIO,
 	PrgProcessor:= THIS^,
+    GCodeLines =&gt; GCodeLines,
 	Enable:= Enable,
 	Error=&gt; ,
 	StatusText=&gt;StatusText);	
@@ -28332,6 +28516,7 @@ VAR_OUTPUT
 	ItfActiveProcessorUnitMode	: PACK_ML.IUnitMode;
 	ItfActiveModule: ItfModule;
 	StatusText: STRING(255);
+    GCodeLines: ARRAY[0..SMC_GCodeViewer.c_uiLines] OF STRING;
 END_VAR
 VAR
 	_DummyUnitMode: PACK_ML.UnitMode;
