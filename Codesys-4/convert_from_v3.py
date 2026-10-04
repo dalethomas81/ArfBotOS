@@ -438,9 +438,12 @@ class Converter:
         ]
         has_children = bool(emitted_children or accessors)
         if has_children:
+            # The object file is the sibling of Name.ext^/, same as
+            # Application.iecapp beside Application.iecapp^/. A file that
+            # lives only inside the caret directory is not a tree node.
             folder = os.path.join(dest, filename + "^")
             os.makedirs(folder, exist_ok=True)
-            target = os.path.join(folder, filename)
+            target = os.path.join(dest, filename)
             child_dest = folder
         else:
             target = os.path.join(dest, filename)
