@@ -1,0 +1,6 @@
+TYPE StringByteArray :
+UNION
+	bArray: ARRAY [0..254] OF BYTE;
+	sString: STRING(255);
+END_UNION
+END_TYPE

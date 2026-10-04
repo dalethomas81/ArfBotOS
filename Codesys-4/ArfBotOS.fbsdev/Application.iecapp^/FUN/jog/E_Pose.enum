@@ -1,0 +1,11 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE E_Pose :
+(
+	One := 0,
+	Two := 1,
+	Three := 2,
+	Four := 3,
+	Five := 4
+);
+END_TYPE

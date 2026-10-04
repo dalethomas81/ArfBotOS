@@ -1,0 +1,13 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+{attribute 'to_string'}
+TYPE DUT_VarSetCmd_OperType :
+(
+	NOP := 0,
+	EQUALS := 1,
+	PLUS := 2,
+	MINUS := 3,
+	TIMES := 4,
+	DIVIDED_BY := 5
+);
+END_TYPE

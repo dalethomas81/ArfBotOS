@@ -1,0 +1,13 @@
+TYPE ST_Buttons :
+STRUCT
+	Square: BOOL;
+	Triangle: BOOL;
+	Circle: BOOL;
+	Cross: BOOL;
+	Share: BOOL;
+	Options: BOOL;
+	PS: BOOL;
+	Touch: BOOL;
+	Mic: BOOL;
+END_STRUCT
+END_TYPE

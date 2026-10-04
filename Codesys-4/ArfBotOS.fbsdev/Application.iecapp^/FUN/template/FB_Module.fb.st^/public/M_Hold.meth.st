@@ -1,0 +1,6 @@
+METHOD PUBLIC M_Hold
+VAR_INPUT
+END_VAR
+
+_UnitMode.Hold();
+END_METHOD

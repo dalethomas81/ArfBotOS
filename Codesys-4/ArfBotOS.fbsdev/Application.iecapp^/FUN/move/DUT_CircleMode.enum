@@ -1,0 +1,9 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE DUT_CircleMode :
+(
+	Border := 0,
+	Center := 1,
+	Radius := 2
+);
+END_TYPE

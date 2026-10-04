@@ -1,0 +1,11 @@
+TYPE ST_VisionLocate :
+STRUCT
+    MaxParts: 		UINT:=1; // max number of parts to locate
+    MaxOverlap: 	REAL:=0.0; // max overlap of parts. only needed if MaxParts is greater than zero.
+    Score: 			REAL:=0.6; // min score
+    ToleranceAngle: REAL:=90.0; // max angle +/- to search
+	ResultPosition: UINT:=0; // location to store the results in the vision register array
+	TemplateName: 	STRING:='Template.jpg'; // name of the template to search
+	ScriptFilename: STRING:='FastTemplateMatching.py'; // name of the script that runs the vision program
+END_STRUCT
+END_TYPE

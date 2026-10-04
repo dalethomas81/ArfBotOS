@@ -1,0 +1,16 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+{attribute 'to_string'}
+TYPE DUT_CommandType :
+(
+	Disabled := 0,
+	MoveCommand := 1,
+	PauseCommand := 2,
+	InputCommand := 3,
+	OutputCommand := 4,
+    VisionCommand := 5,
+	CncCommand := 6,
+	VarSetCommand := 7,
+	LogicCommand := 8
+);
+END_TYPE

@@ -1,0 +1,10 @@
+TYPE ST_VisionCmd :
+STRUCT
+    CommandType: DUT_Command_VisionType;
+    ImageWidth: UINT:=640; // pixel count in x direction (must be supported by camera)
+    ImageHeight: UINT:=400; // pixel coutn in y direction (must be supported by camera)
+    Calibrate: ST_VisionCalibrate;
+    Locate: ST_VisionLocate;
+	Timeout: UDINT:=60; // timeout in seconds
+END_STRUCT
+END_TYPE

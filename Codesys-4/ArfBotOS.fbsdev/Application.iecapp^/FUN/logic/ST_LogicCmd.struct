@@ -1,0 +1,14 @@
+TYPE ST_LogicCmd :
+STRUCT
+	IF_Condition : E_LogicIfCondition;
+	IF_Condition_Idx: INT;
+	IF_Condition_Operator: E_LogicIfConditionOperator;
+	IF_Condition_Operator_Value: UDINT;
+	THEN_Function: E_LogicFunction;
+	THEN_Function_Value: UDINT;
+	THEN_Function_Idx: INT;
+	ELSE_Function: E_LogicFunction;
+	ELSE_Function_Idx: INT;
+	ELSE_Function_Value: UDINT;
+END_STRUCT
+END_TYPE

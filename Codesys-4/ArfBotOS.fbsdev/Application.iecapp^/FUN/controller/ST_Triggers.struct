@@ -1,0 +1,6 @@
+TYPE ST_Triggers :
+STRUCT
+	Left: ST_Trigger;
+	Right: ST_Trigger;
+END_STRUCT
+END_TYPE

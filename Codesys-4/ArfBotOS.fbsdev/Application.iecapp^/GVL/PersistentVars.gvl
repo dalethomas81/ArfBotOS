@@ -1,0 +1,28 @@
+{attribute 'qualified_only'}
+VAR_GLOBAL PERSISTENT RETAIN
+	//
+	Programs: ARRAY [GVL_App.PROG_ARR_BEG..GVL_App.PROG_ARR_END] OF DUT_Program;
+	
+	//
+	StoredPositions: ARRAY [GVL_App.POS_ARR_BEG..GVL_App.POS_ARR_END] OF DUT_StoredPosition;
+	VisionRegisters: ARRAY[GVL_App.VIS_ARR_BEG..GVL_App.VIS_ARR_END] OF DUT_VisionRegister;
+	Flags: ARRAY[GVL_App.FLG_ARR_BEG..GVL_App.FLG_ARR_END] OF DUT_Flags;
+	
+	//
+	PositionControllers: ARRAY[GVL_App.POSCONT_ARR_BEG..GVL_App.POSCONT_ARR_END] OF DUT_PositionController;
+	
+	// vision
+	VisionSystemIpAddress: STRING(19):='127.0.0.1';
+	VisionSystemPort: UINT:=50011;
+	
+	// dh parameters
+	
+	// axis params
+	PulsesPerRevolution: ARRAY [0..5] OF LREAL := [32000.0, 40000.0, 40000.0, 35840.0, 15700.0, 16162.5];
+	
+	// homing
+	HomingGroupOne: DUT_AxisEnabled := (J1:=TRUE, J2:=TRUE, J3:=TRUE, J4:=FALSE, J5:=FALSE, J6:=FALSE);
+	HomingGroupTwo: DUT_AxisEnabled := (J1:=FALSE, J2:=FALSE, J3:=FALSE, J4:=TRUE, J5:=TRUE, J6:=FALSE);
+	HomingGroupThree: DUT_AxisEnabled := (J1:=FALSE, J2:=FALSE, J3:=FALSE, J4:=FALSE, J5:=FALSE, J6:=TRUE);
+	
+END_VAR

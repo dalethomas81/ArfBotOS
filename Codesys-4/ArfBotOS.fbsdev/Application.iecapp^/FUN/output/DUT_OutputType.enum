@@ -1,0 +1,8 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE DUT_OutputType :
+(
+	Digital := 0,
+	Pwm := 1
+);
+END_TYPE

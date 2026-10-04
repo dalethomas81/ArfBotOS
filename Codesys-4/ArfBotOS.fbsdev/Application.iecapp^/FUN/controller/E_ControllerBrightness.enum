@@ -1,0 +1,9 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE E_ControllerBrightness :
+(
+	High := 0,
+	Med := 1,
+	Low := 2
+);
+END_TYPE

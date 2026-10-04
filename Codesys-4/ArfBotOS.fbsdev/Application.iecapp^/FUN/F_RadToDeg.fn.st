@@ -1,0 +1,9 @@
+FUNCTION F_RadToDeg : LREAL
+VAR_INPUT
+    Radians: LREAL;
+END_VAR
+VAR
+END_VAR
+
+F_RadToDeg := Radians * (180 / GVL_App.pi);
+END_FUNCTION

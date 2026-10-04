@@ -1,0 +1,22 @@
+{
+    "device": {
+        "nodeName": "ArfBotOS-Dev-Pi4"
+    },
+    "gateway": {
+        "name": "ArfBotDev",
+        "hostName": "192.168.1.159",
+        "port": 1217,
+        "type": "CODESYS.GwV3"
+    },
+    "scanInformation": {
+        "nodeName": "ArfBotOS-Dev-Pi4",
+        "lastKnownAddress": "0301.209F",
+        "targetId": "0000 0012",
+        "targetType": "Softmotion3S",
+        "targetVersion": "4.22.0.0",
+        "targetVendor": "CODESYS GmbH",
+        "serialNumber": "10000000eaf1a3ad",
+        "targetName": "CODESYS Control for Raspberry Pi 64 SL",
+        "encryptedCommunication": "Supported"
+    }
+}

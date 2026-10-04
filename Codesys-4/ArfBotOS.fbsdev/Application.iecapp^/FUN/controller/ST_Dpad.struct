@@ -1,0 +1,8 @@
+TYPE ST_Dpad :
+STRUCT
+	Up: BOOL;
+	Down: BOOL;
+	Left: BOOL;
+	Right: BOOL;
+END_STRUCT
+END_TYPE

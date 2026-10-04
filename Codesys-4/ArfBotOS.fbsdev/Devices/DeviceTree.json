@@ -1,0 +1,9 @@
+{
+	"deviceName": "CODESYS_Control_for_Raspberry_Pi_64_SL",
+	"identification": {
+		"type": 4102,
+		"id": "0000 0012",
+		"version": "4.22.0.0"
+	},
+	"children": []
+}

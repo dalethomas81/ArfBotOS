@@ -1,0 +1,1546 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<DeviceDescription xmlns="http://www.3s-software.com/schemas/DeviceDescription-1.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ts="http://www.3s-software.com/schemas/TargetSettings-0.1.xsd" xsi:schemaLocation="http://www.3s-software.com/schemas/DeviceDescription-1.0.xsd https://de.codesys.com/fileadmin/data/schemas/DeviceDescription-1.0.xsd     http://www.3s-software.com/schemas/TargetSettings-0.1.xsd https://de.codesys.com/fileadmin/data/schemas/TargetSettings-0.1.xsd">
+  <Types namespace="localTypes" />
+  <Strings namespace="local">
+    <Language lang="de">
+      <String identifier="typedescription">Eine Soft-SPS nach IEC 61131-3 für Raspberry Pi. CODESYS Control basiert auf CODESYS SDK 3.5.22.30, Release .</String>
+    </Language>
+  </Strings>
+  <Files namespace="local">
+    <Language lang="en">
+      <File fileref="local" identifier="Runtimeico">
+        <LocalFile>Runtime.ico</LocalFile>
+      </File>
+      <File fileref="local" identifier="Runtimeimg">
+        <LocalFile>Runtime.png</LocalFile>
+      </File>
+    </Language>
+  </Files>
+  <Device>
+    <DeviceIdentification>
+      <Type>4102</Type>
+      <Id>0000 0012</Id>
+      <Version>4.22.0.0</Version>
+    </DeviceIdentification>
+    <DeviceInfo>
+      <Name name="local:typename">CODESYS Control for Raspberry Pi 64 SL</Name>
+      <Description name="local:typedescription">An IEC 61131-3-compliant SoftPLC for Raspberry Pi 64-bit single- and multi-core systems. CODESYS Control based on CODESYS SDK 3.5.22.30, Release </Description>
+      <Vendor name="local:3S">CODESYS GmbH</Vendor>
+      <OrderNumber>2302000009</OrderNumber>
+      <Image name="local:Runtimeimg">Runtime.png</Image>
+      <Icon name="local:Runtimeico">Runtime.ico</Icon>
+    </DeviceInfo>
+    <Connector moduleType="256" interface="Common.PCI" role="parent" explicit="false">
+      <Var />
+    </Connector>
+    <Connector moduleType="1280" interface="GPIOSysfs" role="parent" explicit="false">
+      <InterfaceName name="local:GPIOs">GPIOs</InterfaceName>
+      <Var />
+    </Connector>
+    <Connector moduleType="1279" interface="Common.SoftMotion.General" role="parent" explicit="true">
+      <InterfaceName name="local:DrivePool">SoftMotion General Axis Pool</InterfaceName>
+      <Var />
+    </Connector>
+    <Connector moduleType="504" interface="Raspberry.GPIOs" role="parent" explicit="false">
+      <InterfaceName name="local:GPIOs">GPIOs</InterfaceName>
+      <Slot allowEmpty="true">
+        <DefaultModule>
+          <DeviceIdentification deviceType="504" deviceId="0000 0000" version="4.22.0.0" />
+        </DefaultModule>
+      </Slot>
+    </Connector>
+    <Connector moduleType="769" interface="SafetyInterface" role="parent" explicit="false">
+      <Var max="1" />
+    </Connector>
+    <Connector moduleType="499" interface="Raspberry.OnewireMaster" role="parent" explicit="true">
+      <InterfaceName name="local:Onewire">Onewire</InterfaceName>
+      <Var />
+    </Connector>
+    <Connector moduleType="502" interface="Raspberry.Camera2" role="parent" explicit="true">
+      <InterfaceName name="local:CameraDevices">Camera device</InterfaceName>
+      <Slot count="1" allowEmpty="true" />
+    </Connector>
+    <Connector moduleType="497" interface="Raspberry.SPIMaster" role="parent" explicit="true">
+      <InterfaceName name="local:SPIdevices">SPI</InterfaceName>
+      <Var />
+    </Connector>
+    <Connector moduleType="496" interface="Raspberry.I2CMaster" role="parent" explicit="true">
+      <InterfaceName name="local:I2Cmaster">I²C</InterfaceName>
+      <Var max="2" />
+    </Connector>
+    <DriverInfo needsBusCycle="false" enableDiagnosis="true" onlineChangeDevice="Disabled">
+      <RequiredLib libname="IoStandard" vendor="System" version="*" identifier="iostandardlib" placeholderlib="IoStandard" />
+      <RequiredLib libname="SM3_Basic" placeholderlib="SM3_Basic" vendor="3S - Smart Software Solutions GmbH" version="*" identifier="deviceLib" />
+      <RequiredLib libname="SM3_CNC" placeholderlib="SM3_CNC" vendor="3S - Smart Software Solutions GmbH" version="*" identifier="deviceLib" />
+      <RequiredLibEx client="3SLicense" libname="3SLicense" vendor="CODESYS" version="0.0.0.0" identifier="_3S_LICENSE" placeholderlib="3SLicense" />
+    </DriverInfo>
+    <Functional>
+      <ChildObject>
+        <ObjectGuid>8ceeba4e-ac7a-4fbd-9415-bfb2d98668ab</ObjectGuid>
+        <ObjectName>Plc Logic</ObjectName>
+      </ChildObject>
+      <Attribute name="StdCommunicationLink">True</Attribute>
+    </Functional>
+    <ExtendedSettings>
+      <ts:TargetSettings>
+        <ts:section name="runtime_identification">
+          <ts:setting name="version" type="string" access="visible">
+            <ts:value>3.5.22.30</ts:value>
+          </ts:setting>
+        </ts:section>
+        <ts:section name="onlinemanager">
+          <ts:setting name="communication-buffer-size" type="integer" access="edit">
+            <ts:value>65536</ts:value>
+          </ts:setting>
+        </ts:section>
+        <ts:section name="runtime_features">
+          <ts:setting name="locked_mode_supported" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="default_for_application_info_download" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="encrypted_download_supported" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:section name="boot_project">
+            <ts:setting name="boot_project_on_download_tag" type="boolean" access="edit">
+              <ts:value>1</ts:value>
+            </ts:setting>
+            <ts:setting name="boot_project_on_download_default" type="boolean" access="edit">
+              <ts:value>1</ts:value>
+            </ts:setting>
+          </ts:section>
+          <ts:setting name="cycle_control_in_iec" type="boolean" access="edit">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="breakpoints_supported" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="operational_mode_supported" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="set_next_statement_supported" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="opcua_server_supported" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="support-multicore" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="opcua_client_supported" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+        </ts:section>
+        <ts:section name="taskconfiguration">
+          <ts:setting name="supportevent" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="supportextendedwatchdog" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="defaulttaskpriority" type="integer" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="maxtaskpriority" type="integer" access="visible">
+            <ts:value>31</ts:value>
+          </ts:setting>
+          <ts:setting name="maxnumoftasks" type="integer" access="visible">
+            <ts:value>100</ts:value>
+          </ts:setting>
+          <ts:setting name="maxeventtasks" type="integer" access="visible">
+            <ts:value>100</ts:value>
+          </ts:setting>
+          <ts:setting name="maxintervaltasks" type="integer" access="visible">
+            <ts:value>100</ts:value>
+          </ts:setting>
+          <ts:setting name="maxexternalevents" type="integer" access="visible">
+            <ts:value>100</ts:value>
+          </ts:setting>
+          <ts:setting name="maxfreetasks" type="integer" access="visible">
+            <ts:value>100</ts:value>
+          </ts:setting>
+          <ts:setting name="externalevents" type="cdata" access="hidden">
+            <ts:value />
+          </ts:setting>
+          <ts:setting name="supportstatus" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="maxstatustasks" type="integer" access="visible">
+            <ts:value>100</ts:value>
+          </ts:setting>
+          <ts:section name="systemevents">
+            <!-- System Events list for the configurator in the taskmanager -->
+            <ts:setting name="library" type="string" access="visible">
+              <ts:value>CmpEventMgr, * (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="library" type="string" access="visible">
+              <ts:value>Component Manager, * (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="library" type="string" access="visible">
+              <ts:value>CmpApp, * (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="library" type="string" access="visible">
+              <ts:value>CmpIecTask, * (System)</ts:value>
+            </ts:setting>
+            <!-- #### CmpApp #### -->
+            <!-- Start event -->
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>PrepareStart</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Called before application starts. Context=Communication task. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.CMPID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVT_PrepareStart</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTPARAMID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTVERSION_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpApp.EVTPARAM_CmpApp</ts:value>
+              </ts:setting>
+            </ts:section>
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>StartDone</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Called after application starts. Context=Communication task. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.CMPID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVT_StartDone</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTPARAMID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTVERSION_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpApp.EVTPARAM_CmpApp</ts:value>
+              </ts:setting>
+            </ts:section>
+            <!-- Stop event -->
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>PrepareStop</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Called before application stops. Context=Communication task. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.CMPID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVT_PrepareStop</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTPARAMID_CmpAppStop</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTVERSION_CmpAppStop</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpApp.EVTPARAM_CmpAppStop</ts:value>
+              </ts:setting>
+            </ts:section>
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>StopDone</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Called after application stops. Context=Communication task. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.CMPID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVT_StopDone</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTPARAMID_CmpAppStop</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTVERSION_CmpAppStop</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpApp.EVTPARAM_CmpAppStop</ts:value>
+              </ts:setting>
+            </ts:section>
+            <!-- Reset event -->
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>PrepareReset</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Called before application reset. Context=Communication task. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.CMPID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVT_PrepareReset</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTPARAMID_CmpAppReset</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTVERSION_CmpAppReset</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpApp.EVTPARAM_CmpAppReset</ts:value>
+              </ts:setting>
+            </ts:section>
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>ResetDone</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Called after application reset. Context=Communication task. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.CMPID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVT_ResetDone</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTPARAMID_CmpAppReset</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTVERSION_CmpAppReset</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpApp.EVTPARAM_CmpAppReset</ts:value>
+              </ts:setting>
+            </ts:section>
+            <!-- Online Change event -->
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>PrepareOnlineChange</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Called before application online change. Context=Communication task. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.CMPID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVT_PrepareOnlineChange</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTPARAMID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTVERSION_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpApp.EVTPARAM_CmpApp</ts:value>
+              </ts:setting>
+            </ts:section>
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>OnlineChangeDone</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Called after application online change. Context=Communication task. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.CMPID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVT_OnlineChangeDone</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTPARAMID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTVERSION_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpApp.EVTPARAM_CmpApp</ts:value>
+              </ts:setting>
+            </ts:section>
+            <!-- Download event -->
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>PrepareDownload</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Called before application download. Context=Communication task. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.CMPID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVT_PrepareDownload</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTPARAMID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTVERSION_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpApp.EVTPARAM_CmpApp</ts:value>
+              </ts:setting>
+            </ts:section>
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>DownloadDone</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Called after application online download. Context=Communication task. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.CMPID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVT_DownloadDone</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTPARAMID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTVERSION_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpApp.EVTPARAM_CmpApp</ts:value>
+              </ts:setting>
+            </ts:section>
+            <!-- Exit event -->
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>PrepareExit</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Called before application is exited. Context=Communication task. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.CMPID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVT_PrepareExit</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTPARAMID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTVERSION_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpApp.EVTPARAM_CmpApp</ts:value>
+              </ts:setting>
+            </ts:section>
+            <!-- CodeInit event -->
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>CodeInitDone</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Event is sent after CodeInit. Is called inside the task safe section and only at online-change! (e.g. the copy code for online-change is executed here). Context=Communication task. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.CMPID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVT_CodeInitDone</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTPARAMID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTVERSION_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpApp.EVTPARAM_CmpApp</ts:value>
+              </ts:setting>
+            </ts:section>
+            <!-- Exception event -->
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>Exception</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Event is sent, if an exception occurred in the context of an application. Context=Exception task or exception task itself. Debugging=Depends on the task</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.CMPID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVT_CmpApp_Exception</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTPARAMID_CmpAppException</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTVERSION_CmpAppException</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpApp.EVTPARAM_CmpAppException</ts:value>
+              </ts:setting>
+            </ts:section>
+            <!-- Login/Logout event -->
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>Login</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Login of a client in this application. Context=Communication task. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.CMPID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVT_Login</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTPARAMID_CmpAppComm</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTVERSION_CmpAppComm</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpApp.EVTPARAM_CmpAppComm</ts:value>
+              </ts:setting>
+            </ts:section>
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>Logout</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Logout of a client in this application. Context=Communication task. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.CMPID_CmpApp</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVT_Logout</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTPARAMID_CmpAppComm</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpApp.EventIDs.EVTVERSION_CmpAppComm</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpApp.EVTPARAM_CmpAppComm</ts:value>
+              </ts:setting>
+            </ts:section>
+            <!-- #### CmpIecTask #### -->
+            <!-- Reading inputs events -->
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>BeforeReadingInputs</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Called before reading inputs. Context=IEC task. Debugging=Enabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.CMPID_CmpIecTask</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.EVT_BeforeReadingInputs</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.EVTPARAMID_CmpIecTask</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.EVTVERSION_CmpIecTask</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpIecTask.EVTPARAM_CmpIecTask</ts:value>
+              </ts:setting>
+            </ts:section>
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>AfterReadingInputs</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Called after reading inputs. Context=IEC task. Debugging=Enabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.CMPID_CmpIecTask</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.EVT_AfterReadingInputs</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.EVTPARAMID_CmpIecTask</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.EVTVERSION_CmpIecTask</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpIecTask.EVTPARAM_CmpIecTask</ts:value>
+              </ts:setting>
+            </ts:section>
+            <!-- Writing outputs events -->
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>BeforeWritingOutputs</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Called before writing outputs. Context=IEC task. Debugging=Enabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.CMPID_CmpIecTask</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.EVT_BeforeWritingOutputs</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.EVTPARAMID_CmpIecTask</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.EVTVERSION_CmpIecTask</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpIecTask.EVTPARAM_CmpIecTask</ts:value>
+              </ts:setting>
+            </ts:section>
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>AfterWritingOutputs</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Called after writing outputs. Context=IEC task. Debugging=Enabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.CMPID_CmpIecTask</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.EVT_AfterWritingOutputs</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.EVTPARAMID_CmpIecTask</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.EVTVERSION_CmpIecTask</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpIecTask.EVTPARAM_CmpIecTask</ts:value>
+              </ts:setting>
+            </ts:section>
+            <!-- Debug loop event -->
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>DebugLoop</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Event is sent cyclically in the debug loop, if the IEC task is halted on a breakpoint. Context=IEC task. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.CMPID_CmpIecTask</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.EVT_IecTaskDebugLoop</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.EVTPARAMID_CmpIecTask</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>CmpIecTask.EventIDs.EVTVERSION_CmpIecTask</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>CmpIecTask.EVTPARAM_CmpIecTask</ts:value>
+              </ts:setting>
+            </ts:section>
+            <!-- #### Component_Manager #### -->
+            <!-- Shutdown events -->
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>PrepareShutdown</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Event is sent right before shutdown of the runtime system. Context=RTS Main loop. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>Component_Manager.ComponentID.CMPID_CmpMgr</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>Component_Manager.EventIDs.EVT_CmpMgr_PrepareShutdown</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>Component_Manager.EventIDs.EVTPARAMID_CmpMgr_Shutdown</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>Component_Manager.EventIDs.EVTVERSION_CmpMgr_Shutdown</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>Component_Manager.EVTPARAM_CmpMgr_Shutdown</ts:value>
+              </ts:setting>
+            </ts:section>
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>PrepareExitComm</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Event is sent before exit the communication servers during shutdown. Context=RTS Main loop. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>Component_Manager.ComponentID.CMPID_CmpMgr</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>Component_Manager.EventIDs.EVT_CmpMgr_PrepareExitComm</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>Component_Manager.EventIDs.EVTPARAMID_CmpMgr_Shutdown</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>Component_Manager.EventIDs.EVTVERSION_CmpMgr_Shutdown</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>Component_Manager.EVTPARAM_CmpMgr_Shutdown</ts:value>
+              </ts:setting>
+            </ts:section>
+            <ts:section name="systemevent">
+              <ts:setting name="eventname" type="string" access="visible">
+                <ts:value>PrepareExitTasks</ts:value>
+              </ts:setting>
+              <ts:setting name="description" type="string" access="visible">
+                <ts:value>Event is sent before exit all tasks during shutdown. Context=RTS Main loop. Debugging=Disabled</ts:value>
+              </ts:setting>
+              <ts:setting name="component-id" type="string" access="visible">
+                <ts:value>Component_Manager.ComponentID.CMPID_CmpMgr</ts:value>
+              </ts:setting>
+              <ts:setting name="event-id" type="string" access="visible">
+                <ts:value>Component_Manager.EventIDs.EVT_CmpMgr_PrepareExitTasks</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-id" type="string" access="visible">
+                <ts:value>Component_Manager.EventIDs.EVTPARAMID_CmpMgr_Shutdown</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-version" type="string" access="visible">
+                <ts:value>Component_Manager.EventIDs.EVTVERSION_CmpMgr_Shutdown</ts:value>
+              </ts:setting>
+              <ts:setting name="parameter-struct" type="string" access="visible">
+                <ts:value>Component_Manager.EVTPARAM_CmpMgr_Shutdown</ts:value>
+              </ts:setting>
+            </ts:section>
+          </ts:section>
+          <ts:section name="priorityinfo">
+            <ts:setting name="priority-0" type="string" access="visible">
+              <ts:value>highest realtime priority above IRQs (SCHED FIFO 56)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-1" type="string" access="visible">
+              <ts:value>realtime priority above IRQs (SCHED FIFO 55)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-2" type="string" access="visible">
+              <ts:value>realtime priority above IRQs (SCHED FIFO 54)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-3" type="string" access="visible">
+              <ts:value>realtime priority above IRQs (SCHED FIFO 53)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-4" type="string" access="visible">
+              <ts:value>realtime priority above IRQs (SCHED FIFO 52)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-5" type="string" access="visible">
+              <ts:value>lowest realtime priority above IRQs (SCHED FIFO 51)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-6" type="string" access="visible">
+              <ts:value>realtime priority equal to IRQs (SCHED FIFO 50)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-7" type="string" access="visible">
+              <ts:value>highest realtime priority below IRQs (SCHED FIFO 49)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-8" type="string" access="visible">
+              <ts:value>realtime priority below IRQs (SCHED FIFO 48)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-9" type="string" access="visible">
+              <ts:value>realtime priority below IRQs (SCHED FIFO 47)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-10" type="string" access="visible">
+              <ts:value>realtime priority below IRQs (SCHED FIFO 46)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-11" type="string" access="visible">
+              <ts:value>realtime priority below IRQs (SCHED FIFO 45)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-12" type="string" access="visible">
+              <ts:value>realtime priority below IRQs (SCHED FIFO 44)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-13" type="string" access="visible">
+              <ts:value>realtime priority below IRQs (SCHED FIFO 43)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-14" type="string" access="visible">
+              <ts:value>realtime priority below IRQs (SCHED FIFO 42)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-15" type="string" access="visible">
+              <ts:value>lowest realtime priority below IRQs (SCHED FIFO 41)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-16" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(-15)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-17" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(-14)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-18" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(-13)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-19" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(-12)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-20" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(-11)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-21" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(-10)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-22" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(-9)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-23" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(-8)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-24" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(-7)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-25" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(-6)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-26" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(-5)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-27" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(-4)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-28" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(-3)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-29" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(-2)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-30" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(-1)</ts:value>
+            </ts:setting>
+            <ts:setting name="priority-31" type="string" access="visible">
+              <ts:value>low linux default priority (SCHED OTHER 20) + nice(0)</ts:value>
+            </ts:setting>
+          </ts:section>
+          <ts:setting name="cycletimedefault" type="string" access="visible">
+            <ts:value>t#4ms</ts:value>
+          </ts:setting>
+          <ts:setting name="supportmicroseconds" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="cycletimemin_us" type="integer" access="visible">
+            <ts:value>50</ts:value>
+          </ts:setting>
+          <ts:section name="taskgroups">
+            <ts:setting name="taskgroups-editable" type="boolean" access="visible">
+              <ts:value>1</ts:value>
+            </ts:setting>
+          </ts:section>
+          <ts:setting name="multicore-cores" type="string" access="visible">
+            <ts:value>-2,-1,-3,0-3</ts:value>
+          </ts:setting>
+        </ts:section>
+        <ts:section name="library-management">
+          <ts:section name="library-manager-filter">
+            <ts:section name="filter-entry">
+              <ts:setting name="hide-category" type="string" access="visible">
+                <ts:value>5753032d-83cc-463f-8562-37bcff9c28db</ts:value>
+              </ts:setting>
+            </ts:section>
+          </ts:section>
+          <ts:section name="placeholder-libraries">
+            <!-- **********************************************  3S Placeholder  ***************************************************** -->
+            <ts:setting name="IoDrvBase" type="string" access="visible">
+              <ts:value>IoDrvBase, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="IoDriver Utility" type="string" access="visible">
+              <ts:value>IoDrvUtility, 3.5.21.0 (CODESYS)</ts:value>
+            </ts:setting>
+            <ts:setting name="Rts Service Handler" type="string" access="visible">
+              <ts:value>Rts Service Handler, 3.5.17.0 (3S - Smart Software Solutions GmbH)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpApp" type="string" access="visible">
+              <ts:value>CmpApp, 3.5.21.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpAppBP" type="string" access="visible">
+              <ts:value>CmpAppBP, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpAsyncMgr" type="string" access="visible">
+              <ts:value>CmpAsyncMgr, 3.5.21.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpBinTagUtilIec" type="string" access="visible">
+              <ts:value>CmpBinTagUtilIec, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpBitmapPool" type="string" access="visible">
+              <ts:value>CmpBitmapPool, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpChannelClientIec" type="string" access="visible">
+              <ts:value>CmpChannelClientIec, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpChannelServer" type="string" access="visible">
+              <ts:value>CmpChannelServer, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpChecksum" type="string" access="visible">
+              <ts:value>CmpChecksum, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpDynamicText" type="string" access="visible">
+              <ts:value>CmpDynamicText, 3.5.20.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpErrors" type="string" access="visible">
+              <ts:value>CmpErrors, 3.3.1.40 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpEventMgr" type="string" access="visible">
+              <ts:value>CmpEventMgr, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpHilscherCIFX" type="string" access="visible">
+              <ts:value>CmpHilscherCIFX, 3.5.21.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpIecTask" type="string" access="visible">
+              <ts:value>CmpIecTask, 3.5.21.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpIecVarAccess" type="string" access="visible">
+              <ts:value>CmpIecVarAccess, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpIoDrvC" type="string" access="visible">
+              <ts:value>CmpIoDrvC, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpLog" type="string" access="visible">
+              <ts:value>CmpLog, 3.5.21.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpNameServiceClientIec" type="string" access="visible">
+              <ts:value>CmpNameServiceClientIec, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpOPCUAProviderAlarmConfiguration" type="string" access="visible">
+              <ts:value>CmpOPCUAProviderAlarmConfiguration, 3.5.21.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpOPCUAServer" type="string" access="visible">
+              <ts:value>CmpOPCUAServer, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpPLCHandler" type="string" access="visible">
+              <ts:value>CmpPLCHandler, 3.5.18.0 (3S - Smart Software Solutions GmbH)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpRouter" type="string" access="visible">
+              <ts:value>CmpRouter, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpSchedule" type="string" access="visible">
+              <ts:value>CmpSchedule, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpSettings" type="string" access="visible">
+              <ts:value>CmpSettings, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpSIL2" type="string" access="visible">
+              <ts:value>CmpSIL2, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpSoftingProfibus" type="string" access="visible">
+              <ts:value>CmpSoftingProfibus, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpSrv" type="string" access="visible">
+              <ts:value>CmpSrv, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpSysEthernet" type="string" access="visible">
+              <ts:value>SysEthernet, 3.5.21.0 (CODESYS)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpTargetVisu" type="string" access="visible">
+              <ts:value>CmpTargetVisu, 3.5.19.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpTraceMgr" type="string" access="visible">
+              <ts:value>CmpTraceMgr, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpVisuHandler" type="string" access="visible">
+              <ts:value>CmpVisuHandler, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="Component Manager" type="string" access="visible">
+              <ts:value>Component Manager, 3.5.21.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CommFB" type="string" access="visible">
+              <ts:value>CommFB, 3.5.21.0 (CODESYS)</ts:value>
+            </ts:setting>
+            <ts:setting name="ARP" type="string" access="visible">
+              <ts:value>ARP, 3.5.17.0 (3S - Smart Software Solutions GmbH)</ts:value>
+            </ts:setting>
+            <ts:setting name="IoStandard" type="string" access="visible">
+              <ts:value>IoStandard, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="iParServer" type="string" access="visible">
+              <ts:value>iParServer, 3.5.21.0 (CODESYS)</ts:value>
+            </ts:setting>
+            <ts:setting name="SDO Server" type="string" access="visible">
+              <ts:value>SDO Server, 3.5.17.0 (3S - Smart Software Solutions GmbH)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysCom" type="string" access="visible">
+              <ts:value>SysCom, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysCpuHandling" type="string" access="visible">
+              <ts:value>SysCpuHandling, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysDir" type="string" access="visible">
+              <ts:value>SysDir, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysEvent" type="string" access="visible">
+              <ts:value>SysEvent, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysExcept" type="string" access="visible">
+              <ts:value>SysExcept, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysFile" type="string" access="visible">
+              <ts:value>SysFile, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysFileAsync" type="string" access="visible">
+              <ts:value>SysFileAsync, 3.5.19.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysInt" type="string" access="visible">
+              <ts:value>SysInt, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysMem" type="string" access="visible">
+              <ts:value>SysMem, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysPci" type="string" access="visible">
+              <ts:value>SysPci, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysPort" type="string" access="visible">
+              <ts:value>SysPort, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysProcess" type="string" access="visible">
+              <ts:value>SysProcess, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysReadWriteLock" type="string" access="visible">
+              <ts:value>SysReadWriteLock, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysSem" type="string" access="visible">
+              <ts:value>SysSem, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysSemProcess" type="string" access="visible">
+              <ts:value>SysSemProcess, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysShm" type="string" access="visible">
+              <ts:value>SysShm, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysSocket" type="string" access="visible">
+              <ts:value>SysSocket, 3.5.19.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysSocketAsync" type="string" access="visible">
+              <ts:value>SysSocketAsync, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysTarget" type="string" access="visible">
+              <ts:value>SysTarget, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysTask" type="string" access="visible">
+              <ts:value>SysTask, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysTime" type="string" access="visible">
+              <ts:value>SysTime, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysTimeCore" type="string" access="visible">
+              <ts:value>SysTimeCore, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysTimer" type="string" access="visible">
+              <ts:value>SysTimer, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysTimeRtc" type="string" access="visible">
+              <ts:value>SysTimeRtc, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysTypes" type="string" access="visible">
+              <ts:value>SysTypes, 3.1.2.0 (System)</ts:value>
+              <!--Do not use SysTypes any more, use ISysTypes instead -->
+            </ts:setting>
+            <ts:setting name="CmpXMLParser" type="string" access="visible">
+              <ts:value>CmpXMLParser, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysSafetyIoBase" type="string" access="visible">
+              <ts:value>SysSafetyIoBase, 3.5.21.0 (CODESYS)</ts:value>
+            </ts:setting>
+            <ts:setting name="IoDrvSafetySp" type="string" access="visible">
+              <ts:value>IoDrvSafetySp, 3.5.22.0 (CODESYS)</ts:value>
+            </ts:setting>
+            <ts:setting name="PSH_Data" type="string" access="visible">
+              <ts:value>PROFIsafeHost_Data, 3.5.21.0 (CODESYS)</ts:value>
+            </ts:setting>
+            <ts:setting name="UDP" type="string" access="visible">
+              <ts:value>UDP, 3.5.21.0 (CODESYS)</ts:value>
+            </ts:setting>
+            <ts:setting name="TCP" type="string" access="visible">
+              <ts:value>TCP, 3.5.21.0 (CODESYS)</ts:value>
+            </ts:setting>
+            <ts:setting name="MemoryUtils" type="string" access="visible">
+              <ts:value>MemoryUtils, 3.5.18.0 (3S - Smart Software Solutions GmbH)</ts:value>
+            </ts:setting>
+            <ts:setting name="Redundancy" type="string" access="visible">
+              <ts:value>Redundancy, 3.5.17.0 (3S - Smart Software Solutions GmbH)</ts:value>
+            </ts:setting>
+            <!-- **********************************************  CAA Placeholder  ***************************************************** -->
+            <ts:setting name="CAA Async Manager" type="string" access="visible">
+              <ts:value>CAA Async Manager Extern, 3.5.21.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA Behaviour Model" type="string" access="visible">
+              <ts:value>CAA Behaviour Model, 3.5.19.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA Callback" type="string" access="visible">
+              <ts:value>CAA Callback Extern, 3.5.17.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA CanL2" type="string" access="visible">
+              <ts:value>CAA Can Low Level Extern, 3.5.21.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA CanL2I" type="string" access="visible">
+              <ts:value>CAA Can Low Level Imp Extern, 3.5.21.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA DTUtility" type="string" access="visible">
+              <ts:value>CAA DTUtil Extern, 3.5.17.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA FB Factory" type="string" access="visible">
+              <ts:value>CAA FB Factory, 3.5.19.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA File" type="string" access="visible">
+              <ts:value>CAA File, 3.5.22.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA List And Tree" type="string" access="visible">
+              <ts:value>CAA List And Tree, 3.5.17.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA Mathematics" type="string" access="visible">
+              <ts:value>CAA Mathematics, 3.5.19.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA MemBlockMan" type="string" access="visible">
+              <ts:value>CAA Memory Block Manager Extern, 3.5.18.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA Memory" type="string" access="visible">
+              <ts:value>CAA Memory, 3.5.17.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA NetBaseSrv" type="string" access="visible">
+              <ts:value>CAA Net Base Services, 3.5.20.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA ResMan" type="string" access="visible">
+              <ts:value>CAA Ressource Manager Extern, 3.5.17.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA RTCLK" type="string" access="visible">
+              <ts:value>CAA Real Time Clock Extern, 3.5.17.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA SegBufMan" type="string" access="visible">
+              <ts:value>CAA Segmented Buffer Manager Extern, 3.5.17.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA SerialCom" type="string" access="visible">
+              <ts:value>CAA SerialCom, 3.5.17.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA Storage" type="string" access="visible">
+              <ts:value>CAA Storage, 3.5.21.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA Storage Imp" type="string" access="visible">
+              <ts:value>3S Storage, 3.5.17.0 (3S - Smart Software Solutions GmbH)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA Tick" type="string" access="visible">
+              <ts:value>CAA Tick Extern, 3.5.17.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA TickUtil" type="string" access="visible">
+              <ts:value>CAA TickUtil Extern, 3.5.17.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA Types" type="string" access="visible">
+              <ts:value>CAA Types Extern, 3.5.17.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <ts:setting name="CAA Device Diagnosis" type="string" access="visible">
+              <ts:value>CAA Device Diagnosis, 3.5.22.0 (CAA Technical Workgroup)</ts:value>
+            </ts:setting>
+            <!-- **********************************************  NetVar Placeholders  *************************************************************-->
+            <ts:setting name="NetVarUdp" type="string" access="visible">
+              <ts:value>NetVarUdp, 3.5.20.0 (System)</ts:value>
+            </ts:setting>
+            <!-- *********************************  Security related Placeholders  *************************************************************-->
+            <ts:setting name="CmpCrypto" type="string" access="visible">
+              <ts:value>CmpCrypto, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpTls" type="string" access="visible">
+              <ts:value>CmpTls, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpX509Cert" type="string" access="visible">
+              <ts:value>CmpX509Cert, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysSocket2" type="string" access="visible">
+              <ts:value>SysSocket2, 3.5.19.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysSocket2 Implementation" type="string" access="visible">
+              <ts:value>SysSocket2 Implementation, 3.5.19.0 (System)</ts:value>
+            </ts:setting>
+            <!-- *********************************  BACnet  *************************************************************-->
+            <ts:setting name="CmpBACnet" type="string" access="visible">
+              <ts:value>CmpBACnet, 3.5.18.0 (3S - Smart Software Solutions GmbH)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpBACnet2" type="string" access="visible">
+              <ts:value>CmpBACnet2, 3.5.20.0 (System)</ts:value>
+            </ts:setting>
+            <!-- *********************************  KNX  *************************************************************-->
+            <ts:setting name="CmpKNX" type="string" access="visible">
+              <ts:value>CmpKNX, 3.5.21.0 (CODESYS)</ts:value>
+            </ts:setting>
+            <!-- *********************************  EL6751  *************************************************************-->
+            <ts:setting name="CmpEL6751CanDrv" type="string" access="visible">
+              <ts:value>CmpEL6751CanDrv, 3.5.21.0 (CODESYS)</ts:value>
+            </ts:setting>
+            <!-- *********************************  Linux Component Containers ********************************************************-->
+            <ts:setting name="CmpCharDevice" type="string" access="visible">
+              <ts:value>CmpCharDevice, 3.5.19.0 (3S - Smart Software Solutions GmbH)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpUnixDomainSocket" type="string" access="visible">
+              <ts:value>CmpUnixDomainSocket, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <!-- *********************************  optional Runtime components **********************************************-->
+            <ts:setting name="SysPipeWindows Implementation" type="string" access="visible">
+              <ts:value>NotImplementedByDevice, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysGraphicLight Implementation" type="string" access="visible">
+              <ts:value>NotImplementedByDevice, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysEthernetBurst Implementation" type="string" access="visible">
+              <ts:value>NotImplementedByDevice, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpCharDevice Implementation" type="string" access="visible">
+              <ts:value>CmpCharDevice Implementation, 3.5.17.0 (3S - Smart Software Solutions GmbH)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpEventMgr Implementation" type="string" access="visible">
+              <ts:value>CmpEventMgr Implementation, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpIecVarAccess Implementation" type="string" access="visible">
+              <ts:value>CmpIecVarAccess Implementation, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpIoConfig Implementation" type="string" access="visible">
+              <ts:value>CmpIoConfig Implementation, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpIoMgr Implementation" type="string" access="visible">
+              <ts:value>CmpIoMgr Implementation, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpOPCUAClient Implementation" type="string" access="visible">
+              <ts:value>CmpOPCUAClient Implementation, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpOPCUAProviderAlarmConfiguration Implementation" type="string" access="visible">
+              <ts:value>CmpOPCUAProviderAlarmConfiguration Implementation, 3.5.21.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpOPCUAServer Implementation" type="string" access="visible">
+              <ts:value>CmpOPCUAServer Implementation, 3.5.21.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpOPCUAStack Implementation" type="string" access="visible">
+              <ts:value>CmpOPCUAStack Implementation, 3.5.21.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpTls Implementation" type="string" access="visible">
+              <ts:value>CmpTls Implementation, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpCrypto Implementation" type="string" access="visible">
+              <ts:value>CmpCrypto Implementation, 3.5.18.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpX509Cert Implementation" type="string" access="visible">
+              <ts:value>CmpX509Cert Implementation, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="Redundancy Implementation" type="string" access="visible">
+              <ts:value>Redundancy Implementation, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpRedundancyConnection Implementation" type="string" access="visible">
+              <ts:value>CmpRedundancyConnection Implementation, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpUnixDomainSocket Implementation" type="string" access="visible">
+              <ts:value>CmpUnixDomainSocket Implementation, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpUserMgr Implementation" type="string" access="visible">
+              <ts:value>CmpUserMgr Implementation, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpWebServer Implementation" type="string" access="visible">
+              <ts:value>CmpWebServer Implementation, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysCpuMultiCore" type="string" access="visible">
+              <ts:value>SysCpuMultiCore, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysProcess Implementation" type="string" access="visible">
+              <ts:value>SysProcess Implementation, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysSem Implementation" type="string" access="visible">
+              <ts:value>SysSem Implementation, 3.5.17.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysShm Implementation" type="string" access="visible">
+              <ts:value>SysShm Implementation, 3.5.21.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="SysSocket Implementation" type="string" access="visible">
+              <ts:value>SysSocket Implementation, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpCodeMeter" type="string" access="visible">
+              <ts:value>CmpCodeMeter, 3.5.18.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpPLCHandlerDataModel" type="string" access="visible">
+              <ts:value>CmpPLCHandlerDataModelLP64, 3.5.21.0 (CODESYS)</ts:value>
+            </ts:setting>
+            <ts:setting name="Raspberry Pi Peripherals" type="string" access="visible">
+              <ts:value>Raspberry Pi Peripherals, 4.19.0.0 (CODESYS)</ts:value>
+            </ts:setting>
+            <ts:setting name="CmpSocketUnix" type="string" access="visible">
+              <ts:value>CmpUnixDomainSocket, 3.5.22.0 (System)</ts:value>
+            </ts:setting>
+            <ts:setting name="ExtensionAPI" type="string" access="visible">
+              <ts:value>ExtensionAPI, 4.19.0.0 (CODESYS)</ts:value>
+            </ts:setting>
+            <ts:setting name="Peripherals" type="string" access="visible">
+              <ts:value>Peripherals, 4.19.0.0 (CODESYS)</ts:value>
+            </ts:setting>
+          </ts:section>
+        </ts:section>
+        <ts:section name="symbolconfiguration">
+          <ts:setting name="generate_as_separate_application" type="boolean" access="visible">
+            <ts:value>0</ts:value>
+          </ts:setting>
+          <ts:setting name="include_opcua_information" type="string" access="visible">
+            <ts:value>Enabled</ts:value>
+          </ts:setting>
+        </ts:section>
+        <ts:section name="memory-layout">
+          <ts:setting name="max-stack-size" type="integer" access="visible">
+            <ts:value>0x20000</ts:value>
+          </ts:setting>
+          <ts:setting name="dynamic-retain" type="boolean" access="visible">
+            <ts:value>true</ts:value>
+          </ts:setting>
+          <ts:setting name="dynamic-persistent" type="boolean" access="visible">
+            <ts:value>true</ts:value>
+          </ts:setting>
+          <ts:setting name="allocation-plus-in-percent" type="integer" access="visible">
+            <ts:value>30</ts:value>
+          </ts:setting>
+          <ts:section name="areas">
+            <ts:setting name="number" type="integer" access="visible">
+              <ts:value>4</ts:value>
+            </ts:setting>
+            <ts:section name="area_0">
+              <ts:setting name="flags" type="integer" access="visible">
+                <ts:value>0xfe9f</ts:value>
+              </ts:setting>
+            </ts:section>
+            <ts:section name="area_1">
+              <ts:setting name="flags" type="integer" access="visible">
+                <ts:value>0x0020</ts:value>
+              </ts:setting>
+              <ts:setting name="minimal-area-size" type="integer" access="visible">
+                <ts:value>0x1000</ts:value>
+              </ts:setting>
+              <ts:setting name="allocation-plus-in-percent" type="integer" access="visible">
+                <ts:value>20</ts:value>
+              </ts:setting>
+            </ts:section>
+            <ts:section name="area_2">
+              <ts:setting name="flags" type="integer" access="visible">
+                <ts:value>0x0120</ts:value>
+              </ts:setting>
+              <ts:setting name="minimal-area-size" type="integer" access="visible">
+                <ts:value>0x1000</ts:value>
+              </ts:setting>
+              <ts:setting name="allocation-plus-in-percent" type="integer" access="visible">
+                <ts:value>20</ts:value>
+              </ts:setting>
+            </ts:section>
+            <ts:section name="area_3">
+              <ts:setting name="flags" type="integer" access="visible">
+                <ts:value>0x0040</ts:value>
+              </ts:setting>
+            </ts:section>
+          </ts:section>
+          <ts:setting name="stack-alignment" type="integer" access="visible">
+            <ts:value>16</ts:value>
+          </ts:setting>
+          <ts:setting name="pack-mode" type="integer" access="visible">
+            <ts:value>8</ts:value>
+          </ts:setting>
+        </ts:section>
+        <ts:section name="codegenerator">
+          <ts:setting name="breakpoint-mark-after-external-call" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="compiler-defines" type="string" access="visible">
+            <ts:value>generate_exceptioninfo, CIP_RETAINS_SUPPORTED</ts:value>
+          </ts:setting>
+          <ts:setting name="Floating Point Unit" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="floating-point-precision" type="string" access="visible">
+            <ts:value />
+          </ts:setting>
+          <ts:setting name="embedded-floating-point-unit" type="boolean" access="visible">
+            <ts:value>0</ts:value>
+          </ts:setting>
+          <ts:setting name="single-precision-mode" type="boolean" access="visible">
+            <ts:value>0</ts:value>
+          </ts:setting>
+          <ts:setting name="memory-barrier" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="generate-div" type="boolean" access="visible">
+            <ts:value>0</ts:value>
+          </ts:setting>
+          <ts:setting name="atomic-read-write-64-bit" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="load-store-register-exclusive" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="report-retain-persistent-update-in-cycle" type="boolean" access="visible">
+            <ts:value>0</ts:value>
+          </ts:setting>
+          <ts:setting name="support-system-applications" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="ltick" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="rts-operating-system" type="string" access="visible">
+            <ts:value>LINUX</ts:value>
+          </ts:setting>
+          <ts:setting name="operating-system" type="string" access="visible">
+            <ts:value>Linux</ts:value>
+          </ts:setting>
+          <ts:setting name="codegenerator-guid" type="string" access="visible">
+            <ts:value>{901DECDD-9EB4-4a5b-951F-42FB21B27718}</ts:value>
+          </ts:setting>
+          <ts:setting name="backend-guid" type="string" access="visible">
+            <ts:value>{A371AE3C-17DA-4847-AE8B-E9EC561C936C}</ts:value>
+          </ts:setting>
+        </ts:section>
+        <ts:section name="visualization">
+          <ts:section name="targetsupport">
+            <ts:setting name="targetvisualization" type="boolean" access="visible">
+              <ts:value>0</ts:value>
+            </ts:setting>
+            <ts:setting name="targetvisualization_insertbydefault" type="boolean" access="visible">
+              <ts:value>0</ts:value>
+            </ts:setting>
+            <ts:setting name="supportslocalvisualizationfiles" type="boolean" access="visible">
+              <ts:value>1</ts:value>
+            </ts:setting>
+            <ts:setting name="webvisualization" type="boolean" access="visible">
+              <ts:value>1</ts:value>
+            </ts:setting>
+            <ts:setting name="webvisualization_insertbydefault" type="boolean" access="visible">
+              <ts:value>1</ts:value>
+            </ts:setting>
+            <ts:setting name="integratedwebserver" type="boolean" access="visible">
+              <ts:value>1</ts:value>
+            </ts:setting>
+          </ts:section>
+          <ts:section name="TargetConstraints">
+            <ts:setting name="TargetImageFormats" type="string" access="visible">
+              <ts:value>*.bmp|*.jpg|*.emf|*.gif|*.png|*.tif|*.ico</ts:value>
+            </ts:setting>
+            <ts:setting name="SupportGradientFill" type="boolean" access="visible">
+              <ts:value>1</ts:value>
+            </ts:setting>
+            <ts:setting name="SupportSemiTransparentDrawing" type="boolean" access="visible">
+              <ts:value>1</ts:value>
+            </ts:setting>
+            <ts:setting name="SupportRealPaintCommands" type="boolean" access="visible">
+              <ts:value>1</ts:value>
+            </ts:setting>
+            <ts:setting name="SupportButtonImagePosition" type="boolean" access="visible">
+              <ts:value>1</ts:value>
+            </ts:setting>
+            <ts:section name="TargetVisualElements">
+              <ts:setting name="AvailableElements" type="string" access="visible">
+                <ts:value>NativeControl</ts:value>
+              </ts:setting>
+              <ts:setting name="AdditionalAvailableElements" type="string" access="visible">
+                <ts:value>NativeControl|BrowserControl</ts:value>
+              </ts:setting>
+            </ts:section>
+            <ts:setting name="InteriorRotationElements" type="string" access="visible">
+              <ts:value>Rectangle|Rounded Rectangle|Ellipse|Image</ts:value>
+            </ts:setting>
+          </ts:section>
+        </ts:section>
+        <ts:section name="deviceconfiguration">
+          <ts:setting name="RemoveAlwaysUpdateInBusTask" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+        </ts:section>
+        <ts:section name="alarmmanager">
+          <ts:setting name="alarms" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="storage" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+        </ts:section>
+        <ts:section name="trace">
+          <ts:setting name="tracemanager" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+        </ts:section>
+        <ts:section name="trendrecording">
+          <ts:setting name="disabled" type="boolean" access="visible">
+            <ts:value>0</ts:value>
+          </ts:setting>
+        </ts:section>
+        <ts:section name="networkvariables">
+          <ts:section name="protocols">
+            <ts:setting name="numofprotocols" type="integer" access="visible">
+              <ts:value>1</ts:value>
+            </ts:setting>
+            <ts:section name="protocol1">
+              <ts:setting name="protocolname" type="string" access="visible">
+                <ts:value>UDP</ts:value>
+              </ts:setting>
+              <ts:setting name="library" type="string" access="visible">
+                <ts:value>NetVarUdp</ts:value>
+              </ts:setting>
+              <ts:setting name="libraryversion" type="string" access="visible">
+                <ts:value>*</ts:value>
+              </ts:setting>
+              <ts:setting name="packetsize" type="integer" access="visible">
+                <ts:value>256</ts:value>
+              </ts:setting>
+            </ts:section>
+          </ts:section>
+        </ts:section>
+        <ts:section name="softmotion">
+          <ts:setting name="enabled" type="integer" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+        </ts:section>
+        <ts:section name="dataserver">
+          <ts:setting name="supportedbydevice" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="protocolsupport" type="string" access="visible">
+            <ts:value>3S_Symbolic,3S_Addresses</ts:value>
+          </ts:setting>
+        </ts:section>
+        <ts:section name="opcuaserver">
+          <ts:section name="informationmodels">
+            <ts:setting name="http://opcfoundation.org/UA/" type="string" access="visible">
+              <ts:value>2024-01-05T00:00:00Z</ts:value>
+            </ts:setting>
+            <ts:setting name="http://opcfoundation.org/UA/DI/" type="string" access="visible">
+              <ts:value>2021-03-09T00:00:00Z</ts:value>
+            </ts:setting>
+            <ts:setting name="http://PLCopen.org/OpcUa/IEC61131-3/" type="string" access="visible">
+              <ts:value>2020-11-25T00:00:00Z</ts:value>
+            </ts:setting>
+          </ts:section>
+          <ts:section name="features">
+            <ts:setting name="builtintypes" type="boolean" access="visible">
+              <ts:value>1</ts:value>
+            </ts:setting>
+            <ts:setting name="arraywithproperties" type="boolean" access="visible">
+              <ts:value>1</ts:value>
+            </ts:setting>
+          </ts:section>
+        </ts:section>
+        <ts:section name="runtimesl">
+          <ts:setting name="enable_externaleventtask" type="boolean" access="visible">
+            <ts:value>true</ts:value>
+          </ts:setting>
+        </ts:section>
+        <ts:section name="datasources">
+          <ts:setting name="supportedbydevice" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+          <ts:setting name="supportssymbolicdriver" type="boolean" access="visible">
+            <ts:value>1</ts:value>
+          </ts:setting>
+        </ts:section>
+      </ts:TargetSettings>
+    </ExtendedSettings>
+  </Device>
+</DeviceDescription>

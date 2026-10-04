@@ -1,0 +1,8 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE E_ControllerTrigger :
+(
+	Left := 0,
+	Right := 1
+);
+END_TYPE

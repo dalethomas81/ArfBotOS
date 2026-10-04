@@ -1,0 +1,8 @@
+TYPE ST_Trackpad :
+STRUCT
+	ID: USINT;
+	Active: BOOL;
+	X: UINT;
+	Y: UINT;
+END_STRUCT
+END_TYPE

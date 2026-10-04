@@ -1,0 +1,77 @@
+{
+	"taskGroups": [
+		{
+			"groupName": "IEC-Tasks",
+			"tasks": {
+				"MainTask": {
+					"calls": [
+						"_00_Main"
+					],
+					"priority": 3,
+					"type": "Cyclic",
+					"interval": 1000,
+					"watchdogEnable": false,
+					"watchdogTime": 0,
+					"watchdogSensitivity": 0
+				},
+				"SoftMotion_PlanningTask": {
+					"calls": [],
+					"priority": 5,
+					"type": "Cyclic",
+					"interval": 1000,
+					"watchdogEnable": false,
+					"watchdogTime": 0,
+					"watchdogSensitivity": 0
+				},
+				"VISU_TASK": {
+					"calls": [
+						"_30_Visu",
+						"_50_Retains"
+					],
+					"priority": 31,
+					"type": "Cyclic",
+					"interval": 100000,
+					"watchdogEnable": false,
+					"watchdogTime": 0,
+					"watchdogSensitivity": 0
+				},
+				"VisionTask": {
+					"calls": [
+						"_40_Vision"
+					],
+					"priority": 15,
+					"type": "Cyclic",
+					"interval": 20000,
+					"watchdogEnable": false,
+					"watchdogTime": 0,
+					"watchdogSensitivity": 0
+				},
+				"EtherCAT_Task": {
+					"calls": [
+						"_10_Robot",
+						"_20_Io"
+					],
+					"priority": 1,
+					"type": "Cyclic",
+					"interval": 4000,
+					"watchdogEnable": false,
+					"watchdogTime": 0,
+					"watchdogSensitivity": 0
+				},
+				"AlarmManagerTask": {
+					"calls": [
+						"AlarmManager.Alarm_Prg"
+					],
+					"priority": 31,
+					"type": "Cyclic",
+					"interval": 50000,
+					"watchdogEnable": false,
+					"watchdogTime": 0,
+					"watchdogSensitivity": 0
+				}
+			},
+			"coreConfig": "FixedPinned"
+		}
+	],
+	"systemEvents": []
+}

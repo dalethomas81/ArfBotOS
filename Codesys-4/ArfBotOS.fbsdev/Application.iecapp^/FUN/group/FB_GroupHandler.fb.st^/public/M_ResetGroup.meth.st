@@ -1,0 +1,6 @@
+METHOD PUBLIC M_ResetGroup : BOOL
+VAR_INPUT
+END_VAR
+
+_ResetGroup := TRUE;
+END_METHOD

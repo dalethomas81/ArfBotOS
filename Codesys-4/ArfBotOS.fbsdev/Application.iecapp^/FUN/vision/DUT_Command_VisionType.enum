@@ -1,0 +1,9 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE DUT_Command_VisionType :
+(
+	Calibrate := 0,
+    Capture := 1,
+    LocatePart :=2
+);
+END_TYPE

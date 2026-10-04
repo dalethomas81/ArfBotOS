@@ -1,0 +1,21 @@
+TYPE DUT_GroupStatus :
+STRUCT
+	Valid: BOOL;
+	Busy: BOOL;
+	Error: BOOL;
+	ErrorID: SMC_ERROR;
+	GroupMoving: BOOL;
+	GroupHoming: BOOL;
+	GroupErrorStop: BOOL;
+	GroupStandby: BOOL;
+	GroupStopping: BOOL;
+	GroupDisabled: BOOL;
+	TrackingDynamicCS: BOOL;
+	InSync: BOOL;
+	ActiveMovementId: SMC_Movement_Id;
+	FirstReferencedMovementId: SMC_Movement_Id;
+	LastAcceptedMovementId: SMC_Movement_Id;
+	PositionLag: LREAL;
+	OrientationLag: LREAL;
+END_STRUCT
+END_TYPE

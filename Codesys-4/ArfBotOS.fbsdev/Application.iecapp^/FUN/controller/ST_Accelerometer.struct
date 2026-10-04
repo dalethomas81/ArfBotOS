@@ -1,0 +1,7 @@
+TYPE ST_Accelerometer :
+STRUCT
+	X: INT;
+	Y: INT;
+	Z: INT;
+END_STRUCT
+END_TYPE

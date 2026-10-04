@@ -1,0 +1,10 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+{attribute 'to_string'}
+TYPE DUT_Command_ArrayType :
+(
+	StoredPosition := 0,
+	VisionRegister := 1,
+	Flag := 2
+);
+END_TYPE

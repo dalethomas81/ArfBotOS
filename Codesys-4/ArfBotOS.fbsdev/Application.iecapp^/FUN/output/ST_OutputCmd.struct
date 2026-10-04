@@ -1,0 +1,7 @@
+TYPE ST_OutputCmd :
+STRUCT
+	OutputType: DUT_OutputType;
+	OutputTarget: INT;
+	OutputValue1: LREAL;
+END_STRUCT
+END_TYPE

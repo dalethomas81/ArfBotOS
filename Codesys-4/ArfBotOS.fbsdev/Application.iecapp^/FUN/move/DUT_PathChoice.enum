@@ -1,0 +1,8 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE DUT_PathChoice :
+(
+	Clockwise := 0,
+	CounterClockwise := 1
+);
+END_TYPE

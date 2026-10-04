@@ -1,0 +1,16 @@
+{attribute 'qualified_only'}
+//{attribute 'strict'}
+{attribute 'to_string'}
+TYPE E_LogicFunction :
+(
+	OUTPUT := 0,
+	REGISTER := 1,
+	FLAG := 2,
+	JUMP := 3,
+	CNTUP := 4,
+	CNTDN := 5,
+	CNTRST := 6,
+	NOP := 7,
+	CALL := 8
+);
+END_TYPE

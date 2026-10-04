@@ -1,0 +1,6 @@
+TYPE DUT_Flags :
+STRUCT
+	Comment: STRING:='';
+	Value: BOOL:=FALSE;
+END_STRUCT
+END_TYPE

@@ -1,0 +1,15 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE E_ControllerTriggerMode :
+(
+	Off := 0, // no resistance
+	Rigid := 1, // continous resistance
+	Pulse := 2, // section resistance
+	Rigid_A := 3,
+	Rigid_B := 4,
+	Rigid_AB := 5,
+	Pulse_A := 6,
+	Pulse_AB := 7,
+	Calibration := 8
+);
+END_TYPE

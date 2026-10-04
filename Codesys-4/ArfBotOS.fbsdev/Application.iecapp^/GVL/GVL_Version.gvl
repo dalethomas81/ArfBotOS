@@ -1,0 +1,8 @@
+{attribute 'qualified_only'}
+VAR_GLOBAL
+    // git describe --tags --always --dirty (does not get the latest tag from main)
+    // git describe --tags --always main (gets the latest tag from main but the commit is wrong because its from the branch we work from - dev)
+    sPlcVersion : STRING(80) := 'v2.2026.38.1-Cnc-2-gfd2cca9-dirty';
+    sRelease : STRING(80);
+    sVersionLine : STRING(160);
+END_VAR

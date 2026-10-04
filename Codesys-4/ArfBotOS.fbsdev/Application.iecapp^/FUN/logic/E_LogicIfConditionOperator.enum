@@ -1,0 +1,12 @@
+{attribute 'qualified_only'}
+//{attribute 'strict'}
+{attribute 'to_string'}
+TYPE E_LogicIfConditionOperator :
+(
+	GRT := 0,
+	LES := 1,
+	EQU := 2,
+	GRE := 3,
+	LEQ := 4
+);
+END_TYPE

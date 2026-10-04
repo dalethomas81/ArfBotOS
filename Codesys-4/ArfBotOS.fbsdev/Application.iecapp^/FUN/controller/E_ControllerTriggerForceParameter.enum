@@ -1,0 +1,13 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE E_ControllerTriggerForceParameter :
+(
+	One := 0,
+	Two := 1,
+	Three := 2,
+	Four := 3,
+	Five := 4,
+	Six := 5,
+	Seven := 6
+);
+END_TYPE

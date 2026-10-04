@@ -1,0 +1,7 @@
+TYPE ST_Joystick :
+STRUCT
+	X: USINT;
+	Y: USINT;
+	ThreeButton: BOOL;
+END_STRUCT
+END_TYPE

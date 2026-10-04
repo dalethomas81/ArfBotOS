@@ -1,0 +1,11 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE E_ControllerPlayerID :
+(
+	Player1 := 4,
+	Player2 := 10,
+	Player3 := 21,
+	Player4 := 27,
+	PlayerAll := 31
+);
+END_TYPE

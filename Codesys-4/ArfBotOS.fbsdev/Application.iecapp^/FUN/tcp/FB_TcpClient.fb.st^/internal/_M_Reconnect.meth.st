@@ -1,0 +1,6 @@
+METHOD INTERNAL _M_Reconnect : BOOL
+VAR_INPUT
+END_VAR
+
+_ConnectStep := ConnectStep_IDLE;
+END_METHOD

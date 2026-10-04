@@ -1,0 +1,12 @@
+TYPE DUT_PositionController :
+STRUCT
+	fKp: LREAL;
+	fPartVelPilotControl: LREAL;
+	fDeadTime: LREAL;
+	fMaxPositionDiff: LREAL;
+	fSWMaxVelocity: LREAL;
+	fSWMaxAcceleration: LREAL;
+	fSWMaxDeceleration: LREAL;
+	fSWMaxJerk: LREAL;
+END_STRUCT
+END_TYPE

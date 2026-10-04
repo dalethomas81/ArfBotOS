@@ -1,0 +1,6 @@
+TYPE ST_Joysticks :
+STRUCT
+	Left: ST_Joystick;
+	Right: ST_Joystick;
+END_STRUCT
+END_TYPE

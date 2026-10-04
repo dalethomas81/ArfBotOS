@@ -1,0 +1,7 @@
+TYPE DUT_Command :
+STRUCT
+	CommandType: DUT_CommandType;
+	CommandString: STRING(GVL_App.COMMAND_LEN);
+	CommandComment: STRING;
+END_STRUCT
+END_TYPE

@@ -1,0 +1,8 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE DUT_Command_PositionType :
+(
+	AbsolutePosition := 0,
+	RelativePosition := 1
+);
+END_TYPE

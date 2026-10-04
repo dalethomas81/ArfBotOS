@@ -1,0 +1,5 @@
+TYPE ST_PauseCmd :
+STRUCT
+	PauseTime: TIME:=T#1S;
+END_STRUCT
+END_TYPE

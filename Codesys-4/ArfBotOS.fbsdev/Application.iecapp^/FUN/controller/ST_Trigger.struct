@@ -1,0 +1,7 @@
+TYPE ST_Trigger :
+STRUCT
+	One: BOOL;
+	Two: USINT;
+	TwoButton: BOOL;
+END_STRUCT
+END_TYPE

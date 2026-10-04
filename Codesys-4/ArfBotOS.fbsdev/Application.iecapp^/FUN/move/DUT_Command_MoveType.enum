@@ -1,0 +1,9 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE DUT_Command_MoveType :
+(
+	CircularMove := 0,
+	DirectMove := 1,
+	LinearMove := 2
+);
+END_TYPE

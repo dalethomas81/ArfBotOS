@@ -1,0 +1,7 @@
+TYPE ST_Gyroscope :
+STRUCT
+	Pitch: INT;
+	Yaw: INT;
+	Roll: INT;
+END_STRUCT
+END_TYPE

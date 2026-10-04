@@ -1,0 +1,23 @@
+{
+	"deviceDescription": {
+		"identification": {
+			"type": 4102,
+			"id": "0000 0012",
+			"version": "4.22.0.0"
+		}
+	},
+	"extensions": {
+		"BaseDevice.PlcConfig": {
+			"configuration": {
+				"applicationForIoHandling": "Application",
+				"updateIosInStop": false,
+				"stopResetBehaviour": "KeepCurrentValues",
+				"generateForceVariables": false,
+				"showIoWarningsAsErrors": false,
+				"deviceDiagnosis": false,
+				"symbolicIoAccess": false,
+				"busCycleTask": "EtherCAT_Task"
+			}
+		}
+	}
+}

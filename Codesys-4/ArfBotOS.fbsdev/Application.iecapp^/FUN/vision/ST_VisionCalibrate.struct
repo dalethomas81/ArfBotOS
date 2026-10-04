@@ -1,0 +1,7 @@
+TYPE ST_VisionCalibrate :
+STRUCT
+    CheckerSize: REAL:=25.0; // this value is in user units ex mm
+    CheckerXCount: UINT:=6; // count of checker blocks in x coordinate
+    CheckerYCount: UINT:=9; // count of checker blocks in y coordinate
+END_STRUCT
+END_TYPE

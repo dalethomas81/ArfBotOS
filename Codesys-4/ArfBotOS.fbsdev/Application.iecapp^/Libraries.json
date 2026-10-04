@@ -1,0 +1,106 @@
+{
+	"references": {
+		"Standard": {
+			"$type": "Placeholder",
+			"placeholder": "Standard"
+		},
+		"SysTimeCore": {
+			"$type": "ManagedLibrary",
+			"libraryId": "SysTimeCore, 3.5.17 (System)"
+		},
+		"CmpTraceMgr": {
+			"$type": "ManagedLibrary",
+			"libraryId": "CmpTraceMgr, 3.5.17 (System)"
+		},
+		"MEMUtils": {
+			"$type": "ManagedLibrary",
+			"libraryId": "MemoryUtils, 3.5.18 (3S - Smart Software Solutions GmbH)"
+		},
+		"CAA": {
+			"$type": "ManagedLibrary",
+			"libraryId": "CAA Types Extern, 3.5.17 (CAA Technical Workgroup)"
+		},
+		"Stu": {
+			"$type": "Placeholder",
+			"placeholder": "StringUtils"
+		},
+		"SysShm": {
+			"$type": "ManagedLibrary",
+			"libraryId": "SysShm, 3.5.17 (System)"
+		},
+		"Util": {
+			"$type": "Placeholder",
+			"placeholder": "Util"
+		},
+		"SysTypes": {
+			"$type": "ManagedLibrary",
+			"libraryId": "SysTypes Interfaces, 3.5.2 (System)"
+		},
+		"SysFile": {
+			"$type": "ManagedLibrary",
+			"libraryId": "SysFile, 3.5.17 (System)"
+		},
+		"SysProcess": {
+			"$type": "ManagedLibrary",
+			"libraryId": "SysProcess, 3.5.17 (System)"
+		},
+		"CmpBitmapPool": {
+			"$type": "ManagedLibrary",
+			"libraryId": "CmpBitmapPool, 3.5.17 (System)"
+		},
+		"SysSocket": {
+			"$type": "ManagedLibrary",
+			"libraryId": "SysSocket, 3.5.19 (System)"
+		},
+		"NBS": {
+			"$type": "Placeholder",
+			"placeholder": "NetBaseSrv"
+		},
+		"SysTypes2": {
+			"$type": "ManagedLibrary",
+			"libraryId": "SysTypes2 Interfaces, 3.5.17 (System)"
+		},
+		"IoDrvGPIO": {
+			"$type": "ManagedLibrary",
+			"libraryId": "IoDrvGPIO, 4.17.0 (CODESYS)"
+		},
+		"SysCom": {
+			"$type": "ManagedLibrary",
+			"libraryId": "SysCom, 3.5.17 (System)"
+		},
+		"CmpDynamicText": {
+			"$type": "ManagedLibrary",
+			"libraryId": "CmpDynamicText, 3.5.20 (System)"
+		},
+		"CmpApp": {
+			"$type": "ManagedLibrary",
+			"libraryId": "CmpApp, 3.5.21 (System)"
+		},
+		"CmpIecTask": {
+			"$type": "ManagedLibrary",
+			"libraryId": "CmpIecTask, 3.5.21 (System)"
+		},
+		"BPLog": {
+			"$type": "Placeholder",
+			"placeholder": "BreakpointLogging"
+		},
+		"CmpMgr": {
+			"$type": "ManagedLibrary",
+			"libraryId": "Component Manager, 3.5.21 (System)"
+		},
+		"CmpEventMgr": {
+			"$type": "ManagedLibrary",
+			"libraryId": "CmpEventMgr, 3.5.17 (System)"
+		},
+		"IoStandard": {
+			"$type": "ManagedLibrary",
+			"libraryId": "IoStandard, 3.5.22 (System)"
+		},
+		"DED": {
+			"$type": "ManagedLibrary",
+			"libraryId": "CAA Device Diagnosis, 3.5.22 (CAA Technical Workgroup)"
+		}
+	},
+	"placeholderOverrides": {},
+	"libraryParameters": {}
+}

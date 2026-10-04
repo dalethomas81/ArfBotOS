@@ -1,0 +1,6 @@
+TYPE ST_Trackpads :
+STRUCT
+	One: ST_Trackpad;
+	Two: ST_Trackpad;
+END_STRUCT
+END_TYPE

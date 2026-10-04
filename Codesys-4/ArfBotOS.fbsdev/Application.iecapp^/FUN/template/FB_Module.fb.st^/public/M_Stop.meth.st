@@ -1,0 +1,6 @@
+METHOD PUBLIC M_Stop
+VAR_INPUT
+END_VAR
+
+_UnitMode.Stop();
+END_METHOD

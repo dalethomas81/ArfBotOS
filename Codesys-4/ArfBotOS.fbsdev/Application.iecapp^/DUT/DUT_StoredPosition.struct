@@ -1,0 +1,6 @@
+TYPE DUT_StoredPosition :
+STRUCT
+	Comment: STRING;
+	Position: MC_COORD_REF;
+END_STRUCT
+END_TYPE

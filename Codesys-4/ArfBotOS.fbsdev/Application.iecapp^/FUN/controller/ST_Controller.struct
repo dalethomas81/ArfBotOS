@@ -1,0 +1,13 @@
+TYPE ST_Controller :
+STRUCT
+	Connected: BOOL;
+	Joysticks: ST_Joysticks;
+	Buttons: ST_Buttons;
+	Dpad: ST_Dpad;
+	Triggers: ST_Triggers;
+	Trackpads: ST_Trackpads;
+	Gyroscope: ST_Gyroscope;
+	Accelerometer: ST_Accelerometer;
+	Battery: ST_Battery;
+END_STRUCT
+END_TYPE

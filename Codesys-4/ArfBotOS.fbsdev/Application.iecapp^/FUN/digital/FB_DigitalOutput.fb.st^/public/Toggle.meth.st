@@ -1,0 +1,6 @@
+METHOD PUBLIC Toggle : BOOL
+VAR_INPUT
+END_VAR
+
+_Output := NOT _Output;
+END_METHOD

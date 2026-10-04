@@ -1,0 +1,6 @@
+TYPE ST_Battery :
+STRUCT
+	State: USINT;
+	Level: USINT;
+END_STRUCT
+END_TYPE

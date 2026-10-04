@@ -1,0 +1,47 @@
+FUNCTION F_SplitCmd : ARRAY [0..GVL_App.COMMAND_LEN] OF STRING
+VAR_INPUT
+    Command: STRING(GVL_App.COMMAND_LEN);
+	Delimiter: STRING(1):=' ';
+END_VAR
+VAR
+	_Command: STRING(GVL_App.COMMAND_LEN);
+	_DelimPos: INT;
+	_i, _j, _k: INT;
+END_VAR
+VAR CONSTANT
+	_SpaceChar: STRING(1):=' ';
+END_VAR
+
+// grab a copy
+// TODO do we need to do this? cant we just operate on the input?
+_Command := Command;
+
+// ex. 123 456 789 0 123 456 879 0
+WHILE LEN(_Command) > 0  AND _i < GVL_App.COMMAND_LEN DO
+	// find the delimiter
+	_DelimPos := FIND(_Command, Delimiter);
+	// don't copy empty commands
+	IF _DelimPos > 1 THEN
+		// copy the command into the array position
+		F_SplitCmd[_i] := MID(STR:=_Command, LEN:=_DelimPos - 1, POS:=1);
+		// trim the command off the front of the string
+		_Command := DELETE(STR:=_Command, LEN:=_DelimPos, POS:=1);
+		// increment the index and get ready for the next
+		_i := _i + 1;
+	ELSIF _DelimPos = 1 OR FIND(_Command, _SpaceChar) = 1 THEN
+		// don't do anything with a stray delimiter or a space at the  start of the next command
+		// trim the command off the space at the front of the string
+		_Command := DELETE(STR:=_Command, LEN:=LEN(_SpaceChar), POS:=1);
+	ELSIF _DelimPos = 0 AND LEN(_Command) > 0 THEN
+		// copy the last command into the array position and return
+		F_SplitCmd[_i] := MID(STR:=_Command, LEN:=LEN(_Command), POS:=1);
+		// trim the command off the front of the string
+		_Command := DELETE(STR:=_Command, LEN:=_DelimPos, POS:=1);
+		// increment the index and get ready for the next
+		_i := _i + 1;
+		RETURN;
+	ELSE
+		RETURN;
+	END_IF
+END_WHILE
+END_FUNCTION

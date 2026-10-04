@@ -1,0 +1,13 @@
+TYPE ST_VarSetCmd :
+STRUCT
+	ArrayType: DUT_Command_ArrayType;
+	ArrayIndex: INT;
+	Coordinates: MC_COORD_REF;
+	XOperType: DUT_VarSetCmd_OperType;
+	YOperType: DUT_VarSetCmd_OperType;
+	ZOperType: DUT_VarSetCmd_OperType;
+	AOperType: DUT_VarSetCmd_OperType;
+	BOperType: DUT_VarSetCmd_OperType;
+	COperType: DUT_VarSetCmd_OperType;
+END_STRUCT
+END_TYPE

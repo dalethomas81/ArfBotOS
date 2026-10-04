@@ -1,0 +1,10 @@
+TYPE ST_CncCmd :
+STRUCT
+	StartPos: 		SMC_PosInfo;				
+	OriConvention: 	SMC_ORI_CONVENTION:=SMC_ORI_CONVENTION.ZYZ;
+	Filename: 		STRING:='CNC_FromFile.cnc';
+	CoordinateType: DUT_Command_CoordinateType:=DUT_Command_CoordinateType.Variable;
+	ArrayIndex: 	INT:=GVL_App.DEC_START_POS;
+	ArrayType: 		DUT_Command_ArrayType:=DUT_Command_ArrayType.StoredPosition;
+END_STRUCT
+END_TYPE

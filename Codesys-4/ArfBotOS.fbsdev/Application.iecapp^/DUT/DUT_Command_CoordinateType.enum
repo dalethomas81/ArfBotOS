@@ -1,0 +1,9 @@
+{attribute 'qualified_only'}
+{attribute 'strict'}
+{attribute 'to_string'}
+TYPE DUT_Command_CoordinateType :
+(
+	Literal := 0,
+	Variable := 1
+);
+END_TYPE
