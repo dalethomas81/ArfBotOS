@@ -4753,10 +4753,10 @@ IF NOT PersistentVars.Flags[GVL.INIT_POS_IDX].Value THEN
 	PersistentVars.StoredPositions[GVL.POSE_3_IDX].Position.C := 0.0;
 	
 	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.X := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.Y := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.Z := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.Y := -4.74;
+	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.Z := -22.79;
 	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.A := 0.0;
-	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.B := 0.0;
+	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.B := 62.45;
 	PersistentVars.StoredPositions[GVL.POSE_4_IDX].Position.C := 0.0;
 	
 	PersistentVars.StoredPositions[GVL.POSE_5_IDX].Position.X := 0.0;
@@ -5301,10 +5301,21 @@ FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 	PersistentVars.Programs[3].Commands[_i].CommandComment := '';
 END_FOR
 PersistentVars.Programs[3].ProgramName := 'Cnc Validation';
-PersistentVars.Programs[3].Commands[0].CommandType := DUT_CommandType.MoveCommand;
-PersistentVars.Programs[3].Commands[0].CommandString := 'DIR ABS 30.0 ACS VAR STO 34 ';
-PersistentVars.Programs[3].Commands[1].CommandType := DUT_CommandType.CncCommand;
-PersistentVars.Programs[3].Commands[1].CommandString := 'CNC_FromFile.cnc';
+PersistentVars.Programs[3].Commands[0].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[3].Commands[0].CommandString := 'STO 46 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 ';
+PersistentVars.Programs[3].Commands[0].CommandComment := 'Clear TCP Offset';
+PersistentVars.Programs[3].Commands[2].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[3].Commands[2].CommandString := 'DIR ABS 50.0 ACS VAR STO 37 ';
+PersistentVars.Programs[3].Commands[2].CommandComment := 'Move to Pose 4';
+PersistentVars.Programs[3].Commands[3].CommandType := DUT_CommandType.CncCommand;
+PersistentVars.Programs[3].Commands[3].CommandString := 'CNC_Cone.cnc ';
+PersistentVars.Programs[3].Commands[3].CommandComment := 'Run the cnc file on disk';
+PersistentVars.Programs[3].Commands[5].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[3].Commands[5].CommandString := 'DIR ABS 50.0 ACS VAR STO 34 ';
+PersistentVars.Programs[3].Commands[5].CommandComment := 'Move to Pose 1';
+PersistentVars.Programs[3].Commands[6].CommandType := DUT_CommandType.CncCommand;
+PersistentVars.Programs[3].Commands[6].CommandString := 'CNC_FromFile.cnc ';
+PersistentVars.Programs[3].Commands[6].CommandComment := 'Run the cnc file on disk';
 
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
@@ -5314,9 +5325,14 @@ FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
 END_FOR
 PersistentVars.Programs[4].ProgramName := 'Vision Validation';
 PersistentVars.Programs[4].Commands[0].CommandType := DUT_CommandType.VisionCommand;
-PersistentVars.Programs[4].Commands[0].CommandString := 'LOC 640 400 60 1 0.0 0.8 30.0 10 Template.jpg FastTemplateMatching.py';
-PersistentVars.Programs[4].Commands[1].CommandType := DUT_CommandType.VisionCommand;
-PersistentVars.Programs[4].Commands[1].CommandString := 'LOC 640 400 60 1 0.0 0.8 30.0 4 strippers2.jpg FastTemplateMatching.py';
+PersistentVars.Programs[4].Commands[0].CommandString := 'CAL 640 400 60 22.0 6 9 ';
+PersistentVars.Programs[4].Commands[0].CommandComment := 'Calibrate using checkerboard';
+PersistentVars.Programs[4].Commands[2].CommandType := DUT_CommandType.PauseCommand;
+PersistentVars.Programs[4].Commands[2].CommandString := 'T#10s ';
+PersistentVars.Programs[4].Commands[2].CommandComment := 'Wait 10 seconds';
+PersistentVars.Programs[4].Commands[4].CommandType := DUT_CommandType.VisionCommand;
+PersistentVars.Programs[4].Commands[4].CommandString := 'LOC 640 400 60 1 0.0 0.8 30.0 10 Template.jpg FastTemplateMatching.py';
+PersistentVars.Programs[4].Commands[4].CommandComment := 'Find the template';
 
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
@@ -5431,6 +5447,40 @@ PersistentVars.Programs[7].Commands[31].CommandComment := 'Set pick/place regist
 PersistentVars.Programs[7].Commands[32].CommandType := DUT_CommandType.LogicCommand;
 PersistentVars.Programs[7].Commands[32].CommandString := 'IF PASS THEN CALL 0 ';
 PersistentVars.Programs[7].Commands[32].CommandComment := 'Call pick and place program';
+
+//
+FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
+	PersistentVars.Programs[9].Commands[_i].CommandType := DUT_CommandType.Disabled;
+	PersistentVars.Programs[9].Commands[_i].CommandString := '';
+	PersistentVars.Programs[9].Commands[_i].CommandComment := '';
+END_FOR
+PersistentVars.Programs[9].ProgramName := 'Vision PCS1 Test';
+PersistentVars.Programs[9].Commands[0].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[9].Commands[0].CommandString := 'DIR ABS 75.0 ACS VAR STO 35 ';
+PersistentVars.Programs[9].Commands[0].CommandComment := 'Move to Pose 2';
+PersistentVars.Programs[9].Commands[2].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[9].Commands[2].CommandString := 'STO 48 E 241.75 E -54.39 E 203.17 E 0.0 E 181.0 E -90.0 ';
+PersistentVars.Programs[9].Commands[2].CommandComment := 'Set PCS1 Offset in ZYZ';
+PersistentVars.Programs[9].Commands[3].CommandType := DUT_CommandType.VarSetCommand;
+PersistentVars.Programs[9].Commands[3].CommandString := 'STO 46 E 0.0 E 0.0 E 0.0 E 0.0 E 0.0 E 90.0 ';
+PersistentVars.Programs[9].Commands[3].CommandComment := 'Rotate TCP in ZYZ';
+PersistentVars.Programs[9].Commands[5].CommandType := DUT_CommandType.VisionCommand;
+PersistentVars.Programs[9].Commands[5].CommandString := 'LOC 640 400 15 2 0.0 0.8 180.0 0 screwdriver1.jpg FastTemplateMatching.py ';
+PersistentVars.Programs[9].Commands[5].CommandComment := 'Find the object and store the result';
+PersistentVars.Programs[9].Commands[7].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[9].Commands[7].CommandString := 'IF REGISTER 0 EQU 0 THEN JUMP 14 ELSE NOP ';
+PersistentVars.Programs[9].Commands[7].CommandComment := 'If parts count = 0 jump to end';
+PersistentVars.Programs[9].Commands[9].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[9].Commands[9].CommandString := 'DIR ABS 50.0 PC1 VAR VIS 0 ';
+PersistentVars.Programs[9].Commands[9].CommandComment := 'Move over the object';
+PersistentVars.Programs[9].Commands[10].CommandType := DUT_CommandType.PauseCommand;
+PersistentVars.Programs[9].Commands[10].CommandString := 'T#3s ';
+PersistentVars.Programs[9].Commands[12].CommandType := DUT_CommandType.LogicCommand;
+PersistentVars.Programs[9].Commands[12].CommandString := 'IF REGISTER 0 GRT 1 THEN JUMP 0 ELSE NOP ';
+PersistentVars.Programs[9].Commands[12].CommandComment := 'If more than 1 part go again';
+PersistentVars.Programs[9].Commands[14].CommandType := DUT_CommandType.MoveCommand;
+PersistentVars.Programs[9].Commands[14].CommandString := 'DIR ABS 75.0 ACS VAR STO 35 ';
+PersistentVars.Programs[9].Commands[14].CommandComment := 'Move to Pose 2';
 
 //
 FOR _i := GVL.PROG_CMDS_ARR_BEG TO GVL.PROG_CMDS_ARR_END BY 1 DO
