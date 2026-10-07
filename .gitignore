@@ -413,3 +413,4 @@ Codesys/ArfBot.~u
 /TwinCAT/TcHmi/Videos
 *.MP4
 /TwinCAT/ArfBotOS-TwinCAT/Main/_Libraries
+.DS_Store
